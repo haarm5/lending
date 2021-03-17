@@ -1,0 +1,12 @@
+out/
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+bin/
+build/
+.gradle
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar

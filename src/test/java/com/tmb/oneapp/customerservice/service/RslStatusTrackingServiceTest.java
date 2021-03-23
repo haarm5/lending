@@ -67,9 +67,9 @@ class RslStatusTrackingServiceTest {
     void fetchMessage() {
         when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
-        String rslResponse_actual = rslStatusTrackingService.fetchRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
+        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
 
-        assertNotNull(rslResponse_actual);
+        assertEquals(null, rslStatusTrackingResponseList_actual);
     }
 
     @Test

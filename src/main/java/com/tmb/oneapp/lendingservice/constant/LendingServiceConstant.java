@@ -28,6 +28,7 @@ public class LendingServiceConstant {
     public static final String HEADER_DEVICE_MODEL = "device-model";
 
     public static final String HEADER_SOAP_ACTION = "SOAPAction";
+    public static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
 
     /**
      * ACTIVITY IDS

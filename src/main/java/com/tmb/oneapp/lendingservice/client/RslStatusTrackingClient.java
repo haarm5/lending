@@ -1,6 +1,7 @@
 package com.tmb.oneapp.lendingservice.client;
 
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class RslStatusTrackingClient {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            headers.add("SOAPAction", "");
+            headers.add(LendingServiceConstant.HEADER_SOAP_ACTION, "");
 
             HttpEntity<String> request = new HttpEntity<>(xml, headers);
 

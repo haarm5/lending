@@ -5,6 +5,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.RslStatusTrackingResponse;
 import com.tmb.oneapp.lendingservice.service.RslStatusTrackingService;
@@ -44,7 +45,9 @@ public class RslStatusTrackingController {
     /**
      * method : To call rslStatusTrackingService service
      *
-     * @param crmId String
+     * @param citizenId String
+     * @param mobileNo String
+     * @param correlationId String
      *
      * @return TmbOneServiceResponse<List<CaseStatusTrackingDetail>>
      */
@@ -52,9 +55,9 @@ public class RslStatusTrackingController {
     @GetMapping(value = "/rsl/status", produces = MediaType.APPLICATION_JSON_VALUE)
     @LogAround
     public ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> getRslStatusTracking(
-            @ApiParam(value = "CITIZEN-ID", defaultValue = "1100400759800", required = true) @RequestHeader(name = "CITIZEN-ID", required = false) String citizenId,
-            @ApiParam(value = "MOBILE-NO", defaultValue = "0811234567", required = true) @RequestHeader(name = "MOBILE-NO", required = false) String mobileNo,
-            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader("X-Correlation-ID") String correlationId) {
+            @ApiParam(value = "Citizen-ID", defaultValue = "1100400759800", required = true) @RequestHeader(name = "Citizen-ID", required = false) String citizenId,
+            @ApiParam(value = "Mobile-No", defaultValue = "0811234567", required = true) @RequestHeader(name = "Mobile-No", required = false) String mobileNo,
+            @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId) {
 
         logger.info("Lending-service getRslStatusTracking method start Time : {} ", System.currentTimeMillis());
 
@@ -69,22 +72,22 @@ public class RslStatusTrackingController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .headers(TMBUtils.getResponseHeaders())
                         .body(rslStatusTrackingResponse);
+            } else if(!rslStatusTracking.isEmpty()) {
+                rslStatusTrackingResponse.setData(rslStatusTracking);
+                rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+                        ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+                return ResponseEntity.status(HttpStatus.OK)
+                        .headers(TMBUtils.getResponseHeaders())
+                        .body(rslStatusTrackingResponse);
             }
-
-            rslStatusTrackingResponse.setData(rslStatusTracking);
-            rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-                            ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-            return ResponseEntity.status(HttpStatus.OK)
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(rslStatusTrackingResponse);
         } catch (Exception e) {
             logger.error("Unable to getRslStatusTracking data : {} ", e);
             rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                             ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .headers(TMBUtils.getResponseHeaders())
-                    .body(rslStatusTrackingResponse);
         }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .headers(TMBUtils.getResponseHeaders())
+                .body(rslStatusTrackingResponse);
     }
 }

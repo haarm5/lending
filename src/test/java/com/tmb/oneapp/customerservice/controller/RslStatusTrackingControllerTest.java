@@ -75,7 +75,7 @@ class RslStatusTrackingControllerTest {
 //        First Data
         RslStatusTrackingResponse rslStatusTrackingResponse = new RslStatusTrackingResponse();
         rslStatusTrackingResponse.setReferenceNo("026CC64017644");
-        rslStatusTrackingResponse.setAppStatus("IDDFD");
+        rslStatusTrackingResponse.setStatus("IDDFD");
         rslStatusTrackingResponse.setCurrentNode("2");
         rslStatusTrackingResponse.setApplicationDate("2021-01-24T14:14:32.000Z");
         rslStatusTrackingResponse.setIsApproved("N");
@@ -84,12 +84,10 @@ class RslStatusTrackingControllerTest {
         rslStatusTrackingResponse.setProductCode("MS");
         rslStatusTrackingResponse.setProductTypeTh("TMB So Chill");
         rslStatusTrackingResponse.setProductTypeEn("TMB So Chill");
-        rslStatusTrackingResponse.setNodeTextTh(getNodeTh());
-        rslStatusTrackingResponse.setNodeTextEn(getNodeEn());
 //        Second Data
         RslStatusTrackingResponse rslStatusTrackingResponse2 = new RslStatusTrackingResponse();
         rslStatusTrackingResponse2.setReferenceNo("026PL64034602");
-        rslStatusTrackingResponse2.setAppStatus("IDDFD");
+        rslStatusTrackingResponse2.setStatus("IDDFD");
         rslStatusTrackingResponse2.setCurrentNode("2");
         rslStatusTrackingResponse2.setApplicationDate("2021-01-25T10:16:41.000Z");
         rslStatusTrackingResponse2.setIsApproved("N");
@@ -98,31 +96,9 @@ class RslStatusTrackingControllerTest {
         rslStatusTrackingResponse2.setProductCode("RC");
         rslStatusTrackingResponse2.setProductTypeTh("FLASH Card");
         rslStatusTrackingResponse2.setProductTypeEn("บัตรกดเงินสด แฟลช");
-        rslStatusTrackingResponse2.setNodeTextTh(getNodeTh());
-        rslStatusTrackingResponse2.setNodeTextEn(getNodeEn());
 
         rslStatusTrackingResponseList.add(rslStatusTrackingResponse2);
 
         return rslStatusTrackingResponseList;
-    }
-
-    private List<String> getNodeTh() {
-        List<String> nodeTh = new ArrayList<>();
-        nodeTh.add("ธนาคารได้รับใบสมัครจากท่านเรียบร้อยแล้ว");
-        nodeTh.add("อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร");
-        nodeTh.add("อยู่ระหว่างการพิจารณาอนุมัติสินเชื่อ");
-        nodeTh.add("ท่านได้รับการอนุมัติสินเชื่อเรียบร้อยแล้ว");
-
-        return nodeTh;
-    }
-
-    private List<String> getNodeEn() {
-        List<String> nodeEn = new ArrayList<>();
-        nodeEn.add("TMB has received your application.");
-        nodeEn.add("Verifing Information and document in progress.");
-        nodeEn.add("Approval process in progress.");
-        nodeEn.add("Your application has been approval.");
-
-        return nodeEn;
     }
 }

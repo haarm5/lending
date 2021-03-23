@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @Service
 public class RslStatusTrackingService {
     private static final TMBLogger<RslStatusTrackingService> logger = new TMBLogger<>(RslStatusTrackingService.class);
+    private final RslStatusTrackingClient rslStatusTrackingClient;
     private final CommonServiceFeignClient commonServiceFeignClient;
     private final RslMessageRepository rslMessageRepository;
 
@@ -40,8 +41,10 @@ public class RslStatusTrackingService {
      * Constructor
      */
     @Autowired
-    public RslStatusTrackingService(CommonServiceFeignClient commonServiceFeignClient,
+    public RslStatusTrackingService(RslStatusTrackingClient rslStatusTrackingClient,
+                                    CommonServiceFeignClient commonServiceFeignClient,
                                     RslMessageRepository rslMessageRepository) {
+        this.rslStatusTrackingClient = rslStatusTrackingClient;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.rslMessageRepository = rslMessageRepository;
     }
@@ -321,7 +324,7 @@ public class RslStatusTrackingService {
 
         try {
             logger.info("fetchRslStatusTracking start time : {}", System.currentTimeMillis());
-            ResponseEntity<String> response = new RslStatusTrackingClient().getRslStatusTracking(rslRequest);
+            ResponseEntity<String> response = rslStatusTrackingClient.getRslStatusTracking(rslRequest);
 
             return response.getBody();
         } catch (Exception e) {

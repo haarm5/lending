@@ -27,6 +27,9 @@ public class LendingServiceConstant {
     public static final String HEADER_DEVICE_ID = "device-id";
     public static final String HEADER_DEVICE_MODEL = "device-model";
 
+    public static final String HEADER_SOAP_ACTION = "SOAPAction";
+    public static final String HEADER_CORRELATION_ID = "X-Correlation-ID";
+
     /**
      * ACTIVITY IDS
      */
@@ -37,6 +40,8 @@ public class LendingServiceConstant {
      */
     public static final String ACTIVITY_SCREEN_NAME_TUTORIAL_CST = "tutorial case tracking";
 
-
-
+    /**
+     * Response
+     */
+    public static final String DATA_NOT_FOUND = "DATA NOT FOUND";
 }

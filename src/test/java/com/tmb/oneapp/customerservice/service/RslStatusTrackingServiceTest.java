@@ -61,12 +61,12 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void getRslStatusTracking() throws JsonProcessingException {
+    void getRslStatusTrackingAppTypeCompleteAndInComplete() throws JsonProcessingException {
         ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
 
         when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
 
-        String mockResultProductConfig = getMockResultProductConfig();
+        String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
         });
         TmbOneServiceResponse<List<ProductConfig>> mockProductConfig = new TmbOneServiceResponse<>();
@@ -81,6 +81,17 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
+    void getStatusAppType() {
+        assertEquals("completed", rslStatusTrackingService.getStatus("MNSTP"));
+        assertEquals("in_progress", rslStatusTrackingService.getStatus("1STAP"));
+        assertEquals("incomplete", rslStatusTrackingService.getStatus("INAPD"));
+        assertEquals("rejected", rslStatusTrackingService.getStatus("FNRJD"));
+        assertEquals("expired", rslStatusTrackingService.getStatus("EXNCC"));
+        assertEquals("customer_cancel", rslStatusTrackingService.getStatus("CANAD"));
+        assertEquals("", rslStatusTrackingService.getStatus("ABC"));
+    }
+
+    @Test
     void getRslStatusTrackingDataNotFound() throws JsonProcessingException {
         String fakeCitizenId = "123";
 
@@ -88,7 +99,7 @@ class RslStatusTrackingServiceTest {
 
         when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
 
-        String mockResultProductConfig = getMockResultProductConfig();
+        String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
         });
         TmbOneServiceResponse<List<ProductConfig>> mockProductConfig = new TmbOneServiceResponse<>();
@@ -106,7 +117,7 @@ class RslStatusTrackingServiceTest {
     void getRslStatusTrackingFail() throws JsonProcessingException {
         when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        String mockResultProductConfig = getMockResultProductConfig();
+        String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
         });
         TmbOneServiceResponse<List<ProductConfig>> mockProductConfig = new TmbOneServiceResponse<>();
@@ -133,7 +144,7 @@ class RslStatusTrackingServiceTest {
         return result;
     }
 
-    private String getMockResultProductConfig() {
+    private String getMockResultProductConfigAppTypeCompleteAndInComplete() {
         String result = "[{\"id\":\"6045f7d09ba0434890589e5b\",\"product_code\":\"MSCHIL\",\"product_description\":\"TMB So Chill credit card\",\"product_name_en\":\"So Chill Credit Card\",\"product_name_th\":\"โซ ชิลล์\",\"rsl_product_code\":\"MS\",\"account_type\":\"CCA\",\"icon_id\":\"/product/credit_card/cards_sochill.png\",\"sort_order\":\"20005\",\"account_summary_display\":\"1\",\"account_detail_view\":\"\",\"allow_transfer_from_account\":\"0\",\"transfer_own_ttbmap_code\":\"000\",\"transfer_other_ttbmap_code\":\"000\",\"allow_transfer_to_other_bank\":\"0\",\"allow_register_prompt_pay\":\"0\",\"allow_transfer_to_prompt_pay\":\"0\",\"allow_card_less_withdraw\":\"0\",\"allow_manage_debit_card\":\"0\",\"allow_point_redemption\":\"0\",\"allow_sogoood\":\"1\",\"allow_cashtransfer\":\"1\",\"allow_buy\":\"0\",\"allow_sell\":\"0\",\"allow_history\":\"0\",\"waive_fee_for_prompt_pay\":\"0\",\"waive_fee_for_prompt_pay_account\":\"0\",\"transfer_shortcut_flag\":\"0\",\"pay_bill_shortcut_flag\":\"0\",\"top_up_shortcut_flag\":\"0\",\"pay_my_cc_shortcut_flag\":\"1\",\"pay_my_loan_shortcut_flag\":\"0\"},{\"id\":\"6045f7d09ba0434890589e5f\",\"product_code\":\"VFPSTD\",\"product_description\":\"TMB FLASH Card\",\"product_name_en\":\"FLASH Card\",\"product_name_th\":\"บัตรกดเงินสด แฟลช\",\"rsl_product_code\":\"RC\",\"account_type\":\"CCA\",\"icon_id\":\"/product/credit_card/cards_flash.png\",\"sort_order\":\"30001\",\"account_summary_display\":\"1\",\"account_detail_view\":\"\",\"allow_transfer_from_account\":\"0\",\"transfer_own_ttbmap_code\":\"000\",\"transfer_other_ttbmap_code\":\"000\",\"allow_transfer_to_other_bank\":\"0\",\"allow_register_prompt_pay\":\"0\",\"allow_transfer_to_prompt_pay\":\"0\",\"allow_card_less_withdraw\":\"0\",\"allow_manage_debit_card\":\"0\",\"allow_point_redemption\":\"0\",\"allow_sogoood\":\"0\",\"allow_cashtransfer\":\"1\",\"allow_buy\":\"0\",\"allow_sell\":\"0\",\"allow_history\":\"0\",\"waive_fee_for_prompt_pay\":\"0\",\"waive_fee_for_prompt_pay_account\":\"0\",\"transfer_shortcut_flag\":\"0\",\"pay_bill_shortcut_flag\":\"0\",\"top_up_shortcut_flag\":\"0\",\"pay_my_cc_shortcut_flag\":\"1\",\"pay_my_loan_shortcut_flag\":\"0\"}]";
 
         return result;

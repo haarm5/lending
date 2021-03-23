@@ -53,17 +53,6 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void fetchRslStatusTracking() {
-        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
-
-        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
-
-        String rslResponse_actual = rslStatusTrackingService.fetchRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
-
-        assertNotNull(rslResponse_actual);
-    }
-
-    @Test
     void fetchMessage() {
         when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
@@ -74,10 +63,10 @@ class RslStatusTrackingServiceTest {
 
     @Test
     void getRslStatusTracking() throws JsonProcessingException {
-        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
-
-        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
-
+//        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
+//
+//        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
+//
         String mockResultProductConfig = getMockResultProductConfig();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
         });
@@ -96,9 +85,9 @@ class RslStatusTrackingServiceTest {
     void getRslStatusTrackingDataNotFound() throws JsonProcessingException {
         String fakeCitizenId = "123";
 
-        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResultFail(), HttpStatus.OK);
-
-        when(rslStatusTrackingClient.getRslStatusTracking(getRequestXML(fakeCitizenId, realMobileNo, realCorrelationId))).thenReturn(mockRslResponse);
+//        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResultFail(), HttpStatus.OK);
+//
+//        when(rslStatusTrackingClient.getRslStatusTracking(getRequestXML(fakeCitizenId, realMobileNo, realCorrelationId))).thenReturn(mockRslResponse);
 
         String mockResultProductConfig = getMockResultProductConfig();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {

@@ -26,7 +26,7 @@ import java.util.List;
  * Controller class responsible for get customer RSL status tracking
  */
 @RestController
-@Api(tags = "Customer case status tracking")
+@Api(tags = "RSL Status tracking")
 public class RslStatusTrackingController {
 
     private static final TMBLogger<RslStatusTrackingController> logger = new TMBLogger<>(RslStatusTrackingController.class);

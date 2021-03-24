@@ -140,6 +140,9 @@ public class RslStatusTrackingService {
 
                         //Remark
                         RslMessage rslMessage = fetchMessage(appStatus, appType);
+                        if(rslMessage == null) {
+                            continue;
+                        }
 
                         rslStatusTrackingResponse.setTopRemarkTh(rslMessage.getGroupMsgTh());
                         rslStatusTrackingResponse.setTopRemarkEn(rslMessage.getGroupMsgEn());
@@ -222,6 +225,14 @@ public class RslStatusTrackingService {
         return null; //NOSONAR lightweight logging
     }
 
+    /**
+     * This method will add Image URL.
+     *
+     * @param rslStatusTrackingResponseList List<RslStatusTrackingResponse>
+     * @param productConfigList List<ProductConfig>
+     *
+     * @return List<RslStatusTrackingResponse> List<RslStatusTrackingResponse>
+     */
     public List<RslStatusTrackingResponse> addImageUrlElement(List<RslStatusTrackingResponse> rslStatusTrackingResponseList, List<ProductConfig> productConfigList) {
         try {
             List<RslStatusTrackingResponse> result = new ArrayList<>();
@@ -266,6 +277,13 @@ public class RslStatusTrackingService {
         return null;    //NOSONAR lightweight logging
     }
 
+    /**
+     * This method will change statusCode to statusText
+     *
+     * @param statusCode String
+     *
+     * @return String String
+     */
     public String getStatus(String statusCode) {
         List<String> completedCodeList = Arrays.asList(new String[]{"MNSTP","PDSTP","STPCP","SFSTP"});  //NOSONAR lightweight logging
         List<String> inProgressCodeList = Arrays.asList(new String[]{"1STAP","1STRJ","ABRCK","RVWDV","ADTCK","ADTET","ADCET","ADCAP","ATVRF","FAVRF","FDSVF","RQADD","PD2CR","RVWAA","RVWDA","RVWIA","RVWRA","AADAD","AVRFA","FDSAD","P2CRA","RVAAA","RVDAA","RVIAA","RVRAA","AGPRP","MGAGP","MGAGS","CRCPD","RGSRQ","RGSRF","DRAFT","ABRTD","PHDCR"}); //NOSONAR lightweight logging
@@ -385,6 +403,13 @@ public class RslStatusTrackingService {
         return null;
     }
 
+    /**
+     * Method will change appStatus to typenumber.
+     *
+     * @param appStatus String
+     *
+     * @return String String
+     */
     public String getTypeOfAppStatusNumber(String appStatus) {
         return (appStatus.equals("PL") || appStatus.equals("CC") || appStatus.equals("SP")) ? "1" : "2";
     }

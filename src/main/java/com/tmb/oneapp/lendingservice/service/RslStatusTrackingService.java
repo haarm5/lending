@@ -332,7 +332,7 @@ public class RslStatusTrackingService {
                 "            </req:body>\n" +
                 "            <req:header>\n" +
                 "               <req:channel>MIB</req:channel>\n" +
-                "               <req:module>3</req:module>\n" +
+                "               <req:module>2</req:module>\n" +
                 "               <req:requestID>" + correlationId + "</req:requestID>\n" +
                 "            </req:header>\n" +
                 "         </trac:req>\n" +

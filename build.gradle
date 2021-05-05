@@ -60,6 +60,10 @@ ext {
     set('springCloudVersion', "Hoxton.SR6")
 }
 
+configurations {
+    jaxb
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -83,6 +87,9 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    jaxb group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.4-1'
+	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.6'
+	implementation group: 'org.springframework.ws', name: 'spring-ws-core', version: '2.2.0.RELEASE'
 
 }
 

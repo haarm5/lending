@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @FeignClient(name = "${feign.common.service.name}", url = "${feign.common.service.url}")
 public interface CommonServiceFeignClient {
 

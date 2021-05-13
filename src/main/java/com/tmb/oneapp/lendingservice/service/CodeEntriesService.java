@@ -21,7 +21,7 @@ import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropd
 @Service
 public class CodeEntriesService {
 	
-	private static final TMBLogger<CustomerProfileService> logger = new TMBLogger<>(CustomerProfileService.class);
+	private static final TMBLogger<CodeEntriesService> logger = new TMBLogger<>(CodeEntriesService.class);
 
 	private static LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
 

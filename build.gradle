@@ -75,7 +75,7 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'com.tmb.common:tmb_common_utility:0.0.73'
+    implementation 'com.tmb.common:tmb_common_utility:0.0.103'
     implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
     implementation 'org.springframework.kafka:spring-kafka'
     testCompile("junit:junit:4.12")
@@ -83,6 +83,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
 
 }
 

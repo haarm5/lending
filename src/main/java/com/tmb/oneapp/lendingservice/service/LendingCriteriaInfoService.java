@@ -164,5 +164,22 @@ public class LendingCriteriaInfoService {
 		}
 		return responseCriterias;
 	}
+	
+	/**
+	 * 
+	 * @param reference
+	 * @return
+	 */
+	public List<CriteriaCodeEntry> getSourceOfIncome(String reference) {
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
+				.getListByCategoryCode(LoanCategory.INCOME_TYPE.getCode());
+		for (CommonCodeEntry entry : commonCodeEntrys) {
+			if ("MIB".equals(entry.getExtValue1()) && reference.equals(entry.getRefEntryCode())) {
+				responseCriterias.add(setModelResponseInfo(entry));
+			}
+		}
+		return responseCriterias;
+	}
 
 }

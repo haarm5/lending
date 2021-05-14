@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiParam;
  *
  */
 @RestController
-@Api(tags = "Creteria Working information")
+@Api(tags = "Criteria Working information")
 public class WorkInformationController {
 
 	private static final TMBLogger<WorkInformationController> logger = new TMBLogger<>(WorkInformationController.class);
@@ -48,7 +48,7 @@ public class WorkInformationController {
 	 * @param occcupationCode
 	 * @return
 	 */
-	@ApiOperation(value = "Creteria for Working Status")
+	@ApiOperation(value = "Criteria for Working Status information")
 	@GetMapping(value = "/criteria/status", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getWorkStatusInfoByOccupationCode(
@@ -72,7 +72,7 @@ public class WorkInformationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@ApiOperation(value = "Creteria for Occupation info")
+	@ApiOperation(value = "Criteria for Occupation information")
 	@GetMapping(value = "/criteria/status/{entrycode}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getOccupationByOccupationCode(
@@ -107,7 +107,7 @@ public class WorkInformationController {
 	 * @param occcupationCode
 	 * @return
 	 */
-	@ApiOperation(value = "Creteria for business type info")
+	@ApiOperation(value = "Criteria for business type information")
 	@GetMapping(value = "/criteria/businesstype", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getBusinessTypeInfo(
@@ -116,7 +116,8 @@ public class WorkInformationController {
 
 		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
 		try {
-			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService.getCriteriaByCatalogId(LoanCategory.BUSINESS_TYPE);
+			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
+					.getCriteriaByCatalogId(LoanCategory.BUSINESS_TYPE);
 			response.setData(criteriaCodeEntrys);
 			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
 					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
@@ -132,7 +133,7 @@ public class WorkInformationController {
 	 * @param occcupationCode
 	 * @return
 	 */
-	@ApiOperation(value = "Creteria for sub business type info")
+	@ApiOperation(value = "Criteria for sub business type information")
 	@GetMapping(value = "/criteria/businesstype/{entryCode}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getSubBusinessTypeInfo(
@@ -143,6 +144,58 @@ public class WorkInformationController {
 		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService.getSubBusinessType(reference);
+			response.setData(criteriaCodeEntrys);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+		} catch (Exception e) {
+			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+		}
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 
+	 * @param occcupationCode
+	 * @return
+	 */
+	@ApiOperation(value = "Criteria for type of income information")
+	@GetMapping(value = "/criteria/income/{entryCode}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getSourceOfIncomeInfo(
+			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+			@ApiParam(value = "Business type entry code", defaultValue = "01", required = true) @PathVariable("entryCode") String reference) {
+		logger.info("lending-service getSourceOfIncomeInfo method start Time : {} ", System.currentTimeMillis());
+
+		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
+		try {
+			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService.getSourceOfIncome(reference);
+			response.setData(criteriaCodeEntrys);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+		} catch (Exception e) {
+			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+		}
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 
+	 * @param occcupationCode
+	 * @return
+	 */
+	@ApiOperation(value = "Criteria for country information")
+	@GetMapping(value = "/criteria/country", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getCountryList(
+			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId) {
+		logger.info("lending-service getCountryList method start Time : {} ", System.currentTimeMillis());
+
+		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
+		try {
+			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
+					.getCriteriaByCatalogId(LoanCategory.SCI_COUNTRY);
 			response.setData(criteriaCodeEntrys);
 			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
 					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

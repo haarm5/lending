@@ -18,6 +18,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.request.RequestDropdown;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListSoapBindingStub;
+import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 
 @Service
 public class CodeEntriesService {
@@ -45,7 +46,6 @@ public class CodeEntriesService {
 			header.setRequestID(requestId);
 			req.setHeader(header);
 			ResponseDropdown response = stub.getDropDownListByCode(req);
-			response.getBody().getCommonCodeEntries();
 
 			CommonCodeEntry[] codeEntrys = response.getBody().getCommonCodeEntries();
 			if (Objects.nonNull(codeEntrys)) {
@@ -53,6 +53,7 @@ public class CodeEntriesService {
 					commonCodeEntrys.add(entry);
 				}
 			}
+			
 		} catch (ServiceException e) {
 			logger.error(e.toString(), e);
 		} catch (RemoteException e) {

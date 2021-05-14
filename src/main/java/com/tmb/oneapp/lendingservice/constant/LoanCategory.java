@@ -7,7 +7,7 @@ public enum LoanCategory {
 	RM_OCCUPATION("RM_OCCUPATION", "RM Occupation"),
 	EMPLOYMENT_STATUS("EMPLOYMENT_STATUS", "Employment"), 
 	BUSINESS_TYPE("BUSINESS_TYPE", "Business Type"),
-	BUSNIESS_SUB_TYPE("BUSNIESS_SUB_TYPE", "Business Sub Type"), 
+	BUSINESS_SUB_TYPE("BUSINESS_SUB_TYPE", "Business Sub Type"), 
 	INCOME_TYPE("INCOME_TYPE", "Income Type"),
 	SCI_COUNTRY("SCI_COUNTRY", "Source of country"), 
 	FEATURE_ENABLE("FEATURE_ENABLE", "Feature enable"),

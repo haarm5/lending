@@ -96,6 +96,8 @@ dependencies {
    	implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
    	implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
     implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 }
 
 task jaxb {

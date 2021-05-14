@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -33,11 +34,27 @@ public class LendingModuleCache {
 
 	@PostConstruct
 	public void setupCaching() {
-		for (LoanCategory loadCategory : LoanCategory.values()) {
-			List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel, "3",
-					UUID.randomUUID().toString());
-			cacheContainer.put(loadCategory.getCode(), commonCodeEntry);
+		try {
+			for (LoanCategory loadCategory : LoanCategory.values()) {
+				List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel,
+						"3", UUID.randomUUID().toString());
+
+				if (LoanCategory.BUSINESS_TYPE.getCode().equals(loadCategory.getCode())) {
+					List<CommonCodeEntry> fillterList = new ArrayList<CommonCodeEntry>();
+					commonCodeEntry.forEach(e -> {
+						if (!"03".equals(e.getEntryCode())) {
+							fillterList.add(e);
+						}
+					});
+					cacheContainer.put(loadCategory.getCode(), fillterList);
+				} else {
+					cacheContainer.put(loadCategory.getCode(), commonCodeEntry);
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.toString(), e);
 		}
+
 	}
 
 	public List<CommonCodeEntry> getListByCategoryCode(String categoryCode) {

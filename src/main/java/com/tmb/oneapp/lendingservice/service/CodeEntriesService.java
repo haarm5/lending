@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import javax.xml.rpc.ServiceException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
@@ -20,14 +21,16 @@ import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropd
 
 @Service
 public class CodeEntriesService {
-	
+
 	private static final TMBLogger<CodeEntriesService> logger = new TMBLogger<>(CodeEntriesService.class);
 
 	private static LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
 
+	@Value("${rsl.service.name.loansubmmission.url}")
+	private String dropdownListUrl;
+
 	public List<CommonCodeEntry> loadEntry(String code, String channel, String module, String requestId) {
-		locator.setLoanSubmissionGetDropdownListEndpointAddress(
-				"http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionGetDropdownList");
+		locator.setLoanSubmissionGetDropdownListEndpointAddress(dropdownListUrl);
 		List<CommonCodeEntry> commonCodeEntrys = new ArrayList<CommonCodeEntry>();
 		try {
 			LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator

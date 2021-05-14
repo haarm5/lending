@@ -18,7 +18,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
-import com.tmb.oneapp.lendingservice.service.CustomerProfileService;
 import com.tmb.oneapp.lendingservice.service.LendingCriteriaInfoService;
 
 import io.swagger.annotations.Api;
@@ -54,7 +53,7 @@ public class WorkInformationController {
 	public ResponseEntity<TmbOneServiceResponse<List<CriteriaCodeEntry>>> getWorkStatusInfoByOccupationCode(
 			@ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@PathVariable("occcupationCode") String occcupationCode) {
-		logger.info("customers-service getWorkStatusInfo method start Time : {} ", System.currentTimeMillis());
+		logger.info("customers-service getWorkStatusInfoByOccupationCode method start Time : {} ", System.currentTimeMillis());
 		if (logger.isDebugEnabled()) {
 			logger.info("Fetch for occupation code :" + occcupationCode);
 		}

@@ -20,11 +20,11 @@ public class LendingModuleCache {
 
 	private static final TMBLogger<LendingModuleCache> logger = new TMBLogger<>(LendingModuleCache.class);
 
-	@Value("${mf.channel}")
-	private String channel;
-
 	private CodeEntriesService codeEntriesService;
 	private static HashMap<String, List<CommonCodeEntry>> cacheContainer = new HashMap();
+
+	@Value("${mf.channel}")
+	private String channel;
 
 	@Autowired
 	public LendingModuleCache(CodeEntriesService codeEntriesService) {
@@ -33,13 +33,11 @@ public class LendingModuleCache {
 
 	@PostConstruct
 	public void setupCaching() {
-
 		for (LoanCategory loadCategory : LoanCategory.values()) {
 			List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel, "3",
 					UUID.randomUUID().toString());
 			cacheContainer.put(loadCategory.getCode(), commonCodeEntry);
 		}
-
 	}
 
 	public List<CommonCodeEntry> getListByCategoryCode(String categoryCode) {

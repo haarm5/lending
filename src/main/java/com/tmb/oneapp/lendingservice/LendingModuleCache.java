@@ -2,10 +2,12 @@ package com.tmb.oneapp.lendingservice;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.tmb.common.logger.TMBLogger;
@@ -17,6 +19,9 @@ import com.tmb.oneapp.lendingservice.service.CodeEntriesService;
 public class LendingModuleCache {
 
 	private static final TMBLogger<LendingModuleCache> logger = new TMBLogger<>(LendingModuleCache.class);
+
+	@Value("${mf.channel}")
+	private String channel;
 
 	private CodeEntriesService codeEntriesService;
 	private static HashMap<String, List<CommonCodeEntry>> cacheContainer = new HashMap();
@@ -30,8 +35,8 @@ public class LendingModuleCache {
 	public void setupCaching() {
 
 		for (LoanCategory loadCategory : LoanCategory.values()) {
-			List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), "MIB", "3",
-					"725a9ec5-5de0-4b95-a51f-9774b559b459");
+			List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel, "3",
+					UUID.randomUUID().toString());
 			cacheContainer.put(loadCategory.getCode(), commonCodeEntry);
 		}
 

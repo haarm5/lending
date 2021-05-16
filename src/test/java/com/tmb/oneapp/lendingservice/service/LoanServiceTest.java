@@ -1,13 +1,23 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.*;
+import com.tmb.oneapp.lendingservice.LendingModuleCache;
+import com.tmb.oneapp.lendingservice.client.CustomerExpServiceClient;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.EligibleProductClient;
 import com.tmb.oneapp.lendingservice.client.LoanStatusTrackingClient;
+import com.tmb.oneapp.lendingservice.constant.LoanCategory;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.Customer;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
+import com.tmb.oneapp.lendingservice.model.account.AccountSaving;
 import com.tmb.oneapp.lendingservice.model.loan.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +29,11 @@ import org.mockito.MockitoAnnotations;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
@@ -33,12 +46,21 @@ public class LoanServiceTest {
     @Mock
     EligibleProductClient eligibleProductClient;
 
+    @Mock
+    CustomerServiceClient customerServiceClient;
+
+    @Mock
+    LendingModuleCache lendingModuleCache;
+
+    @Mock
+    CustomerExpServiceClient customerExpServiceClient;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
-    private  ResponseTracking mockLoanStatusTrackingResponse(){
+    private ResponseTracking mockLoanStatusTrackingResponse() {
         Product product = new Product();
         product.setProductCode("VM");
 
@@ -81,21 +103,24 @@ public class LoanServiceTest {
         mockLoanStatusTrackingResponse.setHeader(header);
         return mockLoanStatusTrackingResponse;
     }
+
     @Test
     void fetchLoanStatusTrackingSuccess() throws ServiceException, RemoteException {
 
 
         ResponseTracking mockLoanStatusTrackingResponse = mockLoanStatusTrackingResponse();
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
 
-        when(loanStatusTrackingClient.searchAppStatusByID()).thenReturn(mockLoanStatusTrackingResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient,null);
+        TmbOneServiceResponse<Customer> mockCustomerResponse = mockCustomerResponse();
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+        LoanService loanService = new LoanService(loanStatusTrackingClient, null, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ProductRequest request = new ProductRequest();
 
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(request);
 
         Assertions.assertNotNull(actualResponse);
 
-        LoanStatusTrackingResponse loanStatusTrackingResponse =  (LoanStatusTrackingResponse) actualResponse.getData();
+        LoanStatusTrackingResponse loanStatusTrackingResponse = (LoanStatusTrackingResponse) actualResponse.getData();
         Assertions.assertNotNull(loanStatusTrackingResponse);
 
         List<OneAppApplication> actualApplications = loanStatusTrackingResponse.getApplications();
@@ -118,8 +143,23 @@ public class LoanServiceTest {
         Assertions.assertEquals("ttb has received your application.", actualRoadMap.getDefaultDescEn());
     }
 
+    private TmbOneServiceResponse<Customer> mockCustomerResponse() {
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        Customer customer = new Customer();
+        customer.setCitizenId("1846622310794");
+        mockCustomerResponse.setData(customer);
+        mockCustomerResponse.setStatus(tmbStatus);
+        return mockCustomerResponse;
+    }
+
     @Test
     void fetchLoanStatusTrackingShouldHandleDataNotFound() throws ServiceException, RemoteException {
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = mockCustomerResponse();
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
         ResponseTracking mockLoanStatusTrackingResponse = new ResponseTracking();
         Header header = new Header();
         header.setChannel("MIB");
@@ -129,8 +169,8 @@ public class LoanServiceTest {
         header.setResponseDescriptionEN("Data Not Found");
         header.setResponseDescriptionTH("");
         mockLoanStatusTrackingResponse.setHeader(header);
-        when(loanStatusTrackingClient.searchAppStatusByID()).thenReturn(mockLoanStatusTrackingResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient,null);
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
+        LoanService loanService = new LoanService(loanStatusTrackingClient, null, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(new ProductRequest());
         ServiceError error = actualResponse.getError();
         Assertions.assertNotNull(error);
@@ -138,7 +178,7 @@ public class LoanServiceTest {
         Assertions.assertEquals(header.getResponseDescriptionEN(), error.getErrorMessage());
     }
 
-    private ResponseInstantLoanGetEligibleProduct mockResponseInstantLoanGetEligibleProduct(){
+    private ResponseInstantLoanGetEligibleProduct mockResponseInstantLoanGetEligibleProduct() {
         ResponseInstantLoanGetEligibleProduct mockResponse = new ResponseInstantLoanGetEligibleProduct();
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
         InstantCreditCard[] instantCreditCards = new InstantCreditCard[0];
@@ -155,11 +195,12 @@ public class LoanServiceTest {
 
     @Test
     void fetchEligibleProductsSuccess() throws ServiceException, RemoteException {
-        ResponseInstantLoanGetEligibleProduct mockResponse =mockResponseInstantLoanGetEligibleProduct();
+        ResponseInstantLoanGetEligibleProduct mockResponse = mockResponseInstantLoanGetEligibleProduct();
 
-        when(eligibleProductClient.getEligibleProduct()).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(null,eligibleProductClient);
-        ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest());
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
+        LoanService loanService = new LoanService(null, eligibleProductClient, null, lendingModuleCache, customerExpServiceClient);
+        HashMap<String, Object> masterData = new HashMap<>();
+        ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
         Assertions.assertNotNull(actualResponse);
 
     }
@@ -172,9 +213,10 @@ public class LoanServiceTest {
         header.setResponseCode("MSG_001");
         mockResponse.setHeader(header);
 
-        when(eligibleProductClient.getEligibleProduct()).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(null,eligibleProductClient);
-        ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest());
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
+        LoanService loanService = new LoanService(null, eligibleProductClient, null, lendingModuleCache, customerExpServiceClient);
+        HashMap<String, Object> masterData = new HashMap<>();
+        ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
         Assertions.assertNotNull(actualResponse);
         ServiceError serviceError = actualResponse.getError();
         Assertions.assertNotNull(serviceError);
@@ -184,11 +226,27 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductsSuccess() throws ServiceException, RemoteException {
+
+        List<CommonCodeEntry> mock26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(mock26);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(mock26);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PYMT_CRITERIA.getCode())).thenReturn(mock26);
+        TmbOneServiceResponse<AccountSaving> mockAccountListResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockAccountListResponse.setStatus(tmbStatus);
+        AccountSaving mockAccountList = new AccountSaving();
+        mockAccountList.setDepositAccountLists(new ArrayList<>());
+        mockAccountListResponse.setData(mockAccountList);
+        when(customerExpServiceClient.getAccountList(any(), any())).thenReturn(mockAccountListResponse);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = mockCustomerResponse();
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
         ResponseTracking mockLoanStatusTrackingResponse = mockLoanStatusTrackingResponse();
-        when(loanStatusTrackingClient.searchAppStatusByID()).thenReturn(mockLoanStatusTrackingResponse);
-        ResponseInstantLoanGetEligibleProduct mockResponse =mockResponseInstantLoanGetEligibleProduct();
-        when(eligibleProductClient.getEligibleProduct()).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient,eligibleProductClient);
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
+        ResponseInstantLoanGetEligibleProduct mockResponse = mockResponseInstantLoanGetEligibleProduct();
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
+        LoanService loanService = new LoanService(loanStatusTrackingClient, eligibleProductClient, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ServiceResponse actualResponse = loanService.fetchProducts(new ProductRequest());
         Assertions.assertNotNull(actualResponse);
         ProductResponse productResponse = (ProductResponse) actualResponse.getData();
@@ -200,7 +258,7 @@ public class LoanServiceTest {
         List<OneAppApplication> applications = loanStatusTracking.getApplications();
         OneAppApplication application = applications.get(0);
 
-        Assertions.assertEquals(mockLoanStatusTrackingResponse.getBody().getApplication()[0].getApplicationDate(),application.getApplicationDate());
+        Assertions.assertEquals(mockLoanStatusTrackingResponse.getBody().getApplication()[0].getApplicationDate(), application.getApplicationDate());
 
     }
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -15,7 +17,8 @@ public class OneAppEligibleProduct {
     private String productNameEn;
     private String productNameTh;
     private String interestRate;
-    private String paymentCriteriaOptions;
+    private List<PaymentCriteriaOption> paymentCriteriaOptions;
     private String loanReqMax;
     private String loanReqMin;
+    private String osLimit;
 }

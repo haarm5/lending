@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class EligibleProductResponse {
-
-    private OneAppEligibleProduct[] eligibleProducts;
-
+public class PaymentCriteriaOption {
+    private String optionId;
+    private String optionNameTh;
+    private String optionNameEn;
 }

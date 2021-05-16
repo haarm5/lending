@@ -1,20 +1,25 @@
 package com.tmb.oneapp.lendingservice.model.loan;
 
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.*;
+import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Provides functionalities to map response from bank's flexi loan services to OneApp
+ */
 public class LoanObjectMapper {
 
     private OneAppApplicant[] toOneApp(Applicant[] applicants) {
-        if(applicants==null) return new OneAppApplicant[0];
-
+        if (applicants == null) return new OneAppApplicant[0];
         return Arrays.stream(applicants).map(applicant -> {
             OneAppApplicant oneAppApplicant = new OneAppApplicant();
             oneAppApplicant.setApplicantType(applicant.getApplicantType());
@@ -32,7 +37,7 @@ public class LoanObjectMapper {
     }
 
     private OneAppProduct[] toOneApp(Product[] products) {
-        if(products==null) return new OneAppProduct[0];
+        if (products == null) return new OneAppProduct[0];
 
         return Arrays.stream(products).map(product -> {
             OneAppProduct oneAppProduct = new OneAppProduct();
@@ -80,6 +85,13 @@ public class LoanObjectMapper {
         }).toArray(OneAppPricing[]::new);
     }
 
+    /**
+     * Maps ResponseTracking to LoanStatusTrackingResponse
+     *
+     * @param responseTracking
+     * @return
+     */
+
     public LoanStatusTrackingResponse toOneApp(ResponseTracking responseTracking) {
 
         LoanStatusTrackingResponse loanStatusTracking = new LoanStatusTrackingResponse();
@@ -115,7 +127,7 @@ public class LoanObjectMapper {
     }
 
     private OneAppRoadMap[] toOneApp(RoadMap[] roadMaps) {
-        if(roadMaps==null) return new OneAppRoadMap[0];
+        if (roadMaps == null) return new OneAppRoadMap[0];
         return Arrays.stream(roadMaps).map(roadMap -> {
             OneAppRoadMap oneAppRoadMap = new OneAppRoadMap();
             oneAppRoadMap.setDefaultDescEn(roadMap.getDefaultDescEn());
@@ -126,23 +138,75 @@ public class LoanObjectMapper {
         }).toArray(OneAppRoadMap[]::new);
     }
 
-    public EligibleProductResponse toOneApp(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) {
+    /**
+     * instantCreditCards uses master26 key map is product_type->entry_code
+     * instantFacility uses master27 key map is facility_code->entry_code
+     *
+     * @param responseInstantLoanGetEligibleProduct
+     * @param masterData
+     * @return
+     */
+    public EligibleProductResponse toOneApp(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct, Map<String, Object> masterData) {
         EligibleProductResponse eligibleProductResponse = new EligibleProductResponse();
         InstantFacility[] instantFacilities = responseInstantLoanGetEligibleProduct.getBody().getInstantFacility();
         InstantCreditCard[] instantCreditCards = responseInstantLoanGetEligibleProduct.getBody().getInstantCreditCard();
-        OneAppEligibleProduct[] product1 = toOneApp(instantFacilities);
-        OneAppEligibleProduct[] product2 = toOneApp(instantCreditCards);
+        OneAppEligibleProduct[] product1 = toOneApp(instantFacilities, masterData);
+        OneAppEligibleProduct[] product2 = toOneApp(instantCreditCards, masterData);
         eligibleProductResponse.setEligibleProducts(Stream.concat(Arrays.stream(product1), Arrays.stream(product2))
                 .toArray(OneAppEligibleProduct[]::new));
 
         return eligibleProductResponse;
     }
 
-    private OneAppEligibleProduct[] toOneApp(InstantCreditCard[] instantCreditCards) {
-        return new OneAppEligibleProduct[0];
+    /**
+     * instantCreditCards uses master26 key map is product_type->entry_code
+     *
+     * @param instantCreditCards
+     * @param masterData
+     * @return
+     */
+    private OneAppEligibleProduct[] toOneApp(InstantCreditCard[] instantCreditCards, Map<String, Object> masterData) {
+        if (instantCreditCards == null) return new OneAppEligibleProduct[0];
+        List<PaymentCriteriaOption> masterDataPymt = (List<PaymentCriteriaOption>) masterData.get(LoanCategory.PYMT_CRITERIA.getCode());
+
+        return Arrays.stream(instantCreditCards).map(instantCreditCard -> {
+            CommonCodeEntry masterDataItem = (CommonCodeEntry) masterData.get(instantCreditCard.getProductType());
+            OneAppEligibleProduct oneAppEligibleProduct = new OneAppEligibleProduct();
+            oneAppEligibleProduct.setProductNameEn(masterDataItem.getEntryName());
+            oneAppEligibleProduct.setProductNameTh(masterDataItem.getEntryName2());
+            oneAppEligibleProduct.setProductCategory("credit_card");
+            oneAppEligibleProduct.setProductType(instantCreditCard.getProductType());
+            oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantCreditCard.getLoanReqMax()));
+            oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantCreditCard.getLoanReqMin()));
+            oneAppEligibleProduct.setPaymentCriteriaOptions(masterDataPymt);
+
+            return oneAppEligibleProduct;
+        }).toArray(OneAppEligibleProduct[]::new);
+
+
     }
 
-    private OneAppEligibleProduct[] toOneApp(InstantFacility[] instantFacilities) {
-        return new OneAppEligibleProduct[0];
+    /**
+     * instantFacility uses master27 key map is facility_code->entry_code
+     *
+     * @param instantFacilities
+     * @param masterData
+     * @return
+     */
+    private OneAppEligibleProduct[] toOneApp(InstantFacility[] instantFacilities, Map<String, Object> masterData) {
+        if (instantFacilities == null) return new OneAppEligibleProduct[0];
+        return Arrays.stream(instantFacilities).map(instantFacility -> {
+            CommonCodeEntry masterDataItem = (CommonCodeEntry) masterData.get(instantFacility.getFacilityCode());
+            OneAppEligibleProduct oneAppEligibleProduct = new OneAppEligibleProduct();
+            oneAppEligibleProduct.setProductNameEn(masterDataItem.getEntryName());
+            oneAppEligibleProduct.setProductNameTh(masterDataItem.getEntryName2());
+            oneAppEligibleProduct.setProductCode(instantFacility.getProductCode());
+            oneAppEligibleProduct.setProductCategory("loan");
+            oneAppEligibleProduct.setInterestRate(String.valueOf(instantFacility.getInterestRate()));
+            oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantFacility.getLoanReqMax()));
+            oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantFacility.getLoanReqMin()));
+            oneAppEligibleProduct.setOsLimit(String.valueOf(instantFacility.getOsLimit()));
+            return oneAppEligibleProduct;
+        }).toArray(OneAppEligibleProduct[]::new);
     }
 }

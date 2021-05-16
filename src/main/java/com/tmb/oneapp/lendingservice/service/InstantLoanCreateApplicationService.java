@@ -51,7 +51,7 @@ public class InstantLoanCreateApplicationService {
 
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
-            List<Address> soapAddressList = addressInfoList.stream().map(this::AddressToSoapRequestAddress).collect(Collectors.toList());
+            List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
             InstantIndividual soapInstantIndividual = getInstantIndividualObject(request);
             if(request.getLoanType().equalsIgnoreCase("CC")){
                 logger.info("Calling Credit Cards");
@@ -152,10 +152,10 @@ public class InstantLoanCreateApplicationService {
         individual.setHostCifNo(customerInfo.getHostCifNo());
         individual.setIdNo1(customerInfo.getIdNo1());
         individual.setIdType1(customerInfo.getIdType1());
-        String IncomeBasicSalary = customerInfo.getEmploymentStatus().equalsIgnoreCase("01")? customerInfo.getIncomeBasicSalary() : "";
-        individual.setIncomeBasicSalary(convertStringToBigDecimal(IncomeBasicSalary));
-        String IncomeDeclared = customerInfo.getEmploymentStatus().equalsIgnoreCase("02")? customerInfo.getIncomeDeclared() : "";
-        individual.setIncomeDeclared(convertStringToBigDecimal(IncomeDeclared));
+        String incomeBasicSalary = customerInfo.getEmploymentStatus().equalsIgnoreCase("01")? customerInfo.getIncomeBasicSalary() : "";
+        individual.setIncomeBasicSalary(convertStringToBigDecimal(incomeBasicSalary));
+        String incomeDeclared = customerInfo.getEmploymentStatus().equalsIgnoreCase("02")? customerInfo.getIncomeDeclared() : "";
+        individual.setIncomeDeclared(convertStringToBigDecimal(incomeDeclared));
         individual.setIncomeType(customerInfo.getIncomeType());
         individual.setIssuedDate(calIssueDate);
         individual.setMobileNo(customerInfo.getMobileNo());
@@ -172,7 +172,7 @@ public class InstantLoanCreateApplicationService {
         return individual;
     }
 
-    private Address AddressToSoapRequestAddress(AddressInfo address){
+    private Address addressToSoapRequestAddress(AddressInfo address){
 
         Address soapAddressObj = new Address();
         soapAddressObj.setAddrTypCode(address.getAddrTypCode());

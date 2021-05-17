@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -13,6 +14,9 @@ import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.service.CodeEntriesService;
 
+/**
+ * Provides beans to load and cache all master data from LoanSubmissionGetDropdownListService
+ */
 @Component
 public class LendingModuleCache {
 
@@ -31,12 +35,11 @@ public class LendingModuleCache {
 
 		for (LoanCategory loadCategory : LoanCategory.values()) {
 			List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), "MIB", "3",
-					"725a9ec5-5de0-4b95-a51f-9774b559b459");
+					UUID.randomUUID().toString());
 			cacheContainer.put(loadCategory.getCode(), commonCodeEntry);
 		}
 
 	}
-
 	public List<CommonCodeEntry> getListByCategoryCode(String categoryCode) {
 		return cacheContainer.get(categoryCode);
 	}

@@ -18,7 +18,7 @@ buildscript {
                 password = 'ad123Tmb*'
             }
         }
-        
+
     }
 }
 
@@ -30,7 +30,7 @@ repositories {
             password = 'ad123Tmb*'
         }
     }
-    
+
 }
 
 apply plugin: 'java'
@@ -85,9 +85,9 @@ dependencies {
     }
     testRuntimeOnly "org.junit.platform:junit-platform-commons:1.7.0"
     implementation group: 'org.apache.axis', name: 'axis', version: '1.4'
-   	implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
-   	implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
-   	implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
+    implementation group: 'javax.xml', name: 'jaxrpc-api', version: '1.1'
+    implementation group: 'commons-discovery', name: 'commons-discovery', version: '0.5'
+    implementation group: 'javax.xml.soap', name: 'javax.xml.soap-api', version: '1.4.0'
     implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
 
 }
@@ -136,11 +136,11 @@ sonarqube {
         }
     }
     properties {
-		property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/LendingServicesApplication.java'
-	}
-	properties {
-		property 'sonar.exclusions', '**/config/*'
-	}
+        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/LendingServicesApplication.java'
+    }
+    properties {
+        property 'sonar.exclusions', '**/config/*'
+    }
 }
 
 test.finalizedBy jacocoTestReport

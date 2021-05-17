@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://submission.loan.ws.sml.integrosys.com" xmlns:intf="http://submission.loan.ws.sml.integrosys.com" xmlns:tns1="http://request.customer.eligible.instant.ws.sml.integrosys.com" xmlns:tns2="http://common.ws.sml.integrosys.com" xmlns:tns3="http://response.customer.eligible.instant.ws.sml.integrosys.com" xmlns:tns4="http://individual.ob.common.sml.integrosys.com" xmlns:tns5="http://account.ob.common.sml.integrosys.com" xmlns:tns6="http://address.ob.common.sml.integrosys.com" xmlns:tns7="http://creditcard.ob.common.sml.integrosys.com" xmlns:tns8="http://feature.ob.common.sml.integrosys.com" xmlns:tns9="http://pricing.ob.common.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <element name="getInstantCustomerInfo">
+    <complexType>
+     <sequence>
+      <element name="req" type="tns1:RequestInstantLoanGetCustInfo"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getInstantCustomerInfoResponse">
+    <complexType>
+     <sequence>
+      <element name="getInstantCustomerInfoReturn" type="tns3:ResponseInstantLoanGetCustInfo"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_tns5_Account">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns5:Account"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns6_Address">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns6:Address"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns9_Pricing">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns9:Pricing"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns7_InstantCreditCard">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns7:InstantCreditCard"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns4_InstantIndividual">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns4:InstantIndividual"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://request.customer.eligible.instant.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="rmNo" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns2:CommonWSRequestHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="RequestInstantLoanGetCustInfo">
+    <sequence>
+     <element name="body" nillable="true" type="tns1:Body"/>
+     <element name="header" nillable="true" type="tns1:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://common.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="CommonWSRequestHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="CommonWSResponseHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+     <element name="responseCode" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://account.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Account">
+    <sequence>
+     <element name="accountNo" nillable="true" type="xsd:string"/>
+     <element name="accountStatus" nillable="true" type="xsd:string"/>
+     <element name="accountType" nillable="true" type="xsd:string"/>
+     <element name="bankName" nillable="true" type="xsd:string"/>
+     <element name="bankNo" nillable="true" type="xsd:string"/>
+     <element name="cifId" nillable="true" type="xsd:decimal"/>
+     <element name="cifName" nillable="true" type="xsd:string"/>
+     <element name="cifRelationship" nillable="true" type="xsd:string"/>
+     <element name="cifRelationshipCode" nillable="true" type="xsd:string"/>
+     <element name="currency" nillable="true" type="xsd:string"/>
+     <element name="exposureTypeCode" nillable="true" type="xsd:string"/>
+     <element name="hostID" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="identifiedBalType" nillable="true" type="xsd:string"/>
+     <element name="outstandingLimit" nillable="true" type="xsd:decimal"/>
+     <element name="outstandingLimitCurrency" nillable="true" type="xsd:string"/>
+     <element name="productCode" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://address.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Address">
+    <sequence>
+     <element name="addrTypCode" nillable="true" type="xsd:string"/>
+     <element name="address" nillable="true" type="xsd:string"/>
+     <element name="amphur" nillable="true" type="xsd:string"/>
+     <element name="buildingName" nillable="true" type="xsd:string"/>
+     <element name="cifId" nillable="true" type="xsd:decimal"/>
+     <element name="country" nillable="true" type="xsd:string"/>
+     <element name="floor" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="moo" nillable="true" type="xsd:string"/>
+     <element name="postalCode" nillable="true" type="xsd:string"/>
+     <element name="province" nillable="true" type="xsd:string"/>
+     <element name="road" nillable="true" type="xsd:string"/>
+     <element name="streetName" nillable="true" type="xsd:string"/>
+     <element name="tumbol" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://feature.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Feature">
+    <sequence>
+     <element name="disbAcctName" nillable="true" type="xsd:string"/>
+     <element name="disbAcctNo" nillable="true" type="xsd:string"/>
+     <element name="disbBankCode" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="requestAmount" nillable="true" type="xsd:decimal"/>
+     <element name="requestPercent" nillable="true" type="xsd:decimal"/>
+     <element name="tenure" nillable="true" type="xsd:long"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://pricing.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Pricing">
+    <sequence>
+     <element name="calculatedRate" nillable="true" type="xsd:decimal"/>
+     <element name="ccId" nillable="true" type="xsd:decimal"/>
+     <element name="facId" nillable="true" type="xsd:decimal"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="installment" nillable="true" type="xsd:decimal"/>
+     <element name="interestRate" nillable="true" type="xsd:decimal"/>
+     <element name="monthFrom" nillable="true" type="xsd:decimal"/>
+     <element name="monthTo" nillable="true" type="xsd:decimal"/>
+     <element name="percentSign" nillable="true" type="xsd:string"/>
+     <element name="pricingType" nillable="true" type="xsd:string"/>
+     <element name="rateType" nillable="true" type="xsd:string"/>
+     <element name="rateVaraince" nillable="true" type="xsd:decimal"/>
+     <element name="tier" nillable="true" type="xsd:decimal"/>
+     <element name="yearFrom" nillable="true" type="xsd:decimal"/>
+     <element name="yearTo" nillable="true" type="xsd:decimal"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://creditcard.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="InstantCreditCard">
+    <sequence>
+     <element name="caId" nillable="true" type="xsd:decimal"/>
+     <element name="campaignCode" nillable="true" type="xsd:string"/>
+     <element name="campaignExpireDate" nillable="true" type="xsd:dateTime"/>
+     <element name="campaignStartDate" nillable="true" type="xsd:dateTime"/>
+     <element name="cardBrand" nillable="true" type="xsd:string"/>
+     <element name="cardDeliveryAddress" nillable="true" type="xsd:string"/>
+     <element name="cardInd" nillable="true" type="xsd:string"/>
+     <element name="cifId" nillable="true" type="xsd:decimal"/>
+     <element name="creditcardSavedFlag" nillable="true" type="xsd:string"/>
+     <element name="custSegment" nillable="true" type="xsd:string"/>
+     <element name="existCardName" nillable="true" type="xsd:string"/>
+     <element name="existCardNumber" nillable="true" type="xsd:string"/>
+     <element name="existCardStatus" nillable="true" type="xsd:string"/>
+     <element name="existCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="existCreditLine" nillable="true" type="xsd:decimal"/>
+     <element name="existProductType" nillable="true" type="xsd:string"/>
+     <element name="feature" nillable="true" type="tns8:Feature"/>
+     <element name="featureType" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="loanReqMax" nillable="true" type="xsd:decimal"/>
+     <element name="loanReqMin" nillable="true" type="xsd:decimal"/>
+     <element name="mailPreference" nillable="true" type="xsd:string"/>
+     <element name="modelName" nillable="true" type="xsd:string"/>
+     <element name="modelScore" nillable="true" type="xsd:decimal"/>
+     <element name="newCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="paymentMethod" nillable="true" type="xsd:string"/>
+     <element name="pricings" nillable="true" type="impl:ArrayOf_tns9_Pricing"/>
+     <element name="productCode" nillable="true" type="xsd:string"/>
+     <element name="productType" nillable="true" type="xsd:string"/>
+     <element name="projectCode" nillable="true" type="xsd:string"/>
+     <element name="requestCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="saleChannelCode" nillable="true" type="xsd:string"/>
+     <element name="saleChannelFlag" nillable="true" type="xsd:string"/>
+     <element name="sourceOfData" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://individual.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="InstantIndividual">
+    <sequence>
+     <element name="accounts" nillable="true" type="impl:ArrayOf_tns5_Account"/>
+     <element name="addresses" nillable="true" type="impl:ArrayOf_tns6_Address"/>
+     <element name="age" nillable="true" type="xsd:decimal"/>
+     <element name="ageMonth" nillable="true" type="xsd:decimal"/>
+     <element name="benefitPlusSegment" nillable="true" type="xsd:string"/>
+     <element name="birthDate" nillable="true" type="xsd:dateTime"/>
+     <element name="birthPlace" nillable="true" type="xsd:string"/>
+     <element name="bonusYearly" nillable="true" type="xsd:decimal"/>
+     <element name="businessSubType" nillable="true" type="xsd:string"/>
+     <element name="businessType" nillable="true" type="xsd:string"/>
+     <element name="caId" nillable="true" type="xsd:decimal"/>
+     <element name="cifId" nillable="true" type="xsd:decimal"/>
+     <element name="cifRelCode" nillable="true" type="xsd:string"/>
+     <element name="companyType" nillable="true" type="xsd:string"/>
+     <element name="contractEmpEndDate" nillable="true" type="xsd:dateTime"/>
+     <element name="contractEmpStartDate" nillable="true" type="xsd:dateTime"/>
+     <element name="contractEmployedFlag" nillable="true" type="xsd:string"/>
+     <element name="countryOfRegAddr" nillable="true" type="xsd:string"/>
+     <element name="creditCards" nillable="true" type="impl:ArrayOf_tns7_InstantCreditCard"/>
+     <element name="currentEmployerCode" nillable="true" type="xsd:string"/>
+     <element name="currentJobTitle" nillable="true" type="xsd:string"/>
+     <element name="custContactTime" nillable="true" type="xsd:string"/>
+     <element name="customerLevel" nillable="true" type="xsd:decimal"/>
+     <element name="customerRiskRM" nillable="true" type="xsd:string"/>
+     <element name="customerType" nillable="true" type="xsd:string"/>
+     <element name="discloseCustInfoFlag" nillable="true" type="xsd:string"/>
+     <element name="educationLevel" nillable="true" type="xsd:string"/>
+     <element name="email" nillable="true" type="xsd:string"/>
+     <element name="emailStatementFlag" nillable="true" type="xsd:string"/>
+     <element name="employmentBizNature" nillable="true" type="xsd:string"/>
+     <element name="employmentDept" nillable="true" type="xsd:string"/>
+     <element name="employmentFaxNo" nillable="true" type="xsd:string"/>
+     <element name="employmentFinalTotalIncome" nillable="true" type="xsd:decimal"/>
+     <element name="employmentInfoSavedFlag" nillable="true" type="xsd:string"/>
+     <element name="employmentMonth" nillable="true" type="xsd:string"/>
+     <element name="employmentName" nillable="true" type="xsd:string"/>
+     <element name="employmentOccupation" nillable="true" type="xsd:string"/>
+     <element name="employmentProvince" nillable="true" type="xsd:string"/>
+     <element name="employmentStaffId" nillable="true" type="xsd:string"/>
+     <element name="employmentStatus" nillable="true" type="xsd:string"/>
+     <element name="employmentTelephoneDirectNo" nillable="true" type="xsd:string"/>
+     <element name="employmentTelephoneExtNo" nillable="true" type="xsd:string"/>
+     <element name="employmentTelephoneNo" nillable="true" type="xsd:string"/>
+     <element name="employmentYear" nillable="true" type="xsd:string"/>
+     <element name="excludeIncomeDebtFlag" nillable="true" type="xsd:string"/>
+     <element name="existingSavingTDAccount" nillable="true" type="xsd:string"/>
+     <element name="expiryDate" nillable="true" type="xsd:dateTime"/>
+     <element name="extTelephoneNo" nillable="true" type="xsd:string"/>
+     <element name="fixNetAsset" nillable="true" type="xsd:string"/>
+     <element name="gender" nillable="true" type="xsd:string"/>
+     <element name="hostCifNo" nillable="true" type="xsd:string"/>
+     <element name="idIssueCtry1" nillable="true" type="xsd:string"/>
+     <element name="idNo1" nillable="true" type="xsd:string"/>
+     <element name="idType1" nillable="true" type="xsd:string"/>
+     <element name="idenPresentToBank" nillable="true" type="xsd:string"/>
+     <element name="inTotalExtraIncome" nillable="true" type="xsd:decimal"/>
+     <element name="inTotalFixedIncome" nillable="true" type="xsd:decimal"/>
+     <element name="inTotalIncome" nillable="true" type="xsd:decimal"/>
+     <element name="inTotalOtherIncome" nillable="true" type="xsd:decimal"/>
+     <element name="includeIncomeFlag" nillable="true" type="xsd:string"/>
+     <element name="incomeBankAccoutNumber" nillable="true" type="xsd:string"/>
+     <element name="incomeBankName" nillable="true" type="xsd:string"/>
+     <element name="incomeBasicSalary" nillable="true" type="xsd:decimal"/>
+     <element name="incomeDeclared" nillable="true" type="xsd:decimal"/>
+     <element name="incomeExtraOther" nillable="true" type="xsd:decimal"/>
+     <element name="incomeExtraRental" nillable="true" type="xsd:decimal"/>
+     <element name="incomeInfoSavedFlag" nillable="true" type="xsd:string"/>
+     <element name="incomeOtherCommAverage" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherCommMonth1" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherCommMonth2" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherCommMonth3" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherDiemAverage" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherDiemMonth1" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherDiemMonth2" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherDiemMonth3" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherFlightAverage" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherFlightMonth1" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherFlightMonth2" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherFlightMonth3" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherIncome" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherOTAverage" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherOTMonth1" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherOTMonth2" nillable="true" type="xsd:decimal"/>
+     <element name="incomeOtherOTMonth3" nillable="true" type="xsd:decimal"/>
+     <element name="incomeSharedHolderPercent" nillable="true" type="xsd:decimal"/>
+     <element name="incomeType" nillable="true" type="xsd:string"/>
+     <element name="incometotalLastMthCreditAcct1" nillable="true" type="xsd:decimal"/>
+     <element name="incometotalLastMthCreditAcct2" nillable="true" type="xsd:decimal"/>
+     <element name="insiderCode" nillable="true" type="xsd:string"/>
+     <element name="issuedDate" nillable="true" type="xsd:dateTime"/>
+     <element name="lifeTimeFlag" nillable="true" type="xsd:string"/>
+     <element name="mailingPreference" nillable="true" type="xsd:string"/>
+     <element name="maritalStatus" nillable="true" type="xsd:string"/>
+     <element name="mobileNo" nillable="true" type="xsd:string"/>
+     <element name="nameLine1" nillable="true" type="xsd:string"/>
+     <element name="nameLine2" nillable="true" type="xsd:string"/>
+     <element name="nationality" nillable="true" type="xsd:string"/>
+     <element name="nationality2" nillable="true" type="xsd:string"/>
+     <element name="ncbConsentFlag" nillable="true" type="xsd:string"/>
+     <element name="noOfDependent" nillable="true" type="xsd:string"/>
+     <element name="originatedUnit" nillable="true" type="xsd:string"/>
+     <element name="personalInfoSavedFlag" nillable="true" type="xsd:string"/>
+     <element name="preScoreCash" nillable="true" type="xsd:decimal"/>
+     <element name="professionalCode" nillable="true" type="xsd:string"/>
+     <element name="race" nillable="true" type="xsd:string"/>
+     <element name="registerExtTelephoneNo" nillable="true" type="xsd:string"/>
+     <element name="registerTelephoneNo" nillable="true" type="xsd:string"/>
+     <element name="relationWithMain" nillable="true" type="xsd:string"/>
+     <element name="residentFlag" nillable="true" type="xsd:string"/>
+     <element name="residentType" nillable="true" type="xsd:string"/>
+     <element name="rmOccupation" nillable="true" type="xsd:string"/>
+     <element name="rmWealthFlag" nillable="true" type="xsd:string"/>
+     <element name="salutationCode" nillable="true" type="xsd:string"/>
+     <element name="sameRegisterAddressFlag" nillable="true" type="xsd:string"/>
+     <element name="selfEmployInTotalIncome" nillable="true" type="xsd:decimal"/>
+     <element name="selfEmployIncomeExtraOther" nillable="true" type="xsd:decimal"/>
+     <element name="selfEmployIncomeExtraRental" nillable="true" type="xsd:decimal"/>
+     <element name="selfEmployIncomeExtraTotal" nillable="true" type="xsd:decimal"/>
+     <element name="selfEmployIncomeTotal" nillable="true" type="xsd:decimal"/>
+     <element name="sourceFromCountry" nillable="true" type="xsd:string"/>
+     <element name="sourceOfRisk" nillable="true" type="xsd:string"/>
+     <element name="spBirthDate" nillable="true" type="xsd:dateTime"/>
+     <element name="spIdNo" nillable="true" type="xsd:string"/>
+     <element name="spIdType" nillable="true" type="xsd:string"/>
+     <element name="spSalutationCode" nillable="true" type="xsd:string"/>
+     <element name="spThaiName" nillable="true" type="xsd:string"/>
+     <element name="spThaiSurName" nillable="true" type="xsd:string"/>
+     <element name="spTitleTypeCode" nillable="true" type="xsd:string"/>
+     <element name="telephoneNo" nillable="true" type="xsd:string"/>
+     <element name="thaiName" nillable="true" type="xsd:string"/>
+     <element name="thaiSalutationCode" nillable="true" type="xsd:string"/>
+     <element name="thaiSurName" nillable="true" type="xsd:string"/>
+     <element name="titleTypeCode" nillable="true" type="xsd:string"/>
+     <element name="workingAddrCopyFrom" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://response.customer.eligible.instant.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://individual.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.customer.eligible.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+   <import namespace="http://address.ob.common.sml.integrosys.com"/>
+   <import namespace="http://account.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="hostCifNo" nillable="true" type="xsd:string"/>
+     <element name="instantIndividual" nillable="true" type="impl:ArrayOf_tns4_InstantIndividual"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns2:CommonWSResponseHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="ResponseInstantLoanGetCustInfo">
+    <sequence>
+     <element name="body" nillable="true" type="tns3:Body"/>
+     <element name="header" nillable="true" type="tns3:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getInstantCustomerInfoResponse">
+
+      <wsdl:part element="intf:getInstantCustomerInfoResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getInstantCustomerInfoRequest">
+
+      <wsdl:part element="intf:getInstantCustomerInfo" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="LoanSubmissionInstantLoanGetCustomerInfo">
+
+      <wsdl:operation name="getInstantCustomerInfo">
+
+         <wsdl:input message="intf:getInstantCustomerInfoRequest" name="getInstantCustomerInfoRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="intf:getInstantCustomerInfoResponse" name="getInstantCustomerInfoResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="LoanSubmissionInstantLoanGetCustomerInfoSoapBinding" type="intf:LoanSubmissionInstantLoanGetCustomerInfo">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getInstantCustomerInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getInstantCustomerInfoRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getInstantCustomerInfoResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="LoanSubmissionInstantLoanGetCustomerInfoService">
+
+      <wsdl:port binding="intf:LoanSubmissionInstantLoanGetCustomerInfoSoapBinding" name="LoanSubmissionInstantLoanGetCustomerInfo">
+
+         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionInstantLoanGetCustomerInfo"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

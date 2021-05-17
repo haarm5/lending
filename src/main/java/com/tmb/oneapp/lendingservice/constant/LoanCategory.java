@@ -1,5 +1,8 @@
 package com.tmb.oneapp.lendingservice.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum LoanCategory {
 
 	PRODUCT("26", "Product"), 
@@ -11,30 +14,14 @@ public enum LoanCategory {
 	INCOME_TYPE("INCOME_TYPE", "Income Type"),
 	SCI_COUNTRY("SCI_COUNTRY", "Source of country"), 
 	FEATURE_ENABLE("FEATURE_ENABLE", "Feature enable"),
-	TENURE("TENURE", "Tenor (refEntryCode=RSL)");
+	TENURE("TENURE", "Tenor (refEntryCode=RSL)"),
+	PYMT_CRITERIA("PYMT_CRITERIA", "Payment Criteria");
 
 	private String code;
 	private String name;
 
-	private LoanCategory(String _code, String _name) {
-		this.code = _code;
-		this.name = _name;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
+	LoanCategory(String code, String name) {
 		this.code = code;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
 		this.name = name;
 	}
-
 }

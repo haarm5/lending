@@ -135,31 +135,11 @@ public class LendingCriteriaInfoTest {
 		Assertions.assertEquals(0, actualResponse.size());
 	}
 
-//	@Test
-//	public void getSourceOfIncome() {
-//		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-//		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-//		List<CommonCodeEntry> status = new ArrayList();
-//		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
-//		when(lendingCriteriaInfoService.getSourceOfIncome(any())).thenReturn(actualResponse);
-//		Assertions.assertNotNull(actualResponse);
-//		Assertions.assertEquals(0, actualResponse.size());
-//	}
-
 	@Test
 	public void getDefaultforSubBusinessType() {
 		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
 		List<CriteriaCodeEntry> actualResponse = new ArrayList();
 		when(lendingCriteriaInfoService.getDefaultforSubBusinessType(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
-	}
-
-	@Test
-	public void getDefaultforCountryType() {
-		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getDefaultforCountryType(any())).thenReturn(actualResponse);
 		Assertions.assertNotNull(actualResponse);
 		Assertions.assertEquals(0, actualResponse.size());
 	}

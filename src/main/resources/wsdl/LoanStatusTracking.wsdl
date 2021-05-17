@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://tracking.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://tracking.ws.sml.integrosys.com" xmlns:intf="http://tracking.ws.sml.integrosys.com" xmlns:tns1="http://request.tracking.ws.sml.integrosys.com" xmlns:tns2="http://response.tracking.ws.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://tracking.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.tracking.ws.sml.integrosys.com"/>
+   <import namespace="http://request.tracking.ws.sml.integrosys.com"/>
+   <element name="searchAppStatusByID">
+    <complexType>
+     <sequence>
+      <element name="req" type="tns1:RequestTracking"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="searchAppStatusByIDResponse">
+    <complexType>
+     <sequence>
+      <element name="searchAppStatusByIDReturn" type="tns2:ResponseTracking"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_tns2_Pricing">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:Pricing"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns2_Product">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:Product"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns2_Applicant">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:Applicant"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns2_RoadMap">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:RoadMap"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns2_Application">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:Application"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://request.tracking.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.tracking.ws.sml.integrosys.com"/>
+   <import namespace="http://tracking.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="citizenID" nillable="true" type="xsd:string"/>
+     <element name="mobileNo" nillable="true" type="xsd:string"/>
+     <element name="rmNo" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="RequestTracking">
+    <sequence>
+     <element name="body" nillable="true" type="tns1:Body"/>
+     <element name="header" nillable="true" type="tns1:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://response.tracking.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://request.tracking.ws.sml.integrosys.com"/>
+   <import namespace="http://tracking.ws.sml.integrosys.com"/>
+   <complexType name="Pricing">
+    <sequence>
+     <element name="calculatedRate" type="xsd:double"/>
+     <element name="installment" type="xsd:double"/>
+     <element name="interestRate" type="xsd:double"/>
+     <element name="monthFrom" type="xsd:double"/>
+     <element name="monthTo" type="xsd:double"/>
+     <element name="percentSign" nillable="true" type="xsd:string"/>
+     <element name="rateType" nillable="true" type="xsd:string"/>
+     <element name="rateVaraince" type="xsd:double"/>
+     <element name="tier" type="xsd:double"/>
+     <element name="yearFrom" type="xsd:double"/>
+     <element name="yearTo" type="xsd:double"/>
+    </sequence>
+   </complexType>
+   <complexType name="Product">
+    <sequence>
+     <element name="approveCreditLimit" type="xsd:double"/>
+     <element name="bankAccountNumber" nillable="true" type="xsd:string"/>
+     <element name="cardName" nillable="true" type="xsd:string"/>
+     <element name="disburseBankCode" nillable="true" type="xsd:string"/>
+     <element name="disburseBankFullEN" nillable="true" type="xsd:string"/>
+     <element name="disburseBankFullTH" nillable="true" type="xsd:string"/>
+     <element name="disburseBankShort" nillable="true" type="xsd:string"/>
+     <element name="dsr" type="xsd:double"/>
+     <element name="dti" type="xsd:double"/>
+     <element name="paymentMethod" nillable="true" type="xsd:string"/>
+     <element name="paymentMethodDescEN" nillable="true" type="xsd:string"/>
+     <element name="paymentMethodDescTH" nillable="true" type="xsd:string"/>
+     <element name="pricings" nillable="true" type="impl:ArrayOf_tns2_Pricing"/>
+     <element name="productCode" nillable="true" type="xsd:string"/>
+     <element name="productDescEN" nillable="true" type="xsd:string"/>
+     <element name="productDescTH" nillable="true" type="xsd:string"/>
+     <element name="subProductCode" nillable="true" type="xsd:string"/>
+     <element name="subProductDescEN" nillable="true" type="xsd:string"/>
+     <element name="subProductDescTH" nillable="true" type="xsd:string"/>
+     <element name="tenure" type="xsd:double"/>
+    </sequence>
+   </complexType>
+   <complexType name="Applicant">
+    <sequence>
+     <element name="applicantType" nillable="true" type="xsd:string"/>
+     <element name="firstNameEN" nillable="true" type="xsd:string"/>
+     <element name="firstNameTH" nillable="true" type="xsd:string"/>
+     <element name="products" nillable="true" type="impl:ArrayOf_tns2_Product"/>
+     <element name="seq" type="xsd:int"/>
+     <element name="surNameEN" nillable="true" type="xsd:string"/>
+     <element name="surNameTH" nillable="true" type="xsd:string"/>
+     <element name="titleEN" nillable="true" type="xsd:string"/>
+     <element name="titleTH" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="RoadMap">
+    <sequence>
+     <element name="defaultDescEn" nillable="true" type="xsd:string"/>
+     <element name="defaultDescTh" nillable="true" type="xsd:string"/>
+     <element name="defaultPercentComplete" nillable="true" type="xsd:string"/>
+     <element name="groupNumber" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <complexType name="Application">
+    <sequence>
+     <element name="appRefNo" nillable="true" type="xsd:string"/>
+     <element name="appStatus" nillable="true" type="xsd:string"/>
+     <element name="appStatusDesc" nillable="true" type="xsd:string"/>
+     <element name="appType" nillable="true" type="xsd:string"/>
+     <element name="applicants" nillable="true" type="impl:ArrayOf_tns2_Applicant"/>
+     <element name="applicationDate" nillable="true" type="xsd:string"/>
+     <element name="balanceTransDate" nillable="true" type="xsd:dateTime"/>
+     <element name="caId" type="xsd:long"/>
+     <element name="currentNode" nillable="true" type="xsd:string"/>
+     <element name="instantAppliedStepFlag" nillable="true" type="xsd:string"/>
+     <element name="instantFlag" nillable="true" type="xsd:string"/>
+     <element name="isApproved" nillable="true" type="xsd:string"/>
+     <element name="isIncompleteDocUpdated" nillable="true" type="xsd:string"/>
+     <element name="isRejected" nillable="true" type="xsd:string"/>
+     <element name="isSubmitted" nillable="true" type="xsd:string"/>
+     <element name="lastUpdateDate" nillable="true" type="xsd:dateTime"/>
+     <element name="natureOfRequest" nillable="true" type="xsd:string"/>
+     <element name="natureOfRequestDescEN" nillable="true" type="xsd:string"/>
+     <element name="natureOfRequestDescTH" nillable="true" type="xsd:string"/>
+     <element name="roadMap" nillable="true" type="impl:ArrayOf_tns2_RoadMap"/>
+     <element name="taskId" type="xsd:long"/>
+    </sequence>
+   </complexType>
+   <complexType name="Body">
+    <sequence>
+     <element name="application" nillable="true" type="impl:ArrayOf_tns2_Application"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+     <element name="responseCode" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ResponseTracking">
+    <sequence>
+     <element name="body" nillable="true" type="tns2:Body"/>
+     <element name="header" nillable="true" type="tns2:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="searchAppStatusByIDResponse">
+
+      <wsdl:part element="impl:searchAppStatusByIDResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="searchAppStatusByIDRequest">
+
+      <wsdl:part element="impl:searchAppStatusByID" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="LoanStatusTracking">
+
+      <wsdl:operation name="searchAppStatusByID">
+
+         <wsdl:input message="impl:searchAppStatusByIDRequest" name="searchAppStatusByIDRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:searchAppStatusByIDResponse" name="searchAppStatusByIDResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="LoanStatusTrackingSoapBinding" type="impl:LoanStatusTracking">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="searchAppStatusByID">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="searchAppStatusByIDRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="searchAppStatusByIDResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="LoanStatusTrackingService">
+
+      <wsdl:port binding="impl:LoanStatusTrackingSoapBinding" name="LoanStatusTracking">
+
+         <wsdlsoap:address location="http://10.209.27.99:9081/RSLWS/services/LoanStatusTracking"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

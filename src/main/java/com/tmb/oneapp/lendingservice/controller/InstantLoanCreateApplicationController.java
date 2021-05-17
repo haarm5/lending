@@ -61,18 +61,23 @@ public class InstantLoanCreateApplicationController {
 
 
         boolean isRequestValid = false;
-
-
+        String loanType = request.getLoanType();
+        String appType = request.getAppType();
         /**
          * List<AddressInfo> addressInfoList = request.getAddresses();
         Stream<Boolean> isvalid =  addressInfoList.stream().map(address -> address.isValid()) ;
         */
         if(request.getCustomerInfo().isValid())
         {
-            isRequestValid = request.getLoanType().equalsIgnoreCase("CC") ? request.getCreditCards().get(0).isValid() : request.getFlashCardOrC2G().get(0).isValid();
+            if(loanType.equalsIgnoreCase("CC") && appType.equalsIgnoreCase("CC")){
+                isRequestValid = request.getCreditCards() != null && !request.getCreditCards().isEmpty() && request.getCreditCards().get(0).isValid();
+            }
+
+            if((loanType.equalsIgnoreCase("F") ||  loanType.equalsIgnoreCase("C2G")) && appType.equalsIgnoreCase("PL")){
+                isRequestValid = request.getFlashCardOrC2G() != null && !request.getFlashCardOrC2G().isEmpty() && request.getFlashCardOrC2G().get(0).isValid();
+            }
 
         }
-
 
         if(!isRequestValid){
             oneServiceResponse.setData(null);

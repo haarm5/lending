@@ -1,6 +1,6 @@
-package com.tmb.oneapp.customerservice.service;
 
 
+package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
@@ -91,6 +91,17 @@ public class InstantLoanCreateApplicationServiceTest {
     @Test
     void InstantLoanCreationForFlashCard() throws RemoteException, ServiceException, JsonProcessingException {
 
+        when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
+        InstantLoanCreationResponse actualresponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
+        assertEquals(soapResponse.getBody().getMemberref(),actualresponse.getMemberRef());
+
+
+    }
+
+    @Test
+    void InstantLoanCreationForC2G() throws RemoteException, ServiceException, JsonProcessingException {
+
+        flashCardRequest.setLoanType("C2G");
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
         InstantLoanCreationResponse actualresponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
         assertEquals(soapResponse.getBody().getMemberref(),actualresponse.getMemberRef());

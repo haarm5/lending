@@ -12,6 +12,7 @@ import com.tmb.oneapp.lendingservice.service.LoanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,7 @@ public class LoanController {
             oneServiceResponse.setData(serviceResponse.getData());
             return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
         }
-        throw new TMBCommonException(serviceResponse.getError().getErrorMessage());
+        throw new TMBCommonException("0001",serviceResponse.getError().getErrorMessage(),ResponseCode.BAD_REQUEST.getService(), HttpStatus.BAD_REQUEST,null);
     }
 
 }

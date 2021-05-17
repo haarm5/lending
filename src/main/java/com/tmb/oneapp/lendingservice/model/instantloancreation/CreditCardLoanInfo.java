@@ -12,8 +12,7 @@ public class CreditCardLoanInfo {
 
     @JsonIgnore
     public boolean isValid() {
-        return !(StringUtils.isBlank(getCardInd()) ||
-                StringUtils.isBlank(getProductType()) ||
+        return !(StringUtils.isBlank(getProductType()) ||
                 StringUtils.isBlank(getCardBrand()) ||
                 StringUtils.isBlank(getCampaignCode()));
     }

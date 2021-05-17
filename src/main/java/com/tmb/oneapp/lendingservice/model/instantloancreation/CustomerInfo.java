@@ -13,7 +13,7 @@ public class CustomerInfo {
 
     @JsonIgnore
     public boolean isValid() {
-        return !(StringUtils.isEmpty(getCifRelCode()) ||
+        return !(
                 StringUtils.isEmpty(getIdType1()) ||
                 StringUtils.isEmpty(getIdNo1()) ||
                 StringUtils.isEmpty(getHostCifNo()) ||

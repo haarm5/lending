@@ -15,7 +15,7 @@ public class InstantLoanCreationRequest {
     @NotEmpty
     @JsonProperty("loanType")
     private String loanType;
-    @NotEmpty
+
     @JsonProperty("requestID")
     private String requestID;
     @NotEmpty
@@ -32,16 +32,16 @@ public class InstantLoanCreationRequest {
     @NotEmpty
     @JsonProperty("appType")
     private String appType;
-    @NotEmpty
+
     @JsonProperty("branchCode")
     private String branchCode;
-    @NotEmpty
+
     @JsonProperty("bookBranchCode")
     private String bookBranchCode;
-    @NotEmpty
+
     @JsonProperty("saleChannel")
     private String saleChannel;
-    @NotEmpty
+
     @JsonProperty("authenCode")
     private String authenCode;
     @NotEmpty

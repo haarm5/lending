@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tmb.common.logger.LogAround;
@@ -19,7 +21,9 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
+import com.tmb.oneapp.lendingservice.model.response.WorkInfoEntryResp;
 import com.tmb.oneapp.lendingservice.service.LendingCriteriaInfoService;
+import com.tmb.oneapp.lendingservice.service.WorkInfoProfileService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,8 +43,13 @@ public class WorkInformationController {
 
 	private LendingCriteriaInfoService lendingCriteriaInfoService;
 
-	public WorkInformationController(LendingCriteriaInfoService lendingCriteriaInfoService) {
+	private WorkInfoProfileService workInfoProfileService;
+
+	@Autowired
+	public WorkInformationController(LendingCriteriaInfoService lendingCriteriaInfoService,
+			WorkInfoProfileService workInfoProfileService) {
 		this.lendingCriteriaInfoService = lendingCriteriaInfoService;
+		this.workInfoProfileService = workInfoProfileService;
 	}
 
 	/**
@@ -200,6 +209,30 @@ public class WorkInformationController {
 			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
 					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 		} catch (Exception e) {
+			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+		}
+		return ResponseEntity.ok(response);
+	}
+
+	@ApiOperation(value = "Criteria for country information")
+	@GetMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<WorkInfoEntryResp>> getWorkInformationWithProfile(
+			@RequestParam(value = "occupationcode") String occupationCode,
+			@RequestParam(value = "businesstypecode") String businessTypeCode,
+			@RequestParam(value = "countryofincome") String countryOfIncome) {
+		logger.info("lending-service getWorkInformationWithProfile method start Time : {} ",
+				System.currentTimeMillis());
+		TmbOneServiceResponse<WorkInfoEntryResp> response = new TmbOneServiceResponse();
+		try {
+			WorkInfoEntryResp workInfoEntry = workInfoProfileService.createWorkInformationModel(occupationCode,
+					businessTypeCode, countryOfIncome);
+			response.setData(workInfoEntry);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+		} catch (Exception e) {
+			logger.error(e.toString(),e);
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 		}

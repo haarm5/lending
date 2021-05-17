@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -17,6 +18,7 @@ public class LendingCriteriaInfoService {
 
 	private LendingModuleCache lendingModuleCache;
 
+	@Autowired
 	public LendingCriteriaInfoService(LendingModuleCache lendingModuleCache) {
 		this.lendingModuleCache = lendingModuleCache;
 	}
@@ -164,7 +166,7 @@ public class LendingCriteriaInfoService {
 		}
 		return responseCriterias;
 	}
-	
+
 	/**
 	 * 
 	 * @param reference
@@ -181,5 +183,6 @@ public class LendingCriteriaInfoService {
 		}
 		return responseCriterias;
 	}
+
 
 }

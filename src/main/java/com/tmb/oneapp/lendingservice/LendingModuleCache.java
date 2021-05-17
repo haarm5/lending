@@ -16,6 +16,10 @@ import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.service.CodeEntriesService;
 
+/**
+ * Provides beans to load and cache all master data from
+ * LoanSubmissionGetDropdownListService
+ */
 @Component
 public class LendingModuleCache {
 
@@ -38,7 +42,6 @@ public class LendingModuleCache {
 			for (LoanCategory loadCategory : LoanCategory.values()) {
 				List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel,
 						"3", UUID.randomUUID().toString());
-
 				if (LoanCategory.BUSINESS_TYPE.getCode().equals(loadCategory.getCode())) {
 					List<CommonCodeEntry> fillterList = new ArrayList<CommonCodeEntry>();
 					commonCodeEntry.forEach(e -> {

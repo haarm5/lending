@@ -19,18 +19,23 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListSoapBindingStub;
 
+/**
+ * Provides service to get master data from LoanSubmissionGetDropdownListService
+ */
 @Service
 public class CodeEntriesService {
 
 	private static final TMBLogger<CodeEntriesService> logger = new TMBLogger<>(CodeEntriesService.class);
-
-	private static LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
-
+	private LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
 	@Value("${rsl.service.name.loansubmmission.url}")
-	private String dropdownListUrl;
+	private String loanSubmissionGetDropdownListUrl;
+
+	public void setLocator(LoanSubmissionGetDropdownListServiceLocator locator) {
+		this.locator = locator;
+	}
 
 	public List<CommonCodeEntry> loadEntry(String code, String channel, String module, String requestId) {
-		locator.setLoanSubmissionGetDropdownListEndpointAddress(dropdownListUrl);
+		locator.setLoanSubmissionGetDropdownListEndpointAddress(loanSubmissionGetDropdownListUrl);
 		List<CommonCodeEntry> commonCodeEntrys = new ArrayList<CommonCodeEntry>();
 		try {
 			LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator
@@ -45,14 +50,19 @@ public class CodeEntriesService {
 			header.setRequestID(requestId);
 			req.setHeader(header);
 			ResponseDropdown response = stub.getDropDownListByCode(req);
-
+			com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header headerResponse = response.getHeader();
+			if (!"MSG_000".equals(headerResponse.getResponseCode())) {
+				logger.error("code: {},Fetching Master Data got error:{} {}", code, headerResponse.getResponseCode(),
+						headerResponse.getResponseDescriptionEN());
+				return commonCodeEntrys;
+			}
 			CommonCodeEntry[] codeEntrys = response.getBody().getCommonCodeEntries();
 			if (Objects.nonNull(codeEntrys)) {
 				for (CommonCodeEntry entry : codeEntrys) {
 					commonCodeEntrys.add(entry);
 				}
 			}
-			
+
 		} catch (ServiceException e) {
 			logger.error(e.toString(), e);
 		} catch (RemoteException e) {

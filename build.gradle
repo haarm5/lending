@@ -18,7 +18,7 @@ buildscript {
                 password = 'ad123Tmb*'
             }
         }
-        
+
     }
 }
 
@@ -30,7 +30,7 @@ repositories {
             password = 'ad123Tmb*'
         }
     }
-    
+
 }
 
 apply plugin: 'java'
@@ -58,13 +58,6 @@ springBoot {
 
 ext {
     set('springCloudVersion', "Hoxton.SR6")
-}
-
-configurations {
-    jaxb
-}
-jar {
-  from sourceSets.main.allSource
 }
 
 dependencies {
@@ -98,25 +91,10 @@ dependencies {
     implementation group: 'wsdl4j', name: 'wsdl4j', version: '1.6.2'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+
 }
 
-task jaxb {
-	def jaxbTargetDir = file("${buildDir}/generated-sources")
-	doLast {
-		jaxbTargetDir.mkdirs()
-		ant.taskdef(
-                name: 'xjc',
-                classname: 'com.sun.tools.xjc.XJCTask',
-                classpath: configurations.jaxb.asPath
-        )
-        ant.jaxbTargetDir = jaxbTargetDir
-        ant.xjc(
-                destdir: '${jaxbTargetDir}',
-                schema: 'src/main/resources/wsdl/LoanSubmissionGetDropdownList.wsdl',
-                language: 'WSDL'
-        )
-	}
-}
+
 
 dependencyManagement {
     imports {
@@ -160,11 +138,11 @@ sonarqube {
         }
     }
     properties {
-		property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/LendingServicesApplication.java'
-	}
-	properties {
-		property 'sonar.exclusions', '**/config/*'
-	}
+        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/LendingServicesApplication.java'
+    }
+    properties {
+        property 'sonar.exclusions', '**/config/*'
+    }
 }
 
 test.finalizedBy jacocoTestReport

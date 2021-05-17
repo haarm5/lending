@@ -184,5 +184,38 @@ public class LendingCriteriaInfoService {
 		return responseCriterias;
 	}
 
+	/**
+	 * 
+	 * @param businessTypeCode
+	 * @return
+	 */
+	public List<CriteriaCodeEntry> getDefaultforSubBusinessType(String reference) {
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
+				.getListByCategoryCode(LoanCategory.BUSINESS_SUB_TYPE.getCode());
+		for (CommonCodeEntry entry : commonCodeEntrys) {
+			if (reference.equals(entry.getRefEntryCode())) {
+				responseCriterias.add(setModelResponseInfo(entry));
+			}
+		}
+		return responseCriterias;
+	}
+
+	/**
+	 * 
+	 * @param countryOfIncome
+	 * @return
+	 */
+	public List<CriteriaCodeEntry> getDefaultforCountryType(String countryOfIncome) {
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
+				.getListByCategoryCode(LoanCategory.SCI_COUNTRY.getCode());
+		for (CommonCodeEntry entry : commonCodeEntrys) {
+			if (countryOfIncome.equals(entry.getEntryCode())) {
+				responseCriterias.add(setModelResponseInfo(entry));
+			}
+		}
+		return responseCriterias;
+	}
 
 }

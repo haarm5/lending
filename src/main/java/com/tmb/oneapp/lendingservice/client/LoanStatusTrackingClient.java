@@ -21,7 +21,11 @@ public class LoanStatusTrackingClient {
     private String loanStatusTrackingUrl;
     private  LoanStatusTrackingServiceLocator locator = new LoanStatusTrackingServiceLocator();
 
-    void setLocator(LoanStatusTrackingServiceLocator locator){
+    private static final String MOBILE_NUMBER  = "0000000000";
+    private static final String CHANNEL = "MIB";
+    private static final String MODULE = "3";
+
+    public void setLocator(LoanStatusTrackingServiceLocator locator){
         this.locator = locator;
     }
     public ResponseTracking searchAppStatusByID(String citizenId) throws RemoteException, ServiceException {
@@ -36,11 +40,11 @@ public class LoanStatusTrackingClient {
 
         Body body = new Body();
         body.setCitizenID(citizenId);
-        body.setMobileNo("0000000000");
+        body.setMobileNo(MOBILE_NUMBER);
         req.setBody(body);
 
-        header.setChannel("MIB");
-        header.setModule("3");
+        header.setChannel(CHANNEL);
+        header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         req.setHeader(header);
         return stub.searchAppStatusByID(req);

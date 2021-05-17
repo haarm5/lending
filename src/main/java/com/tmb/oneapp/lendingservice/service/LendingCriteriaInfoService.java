@@ -190,7 +190,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getDefaultforSubBusinessType(String reference) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_SUB_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
@@ -207,7 +207,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getDefaultforCountryType(String countryOfIncome) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.SCI_COUNTRY.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {

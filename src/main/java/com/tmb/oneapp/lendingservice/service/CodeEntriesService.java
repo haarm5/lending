@@ -1,11 +1,10 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.rpc.ServiceException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class CodeEntriesService {
 
 	public List<CommonCodeEntry> loadEntry(String code, String channel, String module, String requestId) {
 		locator.setLoanSubmissionGetDropdownListEndpointAddress(loanSubmissionGetDropdownListUrl);
-		List<CommonCodeEntry> commonCodeEntrys = new ArrayList<CommonCodeEntry>();
+		List<CommonCodeEntry> commonCodeEntrys = new ArrayList<>();
 		try {
 			LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator
 					.getLoanSubmissionGetDropdownList();
@@ -58,14 +57,10 @@ public class CodeEntriesService {
 			}
 			CommonCodeEntry[] codeEntrys = response.getBody().getCommonCodeEntries();
 			if (Objects.nonNull(codeEntrys)) {
-				for (CommonCodeEntry entry : codeEntrys) {
-					commonCodeEntrys.add(entry);
-				}
+				commonCodeEntrys = new ArrayList<>(Arrays.asList(codeEntrys));
 			}
 
-		} catch (ServiceException e) {
-			logger.error(e.toString(), e);
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 			logger.error(e.toString(), e);
 		}
 		return commonCodeEntrys;

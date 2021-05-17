@@ -43,7 +43,7 @@ public class LendingModuleCache {
 				List<CommonCodeEntry> commonCodeEntry = codeEntriesService.loadEntry(loadCategory.getCode(), channel,
 						"3", UUID.randomUUID().toString());
 				if (LoanCategory.BUSINESS_TYPE.getCode().equals(loadCategory.getCode())) {
-					List<CommonCodeEntry> fillterList = new ArrayList<CommonCodeEntry>();
+					List<CommonCodeEntry> fillterList = new ArrayList<>();
 					commonCodeEntry.forEach(e -> {
 						if (!"03".equals(e.getEntryCode())) {
 							fillterList.add(e);

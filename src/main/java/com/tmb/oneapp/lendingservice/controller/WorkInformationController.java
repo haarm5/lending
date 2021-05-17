@@ -68,17 +68,28 @@ public class WorkInformationController {
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
 					.getCriteriaByCatalogId(LoanCategory.EMPLOYMENT_STATUS);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Return " + criteriaCodeEntrys);
-			}
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 		}
 		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * Model Wrapper
+	 * 
+	 * @param response
+	 * @param criteriaCodeEntrys
+	 */
+	private void setResponseSuccess(TmbOneServiceResponse<List<CriteriaCodeEntry>> response,
+			List<CriteriaCodeEntry> criteriaCodeEntrys) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Return " + criteriaCodeEntrys);
+		}
+		response.setData(criteriaCodeEntrys);
+		response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+				ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 	}
 
 	@ApiOperation(value = "Criteria for Occupation information")
@@ -97,13 +108,7 @@ public class WorkInformationController {
 
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
 					.getOccupationByEmploymentStatus(reference);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Return " + criteriaCodeEntrys);
-			}
-
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
@@ -127,9 +132,7 @@ public class WorkInformationController {
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
 					.getCriteriaByCatalogId(LoanCategory.BUSINESS_TYPE);
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
@@ -153,9 +156,7 @@ public class WorkInformationController {
 		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService.getSubBusinessType(reference);
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
@@ -179,9 +180,7 @@ public class WorkInformationController {
 		TmbOneServiceResponse<List<CriteriaCodeEntry>> response = new TmbOneServiceResponse();
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService.getSourceOfIncome(reference);
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
@@ -205,9 +204,7 @@ public class WorkInformationController {
 		try {
 			List<CriteriaCodeEntry> criteriaCodeEntrys = lendingCriteriaInfoService
 					.getCriteriaByCatalogId(LoanCategory.SCI_COUNTRY);
-			response.setData(criteriaCodeEntrys);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			setResponseSuccess(response, criteriaCodeEntrys);
 		} catch (Exception e) {
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
@@ -232,7 +229,7 @@ public class WorkInformationController {
 			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
 					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 		} catch (Exception e) {
-			logger.error(e.toString(),e);
+			logger.error(e.toString(), e);
 			response.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 		}

@@ -32,6 +32,6 @@ public enum ResponseCode implements Serializable {
 	private final String desc;
 
 	private static class Constants {
-		public static final String SERVICE_NAME = "customers-service";
+		public static final String SERVICE_NAME = "lending-service";
 	}
 }

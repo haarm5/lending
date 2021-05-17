@@ -17,7 +17,7 @@ public class LendingCriteriaInfoService {
 
 	private LendingModuleCache lendingModuleCache;
 
-	private LendingCriteriaInfoService(LendingModuleCache lendingModuleCache) {
+	public LendingCriteriaInfoService(LendingModuleCache lendingModuleCache) {
 		this.lendingModuleCache = lendingModuleCache;
 	}
 

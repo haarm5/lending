@@ -18,7 +18,6 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.request.RequestDropdown;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListSoapBindingStub;
-import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 
 @Service
 public class CodeEntriesService {

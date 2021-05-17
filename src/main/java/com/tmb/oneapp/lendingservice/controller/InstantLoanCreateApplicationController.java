@@ -7,10 +7,10 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.instantloancreation.AddressInfo;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationRequest;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationResponse;
 import com.tmb.oneapp.lendingservice.service.InstantLoanCreateApplicationService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -21,44 +21,60 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
-import java.util.List;
 
+/**
+ * Controller to call Instant Loan Creation
+ *
+ */
+@Api(tags = "Loan Submission- Instant Loan Create Application")
 @RestController
 public class InstantLoanCreateApplicationController {
     private static final TMBLogger<InstantLoanCreateApplicationController> logger = new TMBLogger<>(InstantLoanCreateApplicationController.class);
     private final InstantLoanCreateApplicationService instantLoanCreateApplicationService;
 
 
+    /**
+     * Constructor
+     *
+     * @param instantLoanCreateApplicationService
+     */
     public InstantLoanCreateApplicationController(InstantLoanCreateApplicationService instantLoanCreateApplicationService) {
         this.instantLoanCreateApplicationService = instantLoanCreateApplicationService;
     }
+
+    /**
+     * method  to call InstantLoanCreateApplication service for Credit cards, Flasg crds, C2G
+     *
+     * @param request InstantLoanCreationRequest
+     *
+     * @return TmbOneServiceResponse<InstantLoanCreationResponse>
+     */
 
     @ApiOperation(value = "Create Instant Loan Application")
     @LogAround
     @PostMapping("/create-instant-loan-application")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCreationResponse>> createInstantLoanApplication(@Valid @RequestBody InstantLoanCreationRequest request){
-        logger.info("Calling ....");
+        logger.info("Calling createInstantLoanApplication ");
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<InstantLoanCreationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
 
 
-        final boolean[] isRequestValid = {false};
-        List<AddressInfo> addressInfoList = request.getAddresses();
+        boolean isRequestValid = false;
 
-        logger.info("1 " + addressInfoList.get(0).isValid());
-        logger.info("2 " +addressInfoList.get(1).isValid());
-        addressInfoList.stream().map(address -> isRequestValid[0] = address.isValid());
 
-        logger.info("3 " +isRequestValid[0]);
+        /**
+         * List<AddressInfo> addressInfoList = request.getAddresses();
+        Stream<Boolean> isvalid =  addressInfoList.stream().map(address -> address.isValid()) ;
+        */
         if(request.getCustomerInfo().isValid())
         {
-            isRequestValid[0] = request.getLoanType().equalsIgnoreCase("CC") ? request.getCreditCards().get(0).isValid() : request.getFlashCardOrC2G().get(0).isValid();
+            isRequestValid = request.getLoanType().equalsIgnoreCase("CC") ? request.getCreditCards().get(0).isValid() : request.getFlashCardOrC2G().get(0).isValid();
 
         }
 
 
-        if(!isRequestValid[0]){
+        if(!isRequestValid){
             oneServiceResponse.setData(null);
             oneServiceResponse
                     .setStatus(new TmbStatus(ResponseCode.BAD_REQUEST.getCode(), ResponseCode.BAD_REQUEST.getMessage(),

@@ -20,14 +20,14 @@ public class InstantLoanCreateApplicationClient {
     private  final ObjectMapper mapper;
 
     @Value("${loan.submission.instant.loan.create.application.url}")
-    String instantLoanCreationURL;
+    private String loanSubmissionInstantLoanCreateApplicationURL;
     public InstantLoanCreateApplicationClient(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
     public ResponseInstantLoanCreateApplication callLoanSubmissionInstantLoanCreateApplication(RequestInstantLoanCreateApplication request) throws JsonProcessingException, RemoteException, ServiceException {
         LoanSubmissionInstantLoanCreateApplicationServiceLocator locator = new LoanSubmissionInstantLoanCreateApplicationServiceLocator();
-        locator.setLoanSubmissionInstantLoanCreateApplicationEndpointAddress(instantLoanCreationURL);
+        locator.setLoanSubmissionInstantLoanCreateApplicationEndpointAddress(loanSubmissionInstantLoanCreateApplicationURL);
         LoanSubmissionInstantLoanCreateApplicationSoapBindingStub stub = (LoanSubmissionInstantLoanCreateApplicationSoapBindingStub) locator.getLoanSubmissionInstantLoanCreateApplication();
         logger.info("Soap request to  InstantLoanCreateApplication is  {} :" + mapper.writeValueAsString(request));
         ResponseInstantLoanCreateApplication response = stub.createInstantLoanApplication(request);

@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotEmpty;
-
 @Getter
 @Setter
 public class AddressInfo {

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+
+
 @Service
 public class InstantLoanCreateApplicationService {
     private static final TMBLogger<InstantLoanCreateApplicationService> logger = new TMBLogger<>(InstantLoanCreateApplicationService.class);
@@ -40,14 +42,21 @@ public class InstantLoanCreateApplicationService {
     }
 
 
+    /**
+     * method  to call InstantLoanCreateApplication service of legacy system for Credit cards, Flasg crds, C2G
+     *
+     * @param request InstantLoanCreationRequest
+     *
+     * @return InstantLoanCreationResponse
+     */
       public InstantLoanCreationResponse createInstantLoanApplication(InstantLoanCreationRequest request){
 
 
         RequestInstantLoanCreateApplication soapRequest = new RequestInstantLoanCreateApplication();
 
         try {
-            logger.info("In try ");
-            logger.info("Client Request for  InstantLoanCreateApplication is {} : " +mapper.writeValueAsString(request));
+
+            logger.info(" Request from Client to InstantLoanCreateApplication is {} : " +mapper.writeValueAsString(request));
 
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
@@ -104,6 +113,14 @@ public class InstantLoanCreateApplicationService {
         return response;
     }
 
+
+    /**
+     * method  to call to construct InstantLoanCreateApplication response for Credit cards, Flasg crds, C2G
+     *
+     * @param soapResponse ResponseInstantLoanCreateApplication
+     *
+     * @return InstantLoanCreationResponse
+     */
     private InstantLoanCreationResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse){
 
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
@@ -126,6 +143,13 @@ public class InstantLoanCreateApplicationService {
         return response;
     }
 
+    /**
+     * method to construct InstantIndividual Object request to legacy system
+     *
+     * @param request InstantLoanCreationRequest
+     *
+     * @return InstantIndividual
+     */
     private InstantIndividual getInstantIndividualObject(InstantLoanCreationRequest request) throws ParseException {
         InstantIndividual individual = new InstantIndividual();
         CustomerInfo customerInfo = request.getCustomerInfo();
@@ -172,6 +196,15 @@ public class InstantLoanCreateApplicationService {
         return individual;
     }
 
+
+
+    /**
+     * method to construct address Object request to legacy system
+     *
+     * @param address AddressInfo
+     *
+     * @return Address
+     */
     private Address addressToSoapRequestAddress(AddressInfo address){
 
         Address soapAddressObj = new Address();
@@ -191,6 +224,14 @@ public class InstantLoanCreateApplicationService {
         return  soapAddressObj;
     }
 
+
+    /**
+     * method to construct creditCard Info Object request to legacy system
+     *
+     * @param creditCardLoanInfo CreditCardLoanInfo
+     *
+     * @return InstantCreditCard
+     */
     private InstantCreditCard creditCardInfoToSoapRequestCC(CreditCardLoanInfo creditCardLoanInfo){
 
         InstantCreditCard soapCreditCardLoanData = new InstantCreditCard();
@@ -215,14 +256,20 @@ public class InstantLoanCreateApplicationService {
 
 
 
-
+    /**
+     * method to construct FlashCardOrC2GLoan Info Object request to legacy system
+     *
+     * @param facilitiesInfo FlashCardOrC2GLoanInfo
+     *
+     * @return InstantFacility
+     */
     private InstantFacility facilitiesInfoToSoapRequestInstantFacility(FlashCardOrC2GLoanInfo facilitiesInfo){
         InstantFacility soapFacility = new InstantFacility();
         soapFacility.setFacilityCode(facilitiesInfo.getFacilityCode());
         soapFacility.setProductCode(facilitiesInfo.getProductCode());
         soapFacility.setCaCampaignCode(facilitiesInfo.getCaCampaignCode());
         soapFacility.setLimitApplied(convertStringToBigDecimal(facilitiesInfo.getLimitApplied()));
-        soapFacility.setInterestRate(convertStringToBigDecimal(facilitiesInfo.getInterestRate())); //interestRate k.pump
+        soapFacility.setInterestRate(convertStringToBigDecimal(facilitiesInfo.getInterestRate()));
         soapFacility.setLoanWithOtherBank(facilitiesInfo.getLoanWithOtherBank());
         soapFacility.setConsiderLoanWithOtherBank(facilitiesInfo.getConsiderLoanWithOtherBank());
         soapFacility.setPaymentMethod(facilitiesInfo.getPaymentMethod());
@@ -250,6 +297,14 @@ public class InstantLoanCreateApplicationService {
         return soapFacility;
     }
 
+
+    /**
+     * method to create BigDecimal froma string
+     *
+     * @param data String
+     *
+     * @return BigDecimal
+     */
     public BigDecimal convertStringToBigDecimal(String data){
 
         if(StringUtils.isNotBlank(data))

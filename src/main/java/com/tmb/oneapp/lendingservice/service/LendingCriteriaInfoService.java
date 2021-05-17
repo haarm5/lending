@@ -1,10 +1,11 @@
 package com.tmb.oneapp.lendingservice.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +32,34 @@ public class LendingCriteriaInfoService {
 	public List<CriteriaCodeEntry> getWorkStatusByOccupationCode(String code) {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.RM_OCCUPATION.getCode());
-		Set<String> mappingExtValue1 = commonCodeEntrys.stream().filter(entry -> entry.getEntryCode().equals(code))
-				.map(e -> e.getExtValue1()).collect(Collectors.toSet());
+		Set<String> mappingExtValue1 = findOutMappingExt(commonCodeEntrys, code);
 		List<CommonCodeEntry> employmentEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.EMPLOYMENT_STATUS.getCode());
 		return getCriteriaByEntryCode(employmentEntrys, mappingExtValue1);
 
+	}
+
+	/**
+	 * 
+	 * @param commonCodeEntrys
+	 * @param code
+	 * @return
+	 */
+	private Set<String> findOutMappingExt(List<CommonCodeEntry> commonCodeEntrys, String code) {
+		List<CommonCodeEntry> selctValue = new ArrayList();
+		for (CommonCodeEntry entry : commonCodeEntrys) {
+			if (entry.getEntryCode().equals(code)) {
+				selctValue.add(entry);
+			}
+		}
+		Set<String> validStringSet = new HashSet();
+		if (CollectionUtils.isNotEmpty(selctValue)) {
+			for (CommonCodeEntry select : selctValue) {
+				validStringSet.add(select.getExtValue1());
+			}
+		}
+
+		return validStringSet;
 	}
 
 	/**
@@ -48,7 +71,7 @@ public class LendingCriteriaInfoService {
 	 */
 	private List<CriteriaCodeEntry> getCriteriaByEntryCode(List<CommonCodeEntry> commonCodeEntrys,
 			Set<String> mappingEntryCode) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		for (CommonCodeEntry entry : commonCodeEntrys) {
 			for (String value : mappingEntryCode) {
 				if (value.equals(entry.getEntryCode())) {
@@ -66,7 +89,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getOccupationInfoByCode(String occcupationCode) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.RM_OCCUPATION.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
@@ -84,7 +107,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getBusinessTypeCode(String bustypeEntryCode) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
@@ -124,7 +147,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getCriteriaByCatalogId(LoanCategory employmentStatus) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache.getListByCategoryCode(employmentStatus.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
 			responseCriterias.add(setModelResponseInfo(entry));
@@ -139,7 +162,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getOccupationByEmploymentStatus(String reference) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.RM_OCCUPATION.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
@@ -156,7 +179,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getSubBusinessType(String reference) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_SUB_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
@@ -173,7 +196,7 @@ public class LendingCriteriaInfoService {
 	 * @return
 	 */
 	public List<CriteriaCodeEntry> getSourceOfIncome(String reference) {
-		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<CriteriaCodeEntry>();
+		final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.INCOME_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {

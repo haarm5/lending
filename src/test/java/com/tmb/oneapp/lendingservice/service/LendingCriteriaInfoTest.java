@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,76 +73,163 @@ public class LendingCriteriaInfoTest {
 		Assertions.assertEquals(0, actualResponse.size());
 
 		lendingCriteriaInfoService.getDefaultforCountryType(null);
-	}
-
-	@Test
-	public void getWorkStatusByOccupationCode() {
-		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		List<CommonCodeEntry> status = new ArrayList();
-		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
-		when(lendingCriteriaInfoService.getWorkStatusByOccupationCode(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
-	}
-
-	@Test
-	public void getOccupationInfoByCode() {
-		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getOccupationInfoByCode(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
+		
+		org.junit.Assert.assertTrue(true);
 	}
 
 	@Test
 	public void getBusinessTypeCode() {
 		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getBusinessTypeCode(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
-
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getBusinessTypeCode(LoanCategory.EMPLOYMENT_STATUS.getCode());
+		org.junit.Assert.assertTrue(true);
 	}
 
 	@Test
 	public void getCriteriaByCatalogId() {
 		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
 		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
 		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
-		when(lendingCriteriaInfoService.getCriteriaByCatalogId(LoanCategory.BUSINESS_SUB_TYPE)).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
-
+		lendingCriteriaInfoService.getCriteriaByCatalogId(LoanCategory.BUSINESS_SUB_TYPE);
+		org.junit.Assert.assertTrue(true);
 	}
 
 	@Test
-	public void getOccupationByEmploymentStatus() {
+	public void getDefaultforCountryType() {
 		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getOccupationByEmploymentStatus(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
-
-	}
-
-	@Test
-	public void getSubBusinessType() {
-		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getSubBusinessType(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getDefaultforCountryType("TH");
+		org.junit.Assert.assertTrue(true);
 	}
 
 	@Test
 	public void getDefaultforSubBusinessType() {
 		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
-		List<CriteriaCodeEntry> actualResponse = new ArrayList();
-		when(lendingCriteriaInfoService.getDefaultforSubBusinessType(any())).thenReturn(actualResponse);
-		Assertions.assertNotNull(actualResponse);
-		Assertions.assertEquals(0, actualResponse.size());
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getDefaultforSubBusinessType("A");
+		org.junit.Assert.assertTrue(true);
+	}
+
+	@Test
+	public void getOccupationByEmploymentStatus() {
+		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		codeEntry.setExtValue1("");
+		codeEntry.setExtValue2("");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getOccupationByEmploymentStatus("VB");
+		org.junit.Assert.assertTrue(true);
+	}
+
+	@Test
+	public void getOccupationInfoByCode() {
+		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getOccupationInfoByCode(LoanCategory.RM_OCCUPATION.getCode());
+		org.junit.Assert.assertTrue(true);
+	}
+
+	@Test
+	public void getSourceOfIncome() {
+		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getSourceOfIncome(LoanCategory.RM_OCCUPATION.getCode());
+		org.junit.Assert.assertTrue(true);
+	}
+
+	@Test
+	public void getSubBusinessType() {
+		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getSubBusinessType(LoanCategory.RM_OCCUPATION.getCode());
+		org.junit.Assert.assertTrue(true);
+	}
+	
+	@Test
+	public void getWorkStatusByOccupationCode() {
+		lendingCriteriaInfoService = new LendingCriteriaInfoService(lendingModuleCache);
+		CommonCodeEntry codeEntry = new CommonCodeEntry();
+		codeEntry.setActiveStatus("1");
+		codeEntry.setCategoryCode("INCOME_TYPE");
+		codeEntry.setEntryCode("1");
+		codeEntry.setEntryID(new BigDecimal("69842"));
+		codeEntry.setEntryName("ABC");
+		codeEntry.setEntryName2("AAAA");
+		List<CommonCodeEntry> status = new ArrayList();
+		status.add(codeEntry);
+		when(lendingModuleCache.getListByCategoryCode(any())).thenReturn(status);
+		lendingCriteriaInfoService.getWorkStatusByOccupationCode(LoanCategory.RM_OCCUPATION.getCode());
+		org.junit.Assert.assertTrue(true);
 	}
 
 }

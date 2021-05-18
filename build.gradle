@@ -138,7 +138,7 @@ sonarqube {
         }
     }
     properties {
-        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/LendingServicesApplication.java'
+        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/client/*,**/LendingServiceApplication.java,**/LendingModuleCache.java'
     }
     properties {
         property 'sonar.exclusions', '**/config/*'

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://submission.loan.ws.sml.integrosys.com" xmlns:intf="http://submission.loan.ws.sml.integrosys.com" xmlns:tns1="http://request.uw.calculate.instant.ws.sml.integrosys.com" xmlns:tns2="http://common.ws.sml.integrosys.com" xmlns:tns3="http://response.uw.calculate.instant.ws.sml.integrosys.com" xmlns:tns4="http://creditcard.apprmemo.ob.common.sml.integrosys.com" xmlns:tns5="http://facility.apprmemo.ob.common.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://facility.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <element name="calculateUnderwriting">
+    <complexType>
+     <sequence>
+      <element name="req" type="tns1:RequestInstantLoanCalUW"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="calculateUnderwritingResponse">
+    <complexType>
+     <sequence>
+      <element name="calculateUnderwritingReturn" type="tns3:ResponseInstantLoanCalUW"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_tns4_ApprovalMemoCreditCard">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns4:ApprovalMemoCreditCard"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns5_ApprovalMemoFacility">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns5:ApprovalMemoFacility"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://request.uw.calculate.instant.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://facility.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="caId" nillable="true" type="xsd:decimal"/>
+     <element name="triggerFlag" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns2:CommonWSRequestHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="RequestInstantLoanCalUW">
+    <sequence>
+     <element name="body" nillable="true" type="tns1:Body"/>
+     <element name="header" nillable="true" type="tns1:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://common.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://facility.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="CommonWSRequestHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="CommonWSResponseHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+     <element name="responseCode" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://facility.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="ApprovalMemoCreditCard">
+    <sequence>
+     <element name="cardType" nillable="true" type="xsd:string"/>
+     <element name="ccId" nillable="true" type="xsd:decimal"/>
+     <element name="creditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="cycleCutDate" nillable="true" type="xsd:string"/>
+     <element name="debitAccountName" nillable="true" type="xsd:string"/>
+     <element name="debitAccountNo" nillable="true" type="xsd:string"/>
+     <element name="firstPaymentDueDate" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="loanContractDate" nillable="true" type="xsd:dateTime"/>
+     <element name="payDate" nillable="true" type="xsd:string"/>
+     <element name="paymentMethod" nillable="true" type="xsd:string"/>
+     <element name="underwritingResult" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://facility.apprmemo.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://response.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="ApprovalMemoFacility">
+    <sequence>
+     <element name="creditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="cycleCutDate" nillable="true" type="xsd:string"/>
+     <element name="disburstAccountName" nillable="true" type="xsd:string"/>
+     <element name="disburstAccountNo" nillable="true" type="xsd:string"/>
+     <element name="facId" nillable="true" type="xsd:decimal"/>
+     <element name="firstPaymentDueDate" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="installmentAmount" nillable="true" type="xsd:decimal"/>
+     <element name="interestRate" nillable="true" type="xsd:decimal"/>
+     <element name="loanContractDate" nillable="true" type="xsd:dateTime"/>
+     <element name="outstandingBalance" nillable="true" type="xsd:decimal"/>
+     <element name="payDate" nillable="true" type="xsd:string"/>
+     <element name="paymentMethod" nillable="true" type="xsd:string"/>
+     <element name="rateType" nillable="true" type="xsd:string"/>
+     <element name="rateTypePercent" nillable="true" type="xsd:decimal"/>
+     <element name="tenor" nillable="true" type="xsd:decimal"/>
+     <element name="underwritingResult" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://response.uw.calculate.instant.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://facility.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://creditcard.apprmemo.ob.common.sml.integrosys.com"/>
+   <import namespace="http://request.uw.calculate.instant.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="approvalMemoCreditCards" nillable="true" type="impl:ArrayOf_tns4_ApprovalMemoCreditCard"/>
+     <element name="approvalMemoFacilities" nillable="true" type="impl:ArrayOf_tns5_ApprovalMemoFacility"/>
+     <element name="loanContractDate" nillable="true" type="xsd:dateTime"/>
+     <element name="underwritingResult" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns2:CommonWSResponseHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="ResponseInstantLoanCalUW">
+    <sequence>
+     <element name="body" nillable="true" type="tns3:Body"/>
+     <element name="header" nillable="true" type="tns3:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="calculateUnderwritingRequest">
+
+      <wsdl:part element="impl:calculateUnderwriting" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="calculateUnderwritingResponse">
+
+      <wsdl:part element="impl:calculateUnderwritingResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="LoanSubmissionInstantLoanCalUW">
+
+      <wsdl:operation name="calculateUnderwriting">
+
+         <wsdl:input message="impl:calculateUnderwritingRequest" name="calculateUnderwritingRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:calculateUnderwritingResponse" name="calculateUnderwritingResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="LoanSubmissionInstantLoanCalUWSoapBinding" type="impl:LoanSubmissionInstantLoanCalUW">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="calculateUnderwriting">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="calculateUnderwritingRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="calculateUnderwritingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="LoanSubmissionInstantLoanCalUWService">
+
+      <wsdl:port binding="impl:LoanSubmissionInstantLoanCalUWSoapBinding" name="LoanSubmissionInstantLoanCalUW">
+
+         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionInstantLoanCalUW"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://submission.loan.ws.sml.integrosys.com" xmlns:intf="http://submission.loan.ws.sml.integrosys.com" xmlns:tns1="http://request.update.facility.ws.sml.integrosys.com" xmlns:tns2="http://facility.ob.common.sml.integrosys.com" xmlns:tns3="http://feature.ob.common.sml.integrosys.com" xmlns:tns4="http://pricing.ob.common.sml.integrosys.com" xmlns:tns5="http://common.ws.sml.integrosys.com" xmlns:tns6="http://response.update.facility.ws.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <element name="updateFacilityInfo">
+    <complexType>
+     <sequence>
+      <element name="req" type="tns1:RequestFacility"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_tns4_Pricing">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns4:Pricing"/>
+    </sequence>
+   </complexType>
+   <element name="updateFacilityInfoResponse">
+    <complexType>
+     <sequence>
+      <element name="updateFacilityInfoReturn" type="tns6:ResponseFacility"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://feature.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <complexType name="Feature">
+    <sequence>
+     <element name="disbAcctName" nillable="true" type="xsd:string"/>
+     <element name="disbAcctNo" nillable="true" type="xsd:string"/>
+     <element name="disbBankCode" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="requestAmount" nillable="true" type="xsd:decimal"/>
+     <element name="requestPercent" nillable="true" type="xsd:decimal"/>
+     <element name="tenure" nillable="true" type="xsd:long"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://pricing.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <complexType name="Pricing">
+    <sequence>
+     <element name="calculatedRate" nillable="true" type="xsd:decimal"/>
+     <element name="ccId" nillable="true" type="xsd:decimal"/>
+     <element name="facId" nillable="true" type="xsd:decimal"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="installment" nillable="true" type="xsd:decimal"/>
+     <element name="interestRate" nillable="true" type="xsd:decimal"/>
+     <element name="monthFrom" nillable="true" type="xsd:decimal"/>
+     <element name="monthTo" nillable="true" type="xsd:decimal"/>
+     <element name="percentSign" nillable="true" type="xsd:string"/>
+     <element name="pricingType" nillable="true" type="xsd:string"/>
+     <element name="rateType" nillable="true" type="xsd:string"/>
+     <element name="rateVaraince" nillable="true" type="xsd:decimal"/>
+     <element name="tier" nillable="true" type="xsd:decimal"/>
+     <element name="yearFrom" nillable="true" type="xsd:decimal"/>
+     <element name="yearTo" nillable="true" type="xsd:decimal"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://facility.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <complexType name="Facility">
+    <sequence>
+     <element name="accountName" nillable="true" type="xsd:string"/>
+     <element name="amountFinance" nillable="true" type="xsd:decimal"/>
+     <element name="caCampaignCode" nillable="true" type="xsd:string"/>
+     <element name="caId" nillable="true" type="xsd:decimal"/>
+     <element name="cardDelivery" nillable="true" type="xsd:string"/>
+     <element name="considerLoanWithOtherBank" nillable="true" type="xsd:string"/>
+     <element name="contractDate" nillable="true" type="xsd:dateTime"/>
+     <element name="creditLimitFromMof" nillable="true" type="xsd:decimal"/>
+     <element name="customerSegment" nillable="true" type="xsd:string"/>
+     <element name="disburstAccountName" nillable="true" type="xsd:string"/>
+     <element name="disburstAccountNo" nillable="true" type="xsd:string"/>
+     <element name="disburstBankName" nillable="true" type="xsd:string"/>
+     <element name="existLimit" nillable="true" type="xsd:decimal"/>
+     <element name="existLoan" nillable="true" type="xsd:string"/>
+     <element name="existMaxCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="existingAccountNo" nillable="true" type="xsd:string"/>
+     <element name="existingCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="existingOsBalance" nillable="true" type="xsd:decimal"/>
+     <element name="existingTenure" nillable="true" type="xsd:decimal"/>
+     <element name="facilityCode" nillable="true" type="xsd:string"/>
+     <element name="facilityPurchaseCode" nillable="true" type="xsd:string"/>
+     <element name="facilityPurchaseDesc" nillable="true" type="xsd:string"/>
+     <element name="facilitySavedFlag" nillable="true" type="xsd:string"/>
+     <element name="facilityStatus" nillable="true" type="xsd:string"/>
+     <element name="feature" nillable="true" type="tns3:Feature"/>
+     <element name="featureType" nillable="true" type="xsd:string"/>
+     <element name="financialInstitution" nillable="true" type="xsd:string"/>
+     <element name="financialInstitutionName" nillable="true" type="xsd:string"/>
+     <element name="firstPaymentDueDate" nillable="true" type="xsd:string"/>
+     <element name="hostAaNo" nillable="true" type="xsd:string"/>
+     <element name="hostAccountName" nillable="true" type="xsd:string"/>
+     <element name="hostAccountNoSuffix" nillable="true" type="xsd:string"/>
+     <element name="hostAcfNo" nillable="true" type="xsd:string"/>
+     <element name="hostProductCode" nillable="true" type="xsd:string"/>
+     <element name="hostProjectCode" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:decimal"/>
+     <element name="instantRequestLead" nillable="true" type="xsd:decimal"/>
+     <element name="limitApplied" nillable="true" type="xsd:decimal"/>
+     <element name="loanWithOtherBank" nillable="true" type="xsd:string"/>
+     <element name="mailingPreference" nillable="true" type="xsd:string"/>
+     <element name="mofDocumentCode" nillable="true" type="xsd:string"/>
+     <element name="mofLoanID" nillable="true" type="xsd:string"/>
+     <element name="monthlyInstall" nillable="true" type="xsd:decimal"/>
+     <element name="monthlyInstallment" nillable="true" type="xsd:decimal"/>
+     <element name="mrtaAmount" nillable="true" type="xsd:decimal"/>
+     <element name="mrtaFlag" nillable="true" type="xsd:string"/>
+     <element name="mrtaIncludeInLoanAmountFlag" nillable="true" type="xsd:string"/>
+     <element name="mrtaSumInsured" nillable="true" type="xsd:decimal"/>
+     <element name="mrtaYrsCoverage" nillable="true" type="xsd:decimal"/>
+     <element name="osLimit" nillable="true" type="xsd:decimal"/>
+     <element name="outStandingBalance" nillable="true" type="xsd:decimal"/>
+     <element name="payMethodCriteria" nillable="true" type="xsd:string"/>
+     <element name="paymentAccountName" nillable="true" type="xsd:string"/>
+     <element name="paymentAccountNo" nillable="true" type="xsd:string"/>
+     <element name="paymentDueDate" nillable="true" type="xsd:string"/>
+     <element name="paymentMethod" nillable="true" type="xsd:string"/>
+     <element name="pricings" nillable="true" type="impl:ArrayOf_tns4_Pricing"/>
+     <element name="productCode" nillable="true" type="xsd:string"/>
+     <element name="rePayMent" nillable="true" type="xsd:string"/>
+     <element name="rfContractDate" nillable="true" type="xsd:dateTime"/>
+     <element name="sameGroup" nillable="true" type="xsd:string"/>
+     <element name="suffix" nillable="true" type="xsd:string"/>
+     <element name="tenure" nillable="true" type="xsd:decimal"/>
+     <element name="totalCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="totalRepaymentAmount" nillable="true" type="xsd:decimal"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://request.update.facility.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence>
+     <element name="facility" nillable="true" type="tns2:Facility"/>
+    </sequence>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns5:CommonWSRequestHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="RequestFacility">
+    <sequence>
+     <element name="body" nillable="true" type="tns1:Body"/>
+     <element name="header" nillable="true" type="tns1:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://common.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://response.update.facility.ws.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <complexType name="CommonWSRequestHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="CommonWSResponseHeader">
+    <sequence>
+     <element name="channel" nillable="true" type="xsd:string"/>
+     <element name="module" nillable="true" type="xsd:string"/>
+     <element name="requestID" nillable="true" type="xsd:string"/>
+     <element name="responseCode" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+     <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://response.update.facility.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+   <import namespace="http://facility.ob.common.sml.integrosys.com"/>
+   <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+   <import namespace="http://common.ws.sml.integrosys.com"/>
+   <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+   <import namespace="http://request.update.facility.ws.sml.integrosys.com"/>
+   <complexType name="Body">
+    <sequence/>
+   </complexType>
+   <complexType name="Header">
+    <complexContent>
+     <extension base="tns5:CommonWSResponseHeader">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="ResponseFacility">
+    <sequence>
+     <element name="body" nillable="true" type="tns6:Body"/>
+     <element name="header" nillable="true" type="tns6:Header"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="updateFacilityInfoRequest">
+
+      <wsdl:part element="impl:updateFacilityInfo" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateFacilityInfoResponse">
+
+      <wsdl:part element="impl:updateFacilityInfoResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="LoanSubmissionUpdateFacility">
+
+      <wsdl:operation name="updateFacilityInfo">
+
+         <wsdl:input message="impl:updateFacilityInfoRequest" name="updateFacilityInfoRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:updateFacilityInfoResponse" name="updateFacilityInfoResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="LoanSubmissionUpdateFacilitySoapBinding" type="impl:LoanSubmissionUpdateFacility">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="updateFacilityInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateFacilityInfoRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateFacilityInfoResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="LoanSubmissionUpdateFacilityService">
+
+      <wsdl:port binding="impl:LoanSubmissionUpdateFacilitySoapBinding" name="LoanSubmissionUpdateFacility">
+
+         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionUpdateFacility"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

@@ -173,9 +173,10 @@ public class LoanServiceTest {
         LoanService loanService = new LoanService(loanStatusTrackingClient, null, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(new ProductRequest());
         ServiceError error = actualResponse.getError();
-        Assertions.assertNotNull(error);
-        Assertions.assertEquals(header.getResponseCode(), error.getResponseCode());
-        Assertions.assertEquals(header.getResponseDescriptionEN(), error.getErrorMessage());
+        Assertions.assertNull(error);
+        LoanStatusTrackingResponse loanStatusTrackingResponse = (LoanStatusTrackingResponse) actualResponse.getData();
+        Assertions.assertNotNull(loanStatusTrackingResponse);
+        Assertions.assertNull(loanStatusTrackingResponse.getApplications());
     }
 
     private ResponseInstantLoanGetEligibleProduct mockResponseInstantLoanGetEligibleProduct() {

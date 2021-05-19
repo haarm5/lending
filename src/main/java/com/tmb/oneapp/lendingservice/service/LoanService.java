@@ -174,8 +174,14 @@ public class LoanService {
      */
     private ServiceResponse parseLoanStatusTracking(ResponseTracking loanStatusTrackingResponse) {
         String successCode = "MSG_000";
+        String dataNotFoundCode = "MSG_001";
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         Header header = loanStatusTrackingResponse.getHeader();
+        if(dataNotFoundCode.equals(header.getResponseCode())){
+            LoanStatusTrackingResponse dataNotFoundLoanStatusTrackingResponse = new LoanStatusTrackingResponse();
+            serviceResponseImp.setData(dataNotFoundLoanStatusTrackingResponse);
+            return serviceResponseImp;
+        }
         if (!successCode.equals(header.getResponseCode())) {
             logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             ServiceError serviceError = new ServiceError();

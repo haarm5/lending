@@ -195,6 +195,7 @@ public class LoanObjectMapper {
      */
     private OneAppEligibleProduct[] toOneApp(InstantFacility[] instantFacilities, Map<String, Object> masterData) {
         if (instantFacilities == null) return new OneAppEligibleProduct[0];
+        List<PaymentCriteriaOption> masterDataPymt = (List<PaymentCriteriaOption>) masterData.get(LoanCategory.PYMT_CRITERIA.getCode());
         return Arrays.stream(instantFacilities).map(instantFacility -> {
             CommonCodeEntry masterDataItem = (CommonCodeEntry) masterData.get(instantFacility.getFacilityCode());
             OneAppEligibleProduct oneAppEligibleProduct = new OneAppEligibleProduct();
@@ -206,6 +207,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantFacility.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantFacility.getLoanReqMin()));
             oneAppEligibleProduct.setOsLimit(String.valueOf(instantFacility.getOsLimit()));
+            oneAppEligibleProduct.setPaymentCriteriaOptions(masterDataPymt);
             return oneAppEligibleProduct;
         }).toArray(OneAppEligibleProduct[]::new);
     }

@@ -175,6 +175,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setProductNameEn(masterDataItem.getEntryName());
             oneAppEligibleProduct.setProductNameTh(masterDataItem.getEntryName2());
             oneAppEligibleProduct.setProductCategory("credit_card");
+            oneAppEligibleProduct.setCampaignCode(instantCreditCard.getCampaignCode());
             oneAppEligibleProduct.setProductType(instantCreditCard.getProductType());
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantCreditCard.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantCreditCard.getLoanReqMin()));
@@ -203,6 +204,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setProductNameTh(masterDataItem.getEntryName2());
             oneAppEligibleProduct.setProductCode(instantFacility.getProductCode());
             oneAppEligibleProduct.setProductCategory("loan");
+            oneAppEligibleProduct.setFacilityCode(instantFacility.getFacilityCode());
             oneAppEligibleProduct.setInterestRate(String.valueOf(instantFacility.getInterestRate()));
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantFacility.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantFacility.getLoanReqMin()));

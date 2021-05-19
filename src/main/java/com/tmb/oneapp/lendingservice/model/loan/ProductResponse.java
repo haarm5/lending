@@ -15,6 +15,6 @@ import java.util.List;
 public class ProductResponse {
     private List<DepositAccount> depositAccountLists;
     private LoanStatusTrackingResponse loanStatusTracking;
-    private EligibleProductResponse eligibleProducts;
+    private OneAppEligibleProduct[] eligibleProducts;
 
 }

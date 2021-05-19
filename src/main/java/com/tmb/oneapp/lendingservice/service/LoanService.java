@@ -78,7 +78,7 @@ public class LoanService {
         EligibleProductResponse eligibleProductResponse = (EligibleProductResponse) eligibleProductsResponse.getData();
         LoanStatusTrackingResponse loanStatusTrackingResponseModel = (LoanStatusTrackingResponse) loanStatusTrackingResponse.getData();
         productResponse.setLoanStatusTracking(loanStatusTrackingResponseModel);
-        productResponse.setEligibleProducts(eligibleProductResponse);
+        productResponse.setEligibleProducts(eligibleProductResponse.getEligibleProducts());
         productResponse.setDepositAccountLists(accountList);
         serviceResponseImp.setData(productResponse);
         return serviceResponseImp;

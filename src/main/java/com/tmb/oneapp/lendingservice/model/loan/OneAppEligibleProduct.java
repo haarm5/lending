@@ -14,6 +14,8 @@ public class OneAppEligibleProduct {
     private String productCategory;
     private String productCode;
     private String productType;
+    private String campaignCode;
+    private String facilityCode;
     private String productNameEn;
     private String productNameTh;
     private String interestRate;

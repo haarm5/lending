@@ -201,6 +201,7 @@ public class LoanServiceTest {
         when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
         LoanService loanService = new LoanService(null, eligibleProductClient, null, lendingModuleCache, customerExpServiceClient);
         HashMap<String, Object> masterData = new HashMap<>();
+        masterData.put(LoanCategory.PYMT_CRITERIA.getCode(), new ArrayList<PaymentCriteriaOption>());
         ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
         Assertions.assertNotNull(actualResponse);
 

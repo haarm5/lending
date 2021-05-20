@@ -23,4 +23,5 @@ public class OneAppEligibleProduct {
     private String loanReqMax;
     private String loanReqMin;
     private String osLimit;
+    private String sourceOfData;
 }

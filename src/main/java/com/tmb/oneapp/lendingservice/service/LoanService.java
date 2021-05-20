@@ -94,12 +94,13 @@ public class LoanService {
         List<CommonCodeEntry> localMasterData26 = lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode());
         List<CommonCodeEntry> localMasterData27 = lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode());
         List<CommonCodeEntry> localMasterDataPymtCriteria = lendingModuleCache.getListByCategoryCode(LoanCategory.PYMT_CRITERIA.getCode());
-        List<PaymentCriteriaOption> masterDataPymt = localMasterDataPymtCriteria.stream().filter(commonCodeEntry -> commonCodeEntry.getEntrySource().contains("CC"))
+        List<PaymentCriteriaOption> masterDataPymt = localMasterDataPymtCriteria.stream()
                 .sorted((o1, o2) -> o2.getEntryID().compareTo(o1.getEntryID())).map(commonCodeEntry -> {
                     PaymentCriteriaOption paymentCriteriaOption = new PaymentCriteriaOption();
                     paymentCriteriaOption.setOptionId(String.valueOf(commonCodeEntry.getEntryID()));
                     paymentCriteriaOption.setOptionNameEn(commonCodeEntry.getEntryName());
                     paymentCriteriaOption.setOptionNameTh(commonCodeEntry.getEntryName2());
+                    paymentCriteriaOption.setEntrySource(commonCodeEntry.getEntrySource());
                     return paymentCriteriaOption;
                 }).collect(Collectors.toList());
 
@@ -177,7 +178,7 @@ public class LoanService {
         String dataNotFoundCode = "MSG_001";
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         Header header = loanStatusTrackingResponse.getHeader();
-        if(dataNotFoundCode.equals(header.getResponseCode())){
+        if (dataNotFoundCode.equals(header.getResponseCode())) {
             LoanStatusTrackingResponse dataNotFoundLoanStatusTrackingResponse = new LoanStatusTrackingResponse();
             serviceResponseImp.setData(dataNotFoundLoanStatusTrackingResponse);
             return serviceResponseImp;

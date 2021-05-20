@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -168,6 +169,7 @@ public class LoanObjectMapper {
     private OneAppEligibleProduct[] toOneApp(InstantCreditCard[] instantCreditCards, Map<String, Object> masterData) {
         if (instantCreditCards == null) return new OneAppEligibleProduct[0];
         List<PaymentCriteriaOption> masterDataPymt = (List<PaymentCriteriaOption>) masterData.get(LoanCategory.PYMT_CRITERIA.getCode());
+        List<PaymentCriteriaOption> ccMasterDataPymt = masterDataPymt.stream().filter(paymentCriteriaOption -> paymentCriteriaOption.getEntrySource().contains("CC")).collect(Collectors.toList());
 
         return Arrays.stream(instantCreditCards).map(instantCreditCard -> {
             CommonCodeEntry masterDataItem = (CommonCodeEntry) masterData.get(instantCreditCard.getProductType());
@@ -179,7 +181,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setProductType(instantCreditCard.getProductType());
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantCreditCard.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantCreditCard.getLoanReqMin()));
-            oneAppEligibleProduct.setPaymentCriteriaOptions(masterDataPymt);
+            oneAppEligibleProduct.setPaymentCriteriaOptions(ccMasterDataPymt);
 
             return oneAppEligibleProduct;
         }).toArray(OneAppEligibleProduct[]::new);
@@ -197,6 +199,7 @@ public class LoanObjectMapper {
     private OneAppEligibleProduct[] toOneApp(InstantFacility[] instantFacilities, Map<String, Object> masterData) {
         if (instantFacilities == null) return new OneAppEligibleProduct[0];
         List<PaymentCriteriaOption> masterDataPymt = (List<PaymentCriteriaOption>) masterData.get(LoanCategory.PYMT_CRITERIA.getCode());
+        List<PaymentCriteriaOption> rcMasterDataPymt = masterDataPymt.stream().filter(paymentCriteriaOption -> paymentCriteriaOption.getEntrySource().contains("RC")).collect(Collectors.toList());
         return Arrays.stream(instantFacilities).map(instantFacility -> {
             CommonCodeEntry masterDataItem = (CommonCodeEntry) masterData.get(instantFacility.getFacilityCode());
             OneAppEligibleProduct oneAppEligibleProduct = new OneAppEligibleProduct();
@@ -209,7 +212,8 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantFacility.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantFacility.getLoanReqMin()));
             oneAppEligibleProduct.setOsLimit(String.valueOf(instantFacility.getOsLimit()));
-            oneAppEligibleProduct.setPaymentCriteriaOptions(masterDataPymt);
+            oneAppEligibleProduct.setSourceOfData(instantFacility.getSourceOfData());
+            oneAppEligibleProduct.setPaymentCriteriaOptions(rcMasterDataPymt);
             return oneAppEligibleProduct;
         }).toArray(OneAppEligibleProduct[]::new);
     }

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.model.loan;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
@@ -12,4 +13,6 @@ public class PaymentCriteriaOption {
     private String optionId;
     private String optionNameTh;
     private String optionNameEn;
+    @JsonIgnore
+    private String entrySource;
 }

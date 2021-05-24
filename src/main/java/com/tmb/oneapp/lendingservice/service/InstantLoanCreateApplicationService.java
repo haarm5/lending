@@ -39,6 +39,8 @@ public class InstantLoanCreateApplicationService {
     private static final String BRANCH_CODE = "026";
     private static final String SALE_CHANNEL = "05";
 
+    private String getMoreFlag = "";
+
     public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient) {
         this.mapper = mapper;
         this.soapClient = soapClient;
@@ -60,7 +62,7 @@ public class InstantLoanCreateApplicationService {
         try {
 
             logger.info(" Request from Client to InstantLoanCreateApplication is {} : " +mapper.writeValueAsString(request));
-
+            getMoreFlag = request.getGetMore();
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
             List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
@@ -98,7 +100,9 @@ public class InstantLoanCreateApplicationService {
 
             Body soapRequestBody = new Body();
             soapRequestBody.setInstantApplication(soapInstantApplication);
-            soapRequestBody.setTransactionType(request.getTransactionType());
+
+            String transactionType = getMoreFlag.equalsIgnoreCase("Y") ? "MIB" : "INST";
+            soapRequestBody.setTransactionType(transactionType);
 
             Header soapRequestHeader = new Header();
             String requestId = String.valueOf(UUID.randomUUID());
@@ -179,9 +183,19 @@ public class InstantLoanCreateApplicationService {
         individual.setHostCifNo(customerInfo.getHostCifNo());
         individual.setIdNo1(customerInfo.getIdNo1());
         individual.setIdType1(customerInfo.getIdType1());
-        String incomeBasicSalary = customerInfo.getEmploymentStatus().equalsIgnoreCase("01")? customerInfo.getIncomeBasicSalary() : "";
+
+        String employmentStatus = customerInfo.getEmploymentStatus();
+        String incomeDeclared = "";
+        String incomeBasicSalary = "";
+        if(employmentStatus.equalsIgnoreCase("02")){
+             incomeDeclared = getMoreFlag.equalsIgnoreCase("Y") ?  customerInfo.getMaxIncomeRange() : customerInfo.getIncomeDeclared();
+        }
+
+        if(employmentStatus.equalsIgnoreCase("01")){
+            incomeBasicSalary = getMoreFlag.equalsIgnoreCase("Y") ?  customerInfo.getMaxIncomeRange() : customerInfo.getIncomeBasicSalary();
+        }
+
         individual.setIncomeBasicSalary(convertStringToBigDecimal(incomeBasicSalary));
-        String incomeDeclared = customerInfo.getEmploymentStatus().equalsIgnoreCase("02")? customerInfo.getIncomeDeclared() : "";
         individual.setIncomeDeclared(convertStringToBigDecimal(incomeDeclared));
         individual.setIncomeType(customerInfo.getIncomeType());
         individual.setIssuedDate(calIssueDate);

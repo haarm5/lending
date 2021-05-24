@@ -13,6 +13,10 @@ import java.util.List;
 public class InstantLoanCreationRequest {
 
     @NotEmpty
+    @JsonProperty("getMore")
+    private String getMore;
+
+    @NotEmpty
     @JsonProperty("loanType")
     private String loanType;
 
@@ -23,7 +27,7 @@ public class InstantLoanCreationRequest {
     private String channel;
     @JsonProperty("module")
     private String module;
-    @NotEmpty
+
     @JsonProperty("transactionType")
     private String transactionType;
     @NotEmpty

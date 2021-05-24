@@ -88,4 +88,7 @@ public class CustomerInfo {
     @JsonProperty("incomeBasicSalary")
     private String incomeBasicSalary;
 
+    @JsonProperty("maxIncomeRange")
+    private String maxIncomeRange;
+
 }

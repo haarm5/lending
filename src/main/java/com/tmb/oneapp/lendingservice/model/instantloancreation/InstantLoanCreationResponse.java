@@ -57,4 +57,6 @@ public class InstantLoanCreationResponse {
     private String module;
     @JsonProperty("requestId")
     private String requestId;
+
+    private String authMode = "Access Pin";
 }

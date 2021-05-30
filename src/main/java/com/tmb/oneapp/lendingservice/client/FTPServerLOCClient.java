@@ -13,13 +13,9 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 @Service
 public class FTPServerLOCClient {
@@ -80,6 +76,7 @@ public class FTPServerLOCClient {
                 ftpClient.logout();
                 ftpClient.disconnect();
             }
+            logger.info("closed FTP Connection!");
         } catch (IOException e) {
             logger.error("IOException in closeFTPConnection {} ", e.toString());
         }
@@ -95,38 +92,50 @@ public class FTPServerLOCClient {
         File sourceFile = new File(sourceFilePath);
         if(!sourceFile.exists()) {
             logger.info("In uploadFileToFTP - source file does not exist at given sourceFilePath:"+sourceFilePath);
-            return result;
+            return false;
         }
         FTPClient ftpClient = getFTPConnection();
 
         if(ftpClient == null){
             return false;
         }
-        try (BufferedInputStream buffIn = new BufferedInputStream(new FileInputStream(sourceFile));){
 
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            ftpClient.enterLocalPassiveMode();
-            boolean  directoryPathChanged =   ftpClient.changeWorkingDirectory(locPrimaryLocation);
-            if(directoryPathChanged){
-                boolean success = makeDirectories(ftpClient,directoryPath);
-                if(success){
-                    String destinationFilePath = ftpClient.printWorkingDirectory();
-                    logger.info("destinationFilePath {} ",destinationFilePath);
-                    destinationFilePath = destinationFilePath + File.separator + fileName;
-                    result = ftpClient.storeFile(destinationFilePath, buffIn);
-                    logger.info("Copy file to FTP is done!! result:"+result);
+        int i =1;
+        String ftpLocation = locPrimaryLocation;
+        try{
+            while( i <= 2){
+                try (BufferedInputStream buffIn = new BufferedInputStream(new FileInputStream(sourceFile))){
+                    ftpClient.enterLocalPassiveMode();
+                    ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
+                    boolean  directoryPathChanged =   ftpClient.changeWorkingDirectory(ftpLocation);
+                    if(directoryPathChanged){
+                        boolean success = makeDirectories(ftpClient,directoryPath);
+                        if(success){
+                            String destinationFilePath = ftpClient.printWorkingDirectory();
+                            logger.info("destinationFilePath {} ",destinationFilePath);
+                            destinationFilePath = destinationFilePath + File.separator + fileName;
+                            result = ftpClient.storeFile(destinationFilePath, buffIn);
+                            logger.info("Copy file to FTP is done!! result:"+result);
+
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    logger.error("FileNotFoundException in uploadFileToFTP {} ", e.toString());
+                } catch (IOException e) {
+                    logger.error("IOException in uploadFileToFTP {} ", e.toString());
                 }
+                i++;
+                ftpLocation = locSecondaryLocation;
             }
 
-        } catch (IOException e) {
-            logger.error("IOException in closeFTPConnection {} ", e.toString());
-        } finally {
+        }finally {
             closeFTPConnection(ftpClient);
         }
         logger.info("uploadFileToFTP Method ends here");
         return result;
     }
+
 
     public void generateLOCImageAndUploadToFTP(LOCRequest request) throws JsonProcessingException {
 

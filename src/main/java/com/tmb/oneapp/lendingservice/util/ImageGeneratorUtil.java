@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.xml.sax.SAXException;
 
 import javax.imageio.*;
@@ -30,6 +29,9 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 
@@ -37,13 +39,18 @@ public class ImageGeneratorUtil {
 
     private static final TMBLogger<ImageGeneratorUtil> logger = new TMBLogger<>(ImageGeneratorUtil.class);
 
+    private ImageGeneratorUtil() {
+
+    }
+
+
     public static String generateJPGFile(String jsonData, String xslTemplateName, String fileName){
 
         String currentDir = System.getProperty("user.dir");
         logger.info("currentDir is {} : "+currentDir);
 
         fileName = fileName + ".png";
-        String fullpathfilename = currentDir + "/" +fileName;
+        String fullpathfilename = currentDir + File.separator +fileName;
 
         byte[] outputFilebytes = generateBytes(jsonData, xslTemplateName);
 
@@ -61,7 +68,7 @@ public class ImageGeneratorUtil {
     }
 
     public static byte[] generateBytes(String request, String xslTemplateName) {
-        logger.info("generatePDFBytes Method Starts! ");
+        logger.info("generateBytes Method Starts! ");
         byte[] outputFilebytes = null;
 
         try {
@@ -76,7 +83,7 @@ public class ImageGeneratorUtil {
         } catch (Exception e) {
             logger.error("Exception in generateBytes {} : ", e.toString());
         }
-        logger.info("[generatePDFBytes] Method End! ");
+        logger.info("generateBytes Method End! ");
         return outputFilebytes;
     }
 
@@ -94,31 +101,22 @@ public class ImageGeneratorUtil {
 
     public static byte[] createOutputFile(StreamSource xmlDataStreamSource, String templateName, String fopConfigFileName) {
 
-        ByteArrayOutputStream outputFileoutStream = null;
-
         String templatePath = "templates/" + templateName;
         String fopconfigFilePath = "templates/" + fopConfigFileName;
         File fopConfigFile = null;
 
         Fop fop;
         byte[] outputBytes = null;
-        try {
 
-            Resource resourceTemplate = new ClassPathResource(templatePath);
-            File file = resourceTemplate.getFile();
+        try(ByteArrayOutputStream outputFileoutStream = new ByteArrayOutputStream()){
+
+            File file = new ClassPathResource(templatePath).getFile();
+            fopConfigFile = new ClassPathResource(fopconfigFilePath).getFile();
+
             // create URL of the XSL template file
             URL templateUrl = file.toURI().toURL();
             logger.info("URL for template file is created {} : " + templateUrl);
-            outputFileoutStream = new ByteArrayOutputStream();
 
-            // creation of stream source from XSL input stream
-            StreamSource templateFileTransformSource = new StreamSource(templateUrl.openStream());
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer xslTransformer = transformerFactory.newTransformer(templateFileTransformSource);
-
-            if (null != fopconfigFilePath) {
-                Resource resourceFOP = new ClassPathResource(fopconfigFilePath);
-                fopConfigFile = resourceFOP.getFile();
                 FopFactory fopFactory = FopFactory.newInstance();
                 FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
 
@@ -139,33 +137,26 @@ public class ImageGeneratorUtil {
                 foUserAgent.setTargetResolution(150.00f);
                 fop = fopFactory.newFop(MimeConstants.MIME_PNG, foUserAgent, outputFileoutStream);
 
-                Result transformationAsPdfResult = new SAXResult(fop.getDefaultHandler());
+
+
+
+            // creation of stream source from XSL input stream
+            StreamSource templateFileTransformSource = new StreamSource(templateUrl.openStream());
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer xslTransformer = transformerFactory.newTransformer(templateFileTransformSource);
+
+            Result transformationAsImageResult = new SAXResult(fop.getDefaultHandler());
                 logger.info("starting FOP File transformation");
 
 
-                xslTransformer.transform(xmlDataStreamSource, transformationAsPdfResult);
+                xslTransformer.transform(xmlDataStreamSource, transformationAsImageResult);
                 outputBytes = outputFileoutStream.toByteArray();
 
+            logger.info("Completed FOP output transformation" + outputBytes.length);
 
-            }
-
-
-
-            if (null != outputBytes) {
-                logger.info("Completed FOP output transformation" + outputBytes.length);
-            }
 
         } catch (IOException | TransformerException | SAXException | URISyntaxException e) {
             logger.error("Exception in createOutputFile {} ", e.toString());
-        } finally {
-            fopConfigFile = null;
-            if (null != outputFileoutStream) {
-                try {
-                    outputFileoutStream.close();
-                } catch (IOException e) {
-                    outputFileoutStream = null;
-                }
-            }
         }
 
         return outputBytes;
@@ -173,9 +164,6 @@ public class ImageGeneratorUtil {
     }
 
     public static String convertPngToJPGWithDPI(String folderName, String fullPngFilename, String actualFileName) {
-        BufferedImage bufferedImage = null;
-        File tempJPGFile = null;
-        File actualJPGFile = null;
 
         logger.info("folderName "+folderName);
         logger.info("fullPngFilename "+fullPngFilename);
@@ -185,7 +173,7 @@ public class ImageGeneratorUtil {
             File tempPngFile = new File(fullPngFilename);
 
             //read image file
-            bufferedImage = ImageIO.read(tempPngFile);
+            BufferedImage bufferedImage = ImageIO.read(tempPngFile);
 
             // create a blank, RGB, same width and height, and a white background
             BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(),
@@ -195,14 +183,14 @@ public class ImageGeneratorUtil {
 
             String tempJPG = folderName+File.separator+actualFileName+"_temp.JPG";
 
-            tempJPGFile = new File(tempJPG);
+            File tempJPGFile = new File(tempJPG);
 
             // write to jpeg file
             ImageIO.write(newBufferedImage, "jpg", tempJPGFile);
             newBufferedImage.flush();
             actualFileName = actualFileName.replace(".png","");
             String actualJPG = folderName+ File.separator+ actualFileName+".JPG"; //File.separator+
-            actualJPGFile = new File(actualJPG);
+            File actualJPGFile = new File(actualJPG);
 
             // write to jpeg file
             ImageIO.write(newBufferedImage, "jpg", actualJPGFile);
@@ -211,8 +199,9 @@ public class ImageGeneratorUtil {
 
             saveGridImage(actualJPGFile, tempJPGFile);
 
-            tempJPGFile.delete();
-            tempPngFile.delete();
+            Path tempJPGFilePath = Paths.get(tempJPG);
+            Files.delete(tempJPGFilePath);
+            Files.delete(Paths.get(fullPngFilename));
 
             logger.info("Location of LOC jpg image is {} ",actualJPG);
            return  actualJPG;
@@ -224,11 +213,12 @@ public class ImageGeneratorUtil {
     }
 
     public static void saveGridImage(File output, File tempFile) throws IOException {
-        output.delete();
-        BufferedImage gridImage = null;
+
+        Path outputFilePath = Paths.get(output.getAbsolutePath());
+        Files.delete(outputFilePath);
         final String formatName = "jpeg";
 
-        for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
+       for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
             ImageWriter writer = iw.next();
             ImageWriteParam writeParam = writer.getDefaultWriteParam();
             ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
@@ -238,15 +228,11 @@ public class ImageGeneratorUtil {
             }
 
             setDPI(metadata);
-
-            final ImageOutputStream stream = ImageIO.createImageOutputStream(output);
-            try {
+            try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
                 writer.setOutput(stream);
-                gridImage = ImageIO.read(tempFile);
+                BufferedImage gridImage = ImageIO.read(tempFile);
                 writer.write(metadata, new IIOImage(gridImage, null, metadata), writeParam);
 
-            } finally {
-                stream.close();
             }
             break;
         }

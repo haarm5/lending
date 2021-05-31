@@ -186,7 +186,7 @@
                                                    <fo:inline>ทีเอ็มบี ทัช</fo:inline>
                                                 </xsl:when>
                                                 <xsl:otherwise>
-                                                   <fo:inline>TMB Touch</fo:inline>
+                                                   <fo:inline>TTB APP</fo:inline>
                                                 </xsl:otherwise>
                                              </xsl:choose>
                                           </fo:block>

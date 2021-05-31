@@ -1,6 +1,12 @@
-package com.tmb.oneapp.lendingservice.util;
+package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.lendingservice.client.FTPServerLOCClient;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.model.instantloancreation.LOCRequest;
+import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
@@ -9,7 +15,7 @@ import org.apache.xmlgraphics.util.MimeConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.imageio.*;
@@ -35,17 +41,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
+@Service
+public class ImageGeneratorService {
+    private static final TMBLogger<ImageGeneratorService> logger = new TMBLogger<>(ImageGeneratorService.class);
+    private final ObjectMapper mapper;
+    private final FTPServerLOCClient ftpServerLOCClient;
 
-public class ImageGeneratorUtil {
-
-    private static final TMBLogger<ImageGeneratorUtil> logger = new TMBLogger<>(ImageGeneratorUtil.class);
-
-    private ImageGeneratorUtil() {
-
+    public ImageGeneratorService(ObjectMapper mapper, FTPServerLOCClient ftpServerLOCClient) {
+        this.mapper = mapper;
+        this.ftpServerLOCClient = ftpServerLOCClient;
     }
 
-
-    public static String generateJPGFile(String jsonData, String xslTemplateName, String fileName){
+    public String generateJPGFile(String jsonData, String xslTemplateName, String fileName){
 
         String currentDir = System.getProperty("user.dir");
         logger.info("currentDir is {} : "+currentDir);
@@ -68,7 +75,7 @@ public class ImageGeneratorUtil {
         return null;
     }
 
-    public static byte[] generateBytes(String request, String xslTemplateName) {
+    public byte[] generateBytes(String request, String xslTemplateName) {
         logger.info("generateBytes Method Starts! ");
         byte[] outputFilebytes = null;
 
@@ -100,7 +107,7 @@ public class ImageGeneratorUtil {
 
 
 
-    public static byte[] createOutputFile(StreamSource xmlDataStreamSource, String templateName, String fopConfigFileName) {
+    public byte[] createOutputFile(StreamSource xmlDataStreamSource, String templateName, String fopConfigFileName) {
 
         String templatePath = "templates/" + templateName;
         String fopconfigFilePath = "templates/" + fopConfigFileName;
@@ -111,32 +118,32 @@ public class ImageGeneratorUtil {
 
         try(ByteArrayOutputStream outputFileoutStream = new ByteArrayOutputStream()){
 
-            File file = new ClassPathResource(templatePath).getFile();
-            fopConfigFile = new ClassPathResource(fopconfigFilePath).getFile();
+            File file = getFileFromResource(templatePath);
+            fopConfigFile = getFileFromResource(fopconfigFilePath);
 
             // create URL of the XSL template file
             URL templateUrl = file.toURI().toURL();
             logger.info("URL for template file is created {} : " + templateUrl);
 
-                FopFactory fopFactory = FopFactory.newInstance();
-                FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+            FopFactory fopFactory = FopFactory.newInstance();
+            FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
 
-               logger.info("FOP config File Path" + fopConfigFile.getAbsolutePath() + " does exist ? " + fopConfigFile.exists());
-                if (fopConfigFile.exists()) {
-                    String templatesFolderPath = fopConfigFile.getAbsolutePath().replace(fopConfigFileName,"");
-                    logger.info("templatesFolderPath is {} : "+templatesFolderPath);
-                    fopFactory.getFontManager().setFontBaseURL(templatesFolderPath);
-                    fopFactory.setBaseURL(templatesFolderPath);
-                    fopFactory.setUserConfig(fopConfigFile);
-                    fopFactory.setUserConfigBaseURI(new URI("file://" + templatesFolderPath));
-                    foUserAgent.setBaseURL(fopFactory.getBaseURL());
-                }
+            logger.info("FOP config File Path" + fopConfigFile.getAbsolutePath() + " does exist ? " + fopConfigFile.exists());
+            if (fopConfigFile.exists()) {
+                String templatesFolderPath = fopConfigFile.getAbsolutePath().replace(fopConfigFileName,"");
+                logger.info("templatesFolderPath is {} : "+templatesFolderPath);
+                fopFactory.getFontManager().setFontBaseURL(templatesFolderPath);
+                fopFactory.setBaseURL(templatesFolderPath);
+                fopFactory.setUserConfig(fopConfigFile);
+                fopFactory.setUserConfigBaseURI(new URI("file://" + templatesFolderPath));
+                foUserAgent.setBaseURL(fopFactory.getBaseURL());
+            }
 
-                /**
-                 *   hard coded as the fopcfg.xml value is not getting read properly. FOP frameword bug.
-                 */
-                foUserAgent.setTargetResolution(150.00f);
-                fop = fopFactory.newFop(MimeConstants.MIME_PNG, foUserAgent, outputFileoutStream);
+            /**
+             *   hard coded, as the fopcfg.xml value is not getting read properly. FOP frameword bug.
+             */
+            foUserAgent.setTargetResolution(150.00f);
+            fop = fopFactory.newFop(MimeConstants.MIME_PNG, foUserAgent, outputFileoutStream);
 
 
 
@@ -149,11 +156,11 @@ public class ImageGeneratorUtil {
             Transformer xslTransformer = transformerFactory.newTransformer(templateFileTransformSource);
 
             Result transformationAsImageResult = new SAXResult(fop.getDefaultHandler());
-                logger.info("starting FOP File transformation");
+            logger.info("starting FOP File transformation");
 
 
-                xslTransformer.transform(xmlDataStreamSource, transformationAsImageResult);
-                outputBytes = outputFileoutStream.toByteArray();
+            xslTransformer.transform(xmlDataStreamSource, transformationAsImageResult);
+            outputBytes = outputFileoutStream.toByteArray();
 
             logger.info("Completed FOP output transformation" + outputBytes.length);
 
@@ -207,10 +214,10 @@ public class ImageGeneratorUtil {
             Files.delete(Paths.get(fullPngFilename));
 
             logger.info("Location of LOC jpg image is {} ",actualJPG);
-           return  actualJPG;
+            return  actualJPG;
         } catch (IOException e) {
 
-           logger.error("IOException {} : ",e.toString());
+            logger.error("IOException {} : ",e.toString());
         }
         return null;
     }
@@ -221,7 +228,7 @@ public class ImageGeneratorUtil {
         Files.delete(outputFilePath);
         final String formatName = "jpeg";
 
-       for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
+        for (Iterator<ImageWriter> iw = ImageIO.getImageWritersByFormatName(formatName); iw.hasNext();) {
             ImageWriter writer = iw.next();
             ImageWriteParam writeParam = writer.getDefaultWriteParam();
             ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_RGB);
@@ -264,4 +271,34 @@ public class ImageGeneratorUtil {
         metadata.mergeTree(metadataFormat, root);
     }
 
+    private File getFileFromResource(String fileName) throws URISyntaxException{
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resource = classLoader.getResource(fileName);
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found! " + fileName);
+        } else {
+            return new File(resource.toURI());
+        }
+
+    }
+
+    public void generateLOCImageAndUploadToFTP(LOCRequest request) throws JsonProcessingException {
+
+        logger.info("generateLOCImageAndUploadToFTP start");
+        String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS();
+        logger.info("dateStr {} : "+dateStr);
+        dateStr = dateStr.replaceAll("[/: ]", "");
+        dateStr = dateStr.substring(2);
+        String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE+ "00110";
+        String jsonData = mapper.writeValueAsString(request);
+        String jpgSourcePath = generateJPGFile(jsonData,"InstantLoanNCBConsentTH",fileName);
+        if(jpgSourcePath != null){
+            String jpgFileName = fileName + ".JPG";
+            String directoryPath = request.getCrmId() + File.separator + request.getAppRefNo();
+            ftpServerLOCClient.uploadFileToFTP(jpgSourcePath,jpgFileName,directoryPath);
+        }
+
+        logger.info("generateLOCImageAndUploadToFTP END");
+    }
 }

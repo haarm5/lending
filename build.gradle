@@ -97,6 +97,9 @@ dependencies {
     implementation group: 'org.apache.avalon.framework', name: 'avalon-framework-api', version: '4.3.1'
     implementation group: 'org.apache.avalon.framework', name: 'avalon-framework-impl', version: '4.3.1'
 
+    implementation group: 'xalan', name: 'xalan', version: '2.7.1'
+    
+
 }
 
 
@@ -143,7 +146,7 @@ sonarqube {
         }
     }
     properties {
-        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/utils/*,**/client/*,**/LendingServiceApplication.java,**/ImageGeneratorUtil.java,**/LendingModuleCache.java'
+        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/utils/*,**/client/*,**/LendingServiceApplication.java,**/LendingModuleCache.java'
     }
     properties {
         property 'sonar.exclusions', '**/config/*'

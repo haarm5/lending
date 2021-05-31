@@ -13,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Bod
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.RequestInstantLoanCreateApplication;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
-import com.tmb.oneapp.lendingservice.client.FTPServerLOCClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
@@ -38,18 +37,17 @@ public class InstantLoanCreateApplicationService {
     private static final TMBLogger<InstantLoanCreateApplicationService> logger = new TMBLogger<>(InstantLoanCreateApplicationService.class);
     private final ObjectMapper mapper;
     private final InstantLoanCreateApplicationClient soapClient;
-    private final FTPServerLOCClient ftpServerLOCClient;
     private static final String BRANCH_CODE = "026";
     private static final String SALE_CHANNEL = "05";
-
+    private final ImageGeneratorService imageGeneratorService;
     private String getMoreFlag = "";
 
     LOCRequest locRequest = new LOCRequest();
 
-    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, FTPServerLOCClient ftpServerLOCClient) {
+    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService) {
         this.mapper = mapper;
         this.soapClient = soapClient;
-        this.ftpServerLOCClient = ftpServerLOCClient;
+        this.imageGeneratorService = imageGeneratorService;
     }
 
 
@@ -181,7 +179,7 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
             try {
-                ftpServerLOCClient.generateLOCImageAndUploadToFTP(locRequest);
+                imageGeneratorService.generateLOCImageAndUploadToFTP(locRequest);
             } catch (JsonProcessingException e) {
                 logger.error("JsonProcessingException {} : ", e);
             }

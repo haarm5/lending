@@ -1,12 +1,6 @@
 package com.tmb.oneapp.lendingservice.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
-import com.tmb.oneapp.lendingservice.model.instantloancreation.LOCRequest;
-import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
-import com.tmb.oneapp.lendingservice.util.ImageGeneratorUtil;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
@@ -36,14 +30,8 @@ public class FTPServerLOCClient {
     @Value("${ftp.loc.file.secondary.location}")
     public String locSecondaryLocation;
 
-    private final ObjectMapper mapper;
-
     @Autowired
     ResourceLoader resourceLoader;
-
-    public FTPServerLOCClient(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
 
     public  FTPClient getFTPConnection(){
         FTPClient ftpClient = new FTPClient();
@@ -136,26 +124,6 @@ public class FTPServerLOCClient {
         }
         logger.info("uploadFileToFTP Method ends here");
         return result;
-    }
-
-
-    public void generateLOCImageAndUploadToFTP(LOCRequest request) throws JsonProcessingException {
-
-        logger.info("generateLOCImageAndUploadToFTP start");
-        String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS();
-        logger.info("dateStr {} : "+dateStr);
-        dateStr = dateStr.replaceAll("[/: ]", "");
-        dateStr = dateStr.substring(2);
-        String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE+ "00110";
-        String jsonData = mapper.writeValueAsString(request);
-        String jpgSourcePath = ImageGeneratorUtil.generateJPGFile(jsonData,"InstantLoanNCBConsentTH",fileName);
-        if(jpgSourcePath != null){
-            String jpgFileName = fileName + ".JPG";
-            String directoryPath = request.getCrmId() + File.separator + request.getAppRefNo();
-            uploadFileToFTP(jpgSourcePath,jpgFileName,directoryPath);
-        }
-
-        logger.info("generateLOCImageAndUploadToFTP END");
     }
 
 

@@ -16,6 +16,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Re
 import com.tmb.oneapp.lendingservice.client.FTPServerLOCClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
+import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -151,7 +152,7 @@ public class InstantLoanCreateApplicationService {
             response.setProductDescEN(responseBody.getProductDescEN());
 
             String productName = responseBody.getProductDescTH();
-            productName = responseBody.getAppType().equalsIgnoreCase("CC")? productName + "22" : productName +"05";
+            productName = responseBody.getAppType().equalsIgnoreCase("CC")? productName + " (22)" : productName +" (05)";
             locRequest.setNCBReferenceID(response.getMemberRef());
             locRequest.setNCBDateTime(response.getCreateDate());
             locRequest.setProductName(productName);
@@ -169,6 +170,16 @@ public class InstantLoanCreateApplicationService {
 
         logger.info("constructRequestForLOCCompleteImage Start");
         locRequest.setConsentbyCustomer("Access PIN");
+        String dob = locRequest.getNCBDateofbirth();
+        dob = dob.substring(0,10);
+        locRequest.setNCBDateofbirth(dob);
+
+        String mobno = locRequest.getNCBMobileNo();
+        locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+
+        String customerId = locRequest.getNcbid();
+        locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+
         try {
             ftpServerLOCClient.generateLOCImageAndUploadToFTP(locRequest);
         } catch (JsonProcessingException e) {
@@ -241,6 +252,7 @@ public class InstantLoanCreateApplicationService {
         locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
         locRequest.setNcbid(customerInfo.getIdNo1());
         locRequest.setNCBCustName(customerFullName);
+        locRequest.setCrmId(customerInfo.getHostCifNo());
         return individual;
     }
 

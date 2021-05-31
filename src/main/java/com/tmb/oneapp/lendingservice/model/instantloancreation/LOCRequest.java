@@ -28,4 +28,7 @@ public class LOCRequest {
     private String consentbyCustomer;
     @JsonProperty("appRefNo")
     private String appRefNo;
+
+    @JsonProperty("crmId")
+    private String crmId;
 }

@@ -151,7 +151,7 @@ public class FTPServerLOCClient {
         String jpgSourcePath = ImageGeneratorUtil.generateJPGFile(jsonData,"InstantLoanNCBConsentTH",fileName);
         if(jpgSourcePath != null){
             String jpgFileName = fileName + ".JPG";
-            String directoryPath = request.getNcbid() + File.separator + request.getAppRefNo();
+            String directoryPath = request.getCrmId() + File.separator + request.getAppRefNo();
             uploadFileToFTP(jpgSourcePath,jpgFileName,directoryPath);
         }
 

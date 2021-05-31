@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -31,14 +30,8 @@ public class FTPServerLOCClient {
     @Value("${ftp.loc.file.secondary.location}")
     public String locSecondaryLocation;
 
-    private final ObjectMapper mapper;
-
     @Autowired
     ResourceLoader resourceLoader;
-
-    public FTPServerLOCClient(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
 
     public  FTPClient getFTPConnection(){
         FTPClient ftpClient = new FTPClient();

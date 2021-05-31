@@ -17,6 +17,7 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -142,7 +143,9 @@ public class ImageGeneratorUtil {
 
             // creation of stream source from XSL input stream
             StreamSource templateFileTransformSource = new StreamSource(templateUrl.openStream());
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            javax.xml.transform.TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,true);
+
             Transformer xslTransformer = transformerFactory.newTransformer(templateFileTransformSource);
 
             Result transformationAsImageResult = new SAXResult(fop.getDefaultHandler());

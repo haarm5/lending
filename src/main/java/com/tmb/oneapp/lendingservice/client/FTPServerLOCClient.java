@@ -112,10 +112,12 @@ public class FTPServerLOCClient {
                     if(directoryPathChanged){
                         boolean success = makeDirectories(ftpClient,directoryPath);
                         if(success){
-                            String destinationFilePath = ftpClient.printWorkingDirectory();
+                            StringBuilder destinationFilePath = new StringBuilder();
+                            destinationFilePath.append(ftpClient.printWorkingDirectory());
+                            destinationFilePath.append(File.separator);
+                            destinationFilePath.append(fileName);
                             logger.info("destinationFilePath {} ",destinationFilePath);
-                            destinationFilePath = destinationFilePath + File.separator + fileName;
-                            result = ftpClient.storeFile(destinationFilePath, buffIn);
+                            result = ftpClient.storeFile(destinationFilePath.toString(), buffIn);
                             logger.info("Copy file to FTP is done!! result:"+result);
 
                         }

@@ -13,8 +13,10 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Bod
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.RequestInstantLoanCreateApplication;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
+import com.tmb.oneapp.lendingservice.client.FTPServerLOCClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
+import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +38,17 @@ public class InstantLoanCreateApplicationService {
     private static final TMBLogger<InstantLoanCreateApplicationService> logger = new TMBLogger<>(InstantLoanCreateApplicationService.class);
     private final ObjectMapper mapper;
     private final InstantLoanCreateApplicationClient soapClient;
+    private final FTPServerLOCClient ftpServerLOCClient;
     private static final String BRANCH_CODE = "026";
     private static final String SALE_CHANNEL = "05";
 
     private String getMoreFlag = "";
 
-    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient) {
+    LOCRequest locRequest = new LOCRequest();
+    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, FTPServerLOCClient ftpServerLOCClient) {
         this.mapper = mapper;
         this.soapClient = soapClient;
+        this.ftpServerLOCClient = ftpServerLOCClient;
     }
 
 
@@ -109,7 +114,6 @@ public class InstantLoanCreateApplicationService {
             soapRequestHeader.setRequestID(requestId);
             soapRequestHeader.setModule("3");
             soapRequestHeader.setChannel(request.getChannel());
-
             soapRequest.setBody(soapRequestBody);
             soapRequest.setHeader(soapRequestHeader);
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
@@ -146,6 +150,14 @@ public class InstantLoanCreateApplicationService {
             response.setCreateDate(responseBody.getCreateDate());
             response.setCurrentWorkflow(responseBody.getCurrentWorkflow());
             response.setProductDescEN(responseBody.getProductDescEN());
+
+            String productName = responseBody.getProductDescTH();
+            productName = responseBody.getAppType().equalsIgnoreCase("CC")? productName + " (22)" : productName +" (05)";
+            locRequest.setNCBReferenceID(response.getMemberRef());
+            locRequest.setNCBDateTime(response.getCreateDate());
+            locRequest.setProductName(productName);
+            locRequest.setAppRefNo(responseBody.getAppRefNo());
+            constructRequestForLOCCompleteImage();
         }else{
             response.setError(responseCode);
         }
@@ -153,6 +165,31 @@ public class InstantLoanCreateApplicationService {
         return response;
     }
 
+
+    private void constructRequestForLOCCompleteImage(){
+
+        logger.info("constructRequestForLOCCompleteImage Start");
+        locRequest.setConsentbyCustomer("Access PIN");
+        String dob = locRequest.getNCBDateofbirth();
+        dob = dob.substring(0,10);
+        locRequest.setNCBDateofbirth(dob);
+
+        String mobno = locRequest.getNCBMobileNo();
+        locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+
+        String customerId = locRequest.getNcbid();
+        locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+
+        try {
+            ftpServerLOCClient.generateLOCImageAndUploadToFTP(locRequest);
+        } catch (JsonProcessingException e) {
+           logger.error("JsonProcessingException {} : ",e);
+        }
+
+        logger.info("constructRequestForLOCCompleteImage END");
+
+
+    }
     /**
      * method to construct InstantIndividual Object request to legacy system
      *
@@ -210,6 +247,12 @@ public class InstantLoanCreateApplicationService {
         individual.setThaiName(customerInfo.getThaiName());
         individual.setThaiSurName(customerInfo.getThaiSurName());
 
+        String customerFullName= individual.getThaiName() + " " + individual.getThaiSurName();
+        locRequest.setNCBMobileNo(customerInfo.getMobileNo());
+        locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
+        locRequest.setNcbid(customerInfo.getIdNo1());
+        locRequest.setNCBCustName(customerFullName);
+        locRequest.setCrmId(customerInfo.getHostCifNo());
         return individual;
     }
 

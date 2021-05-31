@@ -1,0 +1,38 @@
+<fop version="1.0">
+	<base>./</base>
+  <renderers>
+	<renderer mime="image/png">
+	      <fonts>
+          <font kerning="yes" embed-url="file:./fonts/DBOzoneX.ttf">
+               <font-triplet name="DBOzoneX" style="normal" weight="normal"/>
+           </font>
+		    <font kerning="yes" embed-url="file:./fonts/DBOzoneX-Bold.ttf">
+               <font-triplet name="DBOzoneX-Bold" style="normal" weight="normal"/>
+           </font>
+		   <font kerning="yes" embed-url="file:./fonts/DBOzoneX-Italic.ttf">
+               <font-triplet name="DBOzoneX-Italic" style="normal" weight="normal"/>
+           </font>
+      </fonts>
+		<rendering>quality</rendering>
+		<source-resolution>600</source-resolution>
+		<target-resolution>600</target-resolution>
+	</renderer>
+	<renderer mime="image/jpeg">
+	         <fonts>
+          <font kerning="yes" embed-url="file:./fonts/DBOzoneX.ttf">
+               <font-triplet name="DBOzoneX" style="normal" weight="normal"/>
+           </font>
+		    <font kerning="yes" embed-url="file:./fonts/DBOzoneX-Bold.ttf">
+               <font-triplet name="DBOzoneX-Bold" style="normal" weight="normal"/>
+           </font>
+		   <font kerning="yes" embed-url="file:./fonts/DBOzoneX-Italic.ttf">
+               <font-triplet name="DBOzoneX-Italic" style="normal" weight="normal"/>
+           </font>
+      </fonts>
+		<rendering>quality</rendering>
+		<source-resolution>600</source-resolution>
+		<target-resolution>600</target-resolution>
+	</renderer>
+	
+  </renderers>
+</fop>

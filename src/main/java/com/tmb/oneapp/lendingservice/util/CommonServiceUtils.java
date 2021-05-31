@@ -1,0 +1,49 @@
+package com.tmb.oneapp.lendingservice.util;
+
+import com.tmb.common.logger.TMBLogger;
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class CommonServiceUtils {
+    private static final TMBLogger<CommonServiceUtils> logger = new TMBLogger<>(CommonServiceUtils.class);
+
+    private CommonServiceUtils() {
+
+    }
+
+    public static String getDateAndTimeInYYYYMMDDHHMMSS() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        return formatter.format(date);
+
+    }
+
+    public static String formatPhoneNumber(String mobNo){
+
+        if(StringUtils.isNotBlank(mobNo) && mobNo.length() == 10){
+            StringBuilder formattedMobNo = new StringBuilder(mobNo);
+            formattedMobNo.insert(3,"-");
+            formattedMobNo.insert(7,"-");
+
+            return formattedMobNo.toString();
+
+        }
+        return "";
+    }
+
+    public static String formatCustomerId(String customerId){
+
+        if(StringUtils.isNotBlank(customerId)){
+            StringBuilder formatCustomerId = new StringBuilder(customerId);
+            formatCustomerId.insert(1,"-");
+            formatCustomerId.insert(6,"-");
+            formatCustomerId.insert(12,"-");
+            formatCustomerId.insert(15,"-");
+            return formatCustomerId.toString();
+
+        }
+        return "";
+    }
+}

@@ -29,8 +29,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 
 
 @Service
@@ -45,6 +45,7 @@ public class InstantLoanCreateApplicationService {
     private String getMoreFlag = "";
 
     LOCRequest locRequest = new LOCRequest();
+
     public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, FTPServerLOCClient ftpServerLOCClient) {
         this.mapper = mapper;
         this.soapClient = soapClient;
@@ -56,17 +57,16 @@ public class InstantLoanCreateApplicationService {
      * method  to call InstantLoanCreateApplication service of legacy system for Credit cards, Flash cards, C2G
      *
      * @param request InstantLoanCreationRequest
-     *
      * @return InstantLoanCreationResponse
      */
-      public InstantLoanCreationResponse createInstantLoanApplication(InstantLoanCreationRequest request){
+    public InstantLoanCreationResponse createInstantLoanApplication(InstantLoanCreationRequest request) {
 
 
         RequestInstantLoanCreateApplication soapRequest = new RequestInstantLoanCreateApplication();
 
         try {
 
-            logger.info(" Request from Client to InstantLoanCreateApplication is {} : " +mapper.writeValueAsString(request));
+            logger.info(" Request from Client to InstantLoanCreateApplication is {} : " + mapper.writeValueAsString(request));
             getMoreFlag = request.getGetMore();
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
@@ -74,22 +74,22 @@ public class InstantLoanCreateApplicationService {
             InstantIndividual soapInstantIndividual = getInstantIndividualObject(request);
 
             // Credit card Data
-            if(request.getLoanType().equalsIgnoreCase("CC")){
+            if (request.getLoanType().equalsIgnoreCase("CC")) {
                 logger.info("Calling Credit Cards");
                 List<CreditCardLoanInfo> creditCardLoanInfo = request.getCreditCards();
                 List<InstantCreditCard> soapCreditCardList = creditCardLoanInfo.stream().map(this::creditCardInfoToSoapRequestCC).collect(Collectors.toList());
                 soapInstantIndividual.setCreditCards(soapCreditCardList.toArray(new InstantCreditCard[0]));
-                logger.info("soapCreditCardList size is  {} : ",String.valueOf(soapCreditCardList.size()));
+                logger.info("soapCreditCardList size is  {} : ", String.valueOf(soapCreditCardList.size()));
             }
             soapInstantIndividual.setAddresses(soapAddressList.toArray(new Address[0]));
-            logger.info("soapAddressList size is  {} : ",String.valueOf(soapAddressList.size()));
+            logger.info("soapAddressList size is  {} : ", String.valueOf(soapAddressList.size()));
 
             InstantApplication soapInstantApplication = new InstantApplication();
             // Flash Card or C2G
-            if(!request.getLoanType().equalsIgnoreCase("CC")){
+            if (!request.getLoanType().equalsIgnoreCase("CC")) {
                 logger.info("Calling Flash Card or C2G");
                 List<FlashCardOrC2GLoanInfo> facilitiesInfo = request.getFlashCardOrC2G();
-                List<InstantFacility> soapInstantFacilityList = facilitiesInfo.stream().map(facility -> facilitiesInfoToSoapRequestInstantFacility(facility,request.getLoanType())).collect(Collectors.toList());
+                List<InstantFacility> soapInstantFacilityList = facilitiesInfo.stream().map(facility -> facilitiesInfoToSoapRequestInstantFacility(facility, request.getLoanType())).collect(Collectors.toList());
                 soapInstantApplication.setFacilities(soapInstantFacilityList.toArray(new InstantFacility[soapInstantFacilityList.size()]));
             }
 
@@ -119,7 +119,7 @@ public class InstantLoanCreateApplicationService {
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
             return constructCreateLoanApplicationResponse(soapResponse);
         } catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
-            logger.error("Exception {} : ",e.toString());
+            logger.error("Exception {} : ", e.toString());
         }
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
         response.setError("exception");
@@ -131,20 +131,19 @@ public class InstantLoanCreateApplicationService {
      * method  to call to construct InstantLoanCreateApplication response for Credit cards, Flasg crds, C2G
      *
      * @param soapResponse ResponseInstantLoanCreateApplication
-     *
      * @return InstantLoanCreationResponse
      */
-    private InstantLoanCreationResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse){
+    private InstantLoanCreationResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse) {
 
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
         com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Body responseBody = soapResponse.getBody();
         String responseCode = soapResponse.getHeader().getResponseCode();
-        if(responseCode.equalsIgnoreCase("MSG_000")){
+        if (responseCode.equalsIgnoreCase("MSG_000")) {
             response.setRequestId(soapResponse.getHeader().getRequestID());
             response.setChannel(soapResponse.getHeader().getChannel());
             response.setModule(soapResponse.getHeader().getModule());
             /**  response.setCaId(soapResponse.getBody().getCaId());
-           response.setAppRefNo(soapResponse.getBody().gera);
+             response.setAppRefNo(soapResponse.getBody().gera);
              */
             response.setMemberRef(responseBody.getMemberref());
             response.setCreateDate(responseBody.getCreateDate());
@@ -152,13 +151,13 @@ public class InstantLoanCreateApplicationService {
             response.setProductDescEN(responseBody.getProductDescEN());
 
             String productName = responseBody.getProductDescTH();
-            productName = responseBody.getAppType().equalsIgnoreCase("CC")? productName + " (22)" : productName +" (05)";
+            productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
             locRequest.setNCBReferenceID(response.getMemberRef());
             locRequest.setNCBDateTime(response.getCreateDate());
             locRequest.setProductName(productName);
             locRequest.setAppRefNo(responseBody.getAppRefNo());
             constructRequestForLOCCompleteImage();
-        }else{
+        } else {
             response.setError(responseCode);
         }
 
@@ -166,35 +165,38 @@ public class InstantLoanCreateApplicationService {
     }
 
 
-    private void constructRequestForLOCCompleteImage(){
+    private void constructRequestForLOCCompleteImage() {
 
-        logger.info("constructRequestForLOCCompleteImage Start");
-        locRequest.setConsentbyCustomer("Access PIN");
-        String dob = locRequest.getNCBDateofbirth();
-        dob = dob.substring(0,10);
-        locRequest.setNCBDateofbirth(dob);
+        CompletableFuture.runAsync(() -> {
+            logger.info("constructRequestForLOCCompleteImage Start");
+            locRequest.setConsentbyCustomer("Access PIN");
+            String dob = locRequest.getNCBDateofbirth();
+            dob = dob.substring(0, 10);
+            locRequest.setNCBDateofbirth(dob);
 
-        String mobno = locRequest.getNCBMobileNo();
-        locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+            String mobno = locRequest.getNCBMobileNo();
+            locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
 
-        String customerId = locRequest.getNcbid();
-        locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+            String customerId = locRequest.getNcbid();
+            locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
-        try {
-            ftpServerLOCClient.generateLOCImageAndUploadToFTP(locRequest);
-        } catch (JsonProcessingException e) {
-           logger.error("JsonProcessingException {} : ",e);
-        }
+            try {
+                ftpServerLOCClient.generateLOCImageAndUploadToFTP(locRequest);
+            } catch (JsonProcessingException e) {
+                logger.error("JsonProcessingException {} : ", e);
+            }
 
-        logger.info("constructRequestForLOCCompleteImage END");
+            logger.info("constructRequestForLOCCompleteImage END");
+
+        });
 
 
     }
+
     /**
      * method to construct InstantIndividual Object request to legacy system
      *
      * @param request InstantLoanCreationRequest
-     *
      * @return InstantIndividual
      */
     private InstantIndividual getInstantIndividualObject(InstantLoanCreationRequest request) throws ParseException {
@@ -224,12 +226,12 @@ public class InstantLoanCreateApplicationService {
         String employmentStatus = customerInfo.getEmploymentStatus();
         String incomeDeclared = "";
         String incomeBasicSalary = "";
-        if(employmentStatus.equalsIgnoreCase("02")){
-             incomeDeclared = getMoreFlag.equalsIgnoreCase("Y") ?  customerInfo.getMaxIncomeRange() : customerInfo.getIncomeDeclared();
+        if (employmentStatus.equalsIgnoreCase("02")) {
+            incomeDeclared = getMoreFlag.equalsIgnoreCase("Y") ? customerInfo.getMaxIncomeRange() : customerInfo.getIncomeDeclared();
         }
 
-        if(employmentStatus.equalsIgnoreCase("01")){
-            incomeBasicSalary = getMoreFlag.equalsIgnoreCase("Y") ?  customerInfo.getMaxIncomeRange() : customerInfo.getIncomeBasicSalary();
+        if (employmentStatus.equalsIgnoreCase("01")) {
+            incomeBasicSalary = getMoreFlag.equalsIgnoreCase("Y") ? customerInfo.getMaxIncomeRange() : customerInfo.getIncomeBasicSalary();
         }
 
         individual.setIncomeBasicSalary(convertStringToBigDecimal(incomeBasicSalary));
@@ -247,7 +249,7 @@ public class InstantLoanCreateApplicationService {
         individual.setThaiName(customerInfo.getThaiName());
         individual.setThaiSurName(customerInfo.getThaiSurName());
 
-        String customerFullName= individual.getThaiName() + " " + individual.getThaiSurName();
+        String customerFullName = individual.getThaiName() + " " + individual.getThaiSurName();
         locRequest.setNCBMobileNo(customerInfo.getMobileNo());
         locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
         locRequest.setNcbid(customerInfo.getIdNo1());
@@ -257,15 +259,13 @@ public class InstantLoanCreateApplicationService {
     }
 
 
-
     /**
      * method to construct address Object request to legacy system
      *
      * @param address AddressInfo
-     *
      * @return Address
      */
-    private Address addressToSoapRequestAddress(AddressInfo address){
+    private Address addressToSoapRequestAddress(AddressInfo address) {
 
         Address soapAddressObj = new Address();
         soapAddressObj.setAddrTypCode(address.getAddrTypCode());
@@ -281,7 +281,7 @@ public class InstantLoanCreateApplicationService {
         soapAddressObj.setProvince(address.getProvince());
         soapAddressObj.setFloor(address.getFloor());
 
-        return  soapAddressObj;
+        return soapAddressObj;
     }
 
 
@@ -289,10 +289,9 @@ public class InstantLoanCreateApplicationService {
      * method to construct creditCard Info Object request to legacy system
      *
      * @param creditCardLoanInfo CreditCardLoanInfo
-     *
      * @return InstantCreditCard
      */
-    private InstantCreditCard creditCardInfoToSoapRequestCC(CreditCardLoanInfo creditCardLoanInfo){
+    private InstantCreditCard creditCardInfoToSoapRequestCC(CreditCardLoanInfo creditCardLoanInfo) {
 
         InstantCreditCard soapCreditCardLoanData = new InstantCreditCard();
         soapCreditCardLoanData.setCardInd("P");
@@ -306,24 +305,22 @@ public class InstantLoanCreateApplicationService {
         soapCreditCardLoanData.setMailPreference(creditCardLoanInfo.getMailPreference());
         soapCreditCardLoanData.setCardDeliveryAddress(creditCardLoanInfo.getCardDelivery());
 
-       /** soapCreditCardLoanData.setdebitAccountName
-        soapCreditCardLoanData.setdebitAccountNo
-        soapCreditCardLoanData.setpaymentCriteria
-        */
+        /** soapCreditCardLoanData.setdebitAccountName
+         soapCreditCardLoanData.setdebitAccountNo
+         soapCreditCardLoanData.setpaymentCriteria
+         */
 
-        return  soapCreditCardLoanData;
+        return soapCreditCardLoanData;
     }
-
 
 
     /**
      * method to construct FlashCardOrC2GLoan Info Object request to legacy system
      *
      * @param facilitiesInfo FlashCardOrC2GLoanInfo
-     *
      * @return InstantFacility
      */
-    private InstantFacility facilitiesInfoToSoapRequestInstantFacility(FlashCardOrC2GLoanInfo facilitiesInfo, String loanType){
+    private InstantFacility facilitiesInfoToSoapRequestInstantFacility(FlashCardOrC2GLoanInfo facilitiesInfo, String loanType) {
         InstantFacility soapFacility = new InstantFacility();
         soapFacility.setFacilityCode(facilitiesInfo.getFacilityCode());
         soapFacility.setProductCode(facilitiesInfo.getProductCode());
@@ -337,15 +334,15 @@ public class InstantLoanCreateApplicationService {
         soapFacility.setPaymentAccountNo(facilitiesInfo.getPaymentAccountNo());
         soapFacility.setMailingPreference(facilitiesInfo.getMailPreference());
 
-        if(loanType.equalsIgnoreCase("F")){
+        if (loanType.equalsIgnoreCase("F")) {
             soapFacility.setCardDelivery(facilitiesInfo.getCardDelivery());
             soapFacility.setPayMethodCriteria(facilitiesInfo.getPaymentCriteria());
 
-        }else{
+        } else {
             soapFacility.setMonthlyInstallment(convertStringToBigDecimal(facilitiesInfo.getMonthlyInstallment()));
             soapFacility.setTenure(convertStringToBigDecimal(facilitiesInfo.getTenure()));
             soapFacility.setFirstPaymentDueDate(facilitiesInfo.getFirstPaymentDueDate());
-            soapFacility.setPaymentDueDate(facilitiesInfo.getFirstPaymentDueDate().substring(0,2));
+            soapFacility.setPaymentDueDate(facilitiesInfo.getFirstPaymentDueDate().substring(0, 2));
             soapFacility.setDisburstBankName(facilitiesInfo.getDisburstBankName());
             soapFacility.setDisburstAccountName(facilitiesInfo.getDisburstAccountName());
             soapFacility.setDisburstAccountNo(facilitiesInfo.getDisburstAccountNo());
@@ -360,12 +357,11 @@ public class InstantLoanCreateApplicationService {
      * method to create BigDecimal froma string
      *
      * @param data String
-     *
      * @return BigDecimal
      */
-    public BigDecimal convertStringToBigDecimal(String data){
+    public BigDecimal convertStringToBigDecimal(String data) {
 
-        if(StringUtils.isNotBlank(data))
+        if (StringUtils.isNotBlank(data))
             return new BigDecimal(data);
 
         return null;

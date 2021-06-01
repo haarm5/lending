@@ -7,6 +7,7 @@ import com.tmb.oneapp.lendingservice.client.FTPServerLOCClient;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.LOCRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
@@ -118,8 +119,10 @@ public class ImageGeneratorService {
 
         try(ByteArrayOutputStream outputFileoutStream = new ByteArrayOutputStream()){
 
-            File file = getFileFromResource(templatePath);
-            fopConfigFile = getFileFromResource(fopconfigFilePath);
+            File file = getFileFromResourceAsStream(templatePath,1);
+            fopConfigFile = getFileFromResourceAsStream(fopconfigFilePath,2);
+
+
 
             // create URL of the XSL template file
             URL templateUrl = file.toURI().toURL();
@@ -131,7 +134,11 @@ public class ImageGeneratorService {
             logger.info("FOP config File Path" + fopConfigFile.getAbsolutePath() + " does exist ? " + fopConfigFile.exists());
             if (fopConfigFile.exists()) {
                 String templatesFolderPath = fopConfigFile.getAbsolutePath().replace(fopConfigFileName,"");
-                logger.info("templatesFolderPath is {} : "+templatesFolderPath);
+                ClassLoader classLoader = getClass().getClassLoader();
+                URL resource = classLoader.getResource("templates");
+                templatesFolderPath = resource.getPath();
+
+                logger.info("templatesFolderPath of resource is {} : "+templatesFolderPath);
                 fopFactory.getFontManager().setFontBaseURL(templatesFolderPath);
                 fopFactory.setBaseURL(templatesFolderPath);
                 fopFactory.setUserConfig(fopConfigFile);
@@ -144,8 +151,6 @@ public class ImageGeneratorService {
              */
             foUserAgent.setTargetResolution(150.00f);
             fop = fopFactory.newFop(MimeConstants.MIME_PNG, foUserAgent, outputFileoutStream);
-
-
 
 
             // creation of stream source from XSL input stream
@@ -271,17 +276,42 @@ public class ImageGeneratorService {
         metadata.mergeTree(metadataFormat, root);
     }
 
+    private File getFileFromResourceAsStream(String fileName,int fileType) throws URISyntaxException, IOException {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream resource = classLoader.getResourceAsStream(fileName);
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found! " + fileName);
+        } else {
+            String currentDir = System.getProperty("user.dir");
+            logger.info("currentDir is {} : "+currentDir);
+            String fileNameTmp = currentDir + "/fopconfig.xml";
+            if(fileType == 1){
+                fileNameTmp = currentDir +  "/InstantLoanNCBConsentTH.xsl";
+            }
+
+            File targetFile = new File(fileNameTmp);
+            FileUtils.copyInputStreamToFile(resource, targetFile);
+            return targetFile;
+
+        }
+
+    }
+
+    /**
+     *
     private File getFileFromResource(String fileName) throws URISyntaxException{
 
         ClassLoader classLoader = getClass().getClassLoader();
         URL resource = classLoader.getResource(fileName);
+
         if (resource == null) {
             throw new IllegalArgumentException("file not found! " + fileName);
         } else {
             return new File(resource.toURI());
         }
 
-    }
+    } **/
 
     public void generateLOCImageAndUploadToFTP(LOCRequest request) throws JsonProcessingException {
 

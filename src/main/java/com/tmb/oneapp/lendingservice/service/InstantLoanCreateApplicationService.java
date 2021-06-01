@@ -136,7 +136,7 @@ public class InstantLoanCreateApplicationService {
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
         com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Body responseBody = soapResponse.getBody();
         String responseCode = soapResponse.getHeader().getResponseCode();
-        if (responseCode.equalsIgnoreCase("MSG_000")) {
+        if (StringUtils.isNotBlank(responseCode) && responseCode.equalsIgnoreCase("MSG_000")) {
             response.setRequestId(soapResponse.getHeader().getRequestID());
             response.setChannel(soapResponse.getHeader().getChannel());
             response.setModule(soapResponse.getHeader().getModule());
@@ -158,7 +158,6 @@ public class InstantLoanCreateApplicationService {
         } else {
             response.setError(responseCode);
         }
-
         return response;
     }
 

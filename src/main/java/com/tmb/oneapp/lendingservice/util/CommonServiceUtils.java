@@ -46,4 +46,16 @@ public class CommonServiceUtils {
         }
         return "";
     }
+
+    public static String getThaiYear(String year){
+        return String.valueOf(Integer.parseInt(year) + 543);
+    }
+
+    public static String getThaiMonth(String month){
+        String[] thaiMonths = {
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
+                "พฤษภาคม", "มิถุนายน" ,"กรกฎาคม", "สิงหาคม",
+                "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"};
+        return thaiMonths[Integer.parseInt(month)-1];
+    }
 }

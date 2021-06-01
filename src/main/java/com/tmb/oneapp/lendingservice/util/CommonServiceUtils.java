@@ -52,10 +52,10 @@ public class CommonServiceUtils {
     }
 
     public static String getThaiMonth(String month){
-        String Months[] = {
+        String[] thaiMonths = {
                 "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
                 "พฤษภาคม", "มิถุนายน" ,"กรกฎาคม", "สิงหาคม",
                 "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"};
-        return Months[Integer.parseInt(month)-1];
+        return thaiMonths[Integer.parseInt(month)-1];
     }
 }

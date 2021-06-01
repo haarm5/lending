@@ -276,7 +276,7 @@ public class ImageGeneratorService {
         metadata.mergeTree(metadataFormat, root);
     }
 
-    private File getFileFromResourceAsStream(String fileName,int fileType) throws URISyntaxException, IOException {
+    private File getFileFromResourceAsStream(String fileName,int fileType) throws  IOException {
 
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resource = classLoader.getResourceAsStream(fileName);

@@ -30,7 +30,7 @@ public class WorkInfoProfileService {
 				.getWorkStatusByOccupationCode(occupationCode);
 		if (CollectionUtils.isNotEmpty(workStatusByOccupationList)) {
 			CriteriaCodeEntry defaultEntry = workStatusByOccupationList.get(0);
-			selectWorkstatusCodeEntry.setName(defaultEntry.getEntryName());
+			selectWorkstatusCodeEntry.setName(defaultEntry.getEntryName2());
 			selectWorkstatusCodeEntry.setValue(defaultEntry.getEntryCode());
 		}
 		List<CriteriaCodeEntry> relateWorkStatusCodeEntry = lendingCriteriaInfoService

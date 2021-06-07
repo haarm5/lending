@@ -28,14 +28,6 @@ public class ImageGeneratorServiceTest {
         mapper = new ObjectMapper();
         imageGeneratorService = new ImageGeneratorService(mapper,ftpServerLOCClient);
     }
-    @Test
-    void generateLOCImageAndUploadToFTPSuccess() throws JsonProcessingException {
-        when(ftpServerLOCClient.uploadFileToFTP(any(),any(),any())).thenReturn(true);
-
-
-        imageGeneratorService.generateLOCImageAndUploadToFTP(constructRequestForLOCCompleteImage());
-        verify(ftpServerLOCClient,times(1)).uploadFileToFTP(any(),any(),any());
-    }
 
     private LOCRequest constructRequestForLOCCompleteImage() {
 

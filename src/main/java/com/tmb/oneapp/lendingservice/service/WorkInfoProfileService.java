@@ -76,16 +76,15 @@ public class WorkInfoProfileService {
 		response.setSubBusinessType(selectBusSubTypeCodeEntry);
 
 		SelectCodeEntry sourceOfIncomeEntry = new SelectCodeEntry();
-		List<CriteriaCodeEntry> sourceOfIncome = lendingCriteriaInfoService
-				.getCriteriaByCatalogId(LoanCategory.INCOME_TYPE);
-		if (CollectionUtils.isNotEmpty(sourceOfIncome)) {
-			CriteriaCodeEntry defaultEntry = sourceOfIncome.get(0);
-			sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
-			sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
-		}
+		
 		List<CriteriaCodeEntry> relateSourceOfIncomeCodeEntry = lendingCriteriaInfoService
 				.getSourceOfIncome(response.getWorkstatus().getValue());
 		sourceOfIncomeEntry.setRelateCodeEntry(relateSourceOfIncomeCodeEntry);
+		if (CollectionUtils.isNotEmpty(relateSourceOfIncomeCodeEntry)) {
+			CriteriaCodeEntry defaultEntry = relateSourceOfIncomeCodeEntry.get(0);
+			sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
+			sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
+		}
 		response.setSourceIncomes(sourceOfIncomeEntry);
 
 		SelectCodeEntry sourceCountryEntry = new SelectCodeEntry();

@@ -130,17 +130,17 @@ public class ImageGeneratorService {
             // create URL of the XSL template file
 
 
-            FopFactory fopFactory = FopFactory.newInstance();
+            FopFactory fopFactory = FopFactory.newInstance(new File("."));
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
 
 
 
 
             logger.info("templatesFolderPath of resource is {} : " +resourceDirectory.getURI().getPath());
-            fopFactory.getFontManager().setFontBaseURL(resourceDirectory.getURI().getPath());
-            fopFactory.setUserConfig(resourceConfig.getURI().getPath());
-            fopFactory.setUserConfigBaseURI(resourceConfig.getURI());
-            foUserAgent.setBaseURL(fopFactory.getBaseURL());
+//            fopFactory.getFontManager().setFontBaseURL(resourceDirectory.getURI().getPath());
+//            fopFactory.setUserConfig(resourceConfig.getURI().getPath());
+//            fopFactory.setUserConfigBaseURI(resourceConfig.getURI());
+//            foUserAgent.setBaseURL(fopFactory.getBaseURL());
 
 
             /**

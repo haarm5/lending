@@ -23,29 +23,21 @@ import java.nio.file.StandardCopyOption;
 public class FopConfig implements ResourceLoaderAware {
 
     private ResourceLoader resourceLoader;
+
     @Bean
     public FopFactory getFopFactory() throws IOException, ConfigurationException, SAXException {
-
-        String[] files = new String[]{"DBOzoneX.ttf", "DBOzoneX-Bold.ttf", "DBOzoneX-Italic.ttf", "fop-config.xml"};
-        File f1 = new File("./fop2");
-        f1.mkdir();
-
+        String[] files = new String[]{"tmblogo.png","InstantLoanNCBConsentTH.xsl","DBOzoneX.ttf", "DBOzoneX-Bold.ttf", "DBOzoneX-Italic.ttf", "fop-config.xml"};
+        new File("./fop").mkdir();
         for (String file : files) {
             Resource configResource = this.resourceLoader.getResource("classpath:fop/" + file);
-
             InputStream inputStream = configResource.getInputStream();
-
-            Files.copy(inputStream, new File("./fop2/" + file).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, new File("./fop/" + file).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
 
-        File fopConfigFile = new File("./fop2/fop-config.xml");
+        File fopConfigFile = new File("./fop/fop-config.xml");
         File baseFolder = new File(fopConfigFile.getParent());
-
         DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
-
         org.apache.fop.configuration.Configuration cfg = cfgBuilder.buildFromFile(fopConfigFile);
-
-
         FopFactoryBuilder builder = new FopFactoryBuilder(baseFolder.toURI()).setConfiguration(cfg);
         return builder.build();
     }

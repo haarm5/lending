@@ -42,8 +42,6 @@ public class InstantLoanCreateApplicationService {
     private final ImageGeneratorService imageGeneratorService;
     private String getMoreFlag = "";
 
-    LOCRequest locRequest = new LOCRequest();
-
     public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService) {
         this.mapper = mapper;
         this.soapClient = soapClient;
@@ -70,6 +68,15 @@ public class InstantLoanCreateApplicationService {
             List<AddressInfo> addressInfoList = request.getAddresses();
             List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
             InstantIndividual soapInstantIndividual = getInstantIndividualObject(request);
+            CustomerInfo customerInfo = request.getCustomerInfo();
+            String customerFullName = soapInstantIndividual.getThaiName() + " " + soapInstantIndividual.getThaiSurName();
+            LOCRequest locRequest = new LOCRequest();
+            locRequest.setNCBMobileNo(soapInstantIndividual.getMobileNo());
+            locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
+            locRequest.setNcbid(customerInfo.getIdNo1());
+            locRequest.setNCBCustName(customerFullName);
+            locRequest.setCrmId(customerInfo.getHostCifNo());
+
 
             // Credit card Data
             if (request.getLoanType().equalsIgnoreCase("CC")) {
@@ -115,7 +122,14 @@ public class InstantLoanCreateApplicationService {
             soapRequest.setBody(soapRequestBody);
             soapRequest.setHeader(soapRequestHeader);
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
-            return constructCreateLoanApplicationResponse(soapResponse);
+
+            InstantLoanCreationResponse response2 =  constructCreateLoanApplicationResponse(soapResponse);
+            locRequest.setNCBReferenceID(response2.getMemberRef());
+            locRequest.setNCBDateTime(response2.getCreateDate());
+            locRequest.setProductName(response2.getProductName());
+            locRequest.setAppRefNo(response2.getAppRefNo());
+            constructRequestForLOCCompleteImage(locRequest);
+            return response2;
         } catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
             logger.error("Exception {} : ", e.toString());
         }
@@ -140,9 +154,6 @@ public class InstantLoanCreateApplicationService {
             response.setRequestId(soapResponse.getHeader().getRequestID());
             response.setChannel(soapResponse.getHeader().getChannel());
             response.setModule(soapResponse.getHeader().getModule());
-            /**  response.setCaId(soapResponse.getBody().getCaId());
-             response.setAppRefNo(soapResponse.getBody().gera);
-             */
             response.setMemberRef(responseBody.getMemberref());
             response.setCreateDate(responseBody.getCreateDate());
             response.setCurrentWorkflow(responseBody.getCurrentWorkflow());
@@ -150,11 +161,8 @@ public class InstantLoanCreateApplicationService {
 
             String productName = responseBody.getProductDescTH();
             productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
-            locRequest.setNCBReferenceID(response.getMemberRef());
-            locRequest.setNCBDateTime(response.getCreateDate());
-            locRequest.setProductName(productName);
-            locRequest.setAppRefNo(responseBody.getAppRefNo());
-            constructRequestForLOCCompleteImage();
+            response.setAppRefNo(responseBody.getAppRefNo());
+            response.setProductName(productName);
         } else {
             response.setError(responseCode);
         }
@@ -162,7 +170,7 @@ public class InstantLoanCreateApplicationService {
     }
 
 
-    private void constructRequestForLOCCompleteImage() {
+    private void constructRequestForLOCCompleteImage(LOCRequest locRequest) {
 
         CompletableFuture.runAsync(() -> {
             logger.info("constructRequestForLOCCompleteImage Start");
@@ -178,7 +186,7 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
             try {
-                imageGeneratorService.generateLOCImageAndUploadToFTP(locRequest);
+                imageGeneratorService.generateLOCImage(locRequest);
             } catch (JsonProcessingException e) {
                 logger.error("JsonProcessingException {} : ", e);
             }
@@ -245,13 +253,6 @@ public class InstantLoanCreateApplicationService {
         individual.setSourceFromCountry(customerInfo.getSourceFromCountry());
         individual.setThaiName(customerInfo.getThaiName());
         individual.setThaiSurName(customerInfo.getThaiSurName());
-
-        String customerFullName = individual.getThaiName() + " " + individual.getThaiSurName();
-        locRequest.setNCBMobileNo(customerInfo.getMobileNo());
-        locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
-        locRequest.setNcbid(customerInfo.getIdNo1());
-        locRequest.setNCBCustName(customerFullName);
-        locRequest.setCrmId(customerInfo.getHostCifNo());
         return individual;
     }
 

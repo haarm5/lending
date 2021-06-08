@@ -26,7 +26,6 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-import javax.xml.XMLConstants;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -153,7 +152,7 @@ public class ImageGeneratorService {
             // creation of stream source from XSL input stream
             StreamSource templateFileTransformSource = new StreamSource(resourcetemplateNameFile.getInputStream());
             javax.xml.transform.TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            transformerFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
 
             Transformer xslTransformer = transformerFactory.newTransformer(templateFileTransformSource);
 

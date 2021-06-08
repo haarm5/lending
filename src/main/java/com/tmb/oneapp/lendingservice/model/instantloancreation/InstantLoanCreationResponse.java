@@ -59,4 +59,7 @@ public class InstantLoanCreationResponse {
     private String requestId;
 
     private String authMode = "Access Pin";
+
+    @JsonIgnore
+    private String productName;
 }

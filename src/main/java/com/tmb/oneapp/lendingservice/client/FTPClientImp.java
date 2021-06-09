@@ -34,7 +34,7 @@ public class FTPClientImp implements FTPClient {
 
     private static final TMBLogger<FTPClientImp> logger = new TMBLogger<>(FTPClientImp.class);
 
-    private boolean makeDirectory(org.apache.commons.net.ftp.FTPClient ftpClient, String pathname) throws IOException {
+    private boolean makeDirectory(org.apache.commons.net.ftp.FTPSClient ftpClient, String pathname) throws IOException {
         logger.info("target directory: {}", pathname);
         String[] pathElements = pathname.split("/");
         if (pathElements.length == 0) return false;
@@ -55,6 +55,7 @@ public class FTPClientImp implements FTPClient {
 
     /**
      * Store file to ftp server
+     *
      * @param targetDir
      * @param srcFile
      * @return
@@ -67,7 +68,7 @@ public class FTPClientImp implements FTPClient {
             logger.error("src file to upload to ftp does not exists:{}", srcFile);
             return false;
         }
-        org.apache.commons.net.ftp.FTPClient ftpClient = new org.apache.commons.net.ftp.FTPClient();
+        org.apache.commons.net.ftp.FTPSClient ftpClient = new org.apache.commons.net.ftp.FTPSClient();
         ftpClient.connect(serverIP, port);
         logger.info("ftp server is connected");
         boolean loggedIn = ftpClient.login(username, password);

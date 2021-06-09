@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
@@ -49,6 +48,7 @@ public class ImageGeneratorService {
 
     /**
      * generate consent image
+     *
      * @param jsonData
      * @param fileName
      * @return
@@ -88,6 +88,7 @@ public class ImageGeneratorService {
 
     /**
      * convert png to jpt image
+     *
      * @param fullPathPngFilename
      * @return
      * @throws IOException

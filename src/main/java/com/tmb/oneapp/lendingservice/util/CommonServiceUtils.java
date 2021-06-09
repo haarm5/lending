@@ -48,6 +48,7 @@ public class CommonServiceUtils {
     }
 
     public static String getThaiYear(String year){
+        logger.info("Thai year is {} :",year);
         return String.valueOf(Integer.parseInt(year) + 543);
     }
 

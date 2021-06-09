@@ -15,6 +15,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Req
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -191,13 +192,16 @@ public class InstantLoanCreateApplicationService {
             locRequest2.setConsentbyCustomer("Access PIN");
             String dob = locRequest2.getNCBDateofbirth();
             dob = dob.substring(0, 10);
-            locRequest2.setNCBDateofbirth(dob);
+            locRequest2.setNCBDateofbirth(getThaiDate(dob));
 
             String mobno = locRequest2.getNCBMobileNo();
             locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
 
             String customerId = locRequest2.getNcbid();
             locRequest2.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+
+            locRequest2.setNCBDateTime(getDateAndTimeForLOC(locRequest2.getNCBDateTime()));
+
 
             try {
                 String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
@@ -378,6 +382,35 @@ public class InstantLoanCreateApplicationService {
             return new BigDecimal(data);
 
         return null;
+    }
+
+    private String getDateAndTimeForLOC(String dateAndTime){
+
+        if(StringUtils.isBlank(dateAndTime))
+            return "";
+
+        logger.info("dateAndTime is  {} :",dateAndTime);
+        String[] dateAndTimeArry = dateAndTime.split("T");
+        String dateEng = dateAndTimeArry[0];
+        String curTime = dateAndTimeArry[1];
+        return getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z","");
+
+    }
+
+
+    private String getThaiDate(String dateEng){
+        if(StringUtils.isBlank(dateEng))
+            return "";
+        String[] dateArray = dateEng.split("-");
+        String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
+        String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
+        StringBuilder thaiDate = new StringBuilder();
+        thaiDate.append(dateArray[2]);
+        thaiDate.append(LendingServiceConstant.SPACE);
+        thaiDate.append(thaiMonth);
+        thaiDate.append(LendingServiceConstant.SPACE);
+        thaiDate.append(thaiYear);
+        return thaiDate.toString();
     }
 }
 

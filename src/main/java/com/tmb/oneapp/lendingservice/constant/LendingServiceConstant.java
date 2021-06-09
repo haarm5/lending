@@ -47,4 +47,5 @@ public class LendingServiceConstant {
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String UNDER_SCORE = "_";
+    public static final String SPACE = " ";
 }

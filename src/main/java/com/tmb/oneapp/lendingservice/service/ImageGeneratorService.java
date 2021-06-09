@@ -39,9 +39,23 @@ public class ImageGeneratorService {
     @Autowired
     private TransformerFactory transformerFactory;
 
+    public ImageGeneratorService(ObjectMapper mapper, FopFactory fopFactory, TransformerFactory transformerFactory) {
+        this.mapper = mapper;
+        this.fopFactory = fopFactory;
+        this.transformerFactory = transformerFactory;
+    }
+
     private static final String MIME_PNG = "image/png";
 
-
+    /**
+     * generate consent image
+     * @param jsonData
+     * @param fileName
+     * @return
+     * @throws IOException
+     * @throws FOPException
+     * @throws TransformerException
+     */
     private String generateJPGFile(String jsonData, String fileName) throws IOException, FOPException, TransformerException {
         FOUserAgent userAgent = fopFactory.newFOUserAgent();// FOUserAgent can be used to set user configurable options
         File outputDir = new File("./images");
@@ -57,6 +71,7 @@ public class ImageGeneratorService {
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(new File("./fop/InstantLoanNCBConsentTH.xsl")));
             Result res = new SAXResult(fop.getDefaultHandler());
             transformer.transform(data, res);
+            logger.info("generated png consent image success:{}", pngFile.getAbsolutePath());
         }
         return convertPngToJPG("./images/" + fileName + ".png");
     }
@@ -71,7 +86,12 @@ public class ImageGeneratorService {
         return xmlString;
     }
 
-
+    /**
+     * convert png to jpt image
+     * @param fullPathPngFilename
+     * @return
+     * @throws IOException
+     */
     private String convertPngToJPG(String fullPathPngFilename) throws IOException {
         String jpgFullPathFileName = fullPathPngFilename.replace(".png", ".jpg");
         Path source = Paths.get(fullPathPngFilename);
@@ -82,7 +102,6 @@ public class ImageGeneratorService {
                 originalImage.getWidth(),
                 originalImage.getHeight(),
                 BufferedImage.TYPE_INT_RGB);
-        // draw a white background and puts the originalImage on it.
         newBufferedImage.createGraphics()
                 .drawImage(originalImage,
                         0,
@@ -91,34 +110,28 @@ public class ImageGeneratorService {
                         null);
         ImageIO.write(newBufferedImage, "jpg", target.toFile());
         newBufferedImage.flush();
+        logger.info("convert consent image png to jpg  success:{}", jpgFullPathFileName);
+
         return jpgFullPathFileName;
     }
 
     /**
-     * private File getFileFromResource(String fileName) throws URISyntaxException{
-     * <p>
-     * ClassLoader classLoader = getClass().getClassLoader();
-     * URL resource = classLoader.getResource(fileName);
-     * <p>
-     * if (resource == null) {
-     * throw new IllegalArgumentException("file not found! " + fileName);
-     * } else {
-     * return new File(resource.toURI());
-     * }
-     * <p>
-     * }
-     **/
+     * Generate consent image
+     *
+     * @param request
+     * @return
+     */
 
-    public String generateLOCImage(LOCRequest request) throws JsonProcessingException {
+    public String generateLOCImage(LOCRequest request) {
         String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS();
         dateStr = dateStr.replaceAll("[/: ]", "");
         dateStr = dateStr.substring(2);
         String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE + "00110";
-        String jsonData = mapper.writeValueAsString(request);
         try {
+            String jsonData = mapper.writeValueAsString(request);
             return generateJPGFile(jsonData, fileName);
         } catch (IOException | FOPException | TransformerException e) {
-            logger.error("generate image got error:", e);
+            logger.error("generate image got error:{}", e);
         }
         return null;
     }

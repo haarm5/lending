@@ -13,6 +13,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Bod
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.RequestInstantLoanCreateApplication;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.ResponseInstantLoanCreateApplication;
+import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -41,11 +43,14 @@ public class InstantLoanCreateApplicationService {
     private static final String SALE_CHANNEL = "05";
     private final ImageGeneratorService imageGeneratorService;
     private String getMoreFlag = "";
+    private final FTPClient ftpClient;
+    private static final String SEPARATOR = "/";
 
-    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService) {
+    public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
         this.mapper = mapper;
         this.soapClient = soapClient;
         this.imageGeneratorService = imageGeneratorService;
+        this.ftpClient = ftpClient;
     }
 
 
@@ -123,7 +128,7 @@ public class InstantLoanCreateApplicationService {
             soapRequest.setHeader(soapRequestHeader);
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
 
-            InstantLoanCreationResponse response2 =  constructCreateLoanApplicationResponse(soapResponse);
+            InstantLoanCreationResponse response2 = constructCreateLoanApplicationResponse(soapResponse);
             locRequest.setNCBReferenceID(response2.getMemberRef());
             locRequest.setNCBDateTime(response2.getCreateDate());
             locRequest.setProductName(response2.getProductName());
@@ -158,7 +163,6 @@ public class InstantLoanCreateApplicationService {
             response.setCreateDate(responseBody.getCreateDate());
             response.setCurrentWorkflow(responseBody.getCurrentWorkflow());
             response.setProductDescEN(responseBody.getProductDescEN());
-
             String productName = responseBody.getProductDescTH();
             productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
             response.setAppRefNo(responseBody.getAppRefNo());
@@ -171,28 +175,39 @@ public class InstantLoanCreateApplicationService {
 
 
     private void constructRequestForLOCCompleteImage(LOCRequest locRequest) {
-
+        LOCRequest locRequest2 = new LOCRequest();
+        locRequest2.setNCBMobileNo(locRequest.getNCBMobileNo());
+        locRequest2.setNCBDateofbirth(locRequest.getNCBDateofbirth());
+        locRequest2.setNcbid(locRequest.getNcbid());
+        locRequest2.setNCBCustName(locRequest.getNCBCustName());
+        locRequest2.setCrmId(locRequest.getCrmId());
+        locRequest2.setNCBReferenceID(locRequest.getNCBReferenceID());
+        locRequest2.setNCBDateTime(locRequest.getNCBDateTime());
+        locRequest2.setProductName(locRequest.getProductName());
+        locRequest2.setAppRefNo(locRequest.getAppRefNo());
         CompletableFuture.runAsync(() -> {
+
             logger.info("constructRequestForLOCCompleteImage Start");
-            locRequest.setConsentbyCustomer("Access PIN");
-            String dob = locRequest.getNCBDateofbirth();
+            locRequest2.setConsentbyCustomer("Access PIN");
+            String dob = locRequest2.getNCBDateofbirth();
             dob = dob.substring(0, 10);
-            locRequest.setNCBDateofbirth(dob);
+            locRequest2.setNCBDateofbirth(dob);
 
-            String mobno = locRequest.getNCBMobileNo();
-            locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+            String mobno = locRequest2.getNCBMobileNo();
+            locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
 
-            String customerId = locRequest.getNcbid();
-            locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+            String customerId = locRequest2.getNcbid();
+            locRequest2.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
             try {
-                imageGeneratorService.generateLOCImage(locRequest);
-            } catch (JsonProcessingException e) {
-                logger.error("JsonProcessingException {} : ", e);
+                String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
+                String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
+                ftpClient.storeFile(directoryPath, jpgFile);
+            } catch (IOException e) {
+                logger.error("generateLOCImage got error:{}",e);
             }
 
             logger.info("constructRequestForLOCCompleteImage END");
-
         });
 
 

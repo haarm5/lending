@@ -49,36 +49,44 @@ public class SFTPController {
 
     @PostMapping(value = "/upload")
     public ResponseEntity upload() {
-        String[] files = new String[]{"lending_test.jpg"};
-        new File("./images").mkdir();
-        for (String file : files) {
-            Resource configResource = new ClassPathResource("fop/" + file);
-            InputStream inputStream = null;
-            try {
-                inputStream = configResource.getInputStream();
-                Files.copy(inputStream, new File("./images/" + file).toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                logger.error("Got error when prepare image file: {}", e);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String[] files = new String[]{"lending_test.jpg"};
+                new File("./images").mkdir();
+                for (String file : files) {
+                    Resource configResource = new ClassPathResource("fop/" + file);
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = configResource.getInputStream();
+                        Files.copy(inputStream, new File("./images/" + file).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        logger.error("Got error when prepare image file: {}", e);
+                    }
+
+                }
+
+
+                String remoteFilePath = locPrimaryLocation + "/abc/xyz/lending_test.jpg";
+                try {
+                    FileSystemManager manager = VFS.getManager();
+                    FileObject local = manager.resolveFile(
+                            System.getProperty("user.dir") + "/images/lending_test.jpg");
+                    FileObject remoteFile = manager.resolveFile(createConnectionString(remoteHost, username, password, remoteFilePath));
+                    logger.info("ftp server connected");
+                    remoteFile.copyFrom(local, Selectors.SELECT_SELF);
+                    logger.info("ftp upload done");
+                    local.close();
+                    remoteFile.close();
+                    manager.close();
+                } catch (FileSystemException e) {
+                    logger.error("Got error when upload file: {}", e);
+                }
             }
+        }).start();
 
-        }
 
-
-        String remoteFilePath = locPrimaryLocation + "/abc/xyz/lending_test.jpg";
-        try {
-            FileSystemManager manager = VFS.getManager();
-            FileObject local = manager.resolveFile(
-                    System.getProperty("user.dir") + "/images/lending_test.jpg");
-            FileObject remoteFile = manager.resolveFile(createConnectionString(remoteHost, username, password, remoteFilePath));
-            logger.info("ftp server connected");
-            remoteFile.copyFrom(local, Selectors.SELECT_SELF);
-            logger.info("ftp upload done");
-            local.close();
-            remoteFile.close();
-            manager.close();
-        } catch (FileSystemException e) {
-            logger.error("Got error when upload file: {}", e);
-        }
         return ResponseEntity.ok().build();
     }
 

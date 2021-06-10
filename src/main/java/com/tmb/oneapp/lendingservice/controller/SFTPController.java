@@ -49,7 +49,6 @@ public class SFTPController {
 
     @PostMapping(value = "/upload")
     public ResponseEntity upload() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,6 +84,8 @@ public class SFTPController {
                 }
             }
         }).start();
+
+
 
 
         return ResponseEntity.ok().build();

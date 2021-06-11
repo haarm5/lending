@@ -226,12 +226,23 @@ public class InstantLoanCreateApplicationService {
     private InstantIndividual getInstantIndividualObject(InstantLoanCreationRequest request) throws ParseException {
         InstantIndividual individual = new InstantIndividual();
         CustomerInfo customerInfo = request.getCustomerInfo();
+        String birthDate = customerInfo.getBirthDate() + "T00:00:00.000Z";
+        String issueDate = customerInfo.getIssuedDate() + "T00:00:00.000Z";
         Calendar calBirthDate = Calendar.getInstance();
         Calendar calIssueDate = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.ENGLISH);
-        calBirthDate.setTime(sdf.parse(customerInfo.getBirthDate()));
-        calIssueDate.setTime(sdf.parse(customerInfo.getIssuedDate()));
-        individual.setBirthDate(calBirthDate);
+        if(StringUtils.isNotBlank(customerInfo.getBirthDate()))
+        {
+            calBirthDate.setTime(sdf.parse(birthDate));
+            individual.setBirthDate(calBirthDate);
+        }
+
+        if(StringUtils.isNotBlank(customerInfo.getIssuedDate()))
+        {
+            calIssueDate.setTime(sdf.parse(issueDate));
+            individual.setIssuedDate(calIssueDate);
+        }
+
         individual.setBusinessSubType(null);
         individual.setBusinessType(customerInfo.getBusinessType());
         individual.setCifRelCode("M");
@@ -261,7 +272,7 @@ public class InstantLoanCreateApplicationService {
         individual.setIncomeBasicSalary(convertStringToBigDecimal(incomeBasicSalary));
         individual.setIncomeDeclared(convertStringToBigDecimal(incomeDeclared));
         individual.setIncomeType(customerInfo.getIncomeType());
-        individual.setIssuedDate(calIssueDate);
+
         individual.setMobileNo(customerInfo.getMobileNo());
         individual.setNameLine1(customerInfo.getNameLine1());
         individual.setNameLine2(customerInfo.getNameLine2());
@@ -359,7 +370,8 @@ public class InstantLoanCreateApplicationService {
             soapFacility.setMonthlyInstallment(convertStringToBigDecimal(facilitiesInfo.getMonthlyInstallment()));
             soapFacility.setTenure(convertStringToBigDecimal(facilitiesInfo.getTenure()));
             soapFacility.setFirstPaymentDueDate(facilitiesInfo.getFirstPaymentDueDate());
-            soapFacility.setPaymentDueDate(facilitiesInfo.getFirstPaymentDueDate().substring(0, 2));
+            String dueDate = StringUtils.isNotBlank(facilitiesInfo.getFirstPaymentDueDate()) ? facilitiesInfo.getFirstPaymentDueDate().substring(0, 2) : "";
+            soapFacility.setPaymentDueDate(dueDate);
             soapFacility.setDisburstBankName(facilitiesInfo.getDisburstBankName());
             soapFacility.setDisburstAccountName(facilitiesInfo.getDisburstAccountName());
             soapFacility.setDisburstAccountNo(facilitiesInfo.getDisburstAccountNo());
@@ -378,7 +390,7 @@ public class InstantLoanCreateApplicationService {
      */
     public BigDecimal convertStringToBigDecimal(String data) {
 
-        if (StringUtils.isNotBlank(data))
+        if (StringUtils.isNotBlank(data) && StringUtils.isNumeric(data))
             return new BigDecimal(data);
 
         return null;

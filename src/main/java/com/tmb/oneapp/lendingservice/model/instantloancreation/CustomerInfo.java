@@ -19,6 +19,10 @@ public class CustomerInfo {
                 StringUtils.isEmpty(getHostCifNo()) ||
                 StringUtils.isEmpty(getNationality()) ||
                 StringUtils.isEmpty(getEmploymentStatus()) ||
+                        StringUtils.isEmpty(getThaiName()) ||
+                        StringUtils.isEmpty(getThaiSurName()) ||
+                        StringUtils.isEmpty(getMobileNo()) ||
+                        StringUtils.isEmpty(getBirthDate()) ||
                 StringUtils.isEmpty(getIncomeType()));
     }
 

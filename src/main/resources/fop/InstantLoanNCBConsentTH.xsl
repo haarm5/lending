@@ -14,8 +14,8 @@
                <fo:block>
                   <fo:leader leader-pattern="space" />
                </fo:block>
-               <fo:block text-align="left" margin-left="15px">
-                  <fo:external-graphic max-height="40px" content-width="scale-to-fit" scaling="uniform" src="tmblogo.png" />
+               <fo:block text-align="left" margin-left="15px" >
+                  <fo:external-graphic content-height="100%" content-width="scale-to-fit" scaling="uniform" src="tmblogo.png" />
                </fo:block>
                <fo:block language="th" font-size="10pt" />
                <!--  3rd block starts   -->

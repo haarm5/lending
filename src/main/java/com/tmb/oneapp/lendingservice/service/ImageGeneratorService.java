@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -58,7 +59,10 @@ public class ImageGeneratorService {
      */
     private String generateJPGFile(String jsonData, String fileName) throws IOException, FOPException, TransformerException {
         FOUserAgent userAgent = fopFactory.newFOUserAgent();// FOUserAgent can be used to set user configurable options
-        File outputDir = new File("./images");
+        String baseDir = System.getProperty("user.dir");
+        userAgent.getRendererOptions().put(
+                "target-bitmap-size", new Dimension(1200, 1650));
+        File outputDir = new File(baseDir + File.separator + "images");
         outputDir.mkdir();
         File pngFile = new File(outputDir, fileName + ".png");
 
@@ -73,7 +77,10 @@ public class ImageGeneratorService {
             transformer.transform(data, res);
             logger.info("generated png consent image success:{}", pngFile.getAbsolutePath());
         }
-        return convertPngToJPG("./images/" + fileName + ".png");
+
+        String jpgFIle = convertPngToJPG(baseDir + File.separator + "images" + File.separator + fileName + ".png");
+        Files.delete(Paths.get(pngFile.getAbsolutePath()));
+        return jpgFIle;
     }
 
     private String getXMLString(String jsonDataString) {
@@ -94,7 +101,7 @@ public class ImageGeneratorService {
      * @throws IOException
      */
     private String convertPngToJPG(String fullPathPngFilename) throws IOException {
-        String jpgFullPathFileName = fullPathPngFilename.replace(".png", ".jpg");
+        String jpgFullPathFileName = fullPathPngFilename.replace(".png", ".JPG");
         Path source = Paths.get(fullPathPngFilename);
         Path target = Paths.get(jpgFullPathFileName);
 
@@ -112,7 +119,6 @@ public class ImageGeneratorService {
         ImageIO.write(newBufferedImage, "jpg", target.toFile());
         newBufferedImage.flush();
         logger.info("convert consent image png to jpg  success:{}", jpgFullPathFileName);
-
         return jpgFullPathFileName;
     }
 

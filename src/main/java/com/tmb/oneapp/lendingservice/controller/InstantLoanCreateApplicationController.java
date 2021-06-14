@@ -7,12 +7,11 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationRequest;
-import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationResponse;
 import com.tmb.oneapp.lendingservice.service.InstantLoanCreateApplicationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,6 @@ import java.time.Instant;
 
 /**
  * Controller to call Instant Loan Creation
- *
  */
 @Api(tags = "Loan Submission- Instant Loan Create Application")
 @RestController
@@ -46,18 +44,17 @@ public class InstantLoanCreateApplicationController {
      * method  to call InstantLoanCreateApplication service for Credit cards, Flasg crds, C2G
      *
      * @param request InstantLoanCreationRequest
-     *
      * @return TmbOneServiceResponse<InstantLoanCreationResponse>
      */
 
     @ApiOperation(value = "Create Instant Loan Application")
     @LogAround
     @PostMapping("/create-instant-loan-application")
-    public ResponseEntity<TmbOneServiceResponse<InstantLoanCreationResponse>> createInstantLoanApplication(@Valid @RequestBody InstantLoanCreationRequest request){
+    public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@Valid @RequestBody InstantLoanCreationRequest request) {
         logger.info("Calling createInstantLoanApplication ");
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<InstantLoanCreationResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<Object> oneServiceResponse = new TmbOneServiceResponse<>();
 
 
         boolean isRequestValid = false;
@@ -65,21 +62,20 @@ public class InstantLoanCreateApplicationController {
         String appType = request.getAppType();
         /**
          * List<AddressInfo> addressInfoList = request.getAddresses();
-        Stream<Boolean> isvalid =  addressInfoList.stream().map(address -> address.isValid()) ;
-        */
-        if(request.getCustomerInfo().isValid())
-        {
-            if(loanType.equalsIgnoreCase("CC") && appType.equalsIgnoreCase("CC")){
+         Stream<Boolean> isvalid =  addressInfoList.stream().map(address -> address.isValid()) ;
+         */
+        if (request.getCustomerInfo().isValid()) {
+            if (loanType.equalsIgnoreCase("CC") && appType.equalsIgnoreCase("CC")) {
                 isRequestValid = request.getCreditCards() != null && !request.getCreditCards().isEmpty() && request.getCreditCards().get(0).isValid();
             }
 
-            if((loanType.equalsIgnoreCase("F") ||  loanType.equalsIgnoreCase("C2G")) && appType.equalsIgnoreCase("PL")){
+            if ((loanType.equalsIgnoreCase("F") || loanType.equalsIgnoreCase("C2G")) && appType.equalsIgnoreCase("PL")) {
                 isRequestValid = request.getFlashCardOrC2G() != null && !request.getFlashCardOrC2G().isEmpty() && request.getFlashCardOrC2G().get(0).isValid();
             }
 
         }
 
-        if(!isRequestValid){
+        if (!isRequestValid) {
             oneServiceResponse.setData(null);
             oneServiceResponse
                     .setStatus(new TmbStatus(ResponseCode.BAD_REQUEST.getCode(), ResponseCode.BAD_REQUEST.getMessage(),
@@ -88,21 +84,21 @@ public class InstantLoanCreateApplicationController {
 
         }
 
-         InstantLoanCreationResponse response = instantLoanCreateApplicationService.createInstantLoanApplication(request);
+        ServiceResponse response = instantLoanCreateApplicationService.createInstantLoanApplication(request);
 
-          if(StringUtils.isNotBlank(response.getError())){
-              oneServiceResponse.setData(null);
-              oneServiceResponse
-                      .setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                              ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-              return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
-
-          }
-            oneServiceResponse.setData(response);
+        if (response.getError() != null) {
+            oneServiceResponse.setData(null);
             oneServiceResponse
-                    .setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-                            ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-            return  ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
+                    .setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                            ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+
+        }
+        oneServiceResponse.setData(response.getData());
+        oneServiceResponse
+                .setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+                        ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
     }
 

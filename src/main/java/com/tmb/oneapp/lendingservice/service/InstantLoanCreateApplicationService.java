@@ -16,6 +16,9 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Re
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.model.ServiceError;
+import com.tmb.oneapp.lendingservice.model.ServiceResponse;
+import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +27,8 @@ import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,7 +66,7 @@ public class InstantLoanCreateApplicationService {
      * @param request InstantLoanCreationRequest
      * @return InstantLoanCreationResponse
      */
-    public InstantLoanCreationResponse createInstantLoanApplication(InstantLoanCreationRequest request) {
+    public ServiceResponse createInstantLoanApplication(InstantLoanCreationRequest request) {
 
 
         RequestInstantLoanCreateApplication soapRequest = new RequestInstantLoanCreateApplication();
@@ -129,18 +134,22 @@ public class InstantLoanCreateApplicationService {
             soapRequest.setHeader(soapRequestHeader);
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
 
-            InstantLoanCreationResponse response2 = constructCreateLoanApplicationResponse(soapResponse);
+            ServiceResponse response = constructCreateLoanApplicationResponse(soapResponse);
+            if (response.getError() != null) {
+                return response;
+            }
+            InstantLoanCreationResponse response2 = (InstantLoanCreationResponse) response.getData();
             locRequest.setNCBReferenceID(response2.getMemberRef());
             locRequest.setNCBDateTime(response2.getCreateDate());
             locRequest.setProductName(response2.getProductName());
             locRequest.setAppRefNo(response2.getAppRefNo());
             constructRequestForLOCCompleteImage(locRequest);
-            return response2;
+            return response;
         } catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
-            logger.error("Exception {} : ", e.toString());
+            logger.error("Exception {} : ", e);
         }
-        InstantLoanCreationResponse response = new InstantLoanCreationResponse();
-        response.setError("exception");
+        ServiceResponseImp response = new ServiceResponseImp();
+        response.setError(new ServiceError());
         return response;
     }
 
@@ -151,8 +160,8 @@ public class InstantLoanCreateApplicationService {
      * @param soapResponse ResponseInstantLoanCreateApplication
      * @return InstantLoanCreationResponse
      */
-    private InstantLoanCreationResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse) {
-
+    private ServiceResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse) {
+        ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
         com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Body responseBody = soapResponse.getBody();
         String responseCode = soapResponse.getHeader().getResponseCode();
@@ -168,10 +177,11 @@ public class InstantLoanCreateApplicationService {
             productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
             response.setAppRefNo(responseBody.getAppRefNo());
             response.setProductName(productName);
+            serviceResponseImp.setData(response);
         } else {
-            response.setError(responseCode);
+            serviceResponseImp.setError(new ServiceError());
         }
-        return response;
+        return serviceResponseImp;
     }
 
 
@@ -207,8 +217,9 @@ public class InstantLoanCreateApplicationService {
                 String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
                 String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
                 ftpClient.storeFile(directoryPath, jpgFile);
+                Files.delete(Paths.get(jpgFile));
             } catch (IOException e) {
-                logger.error("generateLOCImage got error:{}",e);
+                logger.error("generateLOCImage got error:{}", e);
             }
 
             logger.info("constructRequestForLOCCompleteImage END");
@@ -231,18 +242,14 @@ public class InstantLoanCreateApplicationService {
         Calendar calBirthDate = Calendar.getInstance();
         Calendar calIssueDate = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.ENGLISH);
-        if(StringUtils.isNotBlank(customerInfo.getBirthDate()))
-        {
+        if (StringUtils.isNotBlank(customerInfo.getBirthDate())) {
             calBirthDate.setTime(sdf.parse(birthDate));
             individual.setBirthDate(calBirthDate);
         }
-
-        if(StringUtils.isNotBlank(customerInfo.getIssuedDate()))
-        {
+        if (StringUtils.isNotBlank(customerInfo.getIssuedDate())) {
             calIssueDate.setTime(sdf.parse(issueDate));
             individual.setIssuedDate(calIssueDate);
         }
-
         individual.setBusinessSubType(null);
         individual.setBusinessType(customerInfo.getBusinessType());
         individual.setCifRelCode("M");
@@ -272,7 +279,6 @@ public class InstantLoanCreateApplicationService {
         individual.setIncomeBasicSalary(convertStringToBigDecimal(incomeBasicSalary));
         individual.setIncomeDeclared(convertStringToBigDecimal(incomeDeclared));
         individual.setIncomeType(customerInfo.getIncomeType());
-
         individual.setMobileNo(customerInfo.getMobileNo());
         individual.setNameLine1(customerInfo.getNameLine1());
         individual.setNameLine2(customerInfo.getNameLine2());
@@ -396,22 +402,22 @@ public class InstantLoanCreateApplicationService {
         return null;
     }
 
-    private String getDateAndTimeForLOC(String dateAndTime){
+    private String getDateAndTimeForLOC(String dateAndTime) {
 
-        if(StringUtils.isBlank(dateAndTime))
+        if (StringUtils.isBlank(dateAndTime))
             return "";
 
-        logger.info("dateAndTime is  {} :",dateAndTime);
+        logger.info("dateAndTime is  {} :", dateAndTime);
         String[] dateAndTimeArry = dateAndTime.split("T");
         String dateEng = dateAndTimeArry[0];
         String curTime = dateAndTimeArry[1];
-        return getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z","");
+        return getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "");
 
     }
 
 
-    private String getThaiDate(String dateEng){
-        if(StringUtils.isBlank(dateEng))
+    private String getThaiDate(String dateEng) {
+        if (StringUtils.isBlank(dateEng))
             return "";
         String[] dateArray = dateEng.split("-");
         String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
@@ -425,4 +431,3 @@ public class InstantLoanCreateApplicationService {
         return thaiDate.toString();
     }
 }
-

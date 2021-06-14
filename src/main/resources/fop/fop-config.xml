@@ -55,8 +55,7 @@
                 </font>
             </fonts>
             <rendering>quality</rendering>
-            <source-resolution>600</source-resolution>
-            <target-resolution>600</target-resolution>
+            <target-resolution>1200</target-resolution>
         </renderer>
     </renderers>
 </fop>

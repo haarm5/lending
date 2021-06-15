@@ -67,12 +67,12 @@ public class SFTPClientImp implements FTPClient {
 
         File sourceFile = new File(srcFile);
         if (!sourceFile.exists()) {
-            logger.error("src file to upload to ftp does not exists:{}", srcFile);
+            logger.error("src file to upload to ftp does not exists: {}", srcFile);
             return false;
         }
         String[] locations = new String[]{locPrimaryLocation, locSecondaryLocation};
         String fileName = sourceFile.getName();
-        logger.info("src file to upload:{}", srcFile);
+        logger.info("src file to upload: {}", srcFile);
         try (StandardFileSystemManager manager = new StandardFileSystemManager()) {
             manager.init();
             FileObject local = manager.resolveFile(
@@ -85,7 +85,7 @@ public class SFTPClientImp implements FTPClient {
                     FileObject remoteFile = manager.resolveFile(createConnectionString(remoteHost, username, password, remoteFilePath));
                     logger.info("ftp server connected");
                     remoteFile.copyFrom(local, Selectors.SELECT_SELF);
-                    logger.info("ftp upload done:{}", remoteFilePath);
+                    logger.info("ftp upload done: {}", remoteFilePath);
                     remoteFile.close();
 
                 } catch (FileSystemException e) {

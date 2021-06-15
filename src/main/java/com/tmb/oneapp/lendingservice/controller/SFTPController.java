@@ -26,7 +26,7 @@ public class SFTPController {
     public ResponseEntity normal() throws IOException {
         String directoryPath = "normal/12345";
         String baseDir = System.getProperty("user.dir");
-        sftpClientImp.storeFile(directoryPath, baseDir+File.separator+"images"+File.separator+"01_210615152223_abc_00110.JPG");
+        sftpClientImp.storeFile(directoryPath, baseDir+File.separator+"fop"+File.separator+"01_210615152223_abc_00110.JPG");
         return ResponseEntity.ok().build();
     }
 
@@ -42,7 +42,7 @@ public class SFTPController {
             String directoryPath = "async/12346";
             String baseDir = System.getProperty("user.dir");
             try {
-                sftpClientImp.storeFile(directoryPath, baseDir+File.separator+"images"+File.separator+"01_210615152223_abc_00110.JPG");
+                sftpClientImp.storeFile(directoryPath, baseDir+File.separator+"fop"+File.separator+"01_210615152223_abc_00110.JPG");
             } catch (IOException e) {
                 e.printStackTrace();
             }

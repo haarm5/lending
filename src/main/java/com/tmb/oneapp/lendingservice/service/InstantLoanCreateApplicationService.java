@@ -36,7 +36,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
@@ -51,6 +52,8 @@ public class InstantLoanCreateApplicationService {
     private String getMoreFlag = "";
     private final FTPClient ftpClient;
     private static final String SEPARATOR = "/";
+
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
         this.mapper = mapper;
@@ -143,7 +146,8 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNCBDateTime(response2.getCreateDate());
             locRequest.setProductName(response2.getProductName());
             locRequest.setAppRefNo(response2.getAppRefNo());
-            constructRequestForLOCCompleteImage(locRequest);
+            LOCRequest locRequest2 =  new LOCRequest(locRequest);
+            executor.execute(() -> constructRequestForLOCCompleteImage(locRequest2));
             return response;
         } catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
             logger.error("Exception {} : ", e);
@@ -185,45 +189,33 @@ public class InstantLoanCreateApplicationService {
     }
 
 
-    private void constructRequestForLOCCompleteImage(LOCRequest locRequest) {
-        LOCRequest locRequest2 = new LOCRequest();
-        locRequest2.setNCBMobileNo(locRequest.getNCBMobileNo());
-        locRequest2.setNCBDateofbirth(locRequest.getNCBDateofbirth());
-        locRequest2.setNcbid(locRequest.getNcbid());
-        locRequest2.setNCBCustName(locRequest.getNCBCustName());
-        locRequest2.setCrmId(locRequest.getCrmId());
-        locRequest2.setNCBReferenceID(locRequest.getNCBReferenceID());
-        locRequest2.setNCBDateTime(locRequest.getNCBDateTime());
-        locRequest2.setProductName(locRequest.getProductName());
-        locRequest2.setAppRefNo(locRequest.getAppRefNo());
-        CompletableFuture.runAsync(() -> {
+    private void constructRequestForLOCCompleteImage(LOCRequest locRequest2) {
 
-            logger.info("constructRequestForLOCCompleteImage Start");
-            locRequest2.setConsentbyCustomer("Access PIN");
-            String dob = locRequest2.getNCBDateofbirth();
-            dob = dob.substring(0, 10);
-            locRequest2.setNCBDateofbirth(getThaiDate(dob));
+        logger.info("constructRequestForLOCCompleteImage Start");
+        locRequest2.setConsentbyCustomer("Access PIN");
+        String dob = locRequest2.getNCBDateofbirth();
+        dob = dob.substring(0, 10);
+        locRequest2.setNCBDateofbirth(getThaiDate(dob));
 
-            String mobno = locRequest2.getNCBMobileNo();
-            locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+        String mobno = locRequest2.getNCBMobileNo();
+        locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
 
-            String customerId = locRequest2.getNcbid();
-            locRequest2.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+        String customerId = locRequest2.getNcbid();
+        locRequest2.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
-            locRequest2.setNCBDateTime(getDateAndTimeForLOC(locRequest2.getNCBDateTime()));
+        locRequest2.setNCBDateTime(getDateAndTimeForLOC(locRequest2.getNCBDateTime()));
 
 
-            try {
-                String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
-                String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
-                ftpClient.storeFile(directoryPath, jpgFile);
-                Files.delete(Paths.get(jpgFile));
-            } catch (IOException e) {
-                logger.error("generateLOCImage got error:{}", e);
-            }
+        try {
+            String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
+            String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
+            ftpClient.storeFile(directoryPath, jpgFile);
+            Files.delete(Paths.get(jpgFile));
+        } catch (IOException e) {
+            logger.error("generateLOCImage got error:{}", e);
+        }
 
-            logger.info("constructRequestForLOCCompleteImage END");
-        });
+        logger.info("constructRequestForLOCCompleteImage END");
 
 
     }

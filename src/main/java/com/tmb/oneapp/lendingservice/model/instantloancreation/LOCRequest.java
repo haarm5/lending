@@ -31,4 +31,20 @@ public class LOCRequest {
 
     @JsonProperty("crmId")
     private String crmId;
+
+    public LOCRequest() {
+    }
+
+    public LOCRequest(LOCRequest locRequest) {
+        setNCBMobileNo(locRequest.getNCBMobileNo());
+        setNCBDateofbirth(locRequest.getNCBDateofbirth());
+        setNcbid(locRequest.getNcbid());
+        setNCBCustName(locRequest.getNCBCustName());
+        setCrmId(locRequest.getCrmId());
+        setNCBReferenceID(locRequest.getNCBReferenceID());
+        setNCBDateTime(locRequest.getNCBDateTime());
+        setProductName(locRequest.getProductName());
+        setAppRefNo(locRequest.getAppRefNo());
+
+    }
 }

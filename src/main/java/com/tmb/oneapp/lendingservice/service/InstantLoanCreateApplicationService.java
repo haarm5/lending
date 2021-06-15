@@ -78,7 +78,7 @@ public class InstantLoanCreateApplicationService {
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
             List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
-            InstantIndividual soapInstantIndividual = getInstantIndividualObject(request);
+            InstantIndividual soapInstantIndividual = getInstantIndividualObject(request,request.getNcbConsentFlag());
             CustomerInfo customerInfo = request.getCustomerInfo();
             String customerFullName = soapInstantIndividual.getThaiName() + " " + soapInstantIndividual.getThaiSurName();
             LOCRequest locRequest = new LOCRequest();
@@ -234,7 +234,7 @@ public class InstantLoanCreateApplicationService {
      * @param request InstantLoanCreationRequest
      * @return InstantIndividual
      */
-    private InstantIndividual getInstantIndividualObject(InstantLoanCreationRequest request) throws ParseException {
+    private InstantIndividual getInstantIndividualObject(InstantLoanCreationRequest request, String ncbConsent) throws ParseException {
         InstantIndividual individual = new InstantIndividual();
         CustomerInfo customerInfo = request.getCustomerInfo();
         String birthDate = customerInfo.getBirthDate() + "T00:00:00.000Z";
@@ -283,7 +283,7 @@ public class InstantLoanCreateApplicationService {
         individual.setNameLine1(customerInfo.getNameLine1());
         individual.setNameLine2(customerInfo.getNameLine2());
         individual.setNationality(customerInfo.getNationality());
-        individual.setNcbConsentFlag(customerInfo.getNcbConsentFlag());
+        individual.setNcbConsentFlag(ncbConsent);
         individual.setProfessionalCode(customerInfo.getProfessionalCode());
         individual.setRmOccupation(customerInfo.getRmOccupation());
         individual.setSourceFromCountry(customerInfo.getSourceFromCountry());

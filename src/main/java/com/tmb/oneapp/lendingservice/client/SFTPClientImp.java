@@ -64,6 +64,7 @@ public class SFTPClientImp implements FTPClient {
      */
     @Override
     public boolean storeFile(String targetDir, String srcFile) throws IOException {
+
         File sourceFile = new File(srcFile);
         if (!sourceFile.exists()) {
             logger.error("src file to upload to ftp does not exists:{}", srcFile);
@@ -71,10 +72,13 @@ public class SFTPClientImp implements FTPClient {
         }
         String[] locations = new String[]{locPrimaryLocation, locSecondaryLocation};
         String fileName = sourceFile.getName();
+        logger.info("src file to upload:{}", srcFile);
         try (StandardFileSystemManager manager = new StandardFileSystemManager()) {
             manager.init();
             FileObject local = manager.resolveFile(
                     srcFile);
+            logger.info("src file resolved:{}", srcFile);
+
             for (String location : locations) {
                 String remoteFilePath = location + SEPARATOR + targetDir + SEPARATOR + fileName;
                 try {

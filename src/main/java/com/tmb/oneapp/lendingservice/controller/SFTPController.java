@@ -56,22 +56,14 @@ public class SFTPController {
         channelSftp.connect();
         String baseDir = System.getProperty("user.dir");
         String localFile = baseDir + File.separator + "fop" + File.separator + "01_210615152223_abc_00110.JPG";
-        String remoteDir = sftpClientImp.locPrimaryLocation + "/jsch/abc/";
+
         channelSftp.cd( sftpClientImp.locPrimaryLocation );
-        channelSftp.mkdir(sftpClientImp.locPrimaryLocation +"/jsch/");
+        channelSftp.mkdir(sftpClientImp.locPrimaryLocation +"/jsch");
         channelSftp.cd(sftpClientImp.locPrimaryLocation +"/jsch/");
-        channelSftp.mkdir(sftpClientImp.locPrimaryLocation +"/jsch/abc/");
+        channelSftp.mkdir(sftpClientImp.locPrimaryLocation +"/jsch/abc");
 
         channelSftp.put(localFile,  sftpClientImp.locPrimaryLocation + "/jsch/abc/" + "01_210615152223_abc_00110.JPG");
 
-
-
-        channelSftp.cd( sftpClientImp.locSecondaryLocation );
-        channelSftp.mkdir(sftpClientImp.locSecondaryLocation +"/jsch/");
-        channelSftp.cd(sftpClientImp.locSecondaryLocation +"/jsch/");
-        channelSftp.mkdir(sftpClientImp.locSecondaryLocation +"/jsch/abc/");
-
-        channelSftp.put(localFile,  sftpClientImp.locSecondaryLocation + "/jsch/abc/" + "01_210615152223_abc_00110.JPG");
 
 
 

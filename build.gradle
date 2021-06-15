@@ -94,6 +94,7 @@ dependencies {
     implementation group: 'commons-net', name: 'commons-net', version: '3.6'
     implementation 'com.jcraft:jsch:0.1.55'
     implementation 'org.apache.commons:commons-vfs2:2.8.0'
+    implementation group: 'com.hierynomus', name: 'sshj', version: '0.31.0'
     compile('org.apache.xmlgraphics:fop:2.6'){
     	exclude group: 'xml-apis'
     }

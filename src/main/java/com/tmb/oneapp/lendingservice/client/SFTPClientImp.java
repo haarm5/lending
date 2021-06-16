@@ -83,6 +83,7 @@ public class SFTPClientImp implements FTPClient {
                 String remoteFilePath = location + SEPARATOR + targetDir + SEPARATOR + fileName;
                 try {
                     FileObject remoteFile = manager.resolveFile(createConnectionString(remoteHost, username, password, remoteFilePath));
+
                     logger.info("ftp server connected");
                     remoteFile.copyFrom(local, Selectors.SELECT_SELF);
                     logger.info("ftp upload done: {}", remoteFilePath);

@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.loan.ProductRequest;
@@ -15,6 +16,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+
+import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,9 +42,9 @@ public class LoanControllerTest {
 
         when(loanService.fetchProducts(any())).thenReturn(mockResponse);
         LoanController loanController = new LoanController(loanService);
-        ProductRequest request = new ProductRequest();
-        request.setCrmId("12345");
-        ResponseEntity<TmbOneServiceResponse<Object>> actualResponse = loanController.fetchProducts("123", request);
+        HashMap<String, String> reqHeader = new HashMap<>();
+        reqHeader.put(LendingServiceConstant.HEADER_X_CRMID,"123");
+        ResponseEntity<TmbOneServiceResponse<Object>> actualResponse = loanController.fetchProducts(reqHeader);
         ProductResponse actualProductResponse = (ProductResponse) actualResponse.getBody().getData();
         Assertions.assertNotNull(actualProductResponse);
         verify(loanService, times(1)).fetchProducts(any());
@@ -58,7 +61,7 @@ public class LoanControllerTest {
         ProductRequest request = new ProductRequest();
         request.setCrmId("12345");
         try {
-            loanController.fetchProducts("123", request);
+            loanController.fetchProducts(new HashMap<>());
             Assertions.fail("Should have TMBCommonException");
         } catch (TMBCommonException e) {
         }

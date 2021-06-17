@@ -56,11 +56,22 @@ public class SFTPController {
         channelSftp.connect();
         String baseDir = System.getProperty("user.dir");
         String localFile = baseDir + File.separator + "fop" + File.separator + "01_210615152223_abc_00110.JPG";
-        String remoteDir = sftpClientImp.locPrimaryLocation+"/jsch/";
-        channelSftp.cd(sftpClientImp.locPrimaryLocation);
-        channelSftp.mkdir("jsch");
-        channelSftp.put(localFile, remoteDir + "01_210615152223_abc_00110.JPG");
-        channelSftp.exit();
+        try{
+            String remoteDir = sftpClientImp.locPrimaryLocation+"/jsch/";
+            String current = channelSftp.pwd();
+            logger.info("current 1 :{}",current);
+            channelSftp.cd(sftpClientImp.locPrimaryLocation);
+            String current2 = channelSftp.pwd();
+            logger.info("current 2 :{}",current2);
+            channelSftp.mkdir("jsch");
+            channelSftp.put(localFile, remoteDir + "01_210615152223_abc_00110.JPG");
+            channelSftp.exit();
+        }catch (Exception e){
+            SftpATTRS result = channelSftp.stat(sftpClientImp.locPrimaryLocation);
+            logger.info("stat {}",result);
+            logger.info("Exception {}",e);
+        }
+
         logger.info("end jsch");
         return ResponseEntity.ok().build();
     }

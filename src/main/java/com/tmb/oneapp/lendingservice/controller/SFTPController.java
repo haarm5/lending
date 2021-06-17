@@ -60,11 +60,19 @@ public class SFTPController {
             String remoteDir = "/users/mibuser/u01/datafile/mib/mibshare/LetterConsent";
             String current = channelSftp.pwd();
             logger.info("current 1 :{}",current);
+
             channelSftp.cd(remoteDir);
+            channelSftp.mkdir("jsch");
+            channelSftp.cd(remoteDir+"/jsch");
             String current2 = channelSftp.pwd();
             logger.info("current 2 :{}",current2);
-            channelSftp.mkdir("jsch");
-            channelSftp.put(localFile, remoteDir + "/jsch/01_210615152223_abc_00110.JPG");
+
+            channelSftp.mkdir("jsch2");
+            channelSftp.cd(remoteDir+"/jsch/jsch2");
+            String current3 = channelSftp.pwd();
+            logger.info("current 3 :{}",current3);
+
+            channelSftp.put(localFile, remoteDir + "/jsch/jsch2/01_210615152223_abc_00110.JPG");
             channelSftp.exit();
         }catch (Exception e){
             SftpATTRS result = channelSftp.stat(sftpClientImp.locPrimaryLocation);

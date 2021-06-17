@@ -145,7 +145,7 @@ sonarqube {
         }
     }
     properties {
-        property 'sonar.coverage.exclusions', '**/config/*, **/constants/*, **/model/*,  **/model/**,**/utils/*,**/client/*,**/LendingServiceApplication.java,**/LendingModuleCache.java'
+        property 'sonar.coverage.exclusions', '**/controller/SFTPController.java,  **/config/*, **/constants/*, **/model/*,  **/model/**,**/utils/*,**/client/*,**/LendingServiceApplication.java,**/LendingModuleCache.java'
     }
     properties {
         property 'sonar.exclusions', '**/config/*'

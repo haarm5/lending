@@ -57,14 +57,14 @@ public class SFTPController {
         String baseDir = System.getProperty("user.dir");
         String localFile = baseDir + File.separator + "fop" + File.separator + "01_210615152223_abc_00110.JPG";
         try{
-            String remoteDir = sftpClientImp.locPrimaryLocation+"/jsch/";
+            String remoteDir = "/users/mibuser/u01/datafile/mib/mibshare/LetterConsent";
             String current = channelSftp.pwd();
             logger.info("current 1 :{}",current);
-            channelSftp.cd(sftpClientImp.locPrimaryLocation);
+            channelSftp.cd(remoteDir);
             String current2 = channelSftp.pwd();
             logger.info("current 2 :{}",current2);
             channelSftp.mkdir("jsch");
-            channelSftp.put(localFile, remoteDir + "01_210615152223_abc_00110.JPG");
+            channelSftp.put(localFile, remoteDir + "/jsch/01_210615152223_abc_00110.JPG");
             channelSftp.exit();
         }catch (Exception e){
             SftpATTRS result = channelSftp.stat(sftpClientImp.locPrimaryLocation);

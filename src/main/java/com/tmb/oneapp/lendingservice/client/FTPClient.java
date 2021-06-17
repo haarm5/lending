@@ -11,10 +11,10 @@ import java.util.List;
 public interface FTPClient {
     /**
      * Store file to ftp server
-     * @param destDirs
-     * @param srcFile
+     *
+     * @param storeFileInfo
      * @return
      * @throws IOException
      */
-    boolean storeFile(List<SFTPStoreFileInfo> storeFileInfo)throws IOException;
+    boolean storeFile(List<SFTPStoreFileInfo> storeFileInfo);
 }

@@ -16,12 +16,14 @@ import com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Re
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -32,10 +34,7 @@ import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -53,6 +52,9 @@ public class InstantLoanCreateApplicationService {
     private final FTPClient ftpClient;
     private static final String SEPARATOR = "/";
 
+    @Value("${sftp.locations.consent-images}")
+    private String sftpLocations;
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient, ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
@@ -60,6 +62,10 @@ public class InstantLoanCreateApplicationService {
         this.soapClient = soapClient;
         this.imageGeneratorService = imageGeneratorService;
         this.ftpClient = ftpClient;
+    }
+
+    public void setSftpLocations(String sftpLocations) {
+        this.sftpLocations = sftpLocations;
     }
 
 
@@ -81,7 +87,7 @@ public class InstantLoanCreateApplicationService {
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
             List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
-            InstantIndividual soapInstantIndividual = getInstantIndividualObject(request,request.getNcbConsentFlag());
+            InstantIndividual soapInstantIndividual = getInstantIndividualObject(request, request.getNcbConsentFlag());
             CustomerInfo customerInfo = request.getCustomerInfo();
             String customerFullName = soapInstantIndividual.getThaiName() + " " + soapInstantIndividual.getThaiSurName();
             LOCRequest locRequest = new LOCRequest();
@@ -146,7 +152,7 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNCBDateTime(response2.getCreateDate());
             locRequest.setProductName(response2.getProductName());
             locRequest.setAppRefNo(response2.getAppRefNo());
-            LOCRequest locRequest2 =  new LOCRequest(locRequest);
+            LOCRequest locRequest2 = new LOCRequest(locRequest);
             executor.execute(() -> constructRequestForLOCCompleteImage(locRequest2));
             return response;
         } catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
@@ -205,11 +211,21 @@ public class InstantLoanCreateApplicationService {
 
         locRequest2.setNCBDateTime(getDateAndTimeForLOC(locRequest2.getNCBDateTime()));
 
-
         try {
             String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
             String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
-            //ftpClient.storeFile(directoryPath, new String[]{jpgFile});
+            List<SFTPStoreFileInfo> sftpStoreFileInfoList = new ArrayList<>();
+            String[] locationTokens = sftpLocations.split(",");
+            SFTPStoreFileInfo sftpStoreFileInfo;
+            for (int i = 0; i < locationTokens.length; i++) {
+                sftpStoreFileInfo = new SFTPStoreFileInfo();
+                sftpStoreFileInfo.setSrcFile(jpgFile);
+                sftpStoreFileInfo.setRootPath(locationTokens[i]);
+                if (i == 0)
+                    sftpStoreFileInfo.setDstDir(directoryPath);
+                sftpStoreFileInfoList.add(sftpStoreFileInfo);
+            }
+            ftpClient.storeFile(sftpStoreFileInfoList);
             Files.delete(Paths.get(jpgFile));
         } catch (IOException e) {
             logger.error("generateLOCImage got error:{}", e);

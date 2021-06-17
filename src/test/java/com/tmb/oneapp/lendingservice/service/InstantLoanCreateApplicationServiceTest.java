@@ -18,12 +18,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public class InstantLoanCreateApplicationServiceTest {
@@ -115,7 +119,18 @@ public class InstantLoanCreateApplicationServiceTest {
         ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
+    }
 
-
+    @Test
+    void InstantLoanCreationEnsureToCallSFTP() throws IOException, ServiceException, InterruptedException {
+        flashCardRequest.setLoanType("C2G");
+        when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
+        when(imageGeneratorService.generateLOCImage(any())).thenReturn("test.JPG");
+        createApplicationService.setSftpLocations("abc,xyz");
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
+        await().timeout(2000, TimeUnit.SECONDS);
+        InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
+        assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
+        verify(ftpClient, times(1)).storeFile(any());
     }
 }

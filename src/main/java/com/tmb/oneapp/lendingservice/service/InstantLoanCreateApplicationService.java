@@ -209,7 +209,7 @@ public class InstantLoanCreateApplicationService {
         try {
             String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
             String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
-            ftpClient.storeFile(directoryPath, jpgFile);
+            //ftpClient.storeFile(directoryPath, new String[]{jpgFile});
             Files.delete(Paths.get(jpgFile));
         } catch (IOException e) {
             logger.error("generateLOCImage got error:{}", e);

@@ -1,6 +1,9 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
+
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Provides method to store file to ftp server.
@@ -8,10 +11,10 @@ import java.io.IOException;
 public interface FTPClient {
     /**
      * Store file to ftp server
-     * @param target
+     * @param destDirs
      * @param srcFile
      * @return
      * @throws IOException
      */
-    boolean storeFile(String target, String srcFile) throws IOException;
+    boolean storeFile(List<SFTPStoreFileInfo> storeFileInfo)throws IOException;
 }

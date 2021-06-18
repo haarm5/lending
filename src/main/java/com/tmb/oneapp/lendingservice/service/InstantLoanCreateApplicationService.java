@@ -75,7 +75,7 @@ public class InstantLoanCreateApplicationService {
      * @param request InstantLoanCreationRequest
      * @return InstantLoanCreationResponse
      */
-    public ServiceResponse createInstantLoanApplication(InstantLoanCreationRequest request) {
+    public ServiceResponse createInstantLoanApplication(String crmId,InstantLoanCreationRequest request) {
 
 
         RequestInstantLoanCreateApplication soapRequest = new RequestInstantLoanCreateApplication();
@@ -95,7 +95,7 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNCBDateofbirth(customerInfo.getBirthDate());
             locRequest.setNcbid(customerInfo.getIdNo1());
             locRequest.setNCBCustName(customerFullName);
-            locRequest.setCrmId(customerInfo.getHostCifNo());
+            locRequest.setCrmId(crmId);
 
 
             // Credit card Data
@@ -438,4 +438,6 @@ public class InstantLoanCreateApplicationService {
         thaiDate.append(thaiYear);
         return thaiDate.toString();
     }
+
+
 }

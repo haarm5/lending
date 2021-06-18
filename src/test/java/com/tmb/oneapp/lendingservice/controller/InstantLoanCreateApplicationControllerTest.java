@@ -2,7 +2,9 @@ package com.tmb.oneapp.lendingservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.CreditCardLoanInfo;
@@ -19,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +40,9 @@ public class InstantLoanCreateApplicationControllerTest {
     InstantLoanCreationRequest ccRequest;
     InstantLoanCreationRequest flashCardRequest;
     InstantLoanCreationResponse expectedResponse;
+    private String crmId = "123";
+
+    Map<String, String> reqHeaders;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
@@ -48,36 +55,38 @@ public class InstantLoanCreateApplicationControllerTest {
         ccRequest = mapper.readValue(requestCC, InstantLoanCreationRequest.class);
         flashCardRequest = mapper.readValue(requestFlashCard, InstantLoanCreationRequest.class);
         expectedResponse = mapper.readValue(response, InstantLoanCreationResponse.class);
+        reqHeaders = new HashMap<>();
+        reqHeaders.put(LendingServiceConstant.HEADER_X_CRMID, crmId);
 
 
     }
 
     @Test
-    void createInstantLoanApplicationForCC() {
+    void createInstantLoanApplicationForCC() throws TMBCommonException {
 
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         serviceResponseImp.setData(expectedResponse);
-        when(createLoanApplicationService.createInstantLoanApplication(ccRequest)).thenReturn(serviceResponseImp);
+        when(createLoanApplicationService.createInstantLoanApplication(crmId, ccRequest)).thenReturn(serviceResponseImp);
 
-        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(ccRequest);
+        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(reqHeaders, ccRequest);
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResult.getBody().getData();
         assertEquals(expectedResponse.getRequestId(), data.getRequestId());
 
         serviceResponseImp.setError(new ServiceError());
-        actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(ccRequest);
+        actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(reqHeaders, ccRequest);
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
         assertEquals(null, actualResult.getBody().getData());
 
     }
 
     @Test
-    void createInstantLoanApplicationForFlashCard() {
+    void createInstantLoanApplicationForFlashCard() throws TMBCommonException {
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         serviceResponseImp.setData(expectedResponse);
-        when(createLoanApplicationService.createInstantLoanApplication(any())).thenReturn(serviceResponseImp);
+        when(createLoanApplicationService.createInstantLoanApplication(any(), any())).thenReturn(serviceResponseImp);
 
-        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(flashCardRequest);
+        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(reqHeaders, flashCardRequest);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResult.getBody().getData();
         assertEquals(HttpStatus.OK, actualResult.getStatusCode());
         assertEquals(expectedResponse.getRequestId(), data.getRequestId());
@@ -86,13 +95,13 @@ public class InstantLoanCreateApplicationControllerTest {
     }
 
     @Test
-    void createInstantLoanApplicationForInvalidRequest() {
+    void createInstantLoanApplicationForInvalidRequest() throws TMBCommonException {
         List<CreditCardLoanInfo> ccInfoList = new ArrayList<>();
         CreditCardLoanInfo ccInfo = new CreditCardLoanInfo();
         ccInfo.setCardInd("");
         ccInfoList.add(ccInfo);
         ccRequest.setCreditCards(ccInfoList);
-        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(ccRequest);
+        ResponseEntity<TmbOneServiceResponse<Object>> actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(reqHeaders, ccRequest);
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
 
     }

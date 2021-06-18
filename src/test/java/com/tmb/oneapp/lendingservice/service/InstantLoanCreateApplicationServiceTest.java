@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
@@ -45,6 +44,8 @@ public class InstantLoanCreateApplicationServiceTest {
     @Mock
     ImageGeneratorService imageGeneratorService;
 
+    private String crmId = "123";
+
     @BeforeEach
     void setUp() throws JsonProcessingException {
         MockitoAnnotations.initMocks(this);
@@ -62,7 +63,7 @@ public class InstantLoanCreateApplicationServiceTest {
     void InstantLoanCreationForRemoteException() throws RemoteException, ServiceException, JsonProcessingException {
 
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenThrow(RemoteException.class);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(ccRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, ccRequest);
         assertNotNull(actualResponse.getError());
 
 
@@ -72,7 +73,7 @@ public class InstantLoanCreateApplicationServiceTest {
     void InstantLoanCreationForServiceException() throws RemoteException, ServiceException, JsonProcessingException {
 
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenThrow(ServiceException.class);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(ccRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, ccRequest);
         assertNotNull(actualResponse.getError());
 
 
@@ -83,7 +84,7 @@ public class InstantLoanCreateApplicationServiceTest {
     void InstantLoanCreationForJsonProcessingException() throws RemoteException, ServiceException, JsonProcessingException {
 
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenThrow(JsonProcessingException.class);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(ccRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, ccRequest);
         assertNotNull(actualResponse.getError());
 
 
@@ -93,7 +94,7 @@ public class InstantLoanCreateApplicationServiceTest {
     void InstantLoanCreationForCC() throws RemoteException, ServiceException, JsonProcessingException {
 
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(ccRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, ccRequest);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
 
@@ -104,7 +105,7 @@ public class InstantLoanCreateApplicationServiceTest {
     void InstantLoanCreationForFlashCard() throws RemoteException, ServiceException, JsonProcessingException {
 
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
 
@@ -116,7 +117,7 @@ public class InstantLoanCreateApplicationServiceTest {
 
         flashCardRequest.setLoanType("C2G");
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
     }
@@ -127,7 +128,7 @@ public class InstantLoanCreateApplicationServiceTest {
         when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
         when(imageGeneratorService.generateLOCImage(any())).thenReturn("test.JPG");
         createApplicationService.setSftpLocations("abc,xyz");
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(flashCardRequest);
+        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
         await().timeout(2000, TimeUnit.SECONDS);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());

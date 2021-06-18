@@ -1,6 +1,7 @@
 package com.tmb.oneapp.lendingservice.controller;
 
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -13,13 +14,16 @@ import com.tmb.oneapp.lendingservice.service.InstantLoanCreateApplicationService
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Controller to call Instant Loan Creation
@@ -50,7 +54,7 @@ public class InstantLoanCreateApplicationController {
     @ApiOperation(value = "Create Instant Loan Application")
     @LogAround
     @PostMapping("/create-instant-loan-application")
-    public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@Valid @RequestBody InstantLoanCreationRequest request) {
+    public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@RequestHeader Map<String, String> reqHeaders,@Valid @RequestBody InstantLoanCreationRequest request) throws TMBCommonException {
         logger.info("Calling createInstantLoanApplication ");
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -83,8 +87,12 @@ public class InstantLoanCreateApplicationController {
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
 
         }
-
-        ServiceResponse response = instantLoanCreateApplicationService.createInstantLoanApplication(request);
+        String crmId = reqHeaders.get(LendingServiceConstant.HEADER_X_CRMID);
+        if(crmId==null){
+            logger.error("no x-crm-id for createInstantLoanApplication");
+            throw new TMBCommonException("0001","failed",ResponseCode.BAD_REQUEST.getService(), HttpStatus.BAD_REQUEST,null);
+        }
+        ServiceResponse response = instantLoanCreateApplicationService.createInstantLoanApplication(crmId,request);
 
         if (response.getError() != null) {
             oneServiceResponse.setData(null);

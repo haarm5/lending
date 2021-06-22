@@ -26,7 +26,7 @@ public class FopConfig implements ResourceLoaderAware {
     private ResourceLoader resourceLoader;
 
     private void setupFopFiles() throws IOException {
-        String[] files = new String[]{"tmblogo.png", "InstantLoanNCBConsentTH.xsl", "DBOzoneX.ttf", "DBOzoneX-Bold.ttf", "DBOzoneX-Italic.ttf", "fop-config.xml"};
+        String[] files = new String[]{"01_210618012001_abc_00110.JPG","tmblogo.png", "InstantLoanNCBConsentTH.xsl", "DBOzoneX.ttf", "DBOzoneX-Bold.ttf", "DBOzoneX-Italic.ttf", "fop-config.xml"};
         new File("./fop").mkdir();
         for (String file : files) {
             Resource configResource = this.resourceLoader.getResource("classpath:fop/" + file);

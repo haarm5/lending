@@ -54,7 +54,7 @@ public class SFTPController {
         SFTPStoreFileInfo sftpStoreFileInfo = new SFTPStoreFileInfo();
         sftpStoreFileInfo.setRootPath("/u01/datafile/mib/mibshare/LetterConsent");
         sftpStoreFileInfo.setDstDir(crmId);
-        sftpStoreFileInfo.setSrcFile(System.getProperty("user.dir") + "/images/01_210618012001_abc_00110.JPG");
+        sftpStoreFileInfo.setSrcFile(System.getProperty("user.dir") + "/fop/01_210618012001_abc_00110.JPG");
         req.add(sftpStoreFileInfo);
         sftpClientImp.storeFile(req);
 

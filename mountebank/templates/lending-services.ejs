@@ -1,0 +1,26 @@
+{
+   "port":8080,
+   "protocol":"http",
+   "name":"proxy",
+   "stubs":[
+      <% include predicates/product-orientation.ejs %>,
+
+      {
+         "responses":[
+            {
+               "proxy":{
+                  "to":"http://localhost",
+                  "mode":"proxyAlways",
+                  "predicateGenerators":[
+                     {
+                        "matches":{
+                           "path":true
+                        }
+                     }
+                  ]
+               }
+            }
+         ]
+      }
+   ]
+}

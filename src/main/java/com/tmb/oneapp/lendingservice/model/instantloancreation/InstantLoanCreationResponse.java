@@ -18,7 +18,7 @@ public class InstantLoanCreationResponse {
     @JsonProperty("appType")
     private String appType;
     @JsonProperty("caId")
-    private Long caId;
+    private String caId;
     @JsonProperty("ccId")
     private Long ccId;
     @JsonProperty("cifId")

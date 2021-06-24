@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://submission.loan.ws.sml.integrosys.com" xmlns:intf="http://submission.loan.ws.sml.integrosys.com" xmlns:tns1="http://request.creditcard.ws.sml.integrosys.com" xmlns:tns2="http://common.ws.sml.integrosys.com" xmlns:tns3="http://response.creditcard.ws.sml.integrosys.com" xmlns:tns4="http://creditcard.ob.common.sml.integrosys.com" xmlns:tns5="http://feature.ob.common.sml.integrosys.com" xmlns:tns6="http://pricing.ob.common.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+    <wsdl:types>
+        <schema elementFormDefault="qualified" targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <element name="searchCreditcardInfoByCaID">
+                <complexType>
+                    <sequence>
+                        <element name="req" type="tns1:RequestCreditcard"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="searchCreditcardInfoByCaIDResponse">
+                <complexType>
+                    <sequence>
+                        <element name="searchCreditcardInfoByCaIDReturn" type="tns3:ResponseCreditcard"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <complexType name="ArrayOf_tns6_Pricing">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns6:Pricing"/>
+                </sequence>
+            </complexType>
+            <complexType name="ArrayOf_tns4_CreditCard">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns4:CreditCard"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://request.creditcard.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="Body">
+                <sequence>
+                    <element name="caID" type="xsd:long"/>
+                </sequence>
+            </complexType>
+            <complexType name="Header">
+                <complexContent>
+                    <extension base="tns2:CommonWSRequestHeader">
+                        <sequence/>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="RequestCreditcard">
+                <sequence>
+                    <element name="body" nillable="true" type="tns1:Body"/>
+                    <element name="header" nillable="true" type="tns1:Header"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://common.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="CommonWSRequestHeader">
+                <sequence>
+                    <element name="channel" nillable="true" type="xsd:string"/>
+                    <element name="module" nillable="true" type="xsd:string"/>
+                    <element name="requestID" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="CommonWSResponseHeader">
+                <sequence>
+                    <element name="channel" nillable="true" type="xsd:string"/>
+                    <element name="module" nillable="true" type="xsd:string"/>
+                    <element name="requestID" nillable="true" type="xsd:string"/>
+                    <element name="responseCode" nillable="true" type="xsd:string"/>
+                    <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+                    <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://feature.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="Feature">
+                <sequence>
+                    <element name="disbAcctName" nillable="true" type="xsd:string"/>
+                    <element name="disbAcctNo" nillable="true" type="xsd:string"/>
+                    <element name="disbBankCode" nillable="true" type="xsd:string"/>
+                    <element name="id" nillable="true" type="xsd:decimal"/>
+                    <element name="requestAmount" nillable="true" type="xsd:decimal"/>
+                    <element name="requestPercent" nillable="true" type="xsd:decimal"/>
+                    <element name="tenure" nillable="true" type="xsd:long"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://pricing.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="Pricing">
+                <sequence>
+                    <element name="calculatedRate" nillable="true" type="xsd:decimal"/>
+                    <element name="ccId" nillable="true" type="xsd:decimal"/>
+                    <element name="facId" nillable="true" type="xsd:decimal"/>
+                    <element name="id" nillable="true" type="xsd:decimal"/>
+                    <element name="installment" nillable="true" type="xsd:decimal"/>
+                    <element name="interestRate" nillable="true" type="xsd:decimal"/>
+                    <element name="monthFrom" nillable="true" type="xsd:decimal"/>
+                    <element name="monthTo" nillable="true" type="xsd:decimal"/>
+                    <element name="percentSign" nillable="true" type="xsd:string"/>
+                    <element name="pricingType" nillable="true" type="xsd:string"/>
+                    <element name="rateType" nillable="true" type="xsd:string"/>
+                    <element name="rateVaraince" nillable="true" type="xsd:decimal"/>
+                    <element name="tier" nillable="true" type="xsd:decimal"/>
+                    <element name="yearFrom" nillable="true" type="xsd:decimal"/>
+                    <element name="yearTo" nillable="true" type="xsd:decimal"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://creditcard.ob.common.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://response.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="CreditCard">
+                <sequence>
+                    <element name="avgBalance180" nillable="true" type="xsd:decimal"/>
+                    <element name="caId" nillable="true" type="xsd:decimal"/>
+                    <element name="campaignCode" nillable="true" type="xsd:string"/>
+                    <element name="cardBrand" nillable="true" type="xsd:string"/>
+                    <element name="cardDeliveryAddress" nillable="true" type="xsd:string"/>
+                    <element name="cardInd" nillable="true" type="xsd:string"/>
+                    <element name="cifId" nillable="true" type="xsd:decimal"/>
+                    <element name="creditcardSavedFlag" nillable="true" type="xsd:string"/>
+                    <element name="custSegment" nillable="true" type="xsd:string"/>
+                    <element name="debitAccountName" nillable="true" type="xsd:string"/>
+                    <element name="debitAccountNo" nillable="true" type="xsd:string"/>
+                    <element name="depositBlcAmount" nillable="true" type="xsd:decimal"/>
+                    <element name="existCardName" nillable="true" type="xsd:string"/>
+                    <element name="existCardNumber" nillable="true" type="xsd:string"/>
+                    <element name="existCardStatus" nillable="true" type="xsd:string"/>
+                    <element name="existCreditLimit" nillable="true" type="xsd:decimal"/>
+                    <element name="existCreditLine" nillable="true" type="xsd:decimal"/>
+                    <element name="existProductType" nillable="true" type="xsd:string"/>
+                    <element name="feature" nillable="true" type="tns5:Feature"/>
+                    <element name="featureType" nillable="true" type="xsd:string"/>
+                    <element name="id" nillable="true" type="xsd:decimal"/>
+                    <element name="instantRequestLead" nillable="true" type="xsd:decimal"/>
+                    <element name="mailPreference" nillable="true" type="xsd:string"/>
+                    <element name="newCreditLimit" nillable="true" type="xsd:decimal"/>
+                    <element name="pass180Td" nillable="true" type="xsd:string"/>
+                    <element name="paymentCriteria" nillable="true" type="xsd:string"/>
+                    <element name="paymentMethod" nillable="true" type="xsd:string"/>
+                    <element name="pricings" nillable="true" type="impl:ArrayOf_tns6_Pricing"/>
+                    <element name="productCode" nillable="true" type="xsd:string"/>
+                    <element name="productType" nillable="true" type="xsd:string"/>
+                    <element name="projectCode" nillable="true" type="xsd:string"/>
+                    <element name="requestCreditLimit" nillable="true" type="xsd:decimal"/>
+                    <element name="suppProductType" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://response.creditcard.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://pricing.ob.common.sml.integrosys.com"/>
+            <import namespace="http://request.creditcard.ws.sml.integrosys.com"/>
+            <import namespace="http://feature.ob.common.sml.integrosys.com"/>
+            <import namespace="http://creditcard.ob.common.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://submission.loan.ws.sml.integrosys.com"/>
+            <complexType name="Body">
+                <sequence>
+                    <element name="creditCards" nillable="true" type="impl:ArrayOf_tns4_CreditCard"/>
+                </sequence>
+            </complexType>
+            <complexType name="Header">
+                <complexContent>
+                    <extension base="tns2:CommonWSResponseHeader">
+                        <sequence/>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="ResponseCreditcard">
+                <sequence>
+                    <element name="body" nillable="true" type="tns3:Body"/>
+                    <element name="header" nillable="true" type="tns3:Header"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="searchCreditcardInfoByCaIDResponse">
+        <wsdl:part element="impl:searchCreditcardInfoByCaIDResponse" name="parameters">
+
+      </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="searchCreditcardInfoByCaIDRequest">
+        <wsdl:part element="impl:searchCreditcardInfoByCaID" name="parameters">
+
+      </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="LoanSubmissionGetCreditcardInfo">
+        <wsdl:operation name="searchCreditcardInfoByCaID">
+            <wsdl:input message="impl:searchCreditcardInfoByCaIDRequest" name="searchCreditcardInfoByCaIDRequest">
+
+       </wsdl:input>
+            <wsdl:output message="impl:searchCreditcardInfoByCaIDResponse" name="searchCreditcardInfoByCaIDResponse">
+
+       </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="LoanSubmissionGetCreditcardInfoSoapBinding" type="impl:LoanSubmissionGetCreditcardInfo">
+        <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="searchCreditcardInfoByCaID">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="searchCreditcardInfoByCaIDRequest">
+                <wsdlsoap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="searchCreditcardInfoByCaIDResponse">
+                <wsdlsoap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="LoanSubmissionGetCreditcardInfoService">
+        <wsdl:port binding="impl:LoanSubmissionGetCreditcardInfoSoapBinding" name="LoanSubmissionGetCreditcardInfo">
+            <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionGetCreditcardInfo"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -28,6 +28,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class ImageGeneratorService {
@@ -128,16 +131,16 @@ public class ImageGeneratorService {
      * @param request
      * @return
      */
-
     public String generateLOCImage(LOCRequest request) {
-        String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS();
-        dateStr = dateStr.replaceAll("[/: ]", "");
-        dateStr = dateStr.substring(2);
-        String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE + "00110";
         try {
+            Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(request.getCreateDate());
+            String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS(dateObj);
+            dateStr = dateStr.replaceAll("[/: ]", "");
+            dateStr = dateStr.substring(2);
+            String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE + "00110";
             String jsonData = mapper.writeValueAsString(request);
             return generateJPGFile(jsonData, fileName);
-        } catch (IOException | FOPException | TransformerException e) {
+        } catch (ParseException | IOException | FOPException | TransformerException e) {
             logger.error("generate image got error:{}", e);
         }
         return null;

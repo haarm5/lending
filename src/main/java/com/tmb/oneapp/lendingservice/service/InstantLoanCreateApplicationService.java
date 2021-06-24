@@ -152,6 +152,7 @@ public class InstantLoanCreateApplicationService {
             locRequest.setNCBDateTime(response2.getCreateDate());
             locRequest.setProductName(response2.getProductName());
             locRequest.setAppRefNo(response2.getAppRefNo());
+            locRequest.setCreateDate(response2.getCreateDate());
             LOCRequest locRequest2 = new LOCRequest(locRequest);
             executor.execute(() -> constructRequestForLOCCompleteImage(locRequest2));
             return response;

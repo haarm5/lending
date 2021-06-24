@@ -32,6 +32,9 @@ public class LOCRequest {
     @JsonProperty("crmId")
     private String crmId;
 
+    @JsonProperty("createDate")
+    private String createDate;
+
     public LOCRequest() {
     }
 
@@ -45,6 +48,7 @@ public class LOCRequest {
         setNCBDateTime(locRequest.getNCBDateTime());
         setProductName(locRequest.getProductName());
         setAppRefNo(locRequest.getAppRefNo());
+        setCreateDate(locRequest.getCreateDate());
 
     }
 }

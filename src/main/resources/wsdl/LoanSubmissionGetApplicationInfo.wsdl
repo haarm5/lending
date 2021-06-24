@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://submission.loan.ws.sml.integrosys.com" xmlns:intf="http://submission.loan.ws.sml.integrosys.com" xmlns:tns1="http://request.application.ws.sml.integrosys.com" xmlns:tns2="http://common.ws.sml.integrosys.com" xmlns:tns3="http://response.application.ws.sml.integrosys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+    <wsdl:types>
+        <schema elementFormDefault="qualified" targetNamespace="http://submission.loan.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://request.application.ws.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://response.application.ws.sml.integrosys.com"/>
+            <element name="searchApplicationInfoByCaID">
+                <complexType>
+                    <sequence>
+                        <element name="req" type="tns1:RequestApplication"/>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="searchApplicationInfoByCaIDResponse">
+                <complexType>
+                    <sequence>
+                        <element name="searchApplicationInfoByCaIDReturn" type="tns3:ResponseApplication"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://request.application.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <import namespace="http://response.application.ws.sml.integrosys.com"/>
+            <complexType name="Body">
+                <sequence>
+                    <element name="caID" type="xsd:long"/>
+                </sequence>
+            </complexType>
+            <complexType name="Header">
+                <complexContent>
+                    <extension base="tns2:CommonWSRequestHeader">
+                        <sequence/>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="RequestApplication">
+                <sequence>
+                    <element name="body" nillable="true" type="tns1:Body"/>
+                    <element name="header" nillable="true" type="tns1:Header"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://common.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://request.application.ws.sml.integrosys.com"/>
+            <import namespace="http://response.application.ws.sml.integrosys.com"/>
+            <complexType name="CommonWSRequestHeader">
+                <sequence>
+                    <element name="channel" nillable="true" type="xsd:string"/>
+                    <element name="module" nillable="true" type="xsd:string"/>
+                    <element name="requestID" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="CommonWSResponseHeader">
+                <sequence>
+                    <element name="channel" nillable="true" type="xsd:string"/>
+                    <element name="module" nillable="true" type="xsd:string"/>
+                    <element name="requestID" nillable="true" type="xsd:string"/>
+                    <element name="responseCode" nillable="true" type="xsd:string"/>
+                    <element name="responseDescriptionEN" nillable="true" type="xsd:string"/>
+                    <element name="responseDescriptionTH" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+        </schema>
+        <schema elementFormDefault="qualified" targetNamespace="http://response.application.ws.sml.integrosys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://request.application.ws.sml.integrosys.com"/>
+            <import namespace="http://common.ws.sml.integrosys.com"/>
+            <complexType name="Body">
+                <sequence>
+                    <element name="appRefNo" nillable="true" type="xsd:string"/>
+                    <element name="appType" nillable="true" type="xsd:string"/>
+                    <element name="applicationDate" nillable="true" type="xsd:string"/>
+                    <element name="bookBranchCode" nillable="true" type="xsd:string"/>
+                    <element name="branchCode" nillable="true" type="xsd:string"/>
+                    <element name="caId" nillable="true" type="xsd:decimal"/>
+                    <element name="natureOfRequest" nillable="true" type="xsd:string"/>
+                    <element name="ncbConsentFlag" nillable="true" type="xsd:string"/>
+                    <element name="product" nillable="true" type="xsd:string"/>
+                    <element name="productDescEN" nillable="true" type="xsd:string"/>
+                    <element name="productDescTH" nillable="true" type="xsd:string"/>
+                    <element name="subProduct" nillable="true" type="xsd:string"/>
+                    <element name="subProductDescEN" nillable="true" type="xsd:string"/>
+                    <element name="subProductDescTH" nillable="true" type="xsd:string"/>
+                </sequence>
+            </complexType>
+            <complexType name="Header">
+                <complexContent>
+                    <extension base="tns2:CommonWSResponseHeader">
+                        <sequence/>
+                    </extension>
+                </complexContent>
+            </complexType>
+            <complexType name="ResponseApplication">
+                <sequence>
+                    <element name="body" nillable="true" type="tns3:Body"/>
+                    <element name="header" nillable="true" type="tns3:Header"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="searchApplicationInfoByCaIDRequest">
+        <wsdl:part element="impl:searchApplicationInfoByCaID" name="parameters">
+
+      </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="searchApplicationInfoByCaIDResponse">
+        <wsdl:part element="impl:searchApplicationInfoByCaIDResponse" name="parameters">
+
+      </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="LoanSubmissionGetApplicationInfo">
+        <wsdl:operation name="searchApplicationInfoByCaID">
+            <wsdl:input message="impl:searchApplicationInfoByCaIDRequest" name="searchApplicationInfoByCaIDRequest">
+
+       </wsdl:input>
+            <wsdl:output message="impl:searchApplicationInfoByCaIDResponse" name="searchApplicationInfoByCaIDResponse">
+
+       </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="LoanSubmissionGetApplicationInfoSoapBinding" type="impl:LoanSubmissionGetApplicationInfo">
+        <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="searchApplicationInfoByCaID">
+            <wsdlsoap:operation soapAction=""/>
+            <wsdl:input name="searchApplicationInfoByCaIDRequest">
+                <wsdlsoap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="searchApplicationInfoByCaIDResponse">
+                <wsdlsoap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="LoanSubmissionGetApplicationInfoService">
+        <wsdl:port binding="impl:LoanSubmissionGetApplicationInfoSoapBinding" name="LoanSubmissionGetApplicationInfo">
+            <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionGetApplicationInfo"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

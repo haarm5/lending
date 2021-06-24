@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -82,7 +83,11 @@ public class ImageGeneratorService {
         }
 
         String jpgFIle = convertPngToJPG(baseDir + File.separator + "images" + File.separator + fileName + ".png");
-        Files.delete(Paths.get(pngFile.getAbsolutePath()));
+        try{
+            Files.delete(Paths.get(pngFile.getAbsolutePath()));
+        }catch (NoSuchFileException e){
+            logger.info("cannot delete png file: {}", e);
+        }
         return jpgFIle;
     }
 

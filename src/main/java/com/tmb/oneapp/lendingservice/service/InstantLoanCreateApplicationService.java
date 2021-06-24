@@ -30,6 +30,7 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -230,7 +231,7 @@ public class InstantLoanCreateApplicationService {
             ftpClient.storeFile(sftpStoreFileInfoList);
             Files.delete(Paths.get(jpgFile));
         } catch (IOException e) {
-            logger.error("generateLOCImage got error:{}", e);
+            logger.error("constructRequestForLOCCompleteImage got error:{}", e);
         }
 
         logger.info("constructRequestForLOCCompleteImage END");

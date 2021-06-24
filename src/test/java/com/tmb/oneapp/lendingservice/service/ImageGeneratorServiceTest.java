@@ -66,6 +66,7 @@ public class ImageGeneratorServiceTest {
         request.setProductName("C2Go");
         request.setNCBDateofbirth("20-may-1980");
         request.setNCBReferenceID("01AR022");
+        request.setCreateDate("2021-06-24T16:35:36.000Z");
         String imagePath = imageGeneratorService.generateLOCImage(request);
         Assertions.assertNotNull(imagePath);
     }

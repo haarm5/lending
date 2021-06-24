@@ -13,11 +13,13 @@ public class CommonServiceUtils {
 
     }
 
-    public static String getDateAndTimeInYYYYMMDDHHMMSS() {
+    public static String getDateAndTimeInYYYYMMDDHHMMSS(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
         return formatter.format(date);
 
+    }
+    public static String getDateAndTimeInYYYYMMDDHHMMSS() {
+        return getDateAndTimeInYYYYMMDDHHMMSS(new Date());
     }
 
     public static String formatPhoneNumber(String mobNo){

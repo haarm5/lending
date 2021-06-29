@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
@@ -8,16 +9,16 @@ import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.*;
 import com.tmb.oneapp.lendingservice.LendingModuleCache;
-import com.tmb.oneapp.lendingservice.client.CustomerExpServiceClient;
-import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
-import com.tmb.oneapp.lendingservice.client.EligibleProductClient;
-import com.tmb.oneapp.lendingservice.client.LoanStatusTrackingClient;
+import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.Customer;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.account.AccountSaving;
+import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
+import com.tmb.oneapp.lendingservice.model.creditcard.CreditCard;
+import com.tmb.oneapp.lendingservice.model.creditcard.CreditCardResponse;
 import com.tmb.oneapp.lendingservice.model.loan.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,9 +57,15 @@ public class LoanServiceTest {
     @Mock
     CustomerExpServiceClient customerExpServiceClient;
 
+    @Mock
+    CommonServiceFeignClient commonServiceFeignClient;
+
+    LoanService loanService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        loanService = new LoanService(loanStatusTrackingClient, eligibleProductClient, customerServiceClient, lendingModuleCache, customerExpServiceClient, commonServiceFeignClient);
     }
 
     private ResponseTracking mockLoanStatusTrackingResponse() {
@@ -113,7 +121,6 @@ public class LoanServiceTest {
 
         TmbOneServiceResponse<Customer> mockCustomerResponse = mockCustomerResponse();
         when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient, null, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ProductRequest request = new ProductRequest();
 
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(request);
@@ -170,7 +177,6 @@ public class LoanServiceTest {
         header.setResponseDescriptionTH("");
         mockLoanStatusTrackingResponse.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient, null, customerServiceClient, lendingModuleCache, customerExpServiceClient);
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(new ProductRequest());
         ServiceError error = actualResponse.getError();
         Assertions.assertNull(error);
@@ -199,7 +205,6 @@ public class LoanServiceTest {
         ResponseInstantLoanGetEligibleProduct mockResponse = mockResponseInstantLoanGetEligibleProduct();
 
         when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(null, eligibleProductClient, null, lendingModuleCache, customerExpServiceClient);
         HashMap<String, Object> masterData = new HashMap<>();
         masterData.put(LoanCategory.PYMT_CRITERIA.getCode(), new ArrayList<PaymentCriteriaOption>());
         ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
@@ -216,7 +221,6 @@ public class LoanServiceTest {
         mockResponse.setHeader(header);
 
         when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(null, eligibleProductClient, null, lendingModuleCache, customerExpServiceClient);
         HashMap<String, Object> masterData = new HashMap<>();
         ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
         Assertions.assertNotNull(actualResponse);
@@ -248,7 +252,7 @@ public class LoanServiceTest {
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
         ResponseInstantLoanGetEligibleProduct mockResponse = mockResponseInstantLoanGetEligibleProduct();
         when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockResponse);
-        LoanService loanService = new LoanService(loanStatusTrackingClient, eligibleProductClient, customerServiceClient, lendingModuleCache, customerExpServiceClient);
+
         ServiceResponse actualResponse = loanService.fetchProducts(new ProductRequest());
         Assertions.assertNotNull(actualResponse);
         ProductResponse productResponse = (ProductResponse) actualResponse.getData();
@@ -263,4 +267,581 @@ public class LoanServiceTest {
         Assertions.assertEquals(mockLoanStatusTrackingResponse.getBody().getApplication()[0].getApplicationDate(), application.getApplicationDate());
 
     }
+
+    @Test
+    void fetchProductDetailCreditCardContainInAccountCreditCardAndStatusActiveShouldReturnAlreadyHasProduct() throws ServiceException, RemoteException, TMBCommonException {
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>(Arrays.asList("vi")));
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        body.setStatus(tmbStatus);
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vi");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertTrue(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardFlexiOnlyShouldBeTrue() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vi");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>(Arrays.asList("vi")));
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setStatus(tmbStatus);
+        body.setData(mockLendingModuleConfig);
+
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertTrue(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardFlexiLoanFlowInstantFlagIsYAndIsSubmittedIsNShouldReturnContinueApply() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vi");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>());
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        body.setStatus(tmbStatus);
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vi");
+        applicant1.setProducts(new Product[]{product1});
+        application1.setApplicants(new Applicant[]{applicant1});
+        application1.setInstantFlag("Y");
+        application1.setIsSubmitted("N");
+        mockResponseTrackingBody.setApplication(new Application[]{application1});
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals("continue_apply", productDetailResponse.getStatus());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardFlexiLoanFlowInstantFlagIsYAndIsSubmittedIsYShouldReturnCheckStatus() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vi");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>());
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        body.setStatus(tmbStatus);
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vi");
+        applicant1.setProducts(new Product[]{product1});
+        application1.setApplicants(new Applicant[]{applicant1});
+        application1.setInstantFlag("Y");
+        application1.setIsSubmitted("Y");
+        mockResponseTrackingBody.setApplication(new Application[]{application1});
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals("check_status", productDetailResponse.getStatus());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardLoanSubmissionFlowInstantFlagIsNotYAndIsSubmittedIsNShouldReturnSeeDocList() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vi");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD")));
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>());
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        body.setStatus(tmbStatus);
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vi");
+        applicant1.setProducts(new Product[]{product1});
+        application1.setApplicants(new Applicant[]{applicant1});
+        application1.setInstantFlag("N");
+        application1.setIsSubmitted("N");
+        application1.setAppStatus("IDOFD");
+        mockResponseTrackingBody.setApplication(new Application[]{application1});
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals("see_doc_list", productDetailResponse.getStatus());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardLoanSubmissionFlowInstantFlagIsNotYAndIsSubmittedIsNAppStatusIsOtherShouldReturnCheckStatus() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vi");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD")));
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>());
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        body.setStatus(tmbStatus);
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vi");
+        applicant1.setProducts(new Product[]{product1});
+        application1.setApplicants(new Applicant[]{applicant1});
+        application1.setInstantFlag("N");
+        application1.setIsSubmitted("N");
+        application1.setAppStatus("Other");
+        mockResponseTrackingBody.setApplication(new Application[]{application1});
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals("check_status", productDetailResponse.getStatus());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+
+    @Test
+    void fetchProductDetailCreditCardLoanSubmissionFlowInstantFlagIsNotYAndIsSubmittedIsNAppStatusIsOtherShouldReturnContinueApplyWithProductName() throws ServiceException, RemoteException, TMBCommonException {
+
+
+        List<CommonCodeEntry> master26 = new ArrayList<>();
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+        List<CommonCodeEntry> master27 = new ArrayList<>();
+        CommonCodeEntry vi = new CommonCodeEntry();
+        vi.setEntryCode("vi");
+        vi.setEntryName("TMB VISA Classic");
+        vi.setEntryName2("ทีทีบี");
+        master26.add(vi);
+        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+
+
+        String crmId = "123";
+        String correlationId = "abc";
+        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        mockCreditCardResponse.setStatus(tmbStatus);
+        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+        CreditCard c1 = new CreditCard();
+        c1.setRslProductCode("vj");
+        c1.setAccountStatus("active");
+        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+        mockCreditCardData.setFlashCards(new ArrayList<>());
+        mockCreditCardResponse.setData(mockCreditCardData);
+        when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(mockCreditCardResponse);
+        ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
+        InstantCreditCard ic1 = new InstantCreditCard();
+        ic1.setProductType("vj");
+        mockBody.setInstantCreditCard(new InstantCreditCard[]{ic1});
+        mockEligibleProductResponse.setBody(mockBody);
+
+        when(eligibleProductClient.getEligibleProduct(any())).thenReturn(mockEligibleProductResponse);
+
+
+        LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
+        mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD")));
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>());
+        mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>());
+        mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
+        TmbOneServiceResponse<LendingModuleConfig> body = new TmbOneServiceResponse<>();
+        body.setData(mockLendingModuleConfig);
+        body.setStatus(tmbStatus);
+
+        when(commonServiceFeignClient.getCommonConfig(any(), any())).thenReturn(body);
+
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vj" +
+                "");
+        applicant1.setProducts(new Product[]{product1});
+        application1.setApplicants(new Applicant[]{applicant1});
+        application1.setInstantFlag("N");
+        application1.setIsSubmitted("N");
+        application1.setAppStatus("Other");
+        mockResponseTrackingBody.setApplication(new Application[]{application1});
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+
+        ProductDetailRequest request = new ProductDetailRequest();
+        request.setProductCode("vi");
+        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals("credit_card", productDetailResponse.getLoanType());
+        Assertions.assertEquals("apply_with_product_name", productDetailResponse.getStatus());
+        Assertions.assertEquals(vi.getEntryName(), productDetailResponse.getProductNameEn());
+
+
+    }
+//    @Test
+//    void fetchProductDetailPersonalLoanContainInAccountCreditCardAndStatusActiveShouldReturnAlreadyHasProduct() throws ServiceException, RemoteException {
+//
+//
+//        List<CommonCodeEntry> master26 = new ArrayList<>();
+//        when(lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode())).thenReturn(master26);
+//        List<CommonCodeEntry> master27 = new ArrayList<>();
+//        CommonCodeEntry c2g01 = new CommonCodeEntry();
+//        c2g01.setEntryCode("c2g01");
+//        c2g01.setEntryName("ttb cash2go personal loan");
+//        c2g01.setEntryName2("ทีทีบี");
+//        master27.add(c2g01);
+//        when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
+//
+//
+//        String crmId = "123";
+//        String correlationId = "abc";
+//        TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
+//        TmbStatus tmbStatus = new TmbStatus();
+//        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+//        mockCreditCardResponse.setStatus(tmbStatus);
+//        CreditCardResponse mockCreditCardData = new CreditCardResponse();
+//        CreditCard c1 = new CreditCard();
+//        c1.setRslProductCode("c2g01");
+//        c1.setAccountStatus("active");
+//        mockCreditCardData.setCreditCards(new ArrayList<>(Arrays.asList(c1)));
+//        mockCreditCardData.setFlashCards(new ArrayList<>());
+//        mockCreditCardResponse.setData(mockCreditCardData);
+//        when(customerExpServiceClient.getCreditCards(any(),any())).thenReturn(mockCreditCardResponse);
+//
+//
+//        ProductDetailRequest request = new ProductDetailRequest();
+//        request.setProductCode("c2g01");
+//        ServiceResponse actualResponse = loanService.fetchProductDetail(crmId, request);
+//        ProductDetailResponse productDetailResponse = (ProductDetailResponse) actualResponse.getData();
+//        Assertions.assertTrue(productDetailResponse.isAlreadyHasProduct());
+//        Assertions.assertEquals("personal_loan",productDetailResponse.getLoanType());
+//        Assertions.assertEquals(c2g01.getEntryName(),productDetailResponse.getProductNameEn());
+//
+//
+//    }
 }

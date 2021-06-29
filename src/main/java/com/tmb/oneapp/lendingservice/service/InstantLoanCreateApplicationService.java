@@ -186,6 +186,7 @@ public class InstantLoanCreateApplicationService {
             response.setCurrentWorkflow(responseBody.getCurrentWorkflow());
             response.setProductDescEN(responseBody.getProductDescEN());
             response.setCaId(String.valueOf(responseBody.getCaId()));
+            response.setProductDescTH(responseBody.getProductDescTH());
             String productName = responseBody.getProductDescTH();
             productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
             response.setAppRefNo(responseBody.getAppRefNo());

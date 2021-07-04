@@ -84,6 +84,7 @@ public class InstantLoanCreateApplicationService {
 
             logger.info(" Request from Client to InstantLoanCreateApplication is {} : " + mapper.writeValueAsString(request));
             getMoreFlag = request.getGetMore();
+            String appType = request.getAppType();
             // Address
             List<AddressInfo> addressInfoList = request.getAddresses();
             List<Address> soapAddressList = addressInfoList.stream().map(this::addressToSoapRequestAddress).collect(Collectors.toList());
@@ -143,7 +144,7 @@ public class InstantLoanCreateApplicationService {
             soapRequest.setHeader(soapRequestHeader);
             ResponseInstantLoanCreateApplication soapResponse = soapClient.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
 
-            ServiceResponse response = constructCreateLoanApplicationResponse(soapResponse);
+            ServiceResponse response = constructCreateLoanApplicationResponse(appType,soapResponse);
             if (response.getError() != null) {
                 return response;
             }
@@ -171,7 +172,7 @@ public class InstantLoanCreateApplicationService {
      * @param soapResponse ResponseInstantLoanCreateApplication
      * @return InstantLoanCreationResponse
      */
-    private ServiceResponse constructCreateLoanApplicationResponse(ResponseInstantLoanCreateApplication soapResponse) {
+    private ServiceResponse constructCreateLoanApplicationResponse(String appType,ResponseInstantLoanCreateApplication soapResponse) {
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
         InstantLoanCreationResponse response = new InstantLoanCreationResponse();
         com.tmb.common.model.legacy.rsl.ws.instant.application.create.response.Body responseBody = soapResponse.getBody();
@@ -185,8 +186,9 @@ public class InstantLoanCreateApplicationService {
             response.setCurrentWorkflow(responseBody.getCurrentWorkflow());
             response.setProductDescEN(responseBody.getProductDescEN());
             response.setCaId(String.valueOf(responseBody.getCaId()));
+            response.setProductDescTH(responseBody.getProductDescTH());
             String productName = responseBody.getProductDescTH();
-            productName = responseBody.getAppType().equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
+            productName = appType.equalsIgnoreCase("CC") ? productName + " (22)" : productName + " (05)";
             response.setAppRefNo(responseBody.getAppRefNo());
             response.setProductName(productName);
             serviceResponseImp.setData(response);

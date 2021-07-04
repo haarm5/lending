@@ -49,7 +49,7 @@ sourceCompatibility = '11'
 if (project.hasProperty('projVersion')) {
     project.version = project.projVersion
 } else {
-    project.version = '0.0.1'
+    project.version = '1.0.0'
 }
 
 springBoot {
@@ -93,6 +93,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
     implementation 'com.jcraft:jsch:0.1.55'
+    implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.0')
     compile('org.apache.xmlgraphics:fop:2.6'){
     	exclude group: 'xml-apis'
     }

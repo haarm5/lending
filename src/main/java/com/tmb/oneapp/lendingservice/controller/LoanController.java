@@ -9,6 +9,7 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.loan.ProductDetailRequest;
+import com.tmb.oneapp.lendingservice.model.loan.ProductDetailResponse;
 import com.tmb.oneapp.lendingservice.model.loan.ProductRequest;
 import com.tmb.oneapp.lendingservice.service.LoanService;
 import io.swagger.annotations.Api;
@@ -78,19 +79,24 @@ public class LoanController {
     }
 
     /**
-     * Get credit card or personal loan product detail
+     * Get credit card or personal loan product orientation
      *
-     * @param reqHeaders - CRM-ID
+     * @param reqHeaders - x-crmid
      * @return
      * @throws TMBCommonException
      */
     @ApiOperation(value = "Get credit card or personal loan product detail")
     @LogAround
-    @PostMapping(value = "/product-detail")
-    public ResponseEntity<TmbOneServiceResponse<Object>> fetchProductDetail(@RequestHeader Map<String, String> reqHeaders, @Valid @RequestBody ProductDetailRequest request) throws TMBCommonException {
+    @PostMapping(value = "/product-orientation")
+    public ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> fetchProductOrientation(@RequestHeader Map<String, String> reqHeaders, @Valid @RequestBody ProductDetailRequest request) throws TMBCommonException {
         String crmId = getCrmId(reqHeaders);
-        ServiceResponse response = loanService.fetchProductDetail(crmId, request);
-        return handleRequest(response);
+        ProductDetailResponse response = loanService.fetchProductOrientation(crmId, request);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        TmbOneServiceResponse<ProductDetailResponse> oneServiceResponse = new TmbOneServiceResponse<>();
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+                ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+        oneServiceResponse.setData(response);
+        return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
     }
 
 

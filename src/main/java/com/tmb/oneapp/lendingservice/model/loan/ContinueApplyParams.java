@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ContinueApplyParams {
-    private String caId;
+    private long caId;
     private String appRefNo;
     private String titlePage;
 }

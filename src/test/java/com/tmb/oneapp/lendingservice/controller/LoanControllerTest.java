@@ -57,18 +57,17 @@ public class LoanControllerTest {
 
     @Test
     void productDetailSuccess() throws TMBCommonException {
-        ServiceResponseImp mockResponse = new ServiceResponseImp();
-        mockResponse.setData(new ProductDetailResponse());
-        when(loanService.fetchProductDetail(any(), any())).thenReturn(mockResponse);
+        ProductDetailResponse mockResponse = new ProductDetailResponse();
+        when(loanService.fetchProductOrientation(any(), any())).thenReturn(mockResponse);
         LoanController loanController = new LoanController(loanService);
         HashMap<String, String> reqHeader = new HashMap<>();
         reqHeader.put(LendingServiceConstant.HEADER_X_CRMID, "123");
         @Valid ProductDetailRequest req = new ProductDetailRequest();
         req.setProductCode("c2g01");
-        ResponseEntity<TmbOneServiceResponse<Object>> actualResponse = loanController.fetchProductDetail(reqHeader, req);
+        ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> actualResponse = loanController.fetchProductOrientation(reqHeader, req);
         ProductDetailResponse actualProductResponse = (ProductDetailResponse) actualResponse.getBody().getData();
         Assertions.assertNotNull(actualProductResponse);
-        verify(loanService, times(1)).fetchProductDetail("123", req);
+        verify(loanService, times(1)).fetchProductOrientation("123", req);
     }
 
     @Test

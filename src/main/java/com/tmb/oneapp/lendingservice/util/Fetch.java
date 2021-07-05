@@ -8,41 +8,94 @@ import org.springframework.http.HttpStatus;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
+/**
+ * Fetch provides functionality for fetching and handle network error.
+ */
 public class Fetch {
+
+    private Fetch() {
+
+    }
+
+    /**
+     * Fetches data from OneApp services.
+     * @param supplier
+     * @param <T>
+     * @return
+     * @throws TMBCommonException
+     */
     public static <T> T fetch(Supplier<TmbOneServiceResponse> supplier) throws TMBCommonException {
         TmbOneServiceResponse oneAppResponse = supplier.get();
         TmbStatus tmbStatus = oneAppResponse.getStatus();
         if (!ResponseCode.SUCCESS.getCode().equals(tmbStatus.getCode())) {
-            throw new TMBCommonException(tmbStatus.getCode(),tmbStatus.getMessage(), tmbStatus.getService(), HttpStatus.BAD_REQUEST, null);
+            throw new TMBCommonException(tmbStatus.getCode(), tmbStatus.getMessage(), tmbStatus.getService(), HttpStatus.BAD_REQUEST, null);
         }
         return (T) oneAppResponse.getData();
     }
-    public static <T, R> R fetch(Supplier<T> supplier, ThrowTmbExceptionFunction<T, R> parser) throws TMBCommonException {
-        T response = supplier.get();
-        R result = parser.apply(response);
-        return result;
+
+    /**
+     * Fetches dat from Soap service
+     * @param supplier
+     * @param supplierFunction
+     * @param <T>
+     * @return
+     */
+    public static <T> CompletableFuture<T> fetchFuture(ThrowSoapServiceExceptionFunction<T> supplier,TmbExceptionSupplierFunction<T> supplierFunction) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return Fetch.fetch(supplier::get,supplierFunction::apply);
+            } catch (TMBCommonException e) {
+                throw new CompletionException(e);
+            }
+        });
     }
 
-    public static <T, R> R fetch(ThrowSoapServiceExceptionFunction<T> supplier, ThrowTmbExceptionFunction<T, R> parser) throws TMBCommonException {
+    /**
+     * Waits for all future complete.
+     * @param cfs
+     * @return
+     * @throws TMBCommonException
+     */
+    public static List<Object> allOf(CompletableFuture<?>... cfs) throws TMBCommonException {
+        CompletableFuture.allOf(cfs);
+        List<Object> results = new ArrayList<>();
+        try {
+            for (CompletableFuture f : cfs) {
+                results.add(f.get());
+            }
+            return results;
+
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+        } catch (CompletionException e) {
+            throw (TMBCommonException) e.getCause();
+
+        }
+    }
+
+    /**
+     * Fetch data from Soap service and parses data
+     * @param supplier
+     * @param supplierFunction
+     * @param <T>
+     * @return
+     * @throws TMBCommonException
+     */
+    public static <T> T fetch(ThrowSoapServiceExceptionFunction<T> supplier,TmbExceptionSupplierFunction<T> supplierFunction) throws TMBCommonException {
         T response = null;
         try {
             response = supplier.get();
-        } catch (RemoteException | ServiceException  e) {
-            throw new TMBCommonException("network error");
+            return supplierFunction.apply(response);
+        } catch (RemoteException | ServiceException e) {
+            throw new TMBCommonException("soap network error");
         }
-        R result = parser.apply(response);
-        return result;
-    }
-    public static <T> T fetch(ThrowSoapServiceExceptionFunction<T> supplier) throws TMBCommonException {
-        T response = null;
-        try {
-            response = supplier.get();
-        } catch (RemoteException | ServiceException  e) {
-            throw new TMBCommonException("network error");
-        }
-
-        return response;
     }
 }

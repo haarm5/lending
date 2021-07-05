@@ -9,14 +9,14 @@ import lombok.Setter;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ProductDetailResponse {
-    private String loanType;
+    private LoanType loanType;
     private String productCode;
     private String productNameTh;
     private String productNameEn;
     private boolean alreadyHasProduct;
     private boolean flexiOnly;
     private String contentLink;
-    private String status;
-    private String continueApplyNextStep;
+    private ProductStatus status;
+    private ContinueApplyNextScreen continueApplyNextStep;
     private ContinueApplyParams continueApplyParams;
 }

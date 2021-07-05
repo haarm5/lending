@@ -5,6 +5,8 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
+import com.tmb.oneapp.lendingservice.model.loan.ProductDetailRequest;
+import com.tmb.oneapp.lendingservice.model.loan.ProductDetailResponse;
 import com.tmb.oneapp.lendingservice.model.loan.ProductRequest;
 import com.tmb.oneapp.lendingservice.model.loan.ProductResponse;
 import com.tmb.oneapp.lendingservice.service.LoanService;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -43,12 +46,28 @@ public class LoanControllerTest {
         when(loanService.fetchProducts(any())).thenReturn(mockResponse);
         LoanController loanController = new LoanController(loanService);
         HashMap<String, String> reqHeader = new HashMap<>();
-        reqHeader.put(LendingServiceConstant.HEADER_X_CRMID,"123");
+        reqHeader.put(LendingServiceConstant.HEADER_X_CRMID, "123");
         ResponseEntity<TmbOneServiceResponse<Object>> actualResponse = loanController.fetchProducts(reqHeader);
         ProductResponse actualProductResponse = (ProductResponse) actualResponse.getBody().getData();
         Assertions.assertNotNull(actualProductResponse);
         verify(loanService, times(1)).fetchProducts(any());
 
+    }
+
+
+    @Test
+    void productDetailSuccess() throws TMBCommonException {
+        ProductDetailResponse mockResponse = new ProductDetailResponse();
+        when(loanService.fetchProductOrientation(any(), any())).thenReturn(mockResponse);
+        LoanController loanController = new LoanController(loanService);
+        HashMap<String, String> reqHeader = new HashMap<>();
+        reqHeader.put(LendingServiceConstant.HEADER_X_CRMID, "123");
+        @Valid ProductDetailRequest req = new ProductDetailRequest();
+        req.setProductCode("c2g01");
+        ResponseEntity<TmbOneServiceResponse<ProductDetailResponse>> actualResponse = loanController.fetchProductOrientation(reqHeader, req);
+        ProductDetailResponse actualProductResponse = (ProductDetailResponse) actualResponse.getBody().getData();
+        Assertions.assertNotNull(actualProductResponse);
+        verify(loanService, times(1)).fetchProductOrientation("123", req);
     }
 
     @Test

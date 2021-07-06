@@ -8,7 +8,6 @@ import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Head
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.account.AccountSaving;
-import com.tmb.oneapp.lendingservice.model.account.DepositAccount;
 import com.tmb.oneapp.lendingservice.model.account.LoanAccount;
 import com.tmb.oneapp.lendingservice.model.account.LoanSummary;
 import com.tmb.oneapp.lendingservice.model.config.CommonProductConfig;
@@ -24,7 +23,8 @@ import java.util.List;
 public class LoanServiceUtils {
 
     private static HashMap<String, CommonProductConfig> productConfigHashMap = new HashMap<>();
-    static{
+
+    static {
         CommonProductConfig viProductConfig = new CommonProductConfig();
         viProductConfig.setRslCode("VI");
         viProductConfig.setProductNameEn("ttb reserve infinite");
@@ -41,17 +41,17 @@ public class LoanServiceUtils {
         productConfigHashMap.put("VJ", vjProductConfig);
     }
 
-    public static CommonProductConfig getProductConfig(String rslCode){
+    public static CommonProductConfig getProductConfig(String rslCode) {
         return productConfigHashMap.get(rslCode.toUpperCase());
     }
 
     public static TmbOneServiceResponse<List<LendingModuleConfig>> moduleLendingModuleConfig() {
 
         LendingModuleConfig mockLendingModuleConfig = new LendingModuleConfig();
-        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>(Arrays.asList("VI","VB")));
+        mockLendingModuleConfig.setFlexiOnly(new ArrayList<>(Arrays.asList("VI", "VB")));
         mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>(productConfigHashMap.values()));
         mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
-        mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD","IDDFD")));
+        mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD", "IDDFD")));
         TmbOneServiceResponse<List<LendingModuleConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         oneServiceResponse.setData(new ArrayList<>(Arrays.asList(mockLendingModuleConfig)));
         TmbStatus tmbStatus = new TmbStatus();
@@ -60,7 +60,7 @@ public class LoanServiceUtils {
         return oneServiceResponse;
     }
 
-    public static TmbOneServiceResponse<CreditCardResponse> mockOneAppCreditCardResponse(CreditCard... creditCards){
+    public static TmbOneServiceResponse<CreditCardResponse> mockOneAppCreditCardResponse(CreditCard... creditCards) {
         TmbOneServiceResponse<CreditCardResponse> mockCreditCardResponse = new TmbOneServiceResponse<>();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
@@ -72,27 +72,30 @@ public class LoanServiceUtils {
         return mockCreditCardResponse;
 
     }
-    public static ResponseInstantLoanGetEligibleProduct mockEligibleProductInstantFacility(InstantFacility... f){
+
+    public static ResponseInstantLoanGetEligibleProduct mockEligibleProductInstantFacility(InstantFacility... f) {
         ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
         mockBody.setInstantFacility(f);
         mockEligibleProductResponse.setBody(mockBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockEligibleProductResponse.setHeader(header);
         return mockEligibleProductResponse;
     }
-    public static ResponseInstantLoanGetEligibleProduct mockEligibleProductInstantCreditCard(InstantCreditCard... c){
+
+    public static ResponseInstantLoanGetEligibleProduct mockEligibleProductInstantCreditCard(InstantCreditCard... c) {
         ResponseInstantLoanGetEligibleProduct mockEligibleProductResponse = new ResponseInstantLoanGetEligibleProduct();
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body mockBody = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Body();
         mockBody.setInstantCreditCard(c);
         mockEligibleProductResponse.setBody(mockBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockEligibleProductResponse.setHeader(header);
         return mockEligibleProductResponse;
     }
-
 
 
     public static TmbOneServiceResponse<LoanSummary> mockAccountLoanResponse(LoanAccount... loanAccounts) {

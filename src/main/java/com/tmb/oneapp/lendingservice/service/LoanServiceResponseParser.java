@@ -18,13 +18,14 @@ import org.springframework.http.HttpStatus;
 public class LoanServiceResponseParser {
     private static final TMBLogger<LoanService> logger = new TMBLogger<>(LoanService.class);
     private static final String SUCCESS_CODE = "MSG_000";
+    private static final String SUCCESS_DESC = "Success";
 
     private LoanServiceResponseParser(){}
     public static ResponseInstantLoanGetEligibleProduct parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) throws TMBCommonException {
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header header = responseInstantLoanGetEligibleProduct.getHeader();
 
-        if (!SUCCESS_CODE.equals(header.getResponseCode())) {
+        if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("EligibleProducts got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseInstantLoanGetEligibleProduct);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
@@ -40,7 +41,7 @@ public class LoanServiceResponseParser {
      */
     public static ResponseTracking parseLoanStatusTracking(ResponseTracking responseTracking) throws TMBCommonException {
         Header header = responseTracking.getHeader();
-        if(!SUCCESS_CODE.equals(header.getResponseCode())) {
+        if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseTracking);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
@@ -56,7 +57,7 @@ public class LoanServiceResponseParser {
      */
     public static ResponseApplication parseApplicationInfo(ResponseApplication responseApplication) throws TMBCommonException {
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = responseApplication.getHeader();
-        if(!SUCCESS_CODE.equals(header.getResponseCode())) {
+        if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("GetApplicationInfo got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseApplication);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
@@ -72,7 +73,7 @@ public class LoanServiceResponseParser {
      */
     public static ResponseIndividual parseCustomerInfo(ResponseIndividual responseIndividual) throws TMBCommonException {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = responseIndividual.getHeader();
-        if(!SUCCESS_CODE.equals(header.getResponseCode())) {
+        if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("GetCustomerInfo got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseIndividual);
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);

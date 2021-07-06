@@ -252,9 +252,10 @@ public class LoanService {
      */
     private ServiceResponse parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct, Map<String, Object> masterData) {
         String successCode = "MSG_000";
+        String successDesc = "Success";
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header header = responseInstantLoanGetEligibleProduct.getHeader();
         ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
-        if (!successCode.equals(header.getResponseCode())) {
+        if (!successCode.equals(header.getResponseCode()) || !successDesc.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("EligibleProducts got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             ServiceError serviceError = new ServiceError();
             serviceError.setResponseCode(header.getResponseCode());

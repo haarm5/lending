@@ -227,6 +227,7 @@ public class LoanServiceTest {
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponse.setHeader(header);
         return mockResponse;
     }
@@ -398,6 +399,8 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
+
         mockResponseTracking.setHeader(header);
 
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
@@ -452,6 +455,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -507,8 +511,9 @@ public class LoanServiceTest {
         application1.setIsSubmitted("N");
         mockResponseTrackingBody.setApplication(new Application[]{application1});
         Header header2 = new Header();
-        header2.setResponseCode("MSG_000" +
-                "");
+        header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
+
         mockResponseTracking.setHeader(header2);
         mockResponseTracking.setBody(mockResponseTrackingBody);
 
@@ -565,6 +570,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
 
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
@@ -625,6 +631,8 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
+
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -632,6 +640,8 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
+
         mockAppInfoResponse.setHeader(header2);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("");
@@ -646,9 +656,9 @@ public class LoanServiceTest {
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header3 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header3.setResponseCode("MSG_000");
+        header3.setResponseDescriptionEN("Success");
+
         mockCustomerInfoResponse.setHeader(header3);
-
-
 
 
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
@@ -708,6 +718,8 @@ public class LoanServiceTest {
         mockResponseTrackingBody.setApplication(new Application[]{application1});
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
+
         mockResponseTracking.setHeader(header2);
         mockResponseTracking.setBody(mockResponseTrackingBody);
 
@@ -768,6 +780,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -859,6 +872,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -918,6 +932,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -977,6 +992,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1037,6 +1053,8 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
+
         mockResponseTracking.setHeader(header);
 
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
@@ -1097,6 +1115,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1173,6 +1192,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1227,6 +1247,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1282,6 +1303,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1337,6 +1359,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1391,6 +1414,7 @@ public class LoanServiceTest {
         mockResponseTrackingBody.setApplication(new Application[]{application1});
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         mockResponseTracking.setBody(mockResponseTrackingBody);
 
@@ -1452,6 +1476,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header2 = new Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header2);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1459,6 +1484,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("");
@@ -1472,8 +1498,8 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header3 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header3.setResponseCode("MSG_000");
+        header3.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header3);
-
 
 
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
@@ -1536,6 +1562,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header4 = new Header();
         header4.setResponseCode("MSG_000");
+        header4.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header4);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1543,6 +1570,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1557,6 +1585,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header2);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1618,6 +1647,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1625,6 +1655,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header2);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1641,6 +1672,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header3 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header3.setResponseCode("MSG_000");
+        header3.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header3);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1702,6 +1734,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header = new Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1709,6 +1742,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header3 = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header3.setResponseCode("MSG_000");
+        header3.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header3);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1725,6 +1759,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header2);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1786,6 +1821,7 @@ public class LoanServiceTest {
         mockResponseTracking.setBody(mockResponseTrackingBody);
         Header header3 = new Header();
         header3.setResponseCode("MSG_000");
+        header3.setResponseDescriptionEN("Success");
         mockResponseTracking.setHeader(header3);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
 
@@ -1793,6 +1829,8 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
+
         mockAppInfoResponse.setHeader(header);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1809,6 +1847,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header2);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1877,6 +1916,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1893,6 +1933,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header2);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1901,7 +1942,7 @@ public class LoanServiceTest {
         try {
             loanService.fetchProductOrientation(crmId, request);
             Assertions.fail("Should throw TMBCommonException");
-        }catch (TMBCommonException e){
+        } catch (TMBCommonException e) {
 
         }
 
@@ -1915,7 +1956,6 @@ public class LoanServiceTest {
         String requestProductCode = "vj";
 
         String crmId = "123";
-
 
 
         when(customerExpServiceClient.getCreditCards(any(), any())).thenReturn(LoanServiceUtils.mockOneAppCreditCardErrorResponse());
@@ -1955,6 +1995,7 @@ public class LoanServiceTest {
         ResponseApplication mockAppInfoResponse = new ResponseApplication();
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
         header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
         mockAppInfoResponse.setHeader(header);
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
         body.setNcbConsentFlag("Y");
@@ -1971,6 +2012,7 @@ public class LoanServiceTest {
         mockCustomerInfoResponse.setBody(customerBody);
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header2 = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         header2.setResponseCode("MSG_000");
+        header2.setResponseDescriptionEN("Success");
         mockCustomerInfoResponse.setHeader(header2);
         when(loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(123)).thenReturn(mockCustomerInfoResponse);
 
@@ -1979,7 +2021,7 @@ public class LoanServiceTest {
         try {
             loanService.fetchProductOrientation(crmId, request);
             Assertions.fail("Should throw TMBCommonException");
-        }catch (TMBCommonException e){
+        } catch (TMBCommonException e) {
 
         }
 

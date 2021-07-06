@@ -12,7 +12,11 @@ import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationRequest;
 import com.tmb.oneapp.lendingservice.service.InstantLoanCreateApplicationService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.*;
+
 import java.time.Instant;
 import java.util.Map;
 
@@ -54,7 +61,10 @@ public class InstantLoanCreateApplicationController {
     @ApiOperation(value = "Create Instant Loan Application")
     @LogAround
     @PostMapping("/create-instant-loan-application")
-    public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@RequestHeader Map<String, String> reqHeaders,@Valid @RequestBody InstantLoanCreationRequest request) throws TMBCommonException {
+    @ApiImplicitParams({
+		@ApiImplicitParam(name = HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
+		@ApiImplicitParam(name = HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<Object>> createInstantLoanApplication(@ApiParam(hidden = true) @RequestHeader Map<String, String> reqHeaders,@Valid @RequestBody InstantLoanCreationRequest request) throws TMBCommonException {
         logger.info("Calling createInstantLoanApplication ");
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));

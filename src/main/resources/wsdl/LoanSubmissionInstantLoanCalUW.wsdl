@@ -225,7 +225,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:LoanSubmissionInstantLoanCalUWSoapBinding" name="LoanSubmissionInstantLoanCalUW">
 
-         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionInstantLoanCalUW"/>
+         <wsdlsoap:address location="http://10.209.27.99:9080/LoanSubmissionWS/services/LoanSubmissionInstantLoanCalUW"/>
 
       </wsdl:port>
 

@@ -237,17 +237,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="searchFacilityInfoByCaIDRequest">
+   <wsdl:message name="searchFacilityInfoByCaIDResponse">
 
-      <wsdl:part element="impl:searchFacilityInfoByCaID" name="parameters">
+      <wsdl:part element="impl:searchFacilityInfoByCaIDResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="searchFacilityInfoByCaIDResponse">
+   <wsdl:message name="searchFacilityInfoByCaIDRequest">
 
-      <wsdl:part element="impl:searchFacilityInfoByCaIDResponse" name="parameters">
+      <wsdl:part element="impl:searchFacilityInfoByCaID" name="parameters">
 
       </wsdl:part>
 
@@ -297,7 +297,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:LoanSubmissionGetFacilityInfoSoapBinding" name="LoanSubmissionGetFacilityInfo">
 
-         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionGetFacilityInfo"/>
+         <wsdlsoap:address location="http://10.209.27.99:9080/LoanSubmissionWS/services/LoanSubmissionGetFacilityInfo"/>
 
       </wsdl:port>
 

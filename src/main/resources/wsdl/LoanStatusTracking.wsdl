@@ -242,7 +242,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:LoanStatusTrackingSoapBinding" name="LoanStatusTracking">
 
-         <wsdlsoap:address location="http://10.209.27.99:9081/RSLWS/services/LoanStatusTracking"/>
+         <wsdlsoap:address location="http://10.209.27.99:9080/RSLWS/services/LoanStatusTracking"/>
 
       </wsdl:port>
 

@@ -165,17 +165,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="calculateUnderwritingRequest">
+   <wsdl:message name="calculateUnderwritingResponse">
 
-      <wsdl:part element="impl:calculateUnderwriting" name="parameters">
+      <wsdl:part element="impl:calculateUnderwritingResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="calculateUnderwritingResponse">
+   <wsdl:message name="calculateUnderwritingRequest">
 
-      <wsdl:part element="impl:calculateUnderwritingResponse" name="parameters">
+      <wsdl:part element="impl:calculateUnderwriting" name="parameters">
 
       </wsdl:part>
 
@@ -225,7 +225,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:LoanSubmissionInstantLoanCalUWSoapBinding" name="LoanSubmissionInstantLoanCalUW">
 
-         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionInstantLoanCalUW"/>
+         <wsdlsoap:address location="http://10.209.27.99:9080/LoanSubmissionWS/services/LoanSubmissionInstantLoanCalUW"/>
 
       </wsdl:port>
 

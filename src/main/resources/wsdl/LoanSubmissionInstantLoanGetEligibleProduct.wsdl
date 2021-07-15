@@ -162,6 +162,8 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="cifId" nillable="true" type="xsd:decimal"/>
      <element name="creditcardSavedFlag" nillable="true" type="xsd:string"/>
      <element name="custSegment" nillable="true" type="xsd:string"/>
+     <element name="debitAccountName" nillable="true" type="xsd:string"/>
+     <element name="debitAccountNo" nillable="true" type="xsd:string"/>
      <element name="existCardName" nillable="true" type="xsd:string"/>
      <element name="existCardNumber" nillable="true" type="xsd:string"/>
      <element name="existCardStatus" nillable="true" type="xsd:string"/>
@@ -177,6 +179,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="modelName" nillable="true" type="xsd:string"/>
      <element name="modelScore" nillable="true" type="xsd:decimal"/>
      <element name="newCreditLimit" nillable="true" type="xsd:decimal"/>
+     <element name="paymentCriteria" nillable="true" type="xsd:string"/>
      <element name="paymentMethod" nillable="true" type="xsd:string"/>
      <element name="pricings" nillable="true" type="impl:ArrayOf_tns6_Pricing"/>
      <element name="productCode" nillable="true" type="xsd:string"/>
@@ -303,17 +306,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="getEligibleProductRequest">
+   <wsdl:message name="getEligibleProductResponse">
 
-      <wsdl:part element="intf:getEligibleProduct" name="parameters">
+      <wsdl:part element="intf:getEligibleProductResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getEligibleProductResponse">
+   <wsdl:message name="getEligibleProductRequest">
 
-      <wsdl:part element="intf:getEligibleProductResponse" name="parameters">
+      <wsdl:part element="intf:getEligibleProduct" name="parameters">
 
       </wsdl:part>
 
@@ -363,7 +366,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="intf:LoanSubmissionInstantLoanGetEligibleProductSoapBinding" name="LoanSubmissionInstantLoanGetEligibleProduct">
 
-         <wsdlsoap:address location="http://10.209.27.99:9081/LoanSubmissionWS/services/LoanSubmissionInstantLoanGetEligibleProduct"/>
+         <wsdlsoap:address location="http://10.209.27.99:9080/LoanSubmissionWS/services/LoanSubmissionInstantLoanGetEligibleProduct"/>
 
       </wsdl:port>
 

@@ -8,7 +8,7 @@ import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.application.InstantApplication;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.InstantFacility;
-import com.tmb.common.model.legacy.rsl.ob.individual.InstantIndividual;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.InstantIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.application.create.request.RequestInstantLoanCreateApplication;
@@ -118,7 +118,6 @@ public class InstantLoanCreateApplicationService {
                 List<InstantFacility> soapInstantFacilityList = facilitiesInfo.stream().map(facility -> facilitiesInfoToSoapRequestInstantFacility(facility, request.getLoanType())).collect(Collectors.toList());
                 soapInstantApplication.setFacilities(soapInstantFacilityList.toArray(new InstantFacility[soapInstantFacilityList.size()]));
             }
-
 
             soapInstantApplication.setIndividuals(new InstantIndividual[]{soapInstantIndividual});
             soapInstantApplication.setNatureOfRequest(request.getNatureOfRequest());

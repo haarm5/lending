@@ -306,17 +306,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="getEligibleProductRequest">
+   <wsdl:message name="getEligibleProductResponse">
 
-      <wsdl:part element="intf:getEligibleProduct" name="parameters">
+      <wsdl:part element="intf:getEligibleProductResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getEligibleProductResponse">
+   <wsdl:message name="getEligibleProductRequest">
 
-      <wsdl:part element="intf:getEligibleProductResponse" name="parameters">
+      <wsdl:part element="intf:getEligibleProduct" name="parameters">
 
       </wsdl:part>
 

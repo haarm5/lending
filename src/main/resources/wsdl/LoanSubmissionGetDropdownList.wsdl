@@ -122,17 +122,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="getDropDownListByCodeResponse">
+   <wsdl:message name="getDropDownListByCodeRequest">
 
-      <wsdl:part element="impl:getDropDownListByCodeResponse" name="parameters">
+      <wsdl:part element="impl:getDropDownListByCode" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getDropDownListByCodeRequest">
+   <wsdl:message name="getDropDownListByCodeResponse">
 
-      <wsdl:part element="impl:getDropDownListByCode" name="parameters">
+      <wsdl:part element="impl:getDropDownListByCodeResponse" name="parameters">
 
       </wsdl:part>
 

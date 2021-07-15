@@ -456,17 +456,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="getInstantCustomerInfoResponse">
+   <wsdl:message name="getInstantCustomerInfoRequest">
 
-      <wsdl:part element="intf:getInstantCustomerInfoResponse" name="parameters">
+      <wsdl:part element="intf:getInstantCustomerInfo" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getInstantCustomerInfoRequest">
+   <wsdl:message name="getInstantCustomerInfoResponse">
 
-      <wsdl:part element="intf:getInstantCustomerInfo" name="parameters">
+      <wsdl:part element="intf:getInstantCustomerInfoResponse" name="parameters">
 
       </wsdl:part>
 

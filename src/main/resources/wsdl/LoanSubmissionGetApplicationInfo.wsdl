@@ -103,17 +103,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="searchApplicationInfoByCaIDResponse">
+   <wsdl:message name="searchApplicationInfoByCaIDRequest">
 
-      <wsdl:part element="impl:searchApplicationInfoByCaIDResponse" name="parameters">
+      <wsdl:part element="impl:searchApplicationInfoByCaID" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="searchApplicationInfoByCaIDRequest">
+   <wsdl:message name="searchApplicationInfoByCaIDResponse">
 
-      <wsdl:part element="impl:searchApplicationInfoByCaID" name="parameters">
+      <wsdl:part element="impl:searchApplicationInfoByCaIDResponse" name="parameters">
 
       </wsdl:part>
 

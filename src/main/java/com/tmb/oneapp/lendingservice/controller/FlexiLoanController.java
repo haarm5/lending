@@ -34,10 +34,7 @@ public class FlexiLoanController {
     @LogAround
     @PostMapping("/approvedStatus")
     public ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> approveStatus(@Valid InstantLoanCalUWRequest instantLoanCalUWRequest) {
-        HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<Object> oneServiceResponse = new TmbOneServiceResponse<>();
-
         TmbOneServiceResponse<InstantLoanCalUWResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(instantLoanCalUWRequest);

@@ -1,19 +1,21 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -31,8 +33,9 @@ public class FlexiLoanCheckApprovedStatusService {
     static final String APPROVE = "APPROVE";
     static final String FLASH = "RC01";
     static final String C2G02 = "C2G02";
+    static final  String MSG_000 = "MSG_000";
 
-    public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws ServiceException, RemoteException {
+    public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws ServiceException, RemoteException, TMBCommonException {
 
         RequestInstantLoanCalUW requestInstantLoanCalUW = new RequestInstantLoanCalUW();
         Body body = new Body();
@@ -44,18 +47,25 @@ public class FlexiLoanCheckApprovedStatusService {
         return calculateUnderwriting(requestInstantLoanCalUW, request.getProduct());
     }
 
-    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws ServiceException, RemoteException {
+    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws ServiceException, RemoteException, TMBCommonException {
         try {
+
             ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.getCalculateUnderwriting(request);
             ResponseFacility facilityInfo = new ResponseFacility();
 
-            if (productCode.equals(FLASH)) {
-                facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getBody().getCaId().longValue());
+            if (responseInstantLoanCalUW.getHeader().getResponseCode().equals(MSG_000)) {
+                if (productCode.equals(FLASH)) {
+                    facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getBody().getCaId().longValue());
+                }
+                return parseResponse(facilityInfo, responseInstantLoanCalUW, productCode);
+            }else {
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getMessage(),
+                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
             }
 
-            return parseResponse(facilityInfo, responseInstantLoanCalUW, productCode);
-        } catch (Exception e) {
-            logger.error("calculateUnderwriting got exception:{}", e);
+        }catch (Exception e) {
+            logger.error("get calculateUnderwriting soap error",e);
             throw e;
         }
     }

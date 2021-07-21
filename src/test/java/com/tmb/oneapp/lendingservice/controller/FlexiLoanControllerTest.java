@@ -1,9 +1,11 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.lendingservice.service.FlexiLoanCheckApprovedStatusService;
+import com.tmb.oneapp.lendingservice.service.FlexiLoanSubmitService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,14 +32,18 @@ public class FlexiLoanControllerTest {
     @Mock
     FlexiLoanCheckApprovedStatusService flexiLoanCheckApprovedStatusService;
 
+    @Mock
+    FlexiLoanSubmitService flexiLoanSubmitService;
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        flexiLoanController = new FlexiLoanController(flexiLoanCheckApprovedStatusService);
+        flexiLoanController = new FlexiLoanController(flexiLoanCheckApprovedStatusService,flexiLoanSubmitService);
     }
 
     @Test
-    public void testCheckCalUWSuccess() throws ServiceException, RemoteException {
+    public void testCheckCalUWSuccess() throws ServiceException, RemoteException, TMBCommonException {
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186761L));
         request.setTriggerFlag("Y");
@@ -51,7 +57,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testCheckCalUWSFail() throws ServiceException, RemoteException {
+    public void testCheckCalUWSFail() throws ServiceException, RemoteException, TMBCommonException {
 
         InstantLoanCalUWRequest request = new InstantLoanCalUWRequest();
         request.setCaId(BigDecimal.valueOf(2021052704186775L));

@@ -8,15 +8,19 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoRequest;
+import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.lendingservice.service.FlexiLoanCheckApprovedStatusService;
+import com.tmb.oneapp.lendingservice.service.FlexiLoanSubmitService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.Instant;
@@ -28,6 +32,7 @@ import java.time.Instant;
 public class FlexiLoanController {
     private static final TMBLogger<FlexiLoanController> logger = new TMBLogger<>(FlexiLoanController.class);
     private final FlexiLoanCheckApprovedStatusService flexiLoanCheckApprovedStatusService;
+    private final FlexiLoanSubmitService flexiLoanSubmitService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     @ApiOperation(value = "check approved status")
@@ -49,6 +54,37 @@ public class FlexiLoanController {
         }
 
     }
+
+
+    @LogAround
+    @ApiOperation("Flexi loan submission info")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-Correlation-ID", defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, dataType = "string", paramType = "header", example = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da")
+    })
+    @GetMapping(value = "/submission/info", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> getSubmissionInfo(@Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+                                                                                           @Valid SubmissionInfoRequest request) {
+
+        setHeader();
+        logger.info("Get flexi loan submission info for correlation id: {}", correlationId);
+
+        TmbOneServiceResponse<SubmissionInfoResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+
+        try {
+            SubmissionInfoResponse response = flexiLoanSubmitService.getSubmissionInfo(request);
+            oneTmbOneServiceResponse.setData(response);
+            getStatusSuccess();
+            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+
+        } catch (Exception e) {
+            logger.error("Error while submission info : {}", e);
+            getStatusFailed();
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+
+    }
+
     private TmbStatus getStatusFailed() {
         return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
                 ResponseCode.FAILED.getService());

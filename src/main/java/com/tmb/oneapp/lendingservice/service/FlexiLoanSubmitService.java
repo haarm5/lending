@@ -39,10 +39,16 @@ public class FlexiLoanSubmitService {
 
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException, TMBCommonException {
 
-        Facility facilityInfo = getFacility(request.getCaId());
-        Individual customerInfo = getCustomer(request.getCaId());
-        CreditCard creditCardInfo = getCreditCard(request.getCaId());
-        return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
+        try {
+            Facility facilityInfo = getFacility(request.getCaId());
+            Individual customerInfo = getCustomer(request.getCaId());
+            CreditCard creditCardInfo = getCreditCard(request.getCaId());
+            return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
+        }catch (Exception e) {
+            logger.error("get customer error" ,e);
+            throw e;
+        }
+
     }
 
     private SubmissionInfoResponse parseSubmissionInfoResponse(String productCode,
@@ -101,9 +107,9 @@ public class FlexiLoanSubmitService {
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         }catch (Exception e) {
             logger.info("get facility soap error",e);
@@ -117,9 +123,9 @@ public class FlexiLoanSubmitService {
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         }catch (Exception e) {
             logger.info("get customer soap error",e);
@@ -133,9 +139,9 @@ public class FlexiLoanSubmitService {
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         }catch (Exception e) {
             logger.info("get credit card soap error",e);

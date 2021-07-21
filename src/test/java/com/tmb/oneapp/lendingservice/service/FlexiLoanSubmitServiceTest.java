@@ -67,14 +67,42 @@ public class FlexiLoanSubmitServiceTest {
 
 //    @Test
 //    public void testService_creditCardFailed() throws ServiceException, RemoteException, TMBCommonException {
-//        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfoFailed());
-//        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
-//        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+//        ResponseFacility facilityInfo = new ResponseFacility();
+//        Body body = new Body();
+//        Header header = new Header();
+//        header.setChannel("MIB");
+//        header.setModule("3");
+//        header.setResponseCode("MSG_000");
+//        facilityInfo.setHeader(header);
+//        facilityInfo.setBody(body);
+//
+//        ResponseCreditcard creditCardInfo = new ResponseCreditcard();
+//        com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body bodyCredit = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body();
+//        com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header headerCredit = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header();
+//        headerCredit.setChannel("MIB");
+//        headerCredit.setModule("3");
+//        headerCredit.setResponseCode("MSG_999");
+//        creditCardInfo.setHeader(headerCredit);
+//        creditCardInfo.setBody(bodyCredit);
+//
+//        ResponseIndividual customerInfo = new ResponseIndividual();
+//        com.tmb.common.model.legacy.rsl.ws.individual.response.Body bodyCustomer = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
+//        com.tmb.common.model.legacy.rsl.ws.individual.response.Header headerCustomer = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+//        headerCustomer.setChannel("MIB");
+//        headerCustomer.setModule("3");
+//        headerCustomer.setResponseCode("MSG_999");
+//        customerInfo.setHeader(headerCustomer);
+//        customerInfo.setBody(bodyCustomer);
+//
+//        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(facilityInfo);
+//        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(customerInfo);
+//        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(creditCardInfo);
 //        SubmissionInfoRequest request = new SubmissionInfoRequest();
 //        request.setCaId(1L);
 //        request.setProductCode("VI");
-//        SubmissionInfoResponse submissionInfoResponse = flexiLoanSubmitService.getSubmissionInfo(request);
-//        Assert.assertNull(submissionInfoResponse);
+//
+//        assertThrows(Exception.class, () ->
+//                flexiLoanSubmitService.getSubmissionInfo(request));
 //    }
 
     @Test
@@ -197,7 +225,7 @@ public class FlexiLoanSubmitServiceTest {
         Facility[] facilities = {facility};
         body.setFacilities(facilities);
         facilityInfo.setHeader(header);
-        facilityInfo.setBody(null);
+        facilityInfo.setBody(body);
         return facilityInfo;
     }
 

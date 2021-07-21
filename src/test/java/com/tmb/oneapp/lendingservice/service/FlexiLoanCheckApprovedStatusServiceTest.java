@@ -6,6 +6,7 @@ import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoF
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
+import com.tmb.common.model.legacy.rsl.ws.facility.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
@@ -55,7 +56,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
 
         Body body = new Body();
         body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.TEN);
+        body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
         when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
@@ -63,7 +64,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("RC01");
         calUWReq.setTriggerFlag("Y");
-        calUWReq.setCaId(BigDecimal.TEN);
+        calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
 
@@ -79,7 +80,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
 
         Body body = new Body();
         body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.TEN);
+        body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
         when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
@@ -87,7 +88,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G02");
         calUWReq.setTriggerFlag("Y");
-        calUWReq.setCaId(BigDecimal.TEN);
+        calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
 
@@ -139,10 +140,13 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         approvalMemoFacilities[0] = approvalMemoFacility;
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body responseBody = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body();
+        com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header();
+        header.setResponseCode("MSG_000");
         responseBody.setUnderwritingResult("APPROVE");
         responseBody.setApprovalMemoCreditCards(approvalMemoCreditCardList);
         responseBody.setApprovalMemoFacilities(approvalMemoFacilities);
         response.setBody(responseBody);
+        response.setHeader(header);
         return response;
     }
 
@@ -151,6 +155,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         Facility f = new Facility();
         Feature feature = new Feature();
         com.tmb.common.model.legacy.rsl.ws.facility.response.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.response.Body();
+        Header header = new Header();
         f.setCardDelivery("H");
         f.setCaId(BigDecimal.TEN);
         f.setFeatureType("S");
@@ -172,7 +177,9 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         Facility[] facilitys = new Facility[1];
         facilitys[0] = f;
         body.setFacilities(facilitys);
+        header.setResponseCode("MSG_000");
         responseFacility.setBody(body);
+        responseFacility.setHeader(header);
         return responseFacility;
     }
 

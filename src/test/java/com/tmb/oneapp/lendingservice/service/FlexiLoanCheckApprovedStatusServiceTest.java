@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -14,7 +15,6 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
-import feign.FeignException;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -51,7 +50,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException {
+    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException, TMBCommonException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
@@ -75,7 +74,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException {
+    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();

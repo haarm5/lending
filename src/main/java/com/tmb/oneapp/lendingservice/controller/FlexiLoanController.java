@@ -49,7 +49,7 @@ public class FlexiLoanController {
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatusFailed());
+            oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
@@ -73,21 +73,20 @@ public class FlexiLoanController {
         try {
             SubmissionInfoResponse response = flexiLoanSubmitService.getSubmissionInfo(request);
             oneTmbOneServiceResponse.setData(response);
-            getStatusSuccess();
-            responseHeaders.set("Timestamp", String.valueOf(Instant.now().toEpochMilli()));
+            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
 
         } catch (Exception e) {
             logger.error("Error while submission info : {}", e);
-            getStatusFailed();
+            oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
     }
 
-    private TmbStatus getStatusFailed() {
+    private TmbStatus getStatusFailed(String error) {
         return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService());
+                ResponseCode.FAILED.getService(),error);
     }
 
 

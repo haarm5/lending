@@ -39,16 +39,10 @@ public class FlexiLoanSubmitService {
 
     public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException, TMBCommonException {
 
-        try {
-            Facility facilityInfo = getFacility(request.getCaId());
-            Individual customerInfo = getCustomer(request.getCaId());
-            CreditCard creditCardInfo = getCreditCard(request.getCaId());
-            return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
-        }catch (Exception e) {
-            logger.error("get customer error" ,e);
-            throw e;
-        }
-
+        Facility facilityInfo = getFacility(request.getCaId());
+        Individual customerInfo = getCustomer(request.getCaId());
+        CreditCard creditCardInfo = getCreditCard(request.getCaId());
+        return parseSubmissionInfoResponse(request.getProductCode(), facilityInfo, customerInfo, creditCardInfo);
     }
 
     private SubmissionInfoResponse parseSubmissionInfoResponse(String productCode,
@@ -112,7 +106,7 @@ public class FlexiLoanSubmitService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         }catch (Exception e) {
-            logger.info("get facility soap error",e);
+            logger.error("get facility soap error",e);
             throw e;
         }
     }
@@ -128,25 +122,14 @@ public class FlexiLoanSubmitService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         }catch (Exception e) {
-            logger.info("get customer soap error",e);
+            logger.error("get customer soap error",e);
             throw e;
         }
     }
 
-    private CreditCard getCreditCard(Long caID) throws ServiceException, RemoteException, TMBCommonException {
-        try {
-            ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caID);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-            }
-        }catch (Exception e) {
-            logger.info("get credit card soap error",e);
-            throw e;
-        }
+    private CreditCard getCreditCard(Long caID) throws ServiceException, RemoteException {
+        ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caID);
+        return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
     }
 
     private String parseRate(Pricing pricing) {

@@ -61,12 +61,13 @@ public class FlexiLoanCheckApprovedStatusService {
             }else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
 
         }catch (Exception e) {
-            logger.error("get calculateUnderwriting soap error",e);
-            throw e;
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    e.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         }
     }
     private InstantLoanCalUWResponse parseResponse(ResponseFacility facilityInfo,

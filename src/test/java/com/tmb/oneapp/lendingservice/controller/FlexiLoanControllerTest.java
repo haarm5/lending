@@ -4,6 +4,8 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
+import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoRequest;
+import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.lendingservice.service.FlexiLoanCheckApprovedStatusService;
 import com.tmb.oneapp.lendingservice.service.FlexiLoanSubmitService;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,4 +71,26 @@ public class FlexiLoanControllerTest {
         ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = flexiLoanController.approveStatus(request);
         assertTrue(result.getStatusCode().isError());
     }
+
+    @Test
+    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException {
+        SubmissionInfoRequest request = new SubmissionInfoRequest();
+        request.setCaId(1L);
+        String correlationId = "xxx";
+        SubmissionInfoResponse response = new SubmissionInfoResponse();
+        when(flexiLoanSubmitService.getSubmissionInfo(any())).thenReturn(response);
+        ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException {
+        SubmissionInfoRequest request = new SubmissionInfoRequest();
+        request.setCaId(1L);
+        String correlationId = "xxx";
+        when(flexiLoanSubmitService.getSubmissionInfo(any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse<SubmissionInfoResponse>> responseEntity = flexiLoanController.getSubmissionInfo(correlationId, request);
+        assertTrue(responseEntity.getStatusCode().isError());
+    }
+
 }

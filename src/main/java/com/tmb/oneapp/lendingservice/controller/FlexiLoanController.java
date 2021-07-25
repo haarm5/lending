@@ -4,6 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
@@ -50,8 +51,9 @@ public class FlexiLoanController {
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
+        return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+
 
     }
 

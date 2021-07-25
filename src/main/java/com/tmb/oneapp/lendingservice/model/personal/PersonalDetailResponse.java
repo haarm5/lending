@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,11 +18,11 @@ public class PersonalDetailResponse {
     private String thaiName;
     private String  thaiSurName;
     private String email;
-    private Date birthDate;
+    private String birthDate;
     private String idIssueCtry1;
-    private Date expiryDate;
+    private String expiryDate;
     private String nationality;
     private Address address;
     private String mobileNo;
-    private String residentFlag;
+    private List<Resident> residentFlag;
 }

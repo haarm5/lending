@@ -13,11 +13,14 @@ import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.service.FlexiLoanSubmitService;
 import com.tmb.oneapp.lendingservice.service.PersonalDetailService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,11 +39,14 @@ public class PersonalDetailController {
     @ApiOperation(value = "get personal detail")
     @LogAround
     @GetMapping("/personalDetail")
-    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(@Valid PersonalDetailRequest request) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+                                                                                           @Valid PersonalDetailRequest request) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PersonalDetailResponse personalDetailResponse = personalDetailService.getPersonalDetail(request.getCaId());
+            PersonalDetailResponse personalDetailResponse = personalDetailService.getPersonalDetail(crmId,request.getCaId());
             oneTmbOneServiceResponse.setData(personalDetailResponse);
             oneTmbOneServiceResponse.setStatus(getStatusSuccess());
             setHeader();

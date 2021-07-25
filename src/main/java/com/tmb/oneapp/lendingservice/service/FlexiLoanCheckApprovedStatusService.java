@@ -22,6 +22,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -98,6 +99,8 @@ public class FlexiLoanCheckApprovedStatusService {
                     }
                 }
                 response.setPricings(pricingList);
+
+
             }else if (productCode.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null){
                 response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }

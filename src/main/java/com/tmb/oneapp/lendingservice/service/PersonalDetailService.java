@@ -39,60 +39,62 @@ public class PersonalDetailService {
         Address address = new Address();
         Individual individual = getCustomer(caId);
 
+        if (individual != null) {
+            if (individual.getPersonalInfoSavedFlag().equals("Y")) {
+                response.setEmail(individual.getEmail());
+                response.setBirthDate(individual.getBirthDate().getTime().toString());
+                response.setEngName(individual.getNameLine2());
+                response.setEngSurName(individual.getNameLine1());
+                response.setNationality(individual.getNationality());
+                response.setExpiryDate(individual.getExpiryDate().getTime().toString());
+                response.setMobileNo(individual.getMobileNo());
+                response.setThaiName(individual.getThaiName());
+                response.setThaiSurName(individual.getThaiSurName());
+                response.setThaiSalutationCode(individual.getThaiSalutationCode());
 
-        if (individual.getPersonalInfoSavedFlag().equals("Y")) {
-            response.setEmail(individual.getEmail());
-            response.setBirthDate(individual.getBirthDate().getTime().toString());
-            response.setEngName(individual.getNameLine2());
-            response.setEngSurName(individual.getNameLine1());
-            response.setNationality(individual.getNationality());
-            response.setExpiryDate(individual.getExpiryDate().getTime().toString());
-            response.setMobileNo(individual.getMobileNo());
-            response.setThaiName(individual.getThaiName());
-            response.setThaiSurName(individual.getThaiSurName());
-            response.setThaiSalutationCode(individual.getThaiSalutationCode());
+                address.setAmphur(individual.getAddresses()[0].getAmphur());
+                address.setCountry(individual.getAddresses()[0].getCountry());
+                address.setFloor(individual.getAddresses()[0].getFloor());
+                address.setBuildingName(individual.getAddresses()[0].getBuildingName());
+                address.setMoo(individual.getAddresses()[0].getMoo());
+                address.setNo(individual.getAddresses()[0].getAddress());
+                address.setProvince(individual.getAddresses()[0].getProvince());
+                address.setRoad(individual.getAddresses()[0].getRoad());
+                address.setPostalCode(individual.getAddresses()[0].getPostalCode());
+                address.setStreetName(individual.getAddresses()[0].getStreetName());
+                address.setTumbol(individual.getAddresses()[0].getTumbol());
 
-            address.setAmphur(individual.getAddresses()[0].getAmphur());
-            address.setCountry(individual.getAddresses()[0].getCountry());
-            address.setFloor(individual.getAddresses()[0].getFloor());
-            address.setBuildingName(individual.getAddresses()[0].getBuildingName());
-            address.setMoo(individual.getAddresses()[0].getMoo());
-            address.setNo(individual.getAddresses()[0].getAddress());
-            address.setProvince(individual.getAddresses()[0].getProvince());
-            address.setRoad(individual.getAddresses()[0].getRoad());
-            address.setPostalCode(individual.getAddresses()[0].getPostalCode());
-            address.setStreetName(individual.getAddresses()[0].getStreetName());
-            address.setTumbol(individual.getAddresses()[0].getTumbol());
+                response.setAddress(address);
 
-            response.setAddress(address);
+            } else {
+                CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
+                response.setEmail(custGeneralProfileResponse.getEmailAddress());
+                response.setBirthDate(custGeneralProfileResponse.getIdBirthDate());
+                response.setEngName(custGeneralProfileResponse.getEngFname());
+                response.setEngSurName(custGeneralProfileResponse.getEngLname());
+                response.setNationality(custGeneralProfileResponse.getNationality());
+                response.setExpiryDate(custGeneralProfileResponse.getIdExpireDate());
+                response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
+                response.setThaiName(custGeneralProfileResponse.getThaFname());
+                response.setThaiSurName(custGeneralProfileResponse.getThaLname());
+                response.setThaiSalutationCode(custGeneralProfileResponse.getCitizenId());
 
-        } else {
-            CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
-            response.setEmail(custGeneralProfileResponse.getEmailAddress());
-            response.setBirthDate(custGeneralProfileResponse.getIdBirthDate());
-            response.setEngName(custGeneralProfileResponse.getEngFname());
-            response.setEngSurName(custGeneralProfileResponse.getEngLname());
-            response.setNationality(custGeneralProfileResponse.getNationality());
-            response.setExpiryDate(custGeneralProfileResponse.getIdExpireDate());
-            response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
-            response.setThaiName(custGeneralProfileResponse.getThaFname());
-            response.setThaiSurName(custGeneralProfileResponse.getThaLname());
-            response.setThaiSalutationCode(custGeneralProfileResponse.getCitizenId());
+                address.setAmphur(custGeneralProfileResponse.getWorkAddrdistrictNameTh());
+                address.setCountry(custGeneralProfileResponse.getNationality());
+                address.setFloor(custGeneralProfileResponse.getCurrentAddrFloorNo());
+                address.setBuildingName(custGeneralProfileResponse.getCurrentAddrVillageOrbuilding());
+                address.setMoo(custGeneralProfileResponse.getCurrentAddrMoo());
+                address.setNo(custGeneralProfileResponse.getCurrentAddrFloorNo());
+                address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
+                address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
+                address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
+                address.setStreetName(custGeneralProfileResponse.getCurrentAddrStreet());
+                address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
 
-            address.setAmphur(custGeneralProfileResponse.getWorkAddrdistrictNameTh());
-            address.setCountry(custGeneralProfileResponse.getNationality());
-            address.setFloor(custGeneralProfileResponse.getCurrentAddrFloorNo());
-            address.setBuildingName(custGeneralProfileResponse.getCurrentAddrVillageOrbuilding());
-            address.setMoo(custGeneralProfileResponse.getCurrentAddrMoo());
-            address.setNo(custGeneralProfileResponse.getCurrentAddrFloorNo());
-            address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
-            address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
-            address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
-            address.setStreetName(custGeneralProfileResponse.getCurrentAddrStreet());
-            address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
-
-            response.setAddress(address);
+                response.setAddress(address);
+            }
         }
+
 
         response.setResidentFlag(getResidents());
 

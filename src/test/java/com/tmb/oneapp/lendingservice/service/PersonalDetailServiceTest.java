@@ -44,8 +44,6 @@ public class PersonalDetailServiceTest {
 
     PersonalDetailService personalDetailService;
 
-    static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -61,6 +59,7 @@ public class PersonalDetailServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         customerHeader.setResponseCode("MSG_000");
+        customerHeader.setResponseDescriptionEN("Success");
         Individual individual = new Individual();
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);

@@ -124,7 +124,7 @@ public class PersonalDetailService {
             if (response != null) {
                 return response.getData();
             } else {
-                throw new TMBCommonException(response.getStatus().getCode(),
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         response.getStatus().getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }

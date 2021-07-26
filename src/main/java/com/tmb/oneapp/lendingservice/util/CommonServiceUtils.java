@@ -1,7 +1,10 @@
 package com.tmb.oneapp.lendingservice.util;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,12 +23,12 @@ public class CommonServiceUtils {
 
     }
 
-    public static String formatPhoneNumber(String mobNo){
+    public static String formatPhoneNumber(String mobNo) {
 
-        if(StringUtils.isNotBlank(mobNo) && mobNo.length() == 10){
+        if (StringUtils.isNotBlank(mobNo) && mobNo.length() == 10) {
             StringBuilder formattedMobNo = new StringBuilder(mobNo);
-            formattedMobNo.insert(3,"-");
-            formattedMobNo.insert(7,"-");
+            formattedMobNo.insert(3, "-");
+            formattedMobNo.insert(7, "-");
 
             return formattedMobNo.toString();
 
@@ -33,30 +36,47 @@ public class CommonServiceUtils {
         return "";
     }
 
-    public static String formatCustomerId(String customerId){
+    public static String formatCustomerId(String customerId) {
 
-        if(StringUtils.isNotBlank(customerId)){
+        if (StringUtils.isNotBlank(customerId)) {
             StringBuilder formatCustomerId = new StringBuilder(customerId);
-            formatCustomerId.insert(1,"-");
-            formatCustomerId.insert(6,"-");
-            formatCustomerId.insert(12,"-");
-            formatCustomerId.insert(15,"-");
+            formatCustomerId.insert(1, "-");
+            formatCustomerId.insert(6, "-");
+            formatCustomerId.insert(12, "-");
+            formatCustomerId.insert(15, "-");
             return formatCustomerId.toString();
 
         }
         return "";
     }
 
-    public static String getThaiYear(String year){
-        logger.info("Thai year is {} :",year);
+    public static String getThaiYear(String year) {
+        logger.info("Thai year is {} :", year);
         return String.valueOf(Integer.parseInt(year) + 543);
     }
 
-    public static String getThaiMonth(String month){
+    public static String getThaiMonth(String month) {
         String[] thaiMonths = {
                 "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
-                "พฤษภาคม", "มิถุนายน" ,"กรกฎาคม", "สิงหาคม",
+                "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
                 "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"};
-        return thaiMonths[Integer.parseInt(month)-1];
+        return thaiMonths[Integer.parseInt(month) - 1];
     }
+
+    public static String getRmId(String crmId) throws TMBCommonException {
+        try {
+            return new StringBuilder(new StringBuilder(crmId).reverse().substring(0, 14)).reverse().toString();
+        }catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid crmId", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
+        }
+    }
+
+    public static long validateCaId(String caId) throws TMBCommonException {
+        try {
+            return Long.parseLong(caId);
+        }catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid caId", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
+        }
+    }
+
 }

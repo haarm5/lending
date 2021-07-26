@@ -1,18 +1,13 @@
 package com.tmb.oneapp.lendingservice.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.logger.TMBLogger;
+
 import com.tmb.common.model.legacy.rsl.ws.individual.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.individual.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetCustomerInfoServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetCustomerInfoSoapBindingStub;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -22,57 +17,28 @@ import java.util.UUID;
 @Service
 public class LoanSubmissionGetCustomerInfoClient {
 
-    private static final TMBLogger<LoanSubmissionGetCustomerInfoClient> logger = new TMBLogger<>(LoanSubmissionGetCustomerInfoClient.class);
-    private final ObjectMapper mapper;
+    @Value("${loan-submission-get-customer-info.url}")
+    private String loanSubmissionGetCustomerInfoServiceLocatorUrl;
 
-    @Value("${rsl.loan-submission-get-customer-info.url}")
-    private String url;
-
-    LoanSubmissionGetCustomerInfoServiceLocator locator = new LoanSubmissionGetCustomerInfoServiceLocator();
-
-    private static final String CHANNEL = "MIB";
-    private static final String MODULE = "3";
-
-    public LoanSubmissionGetCustomerInfoClient(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
-
-    public void setLocator(LoanSubmissionGetCustomerInfoServiceLocator locator) {
-        this.locator = locator;
-    }
-
-    public ResponseIndividual searchCustomerInfoByCaID(long caId) throws ServiceException, JsonProcessingException, TMBCommonException {
-        locator.setLoanSubmissionGetCustomerInfoEndpointAddress(url);
-        LoanSubmissionGetCustomerInfoSoapBindingStub stub = (LoanSubmissionGetCustomerInfoSoapBindingStub) locator.
-                getLoanSubmissionGetCustomerInfo();
-        logger.info("LoanSubmissionGetCustomerInfo Url: {}", url);
+    public ResponseIndividual searchCustomerInfoByCaID(long caId) throws RemoteException, ServiceException {
 
         RequestIndividual request = new RequestIndividual();
-        request.setHeader(setHeader());
-        request.setBody(setBody(caId));
-        logger.info("LoanSubmissionGetCustomerInfo Request: {}", mapper.writeValueAsString(request));
 
-        try {
-            ResponseIndividual response = stub.searchCustomerInfoByCaID(request);
-            logger.info("LoanSubmissionGetCustomerInfo Response: {}", mapper.writeValueAsString(response));
-            return response;
-        } catch (RemoteException e) {
-            throw new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-        }
-    }
-
-    private Header setHeader() {
         Header header = new Header();
-        header.setChannel(CHANNEL);
-        header.setModule(MODULE);
+        header.setChannel("MIB");
+        header.setModule("3");
         header.setRequestID(UUID.randomUUID().toString());
-        return header;
-    }
 
-    private Body setBody(long caId) {
+        request.setHeader(header);
         Body body = new Body();
         body.setCaID(caId);
-        return body;
+        request.setBody(body);
+
+        LoanSubmissionGetCustomerInfoServiceLocator locator = new LoanSubmissionGetCustomerInfoServiceLocator();
+        locator.setLoanSubmissionGetCustomerInfoEndpointAddress(loanSubmissionGetCustomerInfoServiceLocatorUrl);
+        LoanSubmissionGetCustomerInfoSoapBindingStub stub = (LoanSubmissionGetCustomerInfoSoapBindingStub) locator.getLoanSubmissionGetCustomerInfo();
+
+        return stub.searchCustomerInfoByCaID(request);
     }
 
 }

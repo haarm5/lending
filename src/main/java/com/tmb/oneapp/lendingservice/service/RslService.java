@@ -38,7 +38,7 @@ public class RslService {
     private final LoanSubmissionInstantLoanSubmitApplicationClient loanSubmissionInstantLoanSubmitApplicationClient;
     private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
 
-    public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, RemoteException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
         ResponseApplication response = loanSubmissionGetApplicationInfoClient.searchApplicationInfoByCaID(caId);
         checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
@@ -52,7 +52,7 @@ public class RslService {
         return response;
     }
 
-    public ResponseIndividual getLoanSubmissionCustomerInfo(LoanSubmissionGetCustomerInfoRequest request) throws ServiceException, JsonProcessingException, TMBCommonException {
+    public ResponseIndividual getLoanSubmissionCustomerInfo(LoanSubmissionGetCustomerInfoRequest request) throws ServiceException, TMBCommonException, RemoteException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
         ResponseIndividual response = loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(caId);
         checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());

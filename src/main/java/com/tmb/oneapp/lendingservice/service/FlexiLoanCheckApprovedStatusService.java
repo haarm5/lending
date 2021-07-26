@@ -47,10 +47,10 @@ public class FlexiLoanCheckApprovedStatusService {
         return calculateUnderwriting(requestInstantLoanCalUW, request.getProduct());
     }
 
-    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws ServiceException, RemoteException, TMBCommonException {
+    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws TMBCommonException {
         try {
 
-            ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.getCalculateUnderwriting(request);
+            ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.calculateUnderwriting(request.getBody().getTriggerFlag(), request.getBody().getCaId());
             ResponseFacility facilityInfo = new ResponseFacility();
 
             if (responseInstantLoanCalUW.getHeader().getResponseCode().equals(MSG_000)) {

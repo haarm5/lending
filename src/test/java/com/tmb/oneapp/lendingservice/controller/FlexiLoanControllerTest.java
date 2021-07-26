@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
@@ -73,7 +74,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
@@ -84,7 +85,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";

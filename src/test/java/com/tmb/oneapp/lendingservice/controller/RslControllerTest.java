@@ -54,7 +54,7 @@ public class RslControllerTest {
 
     //Loan Submission Get Application Info
     @Test
-    public void loanSubmissionGetApplicationInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void loanSubmissionGetApplicationInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
 
         ResponseApplication response = new ResponseApplication();
         doReturn(response).when(rslService).getLoanSubmissionApplicationInfo(any());

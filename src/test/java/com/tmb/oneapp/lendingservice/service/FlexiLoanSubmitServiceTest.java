@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -11,12 +12,11 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditCardInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoRequest;
-import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionPricingInfo;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ public class FlexiLoanSubmitServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     @Mock
-    private LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
+    private LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
 
     FlexiLoanSubmitService flexiLoanSubmitService;
 
@@ -54,7 +54,7 @@ public class FlexiLoanSubmitServiceTest {
     }
 
     @Test
-    public void testService_creditCard() throws ServiceException, RemoteException, TMBCommonException {
+    public void testService_creditCard() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfo());
         when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
@@ -67,7 +67,7 @@ public class FlexiLoanSubmitServiceTest {
 
 
     @Test
-    public void testService_c2g() throws ServiceException, RemoteException, TMBCommonException {
+    public void testService_c2g() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfoWithRateType());
         when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
         when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());

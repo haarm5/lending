@@ -49,7 +49,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetApplicationInfoRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException, ServiceException, RemoteException {
         TmbOneServiceResponse<ResponseApplication> response = new TmbOneServiceResponse<>();
 
         try {

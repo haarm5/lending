@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 
 import javax.xml.rpc.ServiceException;
 
+import java.rmi.RemoteException;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
@@ -65,7 +67,7 @@ public class RslServiceTest {
 
     //Loan Submission Get Application Info
     @Test
-    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, RemoteException {
         mockGetLoanSubmissionApplicationInfoSuccess();
         LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
         request.setCaId("1");
@@ -179,7 +181,7 @@ public class RslServiceTest {
 
     //Loan Submission Get Customer Info
     @Test
-    public void getLoanSubmissionCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void getLoanSubmissionCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         mockGetLoanSubmissionCustomerInfoSuccess();
         LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
         request.setCaId("1");
@@ -529,7 +531,7 @@ public class RslServiceTest {
 
 
     //Mock Data
-    private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+    private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, RemoteException {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
@@ -543,7 +545,7 @@ public class RslServiceTest {
     }
 
     //Mock Data
-    private void mockGetLoanSubmissionApplicationInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+    private void mockGetLoanSubmissionApplicationInfoFail() throws ServiceException, RemoteException {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
@@ -584,7 +586,7 @@ public class RslServiceTest {
         doReturn(response).when(loanSubmissionGetCreditcardInfoClient).searchCreditcardInfoByCaID(anyLong());
     }
 
-    private void mockGetLoanSubmissionCustomerInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+    private void mockGetLoanSubmissionCustomerInfoSuccess() throws ServiceException, RemoteException {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
@@ -597,7 +599,7 @@ public class RslServiceTest {
         doReturn(response).when(loanSubmissionGetCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
     }
 
-    private void mockGetLoanSubmissionCustomerInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+    private void mockGetLoanSubmissionCustomerInfoFail() throws ServiceException, RemoteException {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
@@ -51,7 +52,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
@@ -59,7 +60,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("RC01");
@@ -75,7 +76,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
@@ -83,7 +84,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G02");

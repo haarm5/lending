@@ -111,7 +111,7 @@ public class RslControllerTest {
 
     //Loan Submission Get Creditcard Info
     @Test
-    public void loanSubmissionGetCreditcardInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void loanSubmissionGetCreditcardInfo_Success() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
 
         ResponseCreditcard response = new ResponseCreditcard();
         doReturn(response).when(rslService).getLoanSubmissionCreditCardInfo(any());

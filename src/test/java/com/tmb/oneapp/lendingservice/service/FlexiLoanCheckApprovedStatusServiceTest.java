@@ -17,7 +17,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -67,11 +68,11 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 
         InstantLoanCalUWResponse actualResult = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(calUWReq);
 
-        Assert.assertNotNull(actualResult);
+        Assertions.assertNotNull(actualResult);
 
     }
 
@@ -91,11 +92,11 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 
         InstantLoanCalUWResponse actualResult = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(calUWReq);
 
-        Assert.assertNotNull(actualResult);
+        Assertions.assertNotNull(actualResult);
 
     }
 

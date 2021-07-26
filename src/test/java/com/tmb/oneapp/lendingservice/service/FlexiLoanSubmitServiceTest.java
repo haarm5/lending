@@ -18,7 +18,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionPricingInfo;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +32,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
 public class FlexiLoanSubmitServiceTest {
@@ -55,27 +54,27 @@ public class FlexiLoanSubmitServiceTest {
 
     @Test
     public void testService_creditCard() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfo());
-        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
-        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+        doReturn(mockFacilityInfo()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockCustomerInfo()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
+        doReturn(mockCreditCardInfo()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         request.setProductCode("VI");
         flexiLoanSubmitService.getSubmissionInfo(request);
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
 
     @Test
     public void testService_c2g() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfoWithRateType());
-        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
-        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+        doReturn(mockFacilityInfoWithRateType()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockCustomerInfo()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
+        doReturn(mockCreditCardInfo()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         request.setProductCode("C2G");
         flexiLoanSubmitService.getSubmissionInfo(request);
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
 

@@ -67,7 +67,7 @@ public class RslServiceTest {
 
     //Loan Submission Get Application Info
     @Test
-    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, RemoteException {
+    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         mockGetLoanSubmissionApplicationInfoSuccess();
         LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
         request.setCaId("1");
@@ -78,9 +78,6 @@ public class RslServiceTest {
     @Test
     public void getLoanSubmissionApplicationInfo_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
-
             LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
             request.setCaId("a"); //invalid caId
             rslService.getLoanSubmissionApplicationInfo(request);
@@ -135,9 +132,6 @@ public class RslServiceTest {
     @Test
     public void getLoanSubmissionCreditCardInfo_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionGetCreditcardInfoClient).searchCreditcardInfoByCaID(anyLong());
-
             LoanSubmissionGetCreditcardInfoRequest request = new LoanSubmissionGetCreditcardInfoRequest();
             request.setCaId("a"); //invalid caId
             rslService.getLoanSubmissionCreditCardInfo(request);
@@ -192,9 +186,6 @@ public class RslServiceTest {
     @Test
     public void getLoanSubmissionCustomerInfo_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionGetCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
-
             LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
             request.setCaId("a"); //invalid caId
             rslService.getLoanSubmissionCustomerInfo(request);
@@ -289,9 +280,6 @@ public class RslServiceTest {
     @Test
     public void getLoanSubmissionFacilityInfo_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionGetFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-
             LoanSubmissionGetFacilityInfoRequest request = new LoanSubmissionGetFacilityInfoRequest();
             request.setCaId("a"); //invalid caId
             rslService.getLoanSubmissionFacilityInfo(request);
@@ -347,9 +335,6 @@ public class RslServiceTest {
     @Test
     public void getLoanSubmissionInstantLoanCalUW_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionInstantLoanCalUWClient).calculateUnderwriting(any(), any());
-
             LoanSubmissionInstantLoanCalUWRequest request = new LoanSubmissionInstantLoanCalUWRequest();
             request.setCaId("a"); //invalid caId
             rslService.getLoanSubmissionInstantLoanCalUW(request);
@@ -445,9 +430,6 @@ public class RslServiceTest {
     @Test
     public void submitInstantLoanApplication_InvalidData() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionInstantLoanSubmitApplicationClient).submitInstantLoanApplication(any(), any());
-
             LoanSubmissionInstantLoanSubmitApplicationRequest request = new LoanSubmissionInstantLoanSubmitApplicationRequest();
             request.setSubmittedFlag("Y");
             request.setCaId("a"); //invalid caId
@@ -531,7 +513,7 @@ public class RslServiceTest {
 
 
     //Mock Data
-    private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, RemoteException {
+    private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
@@ -545,7 +527,7 @@ public class RslServiceTest {
     }
 
     //Mock Data
-    private void mockGetLoanSubmissionApplicationInfoFail() throws ServiceException, RemoteException {
+    private void mockGetLoanSubmissionApplicationInfoFail() throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
@@ -586,7 +568,7 @@ public class RslServiceTest {
         doReturn(response).when(loanSubmissionGetCreditcardInfoClient).searchCreditcardInfoByCaID(anyLong());
     }
 
-    private void mockGetLoanSubmissionCustomerInfoSuccess() throws ServiceException, RemoteException {
+    private void mockGetLoanSubmissionCustomerInfoSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
@@ -599,7 +581,7 @@ public class RslServiceTest {
         doReturn(response).when(loanSubmissionGetCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
     }
 
-    private void mockGetLoanSubmissionCustomerInfoFail() throws ServiceException, RemoteException {
+    private void mockGetLoanSubmissionCustomerInfoFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();

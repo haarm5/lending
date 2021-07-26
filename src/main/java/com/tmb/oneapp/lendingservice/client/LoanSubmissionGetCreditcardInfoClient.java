@@ -74,6 +74,4 @@ public class LoanSubmissionGetCreditcardInfoClient {
         body.setCaID(caId);
         return body;
     }
-
-
 }

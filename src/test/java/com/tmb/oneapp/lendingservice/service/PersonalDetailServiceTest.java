@@ -4,6 +4,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body;
@@ -28,8 +29,10 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -58,9 +61,34 @@ public class PersonalDetailServiceTest {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+        Address address = new Address();
         customerHeader.setResponseCode("MSG_000");
+        customerHeader.setChannel("MIB");
+        customerHeader.setModule("3");
         customerHeader.setResponseDescriptionEN("Success");
         Individual individual = new Individual();
+        individual.setEmail("kk@kk.com");
+        individual.setPersonalInfoSavedFlag("Y");
+        individual.setBirthDate(Calendar.getInstance());
+        individual.setNameLine1("ttn");
+        individual.setNameLine2("ttb");
+        individual.setThaiName("ทีทีบี");
+        individual.setSpThaiSurName("แบงค์");
+        individual.setNationality("TH");
+        individual.setExpiryDate(Calendar.getInstance());
+        individual.setThaiSalutationCode("111");
+        address.setAddress("xx");
+        address.setBuildingName("xxx");
+        address.setAmphur("xxx");
+        address.setId(BigDecimal.ONE);
+        address.setPostalCode("10400");
+        address.setProvince("กทม");
+        address.setMoo("1");
+        address.setFloor("6");
+        address.setCountry("Th");
+        address.setRoad("xx");
+        address.setStreetName("xx");
+        individual.setAddresses(new Address[]{address});
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -106,7 +134,7 @@ public class PersonalDetailServiceTest {
         oneServiceResponse.setStatus(tmbStatus);
 
 
-        when(customerInfoClient.searchCustomerInfoByCaID(any())).thenReturn(mockCustomerInfoResponse);
+        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(dropdownListClient.getDropdownList(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
@@ -117,15 +145,41 @@ public class PersonalDetailServiceTest {
 
 
     @Test
-    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
-        customerHeader.setResponseCode("MSG_999");
+        Address address = new Address();
+        customerHeader.setResponseCode("MSG_000");
+        customerHeader.setChannel("MIB");
+        customerHeader.setModule("3");
+        customerHeader.setResponseDescriptionEN("Success");
         Individual individual = new Individual();
+        individual.setEmail("kk@kk.com");
+        individual.setPersonalInfoSavedFlag("N");
+        individual.setBirthDate(Calendar.getInstance());
+        individual.setNameLine1("ttn");
+        individual.setNameLine2("ttb");
+        individual.setThaiName("ทีทีบี");
+        individual.setSpThaiSurName("แบงค์");
+        individual.setNationality("TH");
+        individual.setExpiryDate(Calendar.getInstance());
+        individual.setThaiSalutationCode("111");
+        address.setAddress("xx");
+        address.setBuildingName("xxx");
+        address.setAmphur("xxx");
+        address.setId(BigDecimal.ONE);
+        address.setPostalCode("10400");
+        address.setProvince("กทม");
+        address.setMoo("1");
+        address.setFloor("6");
+        address.setCountry("Th");
+        address.setRoad("xx");
+        address.setStreetName("xx");
+        individual.setAddresses(new Address[]{address});
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -142,7 +196,7 @@ public class PersonalDetailServiceTest {
         body.setCommonCodeEntries(entries);
         mockResponse.setBody(body);
         Header header = new Header();
-        header.setResponseCode("MSG_999");
+        header.setResponseCode("MSG_000");
         mockResponse.setHeader(header);
 
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
@@ -171,7 +225,7 @@ public class PersonalDetailServiceTest {
         oneServiceResponse.setStatus(tmbStatus);
 
 
-        when(customerInfoClient.searchCustomerInfoByCaID(any())).thenReturn(mockCustomerInfoResponse);
+        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(dropdownListClient.getDropdownList(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 

@@ -21,8 +21,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -66,10 +65,9 @@ public class FlexiLoanControllerTest {
         request.setTriggerFlag("Y");
         request.setProduct("RC01");
 
-        when(flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(request)).thenThrow(new NullPointerException());
-
+        when(flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(any())).thenThrow(new NullPointerException());
         ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = flexiLoanController.approveStatus(request);
-        assertTrue(result.getStatusCode().isError());
+        assertNull(result.getBody().getData());
     }
 
     @Test

@@ -48,21 +48,21 @@ public class PersonalDetailControllerTest {
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
         when(personalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseData().getData());
-        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid,request);
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid, request);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
     @Test
     public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException {
         PersonalDetailRequest request = new PersonalDetailRequest();
-        request.setCaId(202107140L);
+        request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
-        when(personalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseDataFail().getData());
-        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid,request);
-        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCode().value());
+        when(personalDetailService.getPersonalDetail(any(), any())).thenThrow(new NullPointerException());
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid, request);
+        assertTrue(result.getStatusCode().isError());
     }
 
-    private TmbOneServiceResponse<PersonalDetailResponse>  mockPersonalDetailResponseData() {
+    private TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
 
         PersonalDetailResponse response = new PersonalDetailResponse();
@@ -110,7 +110,7 @@ public class PersonalDetailControllerTest {
 
     }
 
-    private TmbOneServiceResponse<PersonalDetailResponse>  mockPersonalDetailResponseDataFail() {
+    private TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseDataFail() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
 
         PersonalDetailResponse response = new PersonalDetailResponse();

@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
@@ -22,8 +24,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +48,8 @@ public class PersonalDetailControllerTest {
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
         when(personalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseData().getData());
-        PersonalDetailResponse  result = personalDetailService.getPersonalDetail(crmid,request.getCaId());
-        assertNotNull(result);
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid,request);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
     @Test
@@ -57,8 +58,8 @@ public class PersonalDetailControllerTest {
         request.setCaId(202107140L);
         String crmid = "001100000000000000000018593707";
         when(personalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseDataFail().getData());
-        PersonalDetailResponse  result = personalDetailService.getPersonalDetail(crmid,request.getCaId());
-        assertNull(result);
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid,request);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getStatusCode().value());
     }
 
     private TmbOneServiceResponse<PersonalDetailResponse>  mockPersonalDetailResponseData() {

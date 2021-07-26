@@ -5,14 +5,12 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
-import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
@@ -129,7 +127,7 @@ public class PersonalDetailService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("get getCustomerEC  error", e);
+            logger.error("get CustomerEC  error", e);
             throw e;
         }
     }

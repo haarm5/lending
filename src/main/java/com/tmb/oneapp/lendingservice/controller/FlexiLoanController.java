@@ -4,6 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
@@ -44,14 +45,15 @@ public class FlexiLoanController {
         try {
             InstantLoanCalUWResponse instantLoanCalUWResponse = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(instantLoanCalUWRequest);
             oneTmbOneServiceResponse.setData(instantLoanCalUWResponse);
-            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while check under writing: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(), e.getMessage()));
         }
+        return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
+
 
     }
 
@@ -73,27 +75,20 @@ public class FlexiLoanController {
         try {
             SubmissionInfoResponse response = flexiLoanSubmitService.getSubmissionInfo(request);
             oneTmbOneServiceResponse.setData(response);
-            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
 
         } catch (Exception e) {
             logger.error("Error while submission info : {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(), e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
     }
 
-    private TmbStatus getStatusFailed(String error) {
-        return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),error);
-    }
-
-
-    private TmbStatus getStatusSuccess() {
-        return new TmbStatus(ResponseCode.SUCCESS.getCode(),
-                ResponseCode.SUCCESS.getMessage(),
-                ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage());
+    private TmbStatus getStatus(String responseCode,String responseService,String responseMessage, String error) {
+        return new TmbStatus(responseCode, responseMessage,
+                responseService,error);
     }
 
     private void setHeader() {

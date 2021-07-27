@@ -449,11 +449,6 @@ public class LoanService {
 			} else if (!foundProductsC2G01.isEmpty()) {
 				return handleFlexiLoanFlow(crmId, productCode, loanType);
 			}
-			
-			if (foundProductsC2G01.isEmpty()) {
-				productDetailResponse.setAlreadyHasProduct(true);
-				return productDetailResponse;
-			}
 			return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
 		}
 

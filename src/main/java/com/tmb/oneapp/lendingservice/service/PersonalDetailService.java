@@ -125,7 +125,7 @@ public class PersonalDetailService {
                 return response.getData();
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        response.getStatus().getMessage(),
+                        ResponseCode.FAILED.getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {

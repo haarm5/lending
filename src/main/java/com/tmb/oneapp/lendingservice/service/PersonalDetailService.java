@@ -90,7 +90,7 @@ public class PersonalDetailService {
                 address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
                 address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
                 address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
-                address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
+                address.setStreetName(custGeneralProfileResponse.getCurrentAddrStreet());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
 
                 response.setAddress(address);

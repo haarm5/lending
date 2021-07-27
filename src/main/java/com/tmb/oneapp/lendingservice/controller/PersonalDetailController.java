@@ -45,27 +45,20 @@ public class PersonalDetailController {
         try {
             PersonalDetailResponse personalDetailResponse = personalDetailService.getPersonalDetail(crmId,request.getCaId());
             oneTmbOneServiceResponse.setData(personalDetailResponse);
-            oneTmbOneServiceResponse.setStatus(getStatusSuccess());
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get personal detail: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatusFailed(e.getMessage()));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
     }
 
-    private TmbStatus getStatusFailed(String error) {
-        return new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                ResponseCode.FAILED.getService(),error);
-    }
-
-
-    private TmbStatus getStatusSuccess() {
-        return new TmbStatus(ResponseCode.SUCCESS.getCode(),
-                ResponseCode.SUCCESS.getMessage(),
-                ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage());
+    private TmbStatus getStatus(String responseCode,String responseService,String responseMessage, String error) {
+        return new TmbStatus(responseCode, responseMessage,
+                responseService,error);
     }
 
     private void setHeader() {

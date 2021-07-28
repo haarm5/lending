@@ -53,18 +53,18 @@ public class LoanSubmissionCreateApplicationService {
 
     private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, TMBCommonException, RemoteException {
 
-        application = mapIndividual(application, req);
+        mapIndividual(application, req);
         if (Objects.isNull(application)) {
             return null;
         }
         if (req.getProductCode().equals("CC")) {
             application.setAppType("CC");
             application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "04" : "03");
-            application = mapDataTypeCC(application, req);
+            mapDataTypeCC(application, req);
         } else {
             application.setAppType("PL");
             application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "12" : "11");
-            application = mapDataTypeNonCC(application, req);
+            mapDataTypeNonCC(application, req);
         }
         application.setBranchCode("026");
         application.setBookBranchCode("026");
@@ -74,7 +74,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req) throws ServiceException, TMBCommonException, RemoteException {
+    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req) {
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();
 
@@ -147,7 +147,7 @@ public class LoanSubmissionCreateApplicationService {
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
             if (responseIncomeModel.getHeader().getResponseCode().equals("MSG_000")) {
-                if (Objects.isNull(responseIncomeModel) || Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
+                if (Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
                     return false;
                 }
                 return true;

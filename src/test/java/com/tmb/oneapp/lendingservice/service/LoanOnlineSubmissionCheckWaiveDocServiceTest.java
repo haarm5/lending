@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -45,7 +47,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdNotReturnStatus() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdNotReturnStatus() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));
@@ -56,7 +58,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdReturnWithStatusSalary() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdReturnWithStatusSalary() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));
@@ -77,7 +79,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
         com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body dropdownBody = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body();
         dropdownBody.setCommonCodeEntries(entrycodes);
         dropdown.setBody(dropdownBody);
-        when(getDropdownListClient.getDropdownList(any())).thenReturn(dropdown);
+        when(getDropdownListClient.getDropDownListByCode(any())).thenReturn(dropdown);
 
         IncomeInfo result = loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId("rmId");
         assertEquals(BigDecimal.valueOf(100), result.getIncomeAmount());
@@ -85,7 +87,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdReturnWithStatusSelfEmployed() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdReturnWithStatusSelfEmployed() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));
@@ -106,7 +108,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
         com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body dropdownBody = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body();
         dropdownBody.setCommonCodeEntries(entryCodes);
         dropdown.setBody(dropdownBody);
-        when(getDropdownListClient.getDropdownList(any())).thenReturn(dropdown);
+        when(getDropdownListClient.getDropDownListByCode(any())).thenReturn(dropdown);
 
         IncomeInfo result = loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId("rmId");
         assertEquals(BigDecimal.valueOf(100), result.getIncomeAmount());

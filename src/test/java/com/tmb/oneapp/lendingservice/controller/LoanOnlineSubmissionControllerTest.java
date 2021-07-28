@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
@@ -36,7 +37,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenReturn(res);
@@ -45,7 +46,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());

@@ -54,9 +54,6 @@ public class LoanSubmissionCreateApplicationService {
     private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, TMBCommonException, RemoteException {
 
         mapIndividual(application, req);
-        if (Objects.isNull(application)) {
-            return null;
-        }
         if (req.getProductCode().equals("CC")) {
             application.setAppType("CC");
             application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "04" : "03");

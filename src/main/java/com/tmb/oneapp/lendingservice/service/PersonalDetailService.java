@@ -52,6 +52,7 @@ public class PersonalDetailService {
                 response.setThaiName(individual.getThaiName());
                 response.setThaiSurName(individual.getThaiSurName());
                 response.setThaiSalutationCode(individual.getThaiSalutationCode());
+                response.setCitizenId(individual.getIdNo1());
 
                 address.setAmphur(individual.getAddresses()[0].getAmphur());
                 address.setCountry(individual.getAddresses()[0].getCountry());
@@ -79,7 +80,7 @@ public class PersonalDetailService {
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
                 response.setThaiSurName(custGeneralProfileResponse.getThaLname());
-                response.setThaiSalutationCode(custGeneralProfileResponse.getCitizenId());
+                response.setCitizenId(custGeneralProfileResponse.getCitizenId());
 
                 address.setAmphur(custGeneralProfileResponse.getCurrentAddrdistrictNameTh());
                 address.setCountry(custGeneralProfileResponse.getNationality());
@@ -90,7 +91,7 @@ public class PersonalDetailService {
                 address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
                 address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
                 address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
-                address.setStreetName(custGeneralProfileResponse.getCurrentAddrStreet());
+                address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
 
                 response.setAddress(address);

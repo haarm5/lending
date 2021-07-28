@@ -147,10 +147,8 @@ public class LoanSubmissionCreateApplicationService {
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
             if (responseIncomeModel.getHeader().getResponseCode().equals("MSG_000")) {
-                if (Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt())) {
-                    return false;
-                }
-                return true;
+                boolean expression = Objects.isNull(responseIncomeModel.getBody()) || Objects.isNull(responseIncomeModel.getBody().getIncomeModelAmt());
+                return expression ? false : true;
             } else {
                 throw new TMBCommonException(responseIncomeModel.getHeader().getResponseCode(),
                         responseIncomeModel.getHeader().getResponseDescriptionEN(),

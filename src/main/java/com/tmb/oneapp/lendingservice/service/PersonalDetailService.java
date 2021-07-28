@@ -41,6 +41,7 @@ public class PersonalDetailService {
         Individual individual = getCustomer(caId);
 
         if (individual != null) {
+            //rsl
             if (individual.getPersonalInfoSavedFlag().equals("Y")) {
                 response.setEmail(individual.getEmail());
                 response.setBirthDate(individual.getBirthDate().getTime().toString());
@@ -52,6 +53,7 @@ public class PersonalDetailService {
                 response.setThaiName(individual.getThaiName());
                 response.setThaiSurName(individual.getThaiSurName());
                 response.setThaiSalutationCode(individual.getThaiSalutationCode());
+                response.setCitizenId(individual.getIdNo1());
 
                 address.setAmphur(individual.getAddresses()[0].getAmphur());
                 address.setCountry(individual.getAddresses()[0].getCountry());
@@ -68,6 +70,7 @@ public class PersonalDetailService {
                 response.setAddress(address);
 
             } else {
+                //ec
                 CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
                 response.setBirthDate(custGeneralProfileResponse.getIdBirthDate());
@@ -78,18 +81,18 @@ public class PersonalDetailService {
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
                 response.setThaiSurName(custGeneralProfileResponse.getThaLname());
-                response.setThaiSalutationCode(custGeneralProfileResponse.getCitizenId());
+                response.setCitizenId(custGeneralProfileResponse.getCitizenId());
 
-                address.setAmphur(custGeneralProfileResponse.getWorkAddrdistrictNameTh());
+                address.setAmphur(custGeneralProfileResponse.getCurrentAddrdistrictNameTh());
                 address.setCountry(custGeneralProfileResponse.getNationality());
                 address.setFloor(custGeneralProfileResponse.getCurrentAddrFloorNo());
                 address.setBuildingName(custGeneralProfileResponse.getCurrentAddrVillageOrbuilding());
                 address.setMoo(custGeneralProfileResponse.getCurrentAddrMoo());
-                address.setNo(custGeneralProfileResponse.getCurrentAddrFloorNo());
+                address.setNo(custGeneralProfileResponse.getCurrentAddrHouseNo());
                 address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
                 address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
                 address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
-                address.setStreetName(custGeneralProfileResponse.getCurrentAddrStreet());
+                address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
 
                 response.setAddress(address);

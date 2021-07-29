@@ -37,7 +37,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenReturn(res);
@@ -46,7 +46,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());

@@ -52,7 +52,7 @@ public class LoanSubmissionCreateApplicationService {
     }
 
 
-    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, RemoteException, JsonProcessingException {
 
         mapIndividual(application, req);
         if (req.getProductCode().equals("CC")) {

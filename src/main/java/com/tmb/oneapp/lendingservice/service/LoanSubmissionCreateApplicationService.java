@@ -1,6 +1,7 @@
 package com.tmb.oneapp.lendingservice.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.application.Application;
@@ -31,7 +32,7 @@ public class LoanSubmissionCreateApplicationService {
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
 
 
-    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws ServiceException, RemoteException, TMBCommonException {
+    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         try {
             var application = new Application();

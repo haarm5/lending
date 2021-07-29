@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.Header;
@@ -41,7 +42,7 @@ class LoanSubmissionCreateApplicationServiceTest {
     }
 
     @Test
-    public void testCreateApplicationTypeCC() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCreateApplicationTypeCC() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
         req.setProductCode("CC");
 
@@ -65,7 +66,7 @@ class LoanSubmissionCreateApplicationServiceTest {
     }
 
     @Test
-    public void testCreateApplicationTypePL() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCreateApplicationTypePL() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
         req.setProductCode("PL");
 

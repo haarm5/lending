@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
@@ -54,7 +55,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCreateApplicationSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseApplication res = new ResponseApplication();
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
@@ -62,7 +63,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCreateApplicationFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         ResponseApplication res = new ResponseApplication();
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());

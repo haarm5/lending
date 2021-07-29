@@ -52,7 +52,7 @@ public class LoanSubmissionCreateApplicationService {
     }
 
 
-    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, TMBCommonException, RemoteException {
+    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
 
         mapIndividual(application, req);
         if (req.getProductCode().equals("CC")) {
@@ -140,7 +140,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, TMBCommonException {
+    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));

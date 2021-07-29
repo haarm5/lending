@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
@@ -45,7 +46,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdNotReturnStatus() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdNotReturnStatus() throws ServiceException, RemoteException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));
@@ -56,7 +57,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdReturnWithStatusSalary() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdReturnWithStatusSalary() throws ServiceException, RemoteException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));
@@ -85,7 +86,7 @@ class LoanOnlineSubmissionCheckWaiveDocServiceTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdReturnWithStatusSelfEmployed() throws ServiceException, RemoteException {
+    public void testGetIncomeInfoByRmIdReturnWithStatusSelfEmployed() throws ServiceException, RemoteException, JsonProcessingException {
         ResponseIncomeModel clientRes = new ResponseIncomeModel();
         Body body = new Body();
         body.setIncomeModelAmt(BigDecimal.valueOf(100));

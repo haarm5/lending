@@ -66,7 +66,6 @@ public class PersonalDetailService {
                 address.setPostalCode(individual.getAddresses()[0].getPostalCode());
                 address.setStreetName(individual.getAddresses()[0].getStreetName());
                 address.setTumbol(individual.getAddresses()[0].getTumbol());
-//                response.setAddress(address);
 
             } else {
                 //ec

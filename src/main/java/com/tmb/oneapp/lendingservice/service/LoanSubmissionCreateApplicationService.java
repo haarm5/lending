@@ -140,16 +140,14 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
 
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
             if (responseIncomeModel.getHeader().getResponseCode().equals("MSG_000")) {
                 return Objects.nonNull(responseIncomeModel.getBody()) && Objects.nonNull(responseIncomeModel.getBody().getIncomeModelAmt());
             } else {
-                throw new TMBCommonException(responseIncomeModel.getHeader().getResponseCode(),
-                        responseIncomeModel.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                return false;
             }
         } catch (Exception e) {
             logger.error("create app soap error", e);

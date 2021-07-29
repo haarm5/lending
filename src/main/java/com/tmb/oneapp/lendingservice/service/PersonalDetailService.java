@@ -38,6 +38,7 @@ public class PersonalDetailService {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
         Individual individual = getCustomer(caId);
+        CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
 
         if (individual != null) {
             //rsl
@@ -66,11 +67,8 @@ public class PersonalDetailService {
                 address.setStreetName(individual.getAddresses()[0].getStreetName());
                 address.setTumbol(individual.getAddresses()[0].getTumbol());
 
-                response.setAddress(address);
-
             } else {
                 //ec
-                CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
                 response.setBirthDate(custGeneralProfileResponse.getIdBirthDate());
                 response.setEngName(custGeneralProfileResponse.getEngFname());
@@ -94,8 +92,10 @@ public class PersonalDetailService {
                 address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
 
-                response.setAddress(address);
             }
+
+            address.setRoomNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
+            response.setAddress(address);
         }
 
 

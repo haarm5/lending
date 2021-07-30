@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -82,7 +83,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws Exception {
+    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException {
         CustGeneralProfileResponse customer = getCustomerEC(rmId);
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();
@@ -187,6 +188,6 @@ public class LoanSubmissionCreateApplicationService {
     }
 
     private void loging(String error, Exception e) {
-        logger.error("create app get CustomerEC soap error", e);
+        logger.error(error, e);
     }
 }

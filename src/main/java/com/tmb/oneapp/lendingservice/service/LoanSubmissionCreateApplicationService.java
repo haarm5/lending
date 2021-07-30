@@ -39,7 +39,7 @@ public class LoanSubmissionCreateApplicationService {
     private final CustomerServiceClient customerServiceClient;
 
 
-    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws Exception {
+    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws TMBCommonException, ServiceException, ParseException, RemoteException, JsonProcessingException {
 
         try {
             var application = new Application();
@@ -53,13 +53,13 @@ public class LoanSubmissionCreateApplicationService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("create app soap error", e);
+            loging("create app soap error",e);
             throw e;
         }
     }
 
 
-    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws Exception {
+    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException, ServiceException, RemoteException, JsonProcessingException {
         mapIndividual(application, req, rmId);
         String productCode = req.getProductCode();
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
@@ -187,7 +187,7 @@ public class LoanSubmissionCreateApplicationService {
         }
     }
 
-    private void loging(String error, Exception e) {
+    private void loging(String error, Exception e)  {
         logger.error(error, e);
     }
 }

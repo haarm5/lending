@@ -1,6 +1,7 @@
 package com.tmb.oneapp.lendingservice.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -20,6 +21,9 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -151,7 +155,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private boolean waiveDocIsAlready(String rmId) throws Exception {
+    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
 
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
@@ -161,11 +165,12 @@ public class LoanSubmissionCreateApplicationService {
                 return false;
             }
         } catch (Exception e) {
-            throw throwError(e, "create app  check waive doc soap error");
+            loging("create app  check waive doc soap error", e);
+            throw e;
         }
     }
 
-    private CustGeneralProfileResponse getCustomerEC(String crmid) throws Exception {
+    private CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
             if (response != null) {
@@ -176,12 +181,12 @@ public class LoanSubmissionCreateApplicationService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            throw throwError(e, "create app get CustomerEC soap error");
+            loging("create app get CustomerEC soap error", e);
+            throw e;
         }
     }
 
-    private Exception throwError(Exception e, String error) {
-        logger.error(error, e);
-        return e;
+    private void loging(String error, Exception e) {
+        logger.error("create app get CustomerEC soap error", e);
     }
 }

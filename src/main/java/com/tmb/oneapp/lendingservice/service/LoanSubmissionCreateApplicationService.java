@@ -1,7 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -21,10 +20,6 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +34,7 @@ public class LoanSubmissionCreateApplicationService {
     private final CustomerServiceClient customerServiceClient;
 
 
-    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+    public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws Exception {
 
         try {
             var application = new Application();
@@ -59,7 +54,7 @@ public class LoanSubmissionCreateApplicationService {
     }
 
 
-    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws ServiceException, RemoteException, JsonProcessingException, TMBCommonException, ParseException {
+    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws Exception {
         mapIndividual(application, req, rmId);
         String productCode = req.getProductCode();
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
@@ -83,7 +78,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException {
+    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws Exception {
         CustGeneralProfileResponse customer = getCustomerEC(rmId);
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();
@@ -156,7 +151,7 @@ public class LoanSubmissionCreateApplicationService {
         return application;
     }
 
-    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
+    private boolean waiveDocIsAlready(String rmId) throws Exception {
 
         try {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
@@ -166,12 +161,11 @@ public class LoanSubmissionCreateApplicationService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("create app  check waive doc soap error", e);
-            throw e;
+            throw throwError(e, "create app  check waive doc soap error");
         }
     }
 
-    private CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
+    private CustGeneralProfileResponse getCustomerEC(String crmid) throws Exception {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
             if (response != null) {
@@ -182,8 +176,12 @@ public class LoanSubmissionCreateApplicationService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("create app get CustomerEC soap error", e);
-            throw e;
+            throw throwError(e, "create app get CustomerEC soap error");
         }
+    }
+
+    private Exception throwError(Exception e, String error) {
+        logger.error(error, e);
+        return e;
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +56,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+    public void testCreateApplicationSuccess() throws Exception {
         ResponseApplication res = new ResponseApplication();
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
@@ -65,8 +64,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
-        ResponseApplication res = new ResponseApplication();
+    public void testCreateApplicationFail() throws Exception {
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().isError());

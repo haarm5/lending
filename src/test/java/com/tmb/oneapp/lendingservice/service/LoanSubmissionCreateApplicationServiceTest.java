@@ -1,7 +1,5 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -21,11 +19,6 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -52,7 +45,7 @@ class LoanSubmissionCreateApplicationServiceTest {
     }
 
     @Test
-    public void testCreateApplicationTypeCC() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+    public void testCreateApplicationTypeCC() throws Exception {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
         req.setProductCode("CC");
 
@@ -103,7 +96,7 @@ class LoanSubmissionCreateApplicationServiceTest {
     }
 
     @Test
-    public void testCreateApplicationTypePL() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+    public void testCreateApplicationTypePL() throws Exception {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
         req.setProductCode("PL");
 

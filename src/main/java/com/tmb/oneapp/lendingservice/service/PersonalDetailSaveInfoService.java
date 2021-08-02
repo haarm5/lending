@@ -38,6 +38,9 @@ public class PersonalDetailSaveInfoService {
         address.setPostalCode(request.getAddress().getPostalCode());
         address.setAmphur(request.getAddress().getAmphur());
         address.setBuildingName(request.getAddress().getBuildingName());
+        address.setAddress(address.getAddress());
+        address.setAddrTypCode(address.getAddrTypCode());
+        address.setCifId(address.getCifId());
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] addresss = {address};
 
         individual.setPersonalInfoSavedFlag("Y");
@@ -50,7 +53,7 @@ public class PersonalDetailSaveInfoService {
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
-        individual.setResidentFlag(request.getResidentFlag().getEntryCode());
+        //individual.setResidentFlag(request.getResidentFlag().getEntryCode());
         individual.setExpiryDate(request.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAddresses(addresss);

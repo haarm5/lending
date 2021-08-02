@@ -4,7 +4,7 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
@@ -12,7 +12,6 @@ import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.lendingservice.service.PersonalDetailSaveInfoService;
 import com.tmb.oneapp.lendingservice.service.PersonalDetailService;
-import feign.Body;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -61,13 +60,13 @@ public class PersonalDetailController {
     @ApiOperation(value = "update personal detail info")
     @LogAround
     @PostMapping("/savePersonalDetail")
-    public ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> updatePersonalDetail(@Valid PersonalDetailRequest request,
+    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual>> updatePersonalDetail(@Valid PersonalDetailRequest request,
                                                                                           @Valid @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            ResponseIndividual responseIndividual = updatePersonalDetail.updateCustomerInfo(request.getCaId(),personalDetailReg);
+            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual responseIndividual = updatePersonalDetail.updateCustomerInfo(request.getCaId(),personalDetailReg);
             oneTmbOneServiceResponse.setData(responseIndividual);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();

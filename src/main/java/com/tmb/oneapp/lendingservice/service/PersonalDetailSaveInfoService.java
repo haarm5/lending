@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
@@ -31,7 +32,7 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, ParseException {
+    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(caId);
@@ -92,7 +93,7 @@ public class PersonalDetailSaveInfoService {
         }
     }
 
-    private Individual getCustomerInfo(Long caId) throws ServiceException, RemoteException, TMBCommonException {
+    private Individual getCustomerInfo(Long caId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             Individual individual = getCustomerInfoClient.searchCustomerInfoByCaID(caId).getBody().getIndividuals()[0];
             if (individual != null) {

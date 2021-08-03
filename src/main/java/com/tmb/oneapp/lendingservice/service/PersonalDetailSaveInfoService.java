@@ -76,7 +76,7 @@ public class PersonalDetailSaveInfoService {
         return saveCustomer(responseIndividual.getBody().getIndividual());
     }
 
-    private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, RemoteException, TMBCommonException {
+    private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
             if (response != null) {

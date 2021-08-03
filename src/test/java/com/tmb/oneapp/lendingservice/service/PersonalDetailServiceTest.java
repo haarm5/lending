@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -54,7 +55,7 @@ public class PersonalDetailServiceTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -135,7 +136,7 @@ public class PersonalDetailServiceTest {
 
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
-        when(dropdownListClient.getDropdownList(any())).thenReturn(mockResponse);
+        when(dropdownListClient.getDropDownListByCode(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
@@ -145,7 +146,7 @@ public class PersonalDetailServiceTest {
 
 
     @Test
-    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -226,7 +227,7 @@ public class PersonalDetailServiceTest {
 
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
-        when(dropdownListClient.getDropdownList(any())).thenReturn(mockResponse);
+        when(dropdownListClient.getDropDownListByCode(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());

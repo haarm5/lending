@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
@@ -34,7 +35,7 @@ public class PersonalDetailService {
     static final String MSG_000 = "MSG_000";
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
 
-    public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException {
+    public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
         Individual individual = getCustomer(caId);
@@ -105,7 +106,7 @@ public class PersonalDetailService {
     }
 
 
-    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException {
+    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
@@ -137,12 +138,12 @@ public class PersonalDetailService {
         }
     }
 
-    private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, RemoteException {
-        ResponseDropdown getDropdownListResp = dropdownListClient.getDropdownList(categoryCode);
+    private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown getDropdownListResp = dropdownListClient.getDropDownListByCode(categoryCode);
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private List<Resident> getResidents() throws ServiceException, RemoteException {
+    private List<Resident> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
         List<Resident> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_RESIDENT_TYPE);
         for (CommonCodeEntry e : entries) {

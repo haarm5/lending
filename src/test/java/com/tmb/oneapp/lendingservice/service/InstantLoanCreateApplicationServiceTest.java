@@ -123,10 +123,10 @@ public class InstantLoanCreateApplicationServiceTest {
     }
 
     @Test
-    void InstantLoanCreationEnsureToCallSFTP() throws IOException, ServiceException, InterruptedException {
+    void InstantLoanCreationEnsureToCallSFTP() throws IOException, ServiceException {
         flashCardRequest.setLoanType("C2G");
-        when(Client.callLoanSubmissionInstantLoanCreateApplication(any())).thenReturn(soapResponse);
-        when(imageGeneratorService.generateLOCImage(any())).thenReturn("test.JPG");
+        doReturn(soapResponse).when(Client).callLoanSubmissionInstantLoanCreateApplication(any());
+        doReturn("test.JPG").when(imageGeneratorService).generateLOCImage(any());
         createApplicationService.setSftpLocations("abc,xyz");
         ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
         await().timeout(5000, TimeUnit.SECONDS);

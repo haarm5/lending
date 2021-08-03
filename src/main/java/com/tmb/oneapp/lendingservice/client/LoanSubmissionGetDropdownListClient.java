@@ -1,12 +1,16 @@
 package com.tmb.oneapp.lendingservice.client;
 
-import com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.request.RequestDropdown;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListSoapBindingStub;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -15,37 +19,58 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetDropdownListClient {
-	@Value("${loan-submission-get-dropdown-list.url}")
-	private String getDropdownListUrl;
+
+	private static final TMBLogger<LoanSubmissionGetDropdownListClient> logger = new TMBLogger<>(LoanSubmissionGetDropdownListClient.class);
+	private final ObjectMapper mapper;
+
+	@Value("${rsl.loan-submission-get-dropdown-list.url}")
+	private String url;
 
 	LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
 
 	private static final String CHANNEL = "MIB";
 	private static final String MODULE = "3";
 
+	public LoanSubmissionGetDropdownListClient(ObjectMapper mapper) {
+		this.mapper = mapper;
+	}
+
 	public void setLocator(LoanSubmissionGetDropdownListServiceLocator locator) {
 		this.locator = locator;
 	}
 
-	public ResponseDropdown getDropdownList(String categoryCode) throws RemoteException, ServiceException {
-		locator.setLoanSubmissionGetDropdownListEndpointAddress(getDropdownListUrl);
-
+	public ResponseDropdown getDropDownListByCode(String categoryCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+		locator.setLoanSubmissionGetDropdownListEndpointAddress(url);
 		LoanSubmissionGetDropdownListSoapBindingStub stub = (LoanSubmissionGetDropdownListSoapBindingStub) locator
 				.getLoanSubmissionGetDropdownList();
+		logger.info("LoanSubmissionGetDropdownList Url: {}", url);
 
-		RequestDropdown req = new RequestDropdown();
+		RequestDropdown request = new RequestDropdown();
+		request.setHeader(getHeader());
+		request.setBody(getBody(categoryCode));
+		logger.info("LoanSubmissionGetDropdownList Request: {}", mapper.writeValueAsString(request));
 
-		Header header = new Header();
+		try {
+			ResponseDropdown response = stub.getDropDownListByCode(request);
+			logger.info("LoanSubmissionGetDropdownList Response: {}", mapper.writeValueAsString(response));
+			return response;
+		} catch (RemoteException e) {
+			throw new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+		}
+	}
+
+	private com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header getHeader() {
+		com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header header = new com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header();
 		header.setChannel(CHANNEL);
 		header.setModule(MODULE);
 		header.setRequestID(UUID.randomUUID().toString());
-		req.setHeader(header);
+		return header;
+	}
 
-		Body body = new Body();
+	private com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body getBody(String categoryCode) {
+		com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body body = new com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body();
 		body.setCategoryCode(categoryCode);
-		req.setBody(body);
-
-		return stub.getDropDownListByCode(req);
+		return body;
 	}
 
 }

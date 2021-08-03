@@ -44,6 +44,7 @@ public class LendingServiceConstant {
      * Response
      */
     public static final String DATA_NOT_FOUND = "DATA NOT FOUND";
+    public static final String INVALID_DATA = "INVALID DATA";
 
     public static final String HEADER_TIMESTAMP = "Timestamp";
     public static final String UNDER_SCORE = "_";

@@ -71,7 +71,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testUpdatePersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException {
+    public void testUpdatePersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -117,7 +117,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, ParseException {
+    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();

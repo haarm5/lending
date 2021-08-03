@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 
 @RunWith(JUnit4.class)
-public class PersonalDetailSaveInfoServiceTest {
+public class
+PersonalDetailSaveInfoServiceTest {
     @Mock
     private LoanSubmissionUpdateCustomerClient updateCustomerClient;
     @Mock
@@ -43,7 +45,7 @@ public class PersonalDetailSaveInfoServiceTest {
     }
 
     @Test
-    public void testSaveCustomerSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException {
+    public void testSaveCustomerSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
@@ -134,7 +136,7 @@ public class PersonalDetailSaveInfoServiceTest {
     }
 
     @Test
-    public void testSaveCustomerFail() throws ServiceException, RemoteException, TMBCommonException, ParseException {
+    public void testSaveCustomerFail() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();

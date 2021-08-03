@@ -3,8 +3,6 @@ package com.tmb.oneapp.lendingservice.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.request.RequestIncomeModel;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetIncomeModelInfoServiceLocator;
@@ -45,13 +43,13 @@ public class LoanSubmissionGetIncomeModelInfoClient {
         RequestIncomeModel req = new RequestIncomeModel();
 
 
-        var header = new Header();
+        com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Header header = new com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         req.setHeader(header);
 
-        Body body = new Body();
+        com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Body body = new com.tmb.common.model.legacy.rsl.ws.incomemodel.request.Body();
         body.setRmNo(rmNo);
         req.setBody(body);
         logger.info(" Request from Client to get income info is {} : " + mapper.writeValueAsString(req));

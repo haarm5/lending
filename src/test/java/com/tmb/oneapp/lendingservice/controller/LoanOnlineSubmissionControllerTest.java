@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -36,7 +38,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenReturn(res);
@@ -45,7 +47,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetIncomeInfoByRmIdFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         IncomeInfo res = new IncomeInfo();
         res.setIncomeAmount(BigDecimal.valueOf(100));
         when(loanOnlineSubmissionCheckWaiveDocService.getIncomeInfoByRmId(any())).thenThrow(new IllegalArgumentException());
@@ -54,7 +56,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCreateApplicationSuccess() throws Exception {
         ResponseApplication res = new ResponseApplication();
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
@@ -62,8 +64,7 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
-    public void testCreateApplicationFail() throws ServiceException, RemoteException, TMBCommonException {
-        ResponseApplication res = new ResponseApplication();
+    public void testCreateApplicationFail() throws Exception {
         when(loanSubmissionCreateApplicationService.createApplication(any(),any())).thenThrow(new IllegalArgumentException());
         ResponseEntity<TmbOneServiceResponse<ResponseApplication>> responseEntity = loanOnlineSubmissionController.createApplication("rmid", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().isError());

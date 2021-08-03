@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -28,7 +29,7 @@ public class LoanOnlineSubmissionCheckWaiveDocService {
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
 
 
-    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException {
+    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));

@@ -1,5 +1,8 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.logger.TMBLogger;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.model.legacy.rsl.common.ob.application.Application;
 import com.tmb.common.model.legacy.rsl.ws.application.save.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
@@ -18,16 +21,23 @@ import java.util.UUID;
 public class LoanSubmissionCreateApplicationClient {
     @Value("${loam-submission-create-application.url}")
     private String createAppUrlInfo;
+    private final ObjectMapper mapper;
+    private static final TMBLogger<LoanSubmissionCreateApplicationClient> logger = new TMBLogger<>(LoanSubmissionCreateApplicationClient.class);
+
 
     LoanSubmissionCreateApplicationServiceLocator locator = new LoanSubmissionCreateApplicationServiceLocator();
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
 
+    public LoanSubmissionCreateApplicationClient(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
     public void setLocator(LoanSubmissionCreateApplicationServiceLocator locator) {
         this.locator = locator;
     }
 
-    public ResponseApplication createApplication(Application application) throws RemoteException, ServiceException {
+    public ResponseApplication createApplication(Application application) throws RemoteException, ServiceException, JsonProcessingException {
         locator.setLoanSubmissionCreateApplicationEndpointAddress(createAppUrlInfo);
         LoanSubmissionCreateApplicationSoapBindingStub stub =
                 (LoanSubmissionCreateApplicationSoapBindingStub) locator.getLoanSubmissionCreateApplication();
@@ -43,6 +53,9 @@ public class LoanSubmissionCreateApplicationClient {
         var req = new RequestApplication();
         req.setHeader(header);
         req.setBody(body);
-        return stub.createApplicationInfo(req);
+        logger.info(" Request from Client to createApplication is {} : " + mapper.writeValueAsString(req));
+        ResponseApplication res = stub.createApplicationInfo(req);
+        logger.info(" Response from Client to createApplication is {} : " + mapper.writeValueAsString(res));
+        return res;
     }
 }

@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -29,8 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,7 +75,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetCreditcardInfoRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseCreditcard> response = new TmbOneServiceResponse<>();
 
         try {
@@ -107,12 +104,12 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetCustomerInfoRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException, RemoteException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseIndividual> response = new TmbOneServiceResponse<>();
 
         try {
-            ResponseIndividual getCustomerInfoResponse = rslService.getLoanSubmissionCustomerInfo(request);
-            response.setData(getCustomerInfoResponse);
+            ResponseIndividual individualResponse = rslService.getLoanSubmissionCustomerInfo(request);
+            response.setData(individualResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 
@@ -136,7 +133,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetDropdownListRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseDropdown> response = new TmbOneServiceResponse<>();
 
         try {
@@ -165,7 +162,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetFacilityInfoRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseFacility> response = new TmbOneServiceResponse<>();
 
         try {
@@ -194,7 +191,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionInstantLoanCalUWRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseInstantLoanCalUW> response = new TmbOneServiceResponse<>();
 
         try {
@@ -223,7 +220,7 @@ public class RslController {
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseInstantLoanGetCustInfo> response = new TmbOneServiceResponse<>();
 
         try {
@@ -252,7 +249,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionInstantLoanSubmitApplicationRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseInstantLoanSubmit> response = new TmbOneServiceResponse<>();
 
         try {
@@ -281,7 +278,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody Facility request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility> response = new TmbOneServiceResponse<>();
 
         try {

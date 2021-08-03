@@ -25,7 +25,6 @@ public class LoanSubmissionUpdateCustomerClient {
     private static final TMBLogger<LoanSubmissionUpdateCustomerClient> logger = new TMBLogger<>(LoanSubmissionUpdateCustomerClient.class);
 
     LoanSubmissionUpdateCustomerServiceLocator locator = new LoanSubmissionUpdateCustomerServiceLocator();
-
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
 

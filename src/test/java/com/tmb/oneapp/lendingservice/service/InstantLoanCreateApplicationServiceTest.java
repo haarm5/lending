@@ -129,7 +129,7 @@ public class InstantLoanCreateApplicationServiceTest {
         doReturn("test.JPG").when(imageGeneratorService).generateLOCImage(any());
         createApplicationService.setSftpLocations("abc,xyz");
         ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
-        await().timeout(5000, TimeUnit.SECONDS);
+        await().timeout(20000, TimeUnit.SECONDS);
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
         verify(ftpClient, times(1)).storeFile(any());

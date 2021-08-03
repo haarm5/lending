@@ -4,6 +4,8 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
@@ -25,8 +27,12 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
     public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException {
+        com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual responseIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual();
+
         Individual individual = getCustomerInfo(caId);
         Address address = new Address();
+        Body body = new Body();
+
         address.setTumbol(request.getAddress().getTumbol());
         address.setRoad(request.getAddress().getRoad());
         address.setProvince(request.getAddress().getProvince());
@@ -53,12 +59,15 @@ public class PersonalDetailSaveInfoService {
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
-        //individual.setResidentFlag(request.getResidentFlag().getEntryCode());
+        individual.setResidentFlag(request.getResidentFlag().getEntryCode());
         individual.setExpiryDate(request.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAddresses(addresss);
 
-        return saveCustomer(individual);
+        body.setIndividual(individual);
+        responseIndividual.setBody(body);
+
+        return saveCustomer(responseIndividual.getBody().getIndividual());
     }
 
     private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, RemoteException, TMBCommonException {

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.request.RequestDropdown;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetDropdownListServiceLocator;
@@ -61,16 +59,16 @@ public class LoanSubmissionGetDropdownListClient {
 		}
 	}
 
-	private Header getHeader() {
-		Header header = new Header();
+	private com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header getHeader() {
+		com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header header = new com.tmb.common.model.legacy.rsl.ws.dropdown.request.Header();
 		header.setChannel(CHANNEL);
 		header.setModule(MODULE);
 		header.setRequestID(UUID.randomUUID().toString());
 		return header;
 	}
 
-	private Body getBody(String categoryCode) {
-		Body body = new Body();
+	private com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body getBody(String categoryCode) {
+		com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body body = new com.tmb.common.model.legacy.rsl.ws.dropdown.request.Body();
 		body.setCategoryCode(categoryCode);
 		return body;
 	}

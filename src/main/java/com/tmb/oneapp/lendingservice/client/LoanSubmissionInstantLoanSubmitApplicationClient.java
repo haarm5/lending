@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.request.RequestInstantLoanSubmit;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanSubmitApplicationServiceLocator;
@@ -63,16 +61,16 @@ public class LoanSubmissionInstantLoanSubmitApplicationClient {
 		}
 	}
 
-	private Header setHeader() {
-		Header header = new Header();
+	private com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Header setHeader() {
+		com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Header();
 		header.setChannel(CHANNEL);
 		header.setModule(MODULE);
 		header.setRequestID(UUID.randomUUID().toString());
 		return header;
 	}
 
-	private Body setBody(BigDecimal caId, String submitFlag) {
-		Body body = new Body();
+	private com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Body setBody(BigDecimal caId, String submitFlag) {
+		com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.submit.request.Body();
 		body.setCaId(caId);
 		body.setSubmittedFlag(submitFlag);
 		return body;

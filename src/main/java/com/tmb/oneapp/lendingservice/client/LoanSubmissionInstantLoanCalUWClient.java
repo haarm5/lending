@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanCalUWServiceLocator;
@@ -57,16 +55,16 @@ public class LoanSubmissionInstantLoanCalUWClient {
         }
     }
 
-    private Header setHeader() {
-        Header header = new Header();
+    private com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header setHeader() {
+        com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         return header;
     }
 
-    private Body setBody(String triggerFlag, BigDecimal caId) {
-        Body body = new Body();
+    private com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body setBody(String triggerFlag, BigDecimal caId) {
+        com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body();
         body.setTriggerFlag(triggerFlag);
         body.setCaId(caId);
         return body;

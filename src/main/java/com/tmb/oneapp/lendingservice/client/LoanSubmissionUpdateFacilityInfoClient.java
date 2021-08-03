@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
-import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.request.RequestFacility;
 import com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateFacilityServiceLocator;
@@ -63,16 +61,16 @@ public class LoanSubmissionUpdateFacilityInfoClient {
         }
     }
 
-    private Header setHeader() {
-        Header header = new Header();
+    private com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header setHeader() {
+        com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.update.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         return header;
     }
 
-    private Body setBody(Facility facility) {
-        Body body = new Body();
+    private com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body setBody(Facility facility) {
+        com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body();
         facility.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
         body.setFacility(facility);
         return body;

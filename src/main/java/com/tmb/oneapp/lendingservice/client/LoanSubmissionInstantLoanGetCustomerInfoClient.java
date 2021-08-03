@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.RequestInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionInstantLoanGetCustomerInfoServiceLocator;
@@ -63,16 +61,16 @@ public class LoanSubmissionInstantLoanGetCustomerInfoClient {
         }
     }
 
-    private Header setHeader() {
-        Header header = new Header();
+    private com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Header setHeader() {
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         return header;
     }
 
-    private Body setBody(String rmNo) {
-        Body body = new Body();
+    private com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body setBody(String rmNo) {
+        com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.request.Body();
         body.setRmNo(rmNo);
         return body;
     }

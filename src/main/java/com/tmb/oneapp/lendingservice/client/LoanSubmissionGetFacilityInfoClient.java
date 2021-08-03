@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.ws.facility.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.facility.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.request.RequestFacility;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionGetFacilityInfoServiceLocator;
@@ -61,16 +59,16 @@ public class LoanSubmissionGetFacilityInfoClient {
 		}
 	}
 
-	private Header setHeader() {
-		Header header = new Header();
+	private com.tmb.common.model.legacy.rsl.ws.facility.request.Header setHeader() {
+		com.tmb.common.model.legacy.rsl.ws.facility.request.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.request.Header();
 		header.setChannel(CHANNEL);
 		header.setModule(MODULE);
 		header.setRequestID(UUID.randomUUID().toString());
 		return header;
 	}
 
-	private Body setBody(long caId) {
-		Body body = new Body();
+	private com.tmb.common.model.legacy.rsl.ws.facility.request.Body setBody(long caId) {
+		com.tmb.common.model.legacy.rsl.ws.facility.request.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.request.Body();
 		body.setCaID(caId);
 		return body;
 	}

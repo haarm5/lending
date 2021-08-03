@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
@@ -9,7 +10,7 @@ import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditCardInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
@@ -32,12 +33,12 @@ public class FlexiLoanSubmitService {
 
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
-    private final LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
+    private final LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
 
     private static final List<String> CREDIT_CARD_CODE_LIST = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
     private static final  String MSG_000 = "MSG_000";
 
-    public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException, TMBCommonException {
+    public SubmissionInfoResponse getSubmissionInfo(SubmissionInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         Facility facilityInfo = getFacility(request.getCaId());
         Individual customerInfo = getCustomer(request.getCaId());
@@ -95,7 +96,7 @@ public class FlexiLoanSubmitService {
         return response;
     }
 
-    private Facility getFacility(Long caID) throws ServiceException, RemoteException, TMBCommonException {
+    private Facility getFacility(Long caID) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseFacility response = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
@@ -111,7 +112,7 @@ public class FlexiLoanSubmitService {
         }
     }
 
-    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException {
+    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = getCustomerInfoClient.searchCustomerInfoByCaID(caID);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
@@ -127,7 +128,7 @@ public class FlexiLoanSubmitService {
         }
     }
 
-    private CreditCard getCreditCard(Long caID) throws ServiceException, RemoteException {
+    private CreditCard getCreditCard(Long caID) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caID);
         return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
     }

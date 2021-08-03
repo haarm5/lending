@@ -1,7 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -17,17 +16,13 @@ import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class FlexiLoanCheckApprovedStatusService {
-    private static final TMBLogger<FlexiLoanCheckApprovedStatusService> logger = new TMBLogger<>(FlexiLoanCheckApprovedStatusService.class);
     private final LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
     static final String APPROVE = "APPROVE";
@@ -35,7 +30,7 @@ public class FlexiLoanCheckApprovedStatusService {
     static final String C2G02 = "C2G02";
     static final  String MSG_000 = "MSG_000";
 
-    public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws ServiceException, RemoteException, TMBCommonException {
+    public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws TMBCommonException {
 
         RequestInstantLoanCalUW requestInstantLoanCalUW = new RequestInstantLoanCalUW();
         Body body = new Body();
@@ -47,10 +42,10 @@ public class FlexiLoanCheckApprovedStatusService {
         return calculateUnderwriting(requestInstantLoanCalUW, request.getProduct());
     }
 
-    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws ServiceException, RemoteException, TMBCommonException {
+    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws TMBCommonException {
         try {
 
-            ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.getCalculateUnderwriting(request);
+            ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.calculateUnderwriting(request.getBody().getTriggerFlag(), request.getBody().getCaId());
             ResponseFacility facilityInfo = new ResponseFacility();
 
             if (responseInstantLoanCalUW.getHeader().getResponseCode().equals(MSG_000)) {

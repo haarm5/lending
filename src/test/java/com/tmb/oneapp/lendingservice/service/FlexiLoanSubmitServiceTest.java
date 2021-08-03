@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -11,14 +12,13 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditCardInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoRequest;
-import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionInfoResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.SubmissionPricingInfo;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +32,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
 public class FlexiLoanSubmitServiceTest {
@@ -43,7 +42,7 @@ public class FlexiLoanSubmitServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     @Mock
-    private LoanSubmissionGetCreditCardInfoClient getCreditCardInfoClient;
+    private LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
 
     FlexiLoanSubmitService flexiLoanSubmitService;
 
@@ -54,28 +53,28 @@ public class FlexiLoanSubmitServiceTest {
     }
 
     @Test
-    public void testService_creditCard() throws ServiceException, RemoteException, TMBCommonException {
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfo());
-        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
-        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+    public void testService_creditCard() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+        doReturn(mockFacilityInfo()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockCustomerInfo()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
+        doReturn(mockCreditCardInfo()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         request.setProductCode("VI");
         flexiLoanSubmitService.getSubmissionInfo(request);
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
 
     @Test
-    public void testService_c2g() throws ServiceException, RemoteException, TMBCommonException {
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacilityInfoWithRateType());
-        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfo());
-        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(any())).thenReturn(mockCreditCardInfo());
+    public void testService_c2g() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+        doReturn(mockFacilityInfoWithRateType()).when(getFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
+        doReturn(mockCustomerInfo()).when(getCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
+        doReturn(mockCreditCardInfo()).when(getCreditCardInfoClient).searchCreditcardInfoByCaID(anyLong());
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         request.setProductCode("C2G");
         flexiLoanSubmitService.getSubmissionInfo(request);
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
 

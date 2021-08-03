@@ -18,6 +18,11 @@ import org.springframework.stereotype.Service;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -26,8 +31,8 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException {
-        com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual responseIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual();
+    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, ParseException {
+        RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(caId);
         Address address = new Address();
@@ -47,7 +52,7 @@ public class PersonalDetailSaveInfoService {
         address.setAddress(address.getAddress());
         address.setAddrTypCode(address.getAddrTypCode());
         address.setCifId(address.getCifId());
-        com.tmb.common.model.legacy.rsl.common.ob.address.Address[] addresss = {address};
+        Address[] addresss = {address};
 
         individual.setPersonalInfoSavedFlag("Y");
         individual.setNationality(request.getNationality());

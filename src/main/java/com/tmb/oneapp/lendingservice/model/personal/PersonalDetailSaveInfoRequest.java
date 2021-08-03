@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.model.personal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.Calendar;
 

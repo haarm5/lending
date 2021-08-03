@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -69,7 +70,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testUpdatePersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testUpdatePersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -115,7 +116,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();

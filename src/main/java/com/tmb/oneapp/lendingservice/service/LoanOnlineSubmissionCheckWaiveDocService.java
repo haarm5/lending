@@ -26,7 +26,7 @@ import java.util.Objects;
 public class LoanOnlineSubmissionCheckWaiveDocService {
     private static final TMBLogger<LoanOnlineSubmissionCheckWaiveDocService> logger = new TMBLogger<>(LoanOnlineSubmissionCheckWaiveDocService.class);
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
-    private CustomerServiceClient customerServiceClient;
+    private final CustomerServiceClient customerServiceClient;
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
 
 
@@ -49,7 +49,7 @@ public class LoanOnlineSubmissionCheckWaiveDocService {
         }
     }
 
-    private String getWorkingStatus(String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    private String getWorkingStatus(String rmId) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
                     .getCustomers(rmId);

@@ -49,7 +49,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetApplicationInfoRequest request
-    ) throws TMBCommonException, ServiceException, JsonProcessingException {
+    ) throws TMBCommonException {
         TmbOneServiceResponse<ResponseApplication> response = new TmbOneServiceResponse<>();
 
         try {
@@ -62,10 +62,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -92,10 +91,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -109,7 +107,7 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionGetCustomerInfoRequest request
-            ) throws TMBCommonException, ServiceException, JsonProcessingException, RemoteException {
+    ) throws TMBCommonException, ServiceException, JsonProcessingException, RemoteException {
         TmbOneServiceResponse<ResponseIndividual> response = new TmbOneServiceResponse<>();
 
         try {
@@ -122,10 +120,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -152,10 +149,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -182,10 +178,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -212,10 +207,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -242,10 +236,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -272,10 +265,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -302,10 +294,9 @@ public class RslController {
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof TMBCommonException) {
-                throw e;
-            }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }

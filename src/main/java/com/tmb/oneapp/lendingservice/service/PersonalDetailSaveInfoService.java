@@ -32,7 +32,7 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
+    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(caId);

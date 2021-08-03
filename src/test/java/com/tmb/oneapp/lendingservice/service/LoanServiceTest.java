@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -566,7 +567,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_InstantFlagIs_N_And_IsSubmitted_Is_N_AppStatus_Is_Draft_ShouldReturn_ContinueApply()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
@@ -1338,7 +1339,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_ContinueApply_ncbConsentFlag_Is_Blank_ShouldReturn_Upload_doc()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
@@ -1419,7 +1420,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_ContinueApply_ncbConsentFlag_Is_Blank_PersonalInfoSavedFlag_Is_N_ShouldReturn_Personal()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
@@ -1500,7 +1501,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_ContinueApply_ncbConsentFlag_Is_Blank_EmploymentInfoSavedFlag_Is_N_ShouldReturn_Working()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
 
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
@@ -1583,7 +1584,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_ContinueApply_ncbConsentFlag_Is_Blank_IncomeInfoSavedFlag_Is_N_ShouldReturn_InCome()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
@@ -1665,7 +1666,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_CreditCard_LoanSubmissionFlow_ContinueApply_ncbConsentFlag_Is_Blank_AllInfoSavedFlag_Is_Y_ShouldReturn_Upload()
-            throws ServiceException, RemoteException, TMBCommonException {
+            throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
@@ -1747,7 +1748,7 @@ public class LoanServiceTest {
     }
 
     @Test
-    void fetchProductOrientation_ShouldHandleErrorFromSoap() throws ServiceException, RemoteException {
+    void fetchProductOrientation_ShouldHandleErrorFromSoap() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
@@ -1824,7 +1825,7 @@ public class LoanServiceTest {
     }
 
     @Test
-    void fetchProductOrientation_ShouldHandleErrorFromOneAppService() throws ServiceException, RemoteException {
+    void fetchProductOrientation_ShouldHandleErrorFromOneAppService() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 

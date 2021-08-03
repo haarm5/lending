@@ -1,6 +1,7 @@
 package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -29,7 +30,7 @@ public class LoanOnlineSubmissionCheckWaiveDocService {
     private final LoanSubmissionGetDropdownListClient getDropdownListClient;
 
 
-    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
+    public IncomeInfo getIncomeInfoByRmId(String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
 
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
@@ -48,7 +49,7 @@ public class LoanOnlineSubmissionCheckWaiveDocService {
         }
     }
 
-    private String getWorkingStatus(String rmId) throws ServiceException, RemoteException {
+    private String getWorkingStatus(String rmId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> responseWorkingProfileInfo = customerServiceClient
                     .getCustomers(rmId);
@@ -64,9 +65,9 @@ public class LoanOnlineSubmissionCheckWaiveDocService {
         }
     }
 
-    private String mapWorkingStatus(String occupationCode) throws ServiceException, RemoteException {
+    private String mapWorkingStatus(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
-            ResponseDropdown getDropdownListResp = getDropdownListClient.getDropdownList("RM_OCCUPATION");
+            ResponseDropdown getDropdownListResp = getDropdownListClient.getDropDownListByCode("RM_OCCUPATION");
             var list = getDropdownListResp.getBody().getCommonCodeEntries();
             var commonCodeEntry = Arrays.stream(list).filter(a -> a.getEntryCode().equals(occupationCode)).findFirst();
             if (commonCodeEntry.isPresent()) {

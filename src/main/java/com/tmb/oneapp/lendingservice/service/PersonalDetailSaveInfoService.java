@@ -63,6 +63,7 @@ public class PersonalDetailSaveInfoService {
         individual.setResidentFlag(request.getResidentFlag().getEntryCode());
         individual.setExpiryDate(request.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
+        individual.setAccounts(individual.getAccounts());
         individual.setAddresses(addresss);
 
         body.setIndividual(individual);

@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body;
@@ -10,7 +11,9 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndiv
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateCustomerServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateCustomerSoapBindingStub;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -36,10 +39,10 @@ public class LoanSubmissionUpdateCustomerClient {
         this.locator = locator;
     }
 
-    public ResponseIndividual updateCustomerInfo(Individual individual) throws RemoteException, ServiceException, JsonProcessingException {
+    public ResponseIndividual updateCustomerInfo(Individual individual) throws ServiceException, JsonProcessingException, TMBCommonException {
         locator.setLoanSubmissionUpdateCustomerEndpointAddress(updateCustomerInfo);
         LoanSubmissionUpdateCustomerSoapBindingStub stub = (LoanSubmissionUpdateCustomerSoapBindingStub) locator.getLoanSubmissionUpdateCustomer();
-
+        logger.info("LoanSubmissionUpdateCustomer Url: {}", updateCustomerInfo);
         RequestIndividual req = new RequestIndividual();
 
         Header header = new Header();
@@ -52,10 +55,12 @@ public class LoanSubmissionUpdateCustomerClient {
         body.setIndividual(individual);
         logger.info("Request from Client to updateCustomer is {} : " + mapper.writeValueAsString(req));
 
-        ResponseIndividual responseIndividual = stub.updateCustomerInfo(req);
-        logger.info("Response from Client to updateCustomer is {} : " + mapper.writeValueAsString(responseIndividual));
-        return responseIndividual;
-
-
+        try {
+            ResponseIndividual responseIndividual = stub.updateCustomerInfo(req);
+            logger.info("LoanSubmissionUpdateCustomer Response: {}", mapper.writeValueAsString(responseIndividual));
+            return responseIndividual;
+        }catch (RemoteException e) {
+            throw new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
 }

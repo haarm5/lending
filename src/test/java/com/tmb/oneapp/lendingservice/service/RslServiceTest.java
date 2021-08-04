@@ -3,11 +3,14 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
@@ -58,6 +61,8 @@ public class RslServiceTest {
     LoanSubmissionInstantLoanSubmitApplicationClient loanSubmissionInstantLoanSubmitApplicationClient;
     @Mock
     LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
+    @Mock
+    LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
 
     @BeforeEach
     void setUp() {
@@ -511,6 +516,43 @@ public class RslServiceTest {
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
+    //Loan Submission Update Customer
+    @Test
+    public void updateCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        mockUpdateCustomerInfoSuccess();
+        Individual request = new Individual();
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = rslService.updateCustomerInfo(request);
+        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void updateCustomerInfo_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
+
+            Individual request = new Individual();
+            rslService.updateCustomerInfo(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void updateCustomerInfo_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockUpdateCustomerInfoFail();
+            Individual request = new Individual();
+            rslService.updateCustomerInfo(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+    }
+
 
     //Mock Data
     private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
@@ -755,5 +797,32 @@ public class RslServiceTest {
         response.setBody(body);
 
         doReturn(response).when(loanSubmissionUpdateFacilityInfoClient).updateFacilityInfo(any());
+    }
+
+    private void mockUpdateCustomerInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+       com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
+
+        Header header = new Header();
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        response.setHeader(header);
+
+        Body body = new Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
+    }
+
+    private void mockUpdateCustomerInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
+
+        Header header = new Header();
+        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        Body body = new Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
     }
 }

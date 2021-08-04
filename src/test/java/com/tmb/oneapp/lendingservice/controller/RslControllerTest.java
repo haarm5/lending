@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
@@ -544,6 +546,59 @@ public class RslControllerTest {
                     .when(rslService).updateFacilityInfo(any());
 
             rslController.loanSubmissionUpdateFacility(correlationId, crmId, request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    //Loan Submission Update Customer
+    @Test
+    public void loanSubmissionUpdateCustomer_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
+        doReturn(response).when(rslService).updateCustomerInfo(any());
+
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        Individual request = new Individual();
+
+        ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual>> responseEntity = rslController.loanSubmissionUpdateCustomerInfo(correlationId, crmId, request);
+
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getCode(), Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+    }
+
+    @Test
+    public void loanSubmissionUpdateCustomer_Fail() {
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        Individual request = new Individual();
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new ServiceException("error")).when(rslService).updateCustomerInfo(any());
+            rslController.loanSubmissionUpdateCustomerInfo(correlationId, crmId, request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+
+    }
+
+    @Test
+    public void loanSubmissionUpdateCustomer_TMBCommonExceptionFail() {
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        Individual request = new Individual();
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(rslService).updateCustomerInfo(any());
+
+            rslController.loanSubmissionUpdateCustomerInfo(correlationId, crmId, request);
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
@@ -37,6 +38,7 @@ public class RslService {
     private final LoanSubmissionInstantLoanGetCustomerInfoClient loanSubmissionInstantLoanGetCustomerInfoClient;
     private final LoanSubmissionInstantLoanSubmitApplicationClient loanSubmissionInstantLoanSubmitApplicationClient;
     private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
+    private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -95,6 +97,12 @@ public class RslService {
 
     public com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility updateFacilityInfo(Facility request) throws ServiceException, TMBCommonException, JsonProcessingException {
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = loanSubmissionUpdateFacilityInfoClient.updateFacilityInfo(request);
+        checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
+
+    public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateCustomerInfo(Individual request) throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = loanSubmissionUpdateCustomerClient.updateCustomerInfo(request);
         checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }

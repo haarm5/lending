@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
-import com.tmb.oneapp.lendingservice.controller.WorkInformationController;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.SelectCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.WorkInfoEntryResp;
@@ -28,8 +27,26 @@ public class WorkInfoProfileService {
 	public WorkInfoEntryResp createWorkInformationModel(String occupationCode, String businessTypeCode,
 			String countryOfIncome) {
 		WorkInfoEntryResp response = new WorkInfoEntryResp();
+		SelectCodeEntry selectWorkstatusCodeEntry = new SelectCodeEntry();
+		SelectCodeEntry selectOccupationCodeEntry = new SelectCodeEntry();
+		SelectCodeEntry selectBusTypeCodeEntry = new SelectCodeEntry();
+		SelectCodeEntry selectBusSubTypeCodeEntry = new SelectCodeEntry();
+		SelectCodeEntry sourceOfIncomeEntry = new SelectCodeEntry();
+		
+		List<CriteriaCodeEntry> relateWorkStatusCodeEntry = lendingCriteriaInfoService
+				.getCriteriaByCatalogId(LoanCategory.EMPLOYMENT_STATUS);
+		selectWorkstatusCodeEntry.setRelateCodeEntry(relateWorkStatusCodeEntry);
+		
+		List<CriteriaCodeEntry> relateBusTypeCodeEntry = lendingCriteriaInfoService
+				.getCriteriaByCatalogId(LoanCategory.BUSINESS_TYPE);
+		selectBusTypeCodeEntry.setRelateCodeEntry(relateBusTypeCodeEntry);
+		
+		SelectCodeEntry sourceCountryEntry = new SelectCodeEntry();
+		List<CriteriaCodeEntry> countryList = lendingCriteriaInfoService
+				.getCriteriaByCatalogId(LoanCategory.SCI_COUNTRY);
+		sourceCountryEntry.setRelateCodeEntry(countryList);
 		try {
-			SelectCodeEntry selectWorkstatusCodeEntry = new SelectCodeEntry();
+			
 			List<CriteriaCodeEntry> workStatusByOccupationList = lendingCriteriaInfoService
 					.getWorkStatusByOccupationCode(occupationCode);
 			if (CollectionUtils.isNotEmpty(workStatusByOccupationList)) {
@@ -37,12 +54,10 @@ public class WorkInfoProfileService {
 				selectWorkstatusCodeEntry.setName(defaultEntry.getEntryName2());
 				selectWorkstatusCodeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			List<CriteriaCodeEntry> relateWorkStatusCodeEntry = lendingCriteriaInfoService
-					.getCriteriaByCatalogId(LoanCategory.EMPLOYMENT_STATUS);
-			selectWorkstatusCodeEntry.setRelateCodeEntry(relateWorkStatusCodeEntry);
+			
 			response.setWorkstatus(selectWorkstatusCodeEntry);
 
-			SelectCodeEntry selectOccupationCodeEntry = new SelectCodeEntry();
+			
 			List<CriteriaCodeEntry> occupationCodeList = lendingCriteriaInfoService
 					.getOccupationInfoByCode(occupationCode);
 			if (CollectionUtils.isNotEmpty(occupationCodeList)) {
@@ -56,19 +71,16 @@ public class WorkInfoProfileService {
 			selectOccupationCodeEntry.setRelateCodeEntry(relateOccupationCodeEntry);
 			response.setOccupation(selectOccupationCodeEntry);
 
-			SelectCodeEntry selectBusTypeCodeEntry = new SelectCodeEntry();
+			
 			List<CriteriaCodeEntry> busTypeCodes = lendingCriteriaInfoService.getBusinessTypeCode(businessTypeCode);
 			if (CollectionUtils.isNotEmpty(busTypeCodes)) {
 				CriteriaCodeEntry defaultEntry = busTypeCodes.get(0);
 				selectBusTypeCodeEntry.setName(defaultEntry.getEntryName());
 				selectBusTypeCodeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			List<CriteriaCodeEntry> relateBusTypeCodeEntry = lendingCriteriaInfoService
-					.getCriteriaByCatalogId(LoanCategory.BUSINESS_TYPE);
-			selectBusTypeCodeEntry.setRelateCodeEntry(relateBusTypeCodeEntry);
+			
 			response.setBusinessType(selectBusTypeCodeEntry);
-
-			SelectCodeEntry selectBusSubTypeCodeEntry = new SelectCodeEntry();
+			
 			List<CriteriaCodeEntry> busSubTypes = lendingCriteriaInfoService
 					.getDefaultforSubBusinessType(businessTypeCode);
 			if (CollectionUtils.isNotEmpty(busSubTypes)) {
@@ -80,8 +92,7 @@ public class WorkInfoProfileService {
 					.getSubBusinessType(selectBusTypeCodeEntry.getValue());
 			selectBusSubTypeCodeEntry.setRelateCodeEntry(relateBusSubCodeEntry);
 			response.setSubBusinessType(selectBusSubTypeCodeEntry);
-
-			SelectCodeEntry sourceOfIncomeEntry = new SelectCodeEntry();
+			
 
 			List<CriteriaCodeEntry> relateSourceOfIncomeCodeEntry = lendingCriteriaInfoService
 					.getSourceOfIncome(response.getWorkstatus().getValue());
@@ -92,8 +103,7 @@ public class WorkInfoProfileService {
 				sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
 			}
 			response.setSourceIncomes(sourceOfIncomeEntry);
-
-			SelectCodeEntry sourceCountryEntry = new SelectCodeEntry();
+			
 			List<CriteriaCodeEntry> sourceOfCountry = lendingCriteriaInfoService
 					.getDefaultforCountryType(countryOfIncome);
 			if (CollectionUtils.isNotEmpty(sourceOfCountry)) {
@@ -101,9 +111,7 @@ public class WorkInfoProfileService {
 				sourceCountryEntry.setName(defaultEntry.getEntryName());
 				sourceCountryEntry.setValue(defaultEntry.getEntryCode());
 			}
-			List<CriteriaCodeEntry> countryList = lendingCriteriaInfoService
-					.getCriteriaByCatalogId(LoanCategory.SCI_COUNTRY);
-			sourceCountryEntry.setRelateCodeEntry(countryList);
+			
 			response.setCountryIncomes(sourceCountryEntry);
 		} catch (Exception e) {
 			logger.error(e.toString(), e);

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
-import com.tmb.oneapp.lendingservice.controller.WorkInformationController;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.SelectCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.WorkInfoEntryResp;

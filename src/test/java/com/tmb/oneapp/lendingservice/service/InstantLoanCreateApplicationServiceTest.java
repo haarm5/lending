@@ -122,16 +122,4 @@ public class InstantLoanCreateApplicationServiceTest {
         assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
     }
 
-    @Test
-    void InstantLoanCreationEnsureToCallSFTP() throws IOException, ServiceException {
-        flashCardRequest.setLoanType("C2G");
-        doReturn(soapResponse).when(Client).callLoanSubmissionInstantLoanCreateApplication(any());
-        doReturn("test.JPG").when(imageGeneratorService).generateLOCImage(any());
-        createApplicationService.setSftpLocations("abc,xyz");
-        ServiceResponse actualResponse = createApplicationService.createInstantLoanApplication(crmId, flashCardRequest);
-        await().timeout(30000, TimeUnit.SECONDS);
-        InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResponse.getData();
-        assertEquals(soapResponse.getBody().getMemberref(), data.getMemberRef());
-        verify(ftpClient, times(1)).storeFile(any());
-    }
 }

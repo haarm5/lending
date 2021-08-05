@@ -1,7 +1,10 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
@@ -9,6 +12,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndiv
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateCustomerServiceLocator;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateCustomerSoapBindingStub;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,6 +35,8 @@ public class LoanSubmissionUpdateCustomerClient {
 
     public LoanSubmissionUpdateCustomerClient(ObjectMapper mapper) {
         this.mapper = mapper;
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
     }
 
     public void setLocator(LoanSubmissionUpdateCustomerServiceLocator locator) {
@@ -42,7 +48,7 @@ public class LoanSubmissionUpdateCustomerClient {
         LoanSubmissionUpdateCustomerSoapBindingStub stub = (LoanSubmissionUpdateCustomerSoapBindingStub) locator.getLoanSubmissionUpdateCustomer();
         logger.info("LoanSubmissionUpdateCustomer Url: {}", updateCustomerInfo);
 
-        RequestIndividual req = new RequestIndividual();
+        com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual req = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
@@ -52,11 +58,11 @@ public class LoanSubmissionUpdateCustomerClient {
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body();
         body.setIndividual(individual);
         req.setBody(body);
-        logger.info("Request from Client to updateCustomer is {} : " + mapper.writeValueAsString(req));
+        logger.info("LoanSubmissionUpdateCustomer req {} : " + mapper.writeValueAsString(req));
 
         try {
             ResponseIndividual responseIndividual = stub.updateCustomerInfo(req);
-            logger.info("LoanSubmissionUpdateCustomer Response: {}", mapper.writeValueAsString(responseIndividual));
+            logger.info("LoanSubmissionUpdateCustomer Response: {}",mapper.writeValueAsString(responseIndividual));
             return responseIndividual;
         }catch (RemoteException e) {
             throw new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);

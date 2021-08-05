@@ -45,6 +45,13 @@ public class WorkInfoProfileService {
 		List<CriteriaCodeEntry> countryList = lendingCriteriaInfoService
 				.getCriteriaByCatalogId(LoanCategory.SCI_COUNTRY);
 		sourceCountryEntry.setRelateCodeEntry(countryList);
+		
+		response.setBusinessType(selectBusTypeCodeEntry);
+		response.setWorkstatus(selectWorkstatusCodeEntry);
+		response.setOccupation(selectOccupationCodeEntry);
+		response.setSubBusinessType(selectBusSubTypeCodeEntry);
+		response.setSourceIncomes(sourceOfIncomeEntry);
+		response.setCountryIncomes(sourceCountryEntry);
 		try {
 			
 			List<CriteriaCodeEntry> workStatusByOccupationList = lendingCriteriaInfoService
@@ -54,9 +61,6 @@ public class WorkInfoProfileService {
 				selectWorkstatusCodeEntry.setName(defaultEntry.getEntryName2());
 				selectWorkstatusCodeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			
-			response.setWorkstatus(selectWorkstatusCodeEntry);
-
 			
 			List<CriteriaCodeEntry> occupationCodeList = lendingCriteriaInfoService
 					.getOccupationInfoByCode(occupationCode);
@@ -69,8 +73,6 @@ public class WorkInfoProfileService {
 			List<CriteriaCodeEntry> relateOccupationCodeEntry = lendingCriteriaInfoService
 					.getOccupationByEmploymentStatus(response.getWorkstatus().getValue());
 			selectOccupationCodeEntry.setRelateCodeEntry(relateOccupationCodeEntry);
-			response.setOccupation(selectOccupationCodeEntry);
-
 			
 			List<CriteriaCodeEntry> busTypeCodes = lendingCriteriaInfoService.getBusinessTypeCode(businessTypeCode);
 			if (CollectionUtils.isNotEmpty(busTypeCodes)) {
@@ -78,8 +80,6 @@ public class WorkInfoProfileService {
 				selectBusTypeCodeEntry.setName(defaultEntry.getEntryName());
 				selectBusTypeCodeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			
-			response.setBusinessType(selectBusTypeCodeEntry);
 			
 			List<CriteriaCodeEntry> busSubTypes = lendingCriteriaInfoService
 					.getDefaultforSubBusinessType(businessTypeCode);
@@ -91,7 +91,7 @@ public class WorkInfoProfileService {
 			List<CriteriaCodeEntry> relateBusSubCodeEntry = lendingCriteriaInfoService
 					.getSubBusinessType(selectBusTypeCodeEntry.getValue());
 			selectBusSubTypeCodeEntry.setRelateCodeEntry(relateBusSubCodeEntry);
-			response.setSubBusinessType(selectBusSubTypeCodeEntry);
+			
 			
 
 			List<CriteriaCodeEntry> relateSourceOfIncomeCodeEntry = lendingCriteriaInfoService
@@ -102,7 +102,7 @@ public class WorkInfoProfileService {
 				sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
 				sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			response.setSourceIncomes(sourceOfIncomeEntry);
+			
 			
 			List<CriteriaCodeEntry> sourceOfCountry = lendingCriteriaInfoService
 					.getDefaultforCountryType(countryOfIncome);
@@ -112,7 +112,7 @@ public class WorkInfoProfileService {
 				sourceCountryEntry.setValue(defaultEntry.getEntryCode());
 			}
 			
-			response.setCountryIncomes(sourceCountryEntry);
+			
 		} catch (Exception e) {
 			logger.error(e.toString(), e);
 		}

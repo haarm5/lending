@@ -101,7 +101,7 @@ public class RslService {
         return response;
     }
 
-    public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateCustomerInfo(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateCustomerInfo(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = loanSubmissionUpdateCustomerClient.updateCustomerInfo(individual);
         checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;

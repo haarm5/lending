@@ -109,10 +109,10 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setNationality("xx");
         personalDetailSaveInfoRequest.setAddress(address);
         personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
+        personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenReturn(mockResponseIndividual().getData());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
+        when(personalDetailSaveInfoService.updateCustomerInfo(any())).thenReturn(mockResponseIndividual().getData());
+        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
@@ -154,9 +154,9 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setNationality("xx");
         personalDetailSaveInfoRequest.setAddress(address);
         personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenThrow(new NullPointerException());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
+        personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
+        when(personalDetailSaveInfoService.updateCustomerInfo(any())).thenThrow(new NullPointerException());
+        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(personalDetailSaveInfoRequest);
 
         assertTrue(result.getStatusCode().isError());
     }

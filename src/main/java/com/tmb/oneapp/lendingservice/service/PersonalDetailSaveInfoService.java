@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 @Service
@@ -27,26 +26,26 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(Long caId , PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
-        Individual individual = getCustomerInfo(caId);
-        Address address = new Address();
+        Individual individual = getCustomerInfo(request.getCaId());
+
         Body body = new Body();
+        Address address = new Address();
 
         address.setTumbol(request.getAddress().getTumbol());
         address.setRoad(request.getAddress().getRoad());
         address.setProvince(request.getAddress().getProvince());
         address.setStreetName(request.getAddress().getStreetName());
         address.setMoo(request.getAddress().getMoo());
-        address.setId(BigDecimal.valueOf(Long.parseLong(request.getAddress().getNo())));
+        address.setId(request.getAddress().getId());
         address.setFloor(request.getAddress().getFloor());
         address.setCountry(request.getAddress().getCountry());
         address.setPostalCode(request.getAddress().getPostalCode());
         address.setAmphur(request.getAddress().getAmphur());
         address.setBuildingName(request.getAddress().getBuildingName());
-        address.setAddress(address.getAddress());
-        address.setAddrTypCode(address.getAddrTypCode());
+        address.setAddrTypCode(request.getAddress().getAddrTypCode());
         address.setCifId(address.getCifId());
         Address[] addresss = {address};
 
@@ -60,7 +59,7 @@ public class PersonalDetailSaveInfoService {
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
-        individual.setResidentFlag(request.getResidentFlag().getEntryCode());
+        individual.setResidentFlag(request.getResidentFlag());
         individual.setExpiryDate(request.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());
@@ -72,7 +71,7 @@ public class PersonalDetailSaveInfoService {
         return saveCustomer(responseIndividual.getBody().getIndividual());
     }
 
-    private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
             if (response != null) {
@@ -83,7 +82,7 @@ public class PersonalDetailSaveInfoService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("update customer soap error", e);
             throw e;
         }
@@ -99,7 +98,7 @@ public class PersonalDetailSaveInfoService {
                         ResponseCode.FAILED.getDesc(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("get customer info soap error", e);
             throw e;
         }

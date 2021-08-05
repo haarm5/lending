@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -109,57 +108,13 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setNationality("xx");
         personalDetailSaveInfoRequest.setAddress(address);
         personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
+        personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenReturn(mockResponseIndividual().getData());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
+        when(personalDetailSaveInfoService.updateCustomerInfo(any())).thenReturn(mockResponseIndividual().getData());
+        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
-    @Test
-    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
-        PersonalDetailRequest request = new PersonalDetailRequest();
-        request.setCaId(2021071404188196L);
-        PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
-        Address address = new Address();
-        Resident resident = new Resident();
-        address.setRoomNo("111");
-        address.setCountry("TH");
-        address.setFloor("6");
-        address.setNo("11");
-        address.setBuildingName("xx");
-        address.setProvince("xx");
-        address.setMoo("1");
-        address.setPostalCode("122222");
-        address.setStreetName("xx");
-        address.setRoad("xx");
-        address.setTumbol("xx");
-        address.setAmphur("xx");
-
-        resident.setEntrySource("111");
-        resident.setEntryId(BigDecimal.ONE);
-        resident.setEntryCode("xx");
-        resident.setEntryNameTh("xx");
-        resident.setEntryNameEng("xx");
-
-        personalDetailSaveInfoRequest.setThaiSalutationCode("xx");
-        personalDetailSaveInfoRequest.setEngName("xx");
-        personalDetailSaveInfoRequest.setEngSurName("xx");
-        personalDetailSaveInfoRequest.setThaiName("xx");
-        personalDetailSaveInfoRequest.setThaiSurName("xx");
-        personalDetailSaveInfoRequest.setEmail("xx");
-        personalDetailSaveInfoRequest.setBirthDate(Calendar.getInstance());
-        personalDetailSaveInfoRequest.setIdIssueCtry1("xx");
-        personalDetailSaveInfoRequest.setExpiryDate(Calendar.getInstance());
-        personalDetailSaveInfoRequest.setNationality("xx");
-        personalDetailSaveInfoRequest.setAddress(address);
-        personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenThrow(new NullPointerException());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
-
-        assertTrue(result.getStatusCode().isError());
-    }
 
     private TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();

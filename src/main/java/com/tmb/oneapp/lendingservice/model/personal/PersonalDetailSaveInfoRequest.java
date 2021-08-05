@@ -2,13 +2,13 @@ package com.tmb.oneapp.lendingservice.model.personal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.Calendar;
 
 @Getter
 @Setter
 public class PersonalDetailSaveInfoRequest {
+    private Long caId;
     private String thaiSalutationCode;
     private String engName;
     private String engSurName;
@@ -21,5 +21,5 @@ public class PersonalDetailSaveInfoRequest {
     private String nationality;
     private Address address;
     private String mobileNo;
-    private Resident residentFlag;
+    private String residentFlag;
 }

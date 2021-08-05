@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
@@ -35,6 +37,7 @@ public class LoanSubmissionUpdateFacilityInfoClient {
 
     public LoanSubmissionUpdateFacilityInfoClient(ObjectMapper mapper) {
         this.mapper = mapper;
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     public void setLocator(LoanSubmissionUpdateFacilityServiceLocator locator) {

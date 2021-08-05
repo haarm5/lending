@@ -518,7 +518,7 @@ public class RslServiceTest {
 
     //Loan Submission Update Customer
     @Test
-    public void updateCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void updateCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         mockUpdateCustomerInfoSuccess();
         Individual request = new Individual();
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = rslService.updateCustomerInfo(request);

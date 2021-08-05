@@ -114,7 +114,7 @@ PersonalDetailSaveInfoServiceTest {
         resident.setEntryCode("xx");
         resident.setEntryId(BigDecimal.ONE);
         resident.setEntrySource("H");
-        request.setResidentFlag(resident);
+        request.setResidentFlag(resident.getEntryCode());
         com.tmb.oneapp.lendingservice.model.personal.Address address1 = new com.tmb.oneapp.lendingservice.model.personal.Address();
         address1.setNo("111");
         address1.setRoad("xx");
@@ -128,8 +128,9 @@ PersonalDetailSaveInfoServiceTest {
         address1.setBuildingName("xx");
         address1.setAmphur("xxx");
         request.setAddress(address1);
+        request.setCaId(2021071404188196L);
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(2021071404188196L,request);
+        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
         Assert.assertNotNull(responseIndividual);
 
 
@@ -204,7 +205,7 @@ PersonalDetailSaveInfoServiceTest {
         resident.setEntryCode("xx");
         resident.setEntryId(BigDecimal.ONE);
         resident.setEntrySource("H");
-        request.setResidentFlag(resident);
+        request.setResidentFlag(resident.getEntryCode());
         com.tmb.oneapp.lendingservice.model.personal.Address address1 = new com.tmb.oneapp.lendingservice.model.personal.Address();
         address1.setNo("111");
         address1.setRoad("xx");
@@ -218,8 +219,9 @@ PersonalDetailSaveInfoServiceTest {
         address1.setBuildingName("xx");
         address1.setAmphur("xxx");
         request.setAddress(address1);
+        request.setCaId(2021071404188196L);
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(2021071404188196L,request);
+        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
         Assert.assertTrue(responseIndividual.getHeader().getResponseCode().equals("MSG_999"));
 
 

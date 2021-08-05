@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Header;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.loan.submission.LoanSubmissionUpdateCustomerServiceLocator;
@@ -43,16 +41,17 @@ public class LoanSubmissionUpdateCustomerClient {
         locator.setLoanSubmissionUpdateCustomerEndpointAddress(updateCustomerInfo);
         LoanSubmissionUpdateCustomerSoapBindingStub stub = (LoanSubmissionUpdateCustomerSoapBindingStub) locator.getLoanSubmissionUpdateCustomer();
         logger.info("LoanSubmissionUpdateCustomer Url: {}", updateCustomerInfo);
-        RequestIndividual req = new RequestIndividual();
 
-        Header header = new Header();
+        RequestIndividual req = new RequestIndividual();
+        com.tmb.common.model.legacy.rsl.ws.individual.update.request.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Header();
         header.setChannel(CHANNEL);
         header.setModule(MODULE);
         header.setRequestID(UUID.randomUUID().toString());
         req.setHeader(header);
 
-        Body body = new Body();
+        com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body();
         body.setIndividual(individual);
+        req.setBody(body);
         logger.info("Request from Client to updateCustomer is {} : " + mapper.writeValueAsString(req));
 
         try {

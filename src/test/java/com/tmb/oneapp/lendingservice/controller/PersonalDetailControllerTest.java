@@ -50,7 +50,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -60,7 +60,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -76,7 +76,7 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
         Address address = new Address();
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         address.setRoomNo("111");
         address.setCountry("TH");
         address.setFloor("6");
@@ -100,7 +100,7 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setEngName("xx");
         personalDetailSaveInfoRequest.setEngSurName("xx");
         personalDetailSaveInfoRequest.setThaiName("xx");
-        personalDetailSaveInfoRequest.setThaiSurName("xx");
+        personalDetailSaveInfoRequest.setThaiSurname("xx");
         personalDetailSaveInfoRequest.setEmail("xx");
         personalDetailSaveInfoRequest.setBirthDate(Calendar.getInstance());
         personalDetailSaveInfoRequest.setIdIssueCtry1("xx");
@@ -121,8 +121,12 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
-        List<Resident> residentList = new ArrayList<>();
-        Resident resident = new Resident();
+        List<DropDown> residentList = new ArrayList<>();
+        DropDown resident = new DropDown();
+
+        List<DropDown> dropDownList = new ArrayList<>();
+        DropDown dropDown = new DropDown();
+
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
         address.setBuildingName("มบ.ปรีชา 3");
@@ -142,18 +146,25 @@ public class PersonalDetailControllerTest {
         resident.setEntrySource("HOST");
         residentList.add(resident);
 
+        dropDown.setEntryCode("H");
+        dropDown.setEntryId(BigDecimal.valueOf(65239));
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDownList.add(dropDown);
 
-        response.setBirthDate("11/10/33");
+
+        response.setBirthDate(Calendar.getInstance());
         response.setEmail("kk@gmail.com");
         response.setEngName("Test");
-        response.setEngSurName("Ja");
-        response.setExpiryDate("11/11/63");
+        response.setEngSurname("Ja");
+        response.setExpiryDate(Calendar.getInstance());
         response.setIdIssueCtry1("dd");
         response.setMobileNo("0987654321");
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
         response.setThaiSurName("แบงค์");
-        response.setThaiSalutationCode("1800272993728");
+        response.setDropDown(dropDownList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
 

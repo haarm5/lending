@@ -417,7 +417,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="spTitleTypeCode" nillable="true" type="xsd:string"/>
      <element name="telephoneNo" nillable="true" type="xsd:string"/>
      <element name="thaiName" nillable="true" type="xsd:string"/>
-     <element name="thaiSalutationCode" nillable="true" type="xsd:string"/>
+     <element name="dropDown" nillable="true" type="xsd:string"/>
      <element name="thaiSurName" nillable="true" type="xsd:string"/>
      <element name="titleTypeCode" nillable="true" type="xsd:string"/>
      <element name="workingAddrCopyFrom" nillable="true" type="xsd:string"/>

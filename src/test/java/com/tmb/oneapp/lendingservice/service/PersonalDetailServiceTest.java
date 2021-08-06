@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +56,7 @@ public class PersonalDetailServiceTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -146,7 +147,7 @@ public class PersonalDetailServiceTest {
 
 
     @Test
-    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 

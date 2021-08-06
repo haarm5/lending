@@ -16,13 +16,18 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.Resident;
+import com.tmb.oneapp.lendingservice.model.personal.ThaiSalutationCode;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -34,8 +39,9 @@ public class PersonalDetailService {
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
     static final String MSG_000 = "MSG_000";
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
+    static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
 
-    public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+    public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
         Individual individual = getCustomer(caId);
@@ -45,15 +51,14 @@ public class PersonalDetailService {
             //rsl
             if (individual.getPersonalInfoSavedFlag().equals("Y")) {
                 response.setEmail(individual.getEmail());
-                response.setBirthDate(individual.getBirthDate().getTime().toString());
+                response.setBirthDate(individual.getBirthDate());
                 response.setEngName(individual.getNameLine2());
                 response.setEngSurName(individual.getNameLine1());
                 response.setNationality(individual.getNationality());
-                response.setExpiryDate(individual.getExpiryDate().getTime().toString());
+                response.setExpiryDate(individual.getExpiryDate());
                 response.setMobileNo(individual.getMobileNo());
                 response.setThaiName(individual.getThaiName());
                 response.setThaiSurName(individual.getThaiSurName());
-                response.setThaiSalutationCode(individual.getThaiSalutationCode());
                 response.setCitizenId(individual.getIdNo1());
 
                 address.setAmphur(individual.getAddresses()[0].getAmphur());
@@ -70,12 +75,20 @@ public class PersonalDetailService {
 
             } else {
                 //ec
+                Calendar calendar1 =  Calendar.getInstance();
+                Date birthDate = new SimpleDateFormat("dd/MM/yyyy").parse(custGeneralProfileResponse.getIdBirthDate());
+                calendar1.setTime(birthDate);
+
+                Calendar calendar2 =  Calendar.getInstance();
+                Date expireDate = new SimpleDateFormat("dd/MM/yyyy").parse(custGeneralProfileResponse.getIdExpireDate());
+                calendar2.setTime(expireDate);
+
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
-                response.setBirthDate(custGeneralProfileResponse.getIdBirthDate());
+                response.setBirthDate(calendar1);
                 response.setEngName(custGeneralProfileResponse.getEngFname());
                 response.setEngSurName(custGeneralProfileResponse.getEngLname());
                 response.setNationality(custGeneralProfileResponse.getNationality());
-                response.setExpiryDate(custGeneralProfileResponse.getIdExpireDate());
+                response.setExpiryDate(calendar2);
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
                 response.setThaiSurName(custGeneralProfileResponse.getThaLname());
@@ -101,6 +114,7 @@ public class PersonalDetailService {
 
 
         response.setResidentFlag(getResidents());
+        response.setThaiSalutationCode(getThaiSalutationCodes());
 
         return response;
     }
@@ -156,5 +170,20 @@ public class PersonalDetailService {
             residents.add(resident);
         }
         return residents;
+    }
+
+    private List<ThaiSalutationCode> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<ThaiSalutationCode> thaiSalutationCodes = new ArrayList<>();
+        CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
+        for (CommonCodeEntry e : entries) {
+            ThaiSalutationCode thaiSalutationCode = new ThaiSalutationCode();
+            thaiSalutationCode.setEntryId(e.getEntryID());
+            thaiSalutationCode.setEntryCode(e.getEntryCode());
+            thaiSalutationCode.setEntryNameEng(e.getEntryName());
+            thaiSalutationCode.setEntryNameTh(e.getEntryName2());
+            thaiSalutationCode.setEntrySource(e.getEntrySource());
+            thaiSalutationCodes.add(thaiSalutationCode);
+        }
+        return thaiSalutationCodes;
     }
 }

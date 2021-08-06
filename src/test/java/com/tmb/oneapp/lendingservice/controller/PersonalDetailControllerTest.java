@@ -50,7 +50,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -60,7 +60,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -123,6 +123,10 @@ public class PersonalDetailControllerTest {
         Address address = new Address();
         List<Resident> residentList = new ArrayList<>();
         Resident resident = new Resident();
+
+        List<ThaiSalutationCode> thaiSalutationCodeList = new ArrayList<>();
+        ThaiSalutationCode thaiSalutationCode = new ThaiSalutationCode();
+
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
         address.setBuildingName("มบ.ปรีชา 3");
@@ -142,18 +146,25 @@ public class PersonalDetailControllerTest {
         resident.setEntrySource("HOST");
         residentList.add(resident);
 
+        thaiSalutationCode.setEntryCode("H");
+        thaiSalutationCode.setEntryId(BigDecimal.valueOf(65239));
+        thaiSalutationCode.setEntryNameEng("Mortgages");
+        thaiSalutationCode.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        thaiSalutationCode.setEntrySource("HOST");
+        thaiSalutationCodeList.add(thaiSalutationCode);
 
-        response.setBirthDate("11/10/33");
+
+        response.setBirthDate(Calendar.getInstance());
         response.setEmail("kk@gmail.com");
         response.setEngName("Test");
         response.setEngSurName("Ja");
-        response.setExpiryDate("11/11/63");
+        response.setExpiryDate(Calendar.getInstance());
         response.setIdIssueCtry1("dd");
         response.setMobileNo("0987654321");
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
         response.setThaiSurName("แบงค์");
-        response.setThaiSalutationCode("1800272993728");
+        response.setThaiSalutationCode(thaiSalutationCodeList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
 

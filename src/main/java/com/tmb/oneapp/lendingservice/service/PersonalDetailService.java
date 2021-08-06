@@ -56,7 +56,7 @@ public class PersonalDetailService {
                 response.setExpiryDate(individual.getExpiryDate());
                 response.setMobileNo(individual.getMobileNo());
                 response.setThaiName(individual.getThaiName());
-                response.setThaiSurName(individual.getThaiSurName());
+                response.setThaiSurname(individual.getThaiSurName());
                 response.setCitizenId(individual.getIdNo1());
 
                 address.setAmphur(individual.getAddresses()[0].getAmphur());
@@ -70,6 +70,7 @@ public class PersonalDetailService {
                 address.setPostalCode(individual.getAddresses()[0].getPostalCode());
                 address.setStreetName(individual.getAddresses()[0].getStreetName());
                 address.setTumbol(individual.getAddresses()[0].getTumbol());
+                address.setAddrTypCode(individual.getAddresses()[0].getAddrTypCode());
 
             } else {
                 //ec
@@ -81,7 +82,7 @@ public class PersonalDetailService {
                 response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
-                response.setThaiSurName(custGeneralProfileResponse.getThaLname());
+                response.setThaiSurname(custGeneralProfileResponse.getThaLname());
                 response.setCitizenId(custGeneralProfileResponse.getCitizenId());
 
                 address.setAmphur(custGeneralProfileResponse.getCurrentAddrdistrictNameTh());
@@ -95,7 +96,6 @@ public class PersonalDetailService {
                 address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
                 address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
-
             }
 
             address.setRoomNo(custGeneralProfileResponse.getCurrentAddrRoomNo());

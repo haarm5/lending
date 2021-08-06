@@ -40,6 +40,7 @@ public class PersonalDetailService {
     static final String MSG_000 = "MSG_000";
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
+    static final String PATTERN_DATE = "yyyy-MM-dd";
 
     public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
@@ -75,20 +76,12 @@ public class PersonalDetailService {
 
             } else {
                 //ec
-                Calendar calendar1 =  Calendar.getInstance();
-                Date birthDate = new SimpleDateFormat("dd/MM/yyyy").parse(custGeneralProfileResponse.getIdBirthDate());
-                calendar1.setTime(birthDate);
-
-                Calendar calendar2 =  Calendar.getInstance();
-                Date expireDate = new SimpleDateFormat("dd/MM/yyyy").parse(custGeneralProfileResponse.getIdExpireDate());
-                calendar2.setTime(expireDate);
-
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
-                response.setBirthDate(calendar1);
+                response.setBirthDate(convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()));
                 response.setEngName(custGeneralProfileResponse.getEngFname());
                 response.setEngSurName(custGeneralProfileResponse.getEngLname());
                 response.setNationality(custGeneralProfileResponse.getNationality());
-                response.setExpiryDate(calendar2);
+                response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
                 response.setThaiSurName(custGeneralProfileResponse.getThaLname());
@@ -185,5 +178,12 @@ public class PersonalDetailService {
             thaiSalutationCodes.add(thaiSalutationCode);
         }
         return thaiSalutationCodes;
+    }
+
+    private Calendar convertStringToCalender(String dateStr) throws ParseException {
+        Calendar calendar =  Calendar.getInstance();
+        Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
+        calendar.setTime(expireDate);
+        return calendar;
     }
 }

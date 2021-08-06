@@ -104,7 +104,7 @@ public class PersonalDetailService {
 
 
         response.setResidentFlag(getResidents());
-        response.setDropDown(getThaiSalutationCodes());
+        response.setThaiSalutationCode(getThaiSalutationCodes());
 
         return response;
     }

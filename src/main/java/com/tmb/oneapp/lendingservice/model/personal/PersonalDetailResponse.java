@@ -12,12 +12,12 @@ import java.util.List;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PersonalDetailResponse {
-    private List<DropDown> dropDown;
+    private List<DropDown> thaiSalutationCode;
     private String citizenId;
     private String engName;
     private String engSurname;
     private String thaiName;
-    private String  thaiSurName;
+    private String  thaiSurname;
     private String email;
     private Calendar birthDate;
     private String idIssueCtry1;

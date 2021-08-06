@@ -163,8 +163,8 @@ public class PersonalDetailControllerTest {
         response.setMobileNo("0987654321");
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
-        response.setThaiSurName("แบงค์");
-        response.setDropDown(dropDownList);
+        response.setThaiSurname("แบงค์");
+        response.setThaiSalutationCode(dropDownList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
 

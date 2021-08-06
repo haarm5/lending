@@ -56,7 +56,7 @@ public class PersonalDetailService {
                 response.setExpiryDate(individual.getExpiryDate());
                 response.setMobileNo(individual.getMobileNo());
                 response.setThaiName(individual.getThaiName());
-                response.setThaiSurName(individual.getThaiSurName());
+                response.setThaiSurname(individual.getThaiSurName());
                 response.setCitizenId(individual.getIdNo1());
 
                 address.setAmphur(individual.getAddresses()[0].getAmphur());
@@ -81,7 +81,7 @@ public class PersonalDetailService {
                 response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
-                response.setThaiSurName(custGeneralProfileResponse.getThaLname());
+                response.setThaiSurname(custGeneralProfileResponse.getThaLname());
                 response.setCitizenId(custGeneralProfileResponse.getCitizenId());
 
                 address.setAmphur(custGeneralProfileResponse.getCurrentAddrdistrictNameTh());
@@ -104,7 +104,7 @@ public class PersonalDetailService {
 
 
         response.setResidentFlag(getResidents());
-        response.setDropDown(getThaiSalutationCodes());
+        response.setThaiSalutationCode(getThaiSalutationCodes());
 
         return response;
     }

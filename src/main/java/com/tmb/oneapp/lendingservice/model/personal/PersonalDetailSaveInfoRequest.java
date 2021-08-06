@@ -12,9 +12,6 @@ public class PersonalDetailSaveInfoRequest {
     private String thaiSalutationCode;
     private String engName;
     private String engSurName;
-    private String thaiName;
-    private String  thaiSurName;
-    private String email;
     private Calendar birthDate;
     private String idIssueCtry1;
     private Calendar expiryDate;
@@ -22,4 +19,7 @@ public class PersonalDetailSaveInfoRequest {
     private Address address;
     private String mobileNo;
     private String residentFlag;
+    private String thaiName;
+    private String thaiSurname;
+    private String email;
 }

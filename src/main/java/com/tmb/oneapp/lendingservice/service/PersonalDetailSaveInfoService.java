@@ -54,7 +54,7 @@ public class PersonalDetailSaveInfoService {
         individual.setMobileNo(request.getMobileNo());
         individual.setThaiName(request.getThaiName());
         individual.setThaiSalutationCode(request.getThaiSalutationCode());
-        individual.setThaiSurName(request.getThaiSurName());
+        individual.setThaiSurName(request.getThaiSurname());
         individual.setNameLine1(request.getEngSurName());
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());

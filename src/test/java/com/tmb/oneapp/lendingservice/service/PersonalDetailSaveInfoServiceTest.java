@@ -8,8 +8,8 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
+import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.lendingservice.model.personal.Resident;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -99,7 +99,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
         request.setIdIssueCtry1("xx");
-        request.setThaiSurName("xx");
+        request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
@@ -108,7 +108,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         resident.setEntryNameEng("xxx");
         resident.setEntryNameTh("xxx");
         resident.setEntryCode("xx");
@@ -191,7 +191,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
         request.setIdIssueCtry1("xx");
-        request.setThaiSurName("xx");
+        request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
@@ -199,7 +199,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setEmail("xxx@gmail.com");
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         resident.setEntryNameEng("xxx");
         resident.setEntryNameTh("xxx");
         resident.setEntryCode("xx");

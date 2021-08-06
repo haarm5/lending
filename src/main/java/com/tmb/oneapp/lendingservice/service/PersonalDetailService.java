@@ -13,10 +13,7 @@ import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.personal.Address;
-import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
-import com.tmb.oneapp.lendingservice.model.personal.Resident;
-import com.tmb.oneapp.lendingservice.model.personal.ThaiSalutationCode;
+import com.tmb.oneapp.lendingservice.model.personal.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -54,7 +51,7 @@ public class PersonalDetailService {
                 response.setEmail(individual.getEmail());
                 response.setBirthDate(individual.getBirthDate());
                 response.setEngName(individual.getNameLine2());
-                response.setEngSurName(individual.getNameLine1());
+                response.setEngSurname(individual.getNameLine1());
                 response.setNationality(individual.getNationality());
                 response.setExpiryDate(individual.getExpiryDate());
                 response.setMobileNo(individual.getMobileNo());
@@ -79,7 +76,7 @@ public class PersonalDetailService {
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
                 response.setBirthDate(convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()));
                 response.setEngName(custGeneralProfileResponse.getEngFname());
-                response.setEngSurName(custGeneralProfileResponse.getEngLname());
+                response.setEngSurname(custGeneralProfileResponse.getEngLname());
                 response.setNationality(custGeneralProfileResponse.getNationality());
                 response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
@@ -107,7 +104,7 @@ public class PersonalDetailService {
 
 
         response.setResidentFlag(getResidents());
-        response.setThaiSalutationCode(getThaiSalutationCodes());
+        response.setDropDown(getThaiSalutationCodes());
 
         return response;
     }
@@ -150,11 +147,11 @@ public class PersonalDetailService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private List<Resident> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<Resident> residents = new ArrayList<>();
+    private List<DropDown> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<DropDown> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_RESIDENT_TYPE);
         for (CommonCodeEntry e : entries) {
-            Resident resident = new Resident();
+            DropDown resident = new DropDown();
             resident.setEntryId(e.getEntryID());
             resident.setEntryCode(e.getEntryCode());
             resident.setEntryNameEng(e.getEntryName());
@@ -165,19 +162,19 @@ public class PersonalDetailService {
         return residents;
     }
 
-    private List<ThaiSalutationCode> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<ThaiSalutationCode> thaiSalutationCodes = new ArrayList<>();
+    private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<DropDown> dropDowns = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
         for (CommonCodeEntry e : entries) {
-            ThaiSalutationCode thaiSalutationCode = new ThaiSalutationCode();
-            thaiSalutationCode.setEntryId(e.getEntryID());
-            thaiSalutationCode.setEntryCode(e.getEntryCode());
-            thaiSalutationCode.setEntryNameEng(e.getEntryName());
-            thaiSalutationCode.setEntryNameTh(e.getEntryName2());
-            thaiSalutationCode.setEntrySource(e.getEntrySource());
-            thaiSalutationCodes.add(thaiSalutationCode);
+            DropDown dropDown = new DropDown();
+            dropDown.setEntryId(e.getEntryID());
+            dropDown.setEntryCode(e.getEntryCode());
+            dropDown.setEntryNameEng(e.getEntryName());
+            dropDown.setEntryNameTh(e.getEntryName2());
+            dropDown.setEntrySource(e.getEntrySource());
+            dropDowns.add(dropDown);
         }
-        return thaiSalutationCodes;
+        return dropDowns;
     }
 
     private Calendar convertStringToCalender(String dateStr) throws ParseException {

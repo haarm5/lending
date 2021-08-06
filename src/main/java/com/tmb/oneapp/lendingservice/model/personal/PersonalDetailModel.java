@@ -1,7 +1,12 @@
 package com.tmb.oneapp.lendingservice.model.personal;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Calendar;
 
+@Getter
+@Setter
 public class PersonalDetailModel {
     private String engName;
     private String engSurName;

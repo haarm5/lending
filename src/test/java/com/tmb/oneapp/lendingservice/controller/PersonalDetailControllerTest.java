@@ -76,7 +76,7 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
         Address address = new Address();
-        DropDown resident = new DropDown();
+        Resident resident = new Resident();
         address.setRoomNo("111");
         address.setCountry("TH");
         address.setFloor("6");
@@ -121,11 +121,11 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
-        List<DropDown> residentList = new ArrayList<>();
-        DropDown resident = new DropDown();
+        List<Resident> residentList = new ArrayList<>();
+        Resident resident = new Resident();
 
-        List<DropDown> dropDownList = new ArrayList<>();
-        DropDown dropDown = new DropDown();
+        List<Resident> dropDownList = new ArrayList<>();
+        Resident dropDown = new Resident();
 
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");

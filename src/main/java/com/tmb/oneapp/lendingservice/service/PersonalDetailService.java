@@ -95,7 +95,7 @@ public class PersonalDetailService {
 
             }
 
-            address.setRoomNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
+            address.setNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
             response.setAddress(address);
         }
 
@@ -122,7 +122,7 @@ public class PersonalDetailService {
         }
     }
 
-    private CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
+    public CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
             if (response != null) {

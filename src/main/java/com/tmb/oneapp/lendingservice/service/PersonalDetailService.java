@@ -147,11 +147,11 @@ public class PersonalDetailService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private List<DropDown> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> residents = new ArrayList<>();
+    private List<Resident> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<Resident> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_RESIDENT_TYPE);
         for (CommonCodeEntry e : entries) {
-            DropDown resident = new DropDown();
+            Resident resident = new Resident();
             resident.setEntryId(e.getEntryID());
             resident.setEntryCode(e.getEntryCode());
             resident.setEntryNameEng(e.getEntryName());
@@ -162,19 +162,19 @@ public class PersonalDetailService {
         return residents;
     }
 
-    private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> dropDowns = new ArrayList<>();
+    private List<Resident> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<Resident> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
         for (CommonCodeEntry e : entries) {
-            DropDown dropDown = new DropDown();
-            dropDown.setEntryId(e.getEntryID());
-            dropDown.setEntryCode(e.getEntryCode());
-            dropDown.setEntryNameEng(e.getEntryName());
-            dropDown.setEntryNameTh(e.getEntryName2());
-            dropDown.setEntrySource(e.getEntrySource());
-            dropDowns.add(dropDown);
+            Resident resident = new Resident();
+            resident.setEntryId(e.getEntryID());
+            resident.setEntryCode(e.getEntryCode());
+            resident.setEntryNameEng(e.getEntryName());
+            resident.setEntryNameTh(e.getEntryName2());
+            resident.setEntrySource(e.getEntrySource());
+            residents.add(resident);
         }
-        return dropDowns;
+        return residents;
     }
 
     private Calendar convertStringToCalender(String dateStr) throws ParseException {

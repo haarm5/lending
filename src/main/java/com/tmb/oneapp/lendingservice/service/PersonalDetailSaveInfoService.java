@@ -44,7 +44,7 @@ public class PersonalDetailSaveInfoService {
         address.setCountry(request.getAddress().getCountry());
         address.setPostalCode(request.getAddress().getPostalCode());
         address.setAmphur(request.getAddress().getAmphur());
-        address.setBuildingName(request.getAddress().getBuildingName());
+        address.setBuildingName(request.getAddress().getBuildingName() + " " + request.getAddress().getRoomNo());
         address.setAddrTypCode(request.getAddress().getAddrTypCode());
         address.setCifId(address.getCifId());
         Address[] addresss = {address};

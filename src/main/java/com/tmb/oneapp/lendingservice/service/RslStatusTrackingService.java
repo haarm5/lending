@@ -125,8 +125,6 @@ public class RslStatusTrackingService {
                                 .getTextContent();
                         rslStatusTrackingResponse.setStatus(getStatus(appStatus));
 
-                        System.out.println("---- appStatus = " + appStatus);
-
                         //CurrentNode
                         String currentNode = applicationElement.getElementsByTagName("currentNode")
                                 .item(0)
@@ -138,8 +136,6 @@ public class RslStatusTrackingService {
                                 .item(0)
                                 .getTextContent();
                         rslStatusTrackingResponse.setAppType(appType);
-
-                        System.out.println("---- appType = " + appType);
 
                         //Remark
                         RslMessage rslMessage = fetchMessage(appStatus, appType);
@@ -397,7 +393,7 @@ public class RslStatusTrackingService {
 
             ResponseEntity<TmbOneServiceResponse<RslMessage>> response = commonServiceFeignClient.getRslMessage(appStatus, loanType);
 
-            return response.getBody().getData();
+            return response.getBody().getData();    //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("fetchMessage method Error(Bad Request) : {} ", e);
             throw new TMBCommonException("0001","failed",

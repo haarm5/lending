@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.creditcard.ApprovalMemoCreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
@@ -16,7 +17,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -51,7 +53,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCheckCalculateUnderwritingApprove() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
@@ -59,23 +61,23 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("RC01");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 
         InstantLoanCalUWResponse actualResult = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(calUWReq);
 
-        Assert.assertNotNull(actualResult);
+        Assertions.assertNotNull(actualResult);
 
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException {
+    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
@@ -83,18 +85,18 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         body.setCaId(BigDecimal.valueOf(2021071404188196L));
         request.setBody(body);
 
-        when(loanCalUWClient.getCalculateUnderwriting(request)).thenReturn(mockCalUW());
+        when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
 
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G02");
         calUWReq.setTriggerFlag("Y");
         calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(any())).thenReturn(mockFacility());
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 
         InstantLoanCalUWResponse actualResult = flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(calUWReq);
 
-        Assert.assertNotNull(actualResult);
+        Assertions.assertNotNull(actualResult);
 
     }
 

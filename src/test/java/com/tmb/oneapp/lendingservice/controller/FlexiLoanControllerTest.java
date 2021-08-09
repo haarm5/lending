@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
@@ -21,8 +22,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -66,14 +66,13 @@ public class FlexiLoanControllerTest {
         request.setTriggerFlag("Y");
         request.setProduct("RC01");
 
-        when(flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(request)).thenThrow(new NullPointerException());
-
+        when(flexiLoanCheckApprovedStatusService.checkCalculateUnderwriting(any())).thenThrow(new NullPointerException());
         ResponseEntity<TmbOneServiceResponse<InstantLoanCalUWResponse>> result = flexiLoanController.approveStatus(request);
-        assertTrue(result.getStatusCode().isError());
+        assertNull(result.getBody().getData());
     }
 
     @Test
-    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";
@@ -84,7 +83,7 @@ public class FlexiLoanControllerTest {
     }
 
     @Test
-    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException {
+    public void testGetSubmissionInfoFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         SubmissionInfoRequest request = new SubmissionInfoRequest();
         request.setCaId(1L);
         String correlationId = "xxx";

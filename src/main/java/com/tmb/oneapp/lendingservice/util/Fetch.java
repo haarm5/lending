@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
@@ -94,7 +95,7 @@ public class Fetch {
         try {
             response = supplier.get();
             return supplierFunction.apply(response);
-        } catch (RemoteException | ServiceException e) {
+        } catch (RemoteException | ServiceException | JsonProcessingException e) {
             throw new TMBCommonException("soap network error");
         }
     }

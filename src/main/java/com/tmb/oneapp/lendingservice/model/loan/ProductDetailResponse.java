@@ -19,4 +19,5 @@ public class ProductDetailResponse {
     private ProductStatus status;
     private ContinueApplyNextScreen continueApplyNextStep;
     private ContinueApplyParams continueApplyParams;
+    private Object productData;
 }

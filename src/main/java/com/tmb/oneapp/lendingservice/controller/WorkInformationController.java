@@ -240,7 +240,7 @@ public class WorkInformationController {
 
 	@LogAround
 	@GetMapping(value = "/fetch-working-info", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "Criteria for country information")
+	@ApiOperation(value = "Get work information with profile")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da", required = true, paramType = "header"),
 			@ApiImplicitParam(name = HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })

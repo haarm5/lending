@@ -49,5 +49,25 @@ public class WorkInfoProfileServiceTest {
 		WorkInfoEntryResp workInfo = workInfoProfileService.createWorkInformationModel("304", "A", "TH");
 		Assertions.assertNotNull(workInfo);
 	}
+	
+	@Test
+	public void testNullCase() {
+		workInfoProfileService = new WorkInfoProfileService(lendingCriteriaInfoService);
+		List<CriteriaCodeEntry> mockResult = new ArrayList();
+		CriteriaCodeEntry entryA = new CriteriaCodeEntry();
+		mockResult.add(entryA);
+		when(lendingCriteriaInfoService.getCriteriaByCatalogId(any())).thenReturn(mockResult);
+		when(lendingCriteriaInfoService.getDefaultforCountryType(any())).thenThrow(new NullPointerException());
+		when(lendingCriteriaInfoService.getDefaultforSubBusinessType(any())).thenThrow(new NullPointerException());
+		
+		when(lendingCriteriaInfoService.getOccupationByEmploymentStatus(any())).thenThrow(new NullPointerException());
+		
+		when(lendingCriteriaInfoService.getOccupationInfoByCode(any())).thenReturn(mockResult);
+		when(lendingCriteriaInfoService.getSourceOfIncome(any())).thenReturn(mockResult);
+		when(lendingCriteriaInfoService.getSubBusinessType(any())).thenReturn(mockResult);
+		when(lendingCriteriaInfoService.getWorkStatusByOccupationCode(any())).thenReturn(mockResult);
+		WorkInfoEntryResp workInfo = workInfoProfileService.createWorkInformationModel("304", "A", "TH");
+		Assertions.assertNotNull(workInfo);
+	}
 
 }

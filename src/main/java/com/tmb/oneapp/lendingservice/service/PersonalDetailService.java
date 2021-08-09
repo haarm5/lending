@@ -147,11 +147,11 @@ public class PersonalDetailService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private List<Resident> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<Resident> residents = new ArrayList<>();
+    private List<DropDown> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<DropDown> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_RESIDENT_TYPE);
         for (CommonCodeEntry e : entries) {
-            Resident resident = new Resident();
+            DropDown resident = new DropDown();
             resident.setEntryId(e.getEntryID());
             resident.setEntryCode(e.getEntryCode());
             resident.setEntryNameEng(e.getEntryName());
@@ -162,11 +162,11 @@ public class PersonalDetailService {
         return residents;
     }
 
-    private List<Resident> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<Resident> residents = new ArrayList<>();
+    private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<DropDown> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
         for (CommonCodeEntry e : entries) {
-            Resident resident = new Resident();
+            DropDown resident = new DropDown();
             resident.setEntryId(e.getEntryID());
             resident.setEntryCode(e.getEntryCode());
             resident.setEntryNameEng(e.getEntryName());

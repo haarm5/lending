@@ -188,7 +188,12 @@ public class DropdownServiceTest {
     }
 
     @Test
-    public void getDropdownsLoanSubmissionWorkingDetail_RslFail() {
+    public void getDropdownsLoanSubmissionWorkingDetail_RslFail() throws TMBCommonException {
+        String employmentStatus = "01";
+        CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
+        customerInfo.setOccupationCode(employmentStatus);
+        doReturn(customerInfo).when(personalDetailService).getCustomerEC(anyString());
+
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doReturn(mockGetDropdownFail()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
             dropdownService.getDropdownsLoanSubmissionWorkingDetail("crmId");

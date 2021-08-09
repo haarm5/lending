@@ -4,14 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -19,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,17 +46,27 @@ public class DropdownService {
 
     public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
         CustGeneralProfileResponse customerInfo = personalDetailService.getCustomerEC(crmId);
+        String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());
-        response.setRmOccupation(getDropdownRmOccupation(customerInfo.getOccupationCode()));
+        response.setRmOccupation(getDropdownRmOccupation(employmentStatus));
         response.setBusinessType(getDropdownBusinessType());
         response.setTotalIncome(getDropdownTotalIncome());
         response.setIncomeBank(getDropdownIncomeBank());
-        response.setIncomeType(getDropdownIncomeType(customerInfo.getOccupationCode()));
+        response.setIncomeType(getDropdownIncomeType(employmentStatus));
         response.setSciCountry(getDropdownSciCountry());
         response.setCardDelivery(getDropdownCardDelivery());
         response.setEmailStatementFlag(getDropdownEmailStatementFlag());
         return response;
+    }
+
+    public String getEmploymentStatus(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown dropdownRmOccupation = getDropdown(DROPDOWN_RM_OCCUPATION);
+        CommonCodeEntry rmOccupationList = Arrays.stream(dropdownRmOccupation.getBody().getCommonCodeEntries())
+                .filter(dropdown->occupationCode.equals(dropdown.getEntryCode())).findFirst()
+                .orElseThrow(()->new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), ResponseCode.DATA_NOT_FOUND.getMessage(), ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null));
+
+        return rmOccupationList.getExtValue1();
     }
 
     public List<Dropdowns.EmploymentStatus> getDropdownEmploymentStatus() throws ServiceException, TMBCommonException, JsonProcessingException {
@@ -69,11 +83,11 @@ public class DropdownService {
         return employmentStatusList;
     }
 
-    public List<Dropdowns.RmOccupation> getDropdownRmOccupation(String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public List<Dropdowns.RmOccupation> getDropdownRmOccupation(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownRmOccupation = getDropdown(DROPDOWN_RM_OCCUPATION);
         List<Dropdowns.RmOccupation> rmOccupationList = Arrays.stream(dropdownRmOccupation.getBody().getCommonCodeEntries())
                 .filter(dropdown -> ACTIVE_STATUS.equals(dropdown.getActiveStatus())
-                        && employmentStatus.equals(dropdown.getExtValue1()))
+                        && occupationCode.equals(dropdown.getExtValue1()))
                 .map(rmOccupation -> {
                     try {
                         return Dropdowns.RmOccupation.builder()

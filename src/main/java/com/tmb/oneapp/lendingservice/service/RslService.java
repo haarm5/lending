@@ -13,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Response
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
-import com.tmb.oneapp.lendingservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.lendingservice.model.rsl.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
@@ -104,13 +103,6 @@ public class RslService {
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = loanSubmissionUpdateCustomerClient.updateCustomerInfo(individual);
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
-    }
-
-    private void checkRslResponse(String responseCode, String responseMessage) throws TMBCommonException {
-        if(!RslResponseCodeEnum.SUCCESS.getCode().equals(responseCode)) {
-            String message = String.format("[%s] %s", responseCode, responseMessage);
-            throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(), message, ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-        }
     }
 
 }

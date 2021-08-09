@@ -3,14 +3,15 @@ package com.tmb.oneapp.customerservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.RslStatusTrackingClient;
 import com.tmb.oneapp.lendingservice.model.ProductConfig;
 import com.tmb.oneapp.lendingservice.model.RslMessage;
 import com.tmb.oneapp.lendingservice.model.RslStatusTrackingResponse;
-import com.tmb.oneapp.lendingservice.repository.RslMessageRepository;
 import com.tmb.oneapp.lendingservice.service.RslStatusTrackingService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -29,12 +30,12 @@ import static org.mockito.Mockito.when;
 class RslStatusTrackingServiceTest {
     private final RslStatusTrackingClient rslStatusTrackingClient = Mockito.mock(RslStatusTrackingClient.class);
     private final CommonServiceFeignClient commonServiceFeignClient = Mockito.mock(CommonServiceFeignClient.class);
-    private final RslMessageRepository rslMessageRepository = Mockito.mock(RslMessageRepository.class);
 
-    RslStatusTrackingService rslStatusTrackingService = new RslStatusTrackingService(rslStatusTrackingClient, commonServiceFeignClient, rslMessageRepository);
+    RslStatusTrackingService rslStatusTrackingService = new RslStatusTrackingService(rslStatusTrackingClient, commonServiceFeignClient);
 
     private final String realCitizenId = "1100400759800";
     private final String realMobileNo = "0811234567";
+    private final String module = "2";
     private final String realCorrelationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -52,12 +53,30 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void fetchMessage() {
-        when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
+    void getProductConfig_fail() {
+        when(commonServiceFeignClient.getProductConfig(anyString())).thenThrow(new IllegalArgumentException());
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
+        List<ProductConfig> rslResponse_actual = rslStatusTrackingService.fetchProductConfig(realCorrelationId);
 
-        assertNull(rslStatusTrackingResponseList_actual);
+        assertNotNull(rslResponse_actual);
+    }
+
+    @Test
+    void fetchMessage() throws TMBCommonException {
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
+
+        RslMessage rslMessage = rslStatusTrackingService.fetchMessage("IDDFD", "PL");
+
+        assertNotNull(rslMessage);
+    }
+
+    @Test
+    void fetchMessage_fail() {
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenThrow(new IllegalArgumentException());
+
+        Assertions.assertThrows(TMBCommonException.class, ()->{
+            RslMessage rslMessage = rslStatusTrackingService.fetchMessage("", "");
+        });
     }
 
     @Test
@@ -74,9 +93,9 @@ class RslStatusTrackingServiceTest {
 
         when(commonServiceFeignClient.getProductConfig(anyString())).thenReturn(new ResponseEntity<>(mockProductConfig, HttpStatus.OK));
 
-        when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
+        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(realCitizenId, realMobileNo, module, realCorrelationId);
         assertNotNull(rslStatusTrackingResponseList_actual);
     }
 
@@ -107,9 +126,9 @@ class RslStatusTrackingServiceTest {
 
         when(commonServiceFeignClient.getProductConfig(anyString())).thenReturn(new ResponseEntity<>(mockProductConfig, HttpStatus.OK));
 
-        when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(fakeCitizenId, realMobileNo, realCorrelationId);
+        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(fakeCitizenId, realMobileNo, module, realCorrelationId);
         assertNotNull(rslStatusTrackingResponseList_actual);
     }
 
@@ -125,9 +144,9 @@ class RslStatusTrackingServiceTest {
 
         when(commonServiceFeignClient.getProductConfig(anyString())).thenReturn(new ResponseEntity<>(mockProductConfig, HttpStatus.OK));
 
-        when(rslMessageRepository.getMsg(anyString(), anyString(), anyString())).thenReturn(getMockResultRslMessage());
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(null, realMobileNo, null);
+        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(null, realMobileNo, module,null);
 
         assertNull(rslStatusTrackingResponseList_actual);
     }
@@ -150,11 +169,19 @@ class RslStatusTrackingServiceTest {
         return result;
     }
 
-    private RslMessage getMockResultRslMessage() {
-        return new RslMessage("apploan_status_code_Desc",
+    private ResponseEntity<TmbOneServiceResponse<RslMessage>> getMockResultRslMessage() {
+        TmbOneServiceResponse<RslMessage> mockResponseRslMessage = new TmbOneServiceResponse<>();
+        mockResponseRslMessage.setData(
+                new RslMessage("apploan_status_code_Desc",
                 "อยู่ระหว่างการตรวจสอบข้อมูลและเอกสาร",
                 "Verifying Information and document in progress",
                 "เอกสารที่ใช้ในการพิจารณาของท่านไม่ถูกต้อง หรือ ไม่ครบถ้วน จะมีเจ้าหน้าที่ธนาคารติดต่อกลับไปยังท่านอีกครั้ง",
-                "Your document is incompleted/incorrect, our staff will call you shortly");
+                "Your document is incompleted/incorrect, our staff will call you shortly")
+        );
+
+        ResponseEntity<TmbOneServiceResponse<RslMessage>> mockResponse = new ResponseEntity<>(mockResponseRslMessage,
+                HttpStatus.OK);
+
+        return mockResponse;
     }
 }

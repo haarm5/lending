@@ -31,7 +31,7 @@ public class RslStatusTrackingClient {
      */
     public ResponseEntity<String> getRslStatusTracking(String xml) {
         try {
-            String url = "http://10.209.23.234:9080/RSLWS/services/LoanStatusTracking";    //NOSONAR lightweight logging
+            String url = "http://10.209.23.234:9081/RSLWS/services/LoanStatusTracking";    //NOSONAR lightweight logging
 
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();

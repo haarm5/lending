@@ -566,18 +566,6 @@ public class RslServiceTest {
         Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
-    @Test
-    public void getLoanSubmissionChecklistInfo_InvalidData() {
-        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
-            request.setCaId(1L); //invalid caId
-            rslService.getDocumentList(request.getCaId());
-        });
-
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-        Assertions.assertEquals(ResponseCode.INVALID_DATA.getCode(), exception.getErrorCode());
-        Assertions.assertEquals("invalid caId", exception.getErrorMessage());
-    }
 
     @Test
     public void getLoanSubmissionChecklistInfo_RslConnectionError() {

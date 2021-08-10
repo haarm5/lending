@@ -31,15 +31,16 @@ class RslStatusTrackingControllerTest {
 
     @Test
     void getCaseStatusTracking_success() {
+        String module = "2";
 
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList = getRealRslStatusTrackingResponseList();
 
         TmbOneServiceResponse<List<RslStatusTrackingResponse>> mockResponseRslStatusTrackingList = new TmbOneServiceResponse<>();
         mockResponseRslStatusTrackingList.setData(rslStatusTrackingResponseList);
 
-        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString())).thenReturn(rslStatusTrackingResponseList);
+        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenReturn(rslStatusTrackingResponseList);
 
-        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(realCitizenId, realMobileNo, realCorrelationId);
+        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(realCitizenId, realMobileNo, module, realCorrelationId);
 
         assertEquals(200, response_actual.getStatusCodeValue());
         assertNotNull(response_actual.getBody());
@@ -48,12 +49,13 @@ class RslStatusTrackingControllerTest {
     @Test
     void getCaseStatusTracking_success_no_case() {
         String fakeCitizenId = "12345";
+        String module = "2";
 
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList = new ArrayList<>();
 
-        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString())).thenReturn(rslStatusTrackingResponseList);
+        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenReturn(rslStatusTrackingResponseList);
 
-        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, realCorrelationId);
+        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, module, realCorrelationId);
 
         assertEquals(404, response_actual.getStatusCodeValue());
     }
@@ -62,10 +64,11 @@ class RslStatusTrackingControllerTest {
     void getCaseStatusTracking_fail() {
         String fakeCitizenId = "";
         String fakeCorrelationId = "";
+        String module = "";
 
-        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString())).thenThrow(IllegalArgumentException.class);
+        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenThrow(IllegalArgumentException.class);
 
-        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, fakeCorrelationId);
+        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, module, fakeCorrelationId);
 
         assertNotNull(response_actual);
     }

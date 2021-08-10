@@ -95,7 +95,7 @@ public class WorkingDetailUpdateWorkingDetailService {
         individual.setEmailStatementFlag(request.getEmailStatementFlag());
         if (isTypeCC) {
             CreditCard[] creditCards = getCreditCard(request.getCaId());
-            if (creditCards.length > 0 && Objects.nonNull(creditCards[0])) {
+            if (Objects.nonNull(Objects.requireNonNull(creditCards)[0])) {
                 creditCards[0].setMailPreference(request.getMailingPreference());
                 creditCards[0].setCardDeliveryAddress(request.getMailingPreference());
                 individual.setCreditCards(creditCards);

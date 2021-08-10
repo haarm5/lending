@@ -190,11 +190,15 @@ public class WorkingDetailUpdateWorkingDetailService {
     }
 
 
-    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    private Individual getCustomer(Long caId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
-            ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
+            ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
+                if (Objects.nonNull(response.getBody().getIndividuals())) {
+                    return null;
+                } else {
+                    return response.getBody().getIndividuals()[0];
+                }
             } else {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
                         response.getHeader().getResponseDescriptionEN(),

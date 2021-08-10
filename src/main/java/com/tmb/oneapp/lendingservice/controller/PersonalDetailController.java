@@ -1,9 +1,12 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
@@ -17,6 +20,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,22 +63,22 @@ public class PersonalDetailController {
 
     @ApiOperation(value = "update personal detail info")
     @LogAround
-    @PostMapping("/savePersonalDetail")
-    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual>> updatePersonalDetail(@Valid PersonalDetailRequest request,
-                                                                                          @Valid @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) {
+    @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual>> updatePersonalDetail(
+                                                                                          @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) throws TMBCommonException, JsonProcessingException {
+        logger.info(TMBUtils.convertJavaObjectToString(personalDetailReg));
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual responseIndividual = updatePersonalDetail.updateCustomerInfo(request.getCaId(),personalDetailReg);
-            oneTmbOneServiceResponse.setData(responseIndividual);
+            updatePersonalDetail.updateCustomerInfo(personalDetailReg);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            logger.error("error while update personal detail info: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
-            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
     }

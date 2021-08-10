@@ -7,7 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class CommonServiceUtils {
     private static final TMBLogger<CommonServiceUtils> logger = new TMBLogger<>(CommonServiceUtils.class);
@@ -78,6 +80,15 @@ public class CommonServiceUtils {
             return Long.parseLong(caId);
         }catch (Exception e) {
             throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid caId", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
+        }
+    }
+
+    public static List<String> parseStringToList(String listString) throws TMBCommonException {
+        try {
+            String[] split = listString.split(",");
+            return Arrays.asList(split);
+        }catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid listString", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
         }
     }
 

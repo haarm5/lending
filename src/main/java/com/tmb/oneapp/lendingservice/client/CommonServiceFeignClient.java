@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.client;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.ProductConfig;
+import com.tmb.oneapp.lendingservice.model.RslMessage;
 import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -22,4 +23,8 @@ public interface CommonServiceFeignClient {
     @GetMapping(value = "/apis/common/internal/common/config")
     TmbOneServiceResponse<List<LendingModuleConfig>> getCommonConfig(
             @RequestHeader(value = LendingServiceConstant.HEADER_CORRELATION_ID) String correlationID, @RequestParam(value = "search") String search);
+
+    @GetMapping(value = "/apis/common/rsl-message")
+    ResponseEntity<TmbOneServiceResponse<RslMessage>> getRslMessage(
+            @RequestHeader(value = "app-status") String appStatus, @RequestHeader(value = "loan-type") String loanType);
 }

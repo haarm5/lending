@@ -28,8 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +50,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -61,7 +60,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
@@ -77,7 +76,7 @@ public class PersonalDetailControllerTest {
 
         PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
         Address address = new Address();
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         address.setRoomNo("111");
         address.setCountry("TH");
         address.setFloor("6");
@@ -101,7 +100,7 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setEngName("xx");
         personalDetailSaveInfoRequest.setEngSurName("xx");
         personalDetailSaveInfoRequest.setThaiName("xx");
-        personalDetailSaveInfoRequest.setThaiSurName("xx");
+        personalDetailSaveInfoRequest.setThaiSurname("xx");
         personalDetailSaveInfoRequest.setEmail("xx");
         personalDetailSaveInfoRequest.setBirthDate(Calendar.getInstance());
         personalDetailSaveInfoRequest.setIdIssueCtry1("xx");
@@ -109,65 +108,25 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setNationality("xx");
         personalDetailSaveInfoRequest.setAddress(address);
         personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
+        personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenReturn(mockResponseIndividual().getData());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
+        when(personalDetailSaveInfoService.updateCustomerInfo(any())).thenReturn(mockResponseIndividual().getData());
+        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
-    @Test
-    public void testUpdatePersonalDetailFail() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
-        PersonalDetailRequest request = new PersonalDetailRequest();
-        request.setCaId(2021071404188196L);
-        PersonalDetailSaveInfoRequest personalDetailSaveInfoRequest = new PersonalDetailSaveInfoRequest();
-        Address address = new Address();
-        Resident resident = new Resident();
-        address.setRoomNo("111");
-        address.setCountry("TH");
-        address.setFloor("6");
-        address.setNo("11");
-        address.setBuildingName("xx");
-        address.setProvince("xx");
-        address.setMoo("1");
-        address.setPostalCode("122222");
-        address.setStreetName("xx");
-        address.setRoad("xx");
-        address.setTumbol("xx");
-        address.setAmphur("xx");
-
-        resident.setEntrySource("111");
-        resident.setEntryId(BigDecimal.ONE);
-        resident.setEntryCode("xx");
-        resident.setEntryNameTh("xx");
-        resident.setEntryNameEng("xx");
-
-        personalDetailSaveInfoRequest.setThaiSalutationCode("xx");
-        personalDetailSaveInfoRequest.setEngName("xx");
-        personalDetailSaveInfoRequest.setEngSurName("xx");
-        personalDetailSaveInfoRequest.setThaiName("xx");
-        personalDetailSaveInfoRequest.setThaiSurName("xx");
-        personalDetailSaveInfoRequest.setEmail("xx");
-        personalDetailSaveInfoRequest.setBirthDate(Calendar.getInstance());
-        personalDetailSaveInfoRequest.setIdIssueCtry1("xx");
-        personalDetailSaveInfoRequest.setExpiryDate(Calendar.getInstance());
-        personalDetailSaveInfoRequest.setNationality("xx");
-        personalDetailSaveInfoRequest.setAddress(address);
-        personalDetailSaveInfoRequest.setMobileNo("xx");
-        personalDetailSaveInfoRequest.setResidentFlag(resident);
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(), any())).thenThrow(new NullPointerException());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(request,personalDetailSaveInfoRequest);
-
-        assertTrue(result.getStatusCode().isError());
-    }
 
     private TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
 
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
-        List<Resident> residentList = new ArrayList<>();
-        Resident resident = new Resident();
+        List<DropDown> residentList = new ArrayList<>();
+        DropDown resident = new DropDown();
+
+        List<DropDown> dropDownList = new ArrayList<>();
+        DropDown dropDown = new DropDown();
+
         address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
         address.setBuildingName("มบ.ปรีชา 3");
@@ -187,18 +146,25 @@ public class PersonalDetailControllerTest {
         resident.setEntrySource("HOST");
         residentList.add(resident);
 
+        dropDown.setEntryCode("H");
+        dropDown.setEntryId(BigDecimal.valueOf(65239));
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDownList.add(dropDown);
 
-        response.setBirthDate("11/10/33");
+
+        response.setBirthDate(Calendar.getInstance());
         response.setEmail("kk@gmail.com");
         response.setEngName("Test");
-        response.setEngSurName("Ja");
-        response.setExpiryDate("11/11/63");
+        response.setEngSurname("Ja");
+        response.setExpiryDate(Calendar.getInstance());
         response.setIdIssueCtry1("dd");
         response.setMobileNo("0987654321");
         response.setNationality("TH");
         response.setThaiName("ทีทีบี");
-        response.setThaiSurName("แบงค์");
-        response.setThaiSalutationCode("1800272993728");
+        response.setThaiSurname("แบงค์");
+        response.setThaiSalutationCode(dropDownList);
         response.setAddress(address);
         response.setResidentFlag(residentList);
 

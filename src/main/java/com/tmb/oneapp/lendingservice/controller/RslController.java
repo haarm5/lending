@@ -1,7 +1,9 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -35,6 +37,7 @@ import javax.validation.Valid;
 @Api(tags = "RSL")
 @RequestMapping("/rsl")
 public class RslController {
+    private static final TMBLogger<RslController> logger = new TMBLogger<>(RslController.class);
 
     private final RslService rslService;
 
@@ -308,12 +311,12 @@ public class RslController {
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody Individual request
-    ) throws TMBCommonException {
+    ) throws TMBCommonException, JsonProcessingException {
+        logger.info(TMBUtils.convertJavaObjectToString(request));
         TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual> response = new TmbOneServiceResponse<>();
 
         try {
-            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateCustomerResponse = rslService.updateCustomerInfo(request);
-            response.setData(updateCustomerResponse);
+            rslService.updateCustomerInfo(request);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 

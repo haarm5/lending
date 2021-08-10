@@ -8,8 +8,8 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
+import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.lendingservice.model.personal.Resident;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -99,7 +99,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
         request.setIdIssueCtry1("xx");
-        request.setThaiSurName("xx");
+        request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
@@ -108,13 +108,13 @@ PersonalDetailSaveInfoServiceTest {
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         resident.setEntryNameEng("xxx");
         resident.setEntryNameTh("xxx");
         resident.setEntryCode("xx");
         resident.setEntryId(BigDecimal.ONE);
         resident.setEntrySource("H");
-        request.setResidentFlag(resident);
+        request.setResidentFlag(resident.getEntryCode());
         com.tmb.oneapp.lendingservice.model.personal.Address address1 = new com.tmb.oneapp.lendingservice.model.personal.Address();
         address1.setNo("111");
         address1.setRoad("xx");
@@ -128,8 +128,9 @@ PersonalDetailSaveInfoServiceTest {
         address1.setBuildingName("xx");
         address1.setAmphur("xxx");
         request.setAddress(address1);
+        request.setCaId(2021071404188196L);
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(2021071404188196L,request);
+        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
         Assert.assertNotNull(responseIndividual);
 
 
@@ -190,7 +191,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
         request.setIdIssueCtry1("xx");
-        request.setThaiSurName("xx");
+        request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
@@ -198,13 +199,13 @@ PersonalDetailSaveInfoServiceTest {
         request.setEmail("xxx@gmail.com");
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
-        Resident resident = new Resident();
+        DropDown resident = new DropDown();
         resident.setEntryNameEng("xxx");
         resident.setEntryNameTh("xxx");
         resident.setEntryCode("xx");
         resident.setEntryId(BigDecimal.ONE);
         resident.setEntrySource("H");
-        request.setResidentFlag(resident);
+        request.setResidentFlag(resident.getEntryCode());
         com.tmb.oneapp.lendingservice.model.personal.Address address1 = new com.tmb.oneapp.lendingservice.model.personal.Address();
         address1.setNo("111");
         address1.setRoad("xx");
@@ -218,8 +219,9 @@ PersonalDetailSaveInfoServiceTest {
         address1.setBuildingName("xx");
         address1.setAmphur("xxx");
         request.setAddress(address1);
+        request.setCaId(2021071404188196L);
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(2021071404188196L,request);
+        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
         Assert.assertTrue(responseIndividual.getHeader().getResponseCode().equals("MSG_999"));
 
 

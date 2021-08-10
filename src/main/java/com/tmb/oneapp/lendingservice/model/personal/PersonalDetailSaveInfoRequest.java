@@ -1,25 +1,28 @@
 package com.tmb.oneapp.lendingservice.model.personal;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.Calendar;
 
 @Getter
 @Setter
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PersonalDetailSaveInfoRequest {
+    private Long caId;
     private String thaiSalutationCode;
     private String engName;
     private String engSurName;
-    private String thaiName;
-    private String  thaiSurName;
-    private String email;
     private Calendar birthDate;
     private String idIssueCtry1;
     private Calendar expiryDate;
     private String nationality;
     private Address address;
     private String mobileNo;
-    private Resident residentFlag;
+    private String residentFlag;
+    private String thaiName;
+    private String thaiSurname;
+    private String email;
 }

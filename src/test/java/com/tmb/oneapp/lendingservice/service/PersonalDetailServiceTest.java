@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +56,7 @@ public class PersonalDetailServiceTest {
     }
 
     @Test
-    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -117,13 +118,13 @@ public class PersonalDetailServiceTest {
         custGeneralProfileResponse.setCurrentAddrdistrictNameTh("ปทุมวัน");
         custGeneralProfileResponse.setCurrentAddrFloorNo("6");
         custGeneralProfileResponse.setEmailAddress("40654@tmbbank.com");
-        custGeneralProfileResponse.setIdBirthDate("01/11/33");
+        custGeneralProfileResponse.setIdBirthDate("2019-11-03");
         custGeneralProfileResponse.setEngFname("ONEAPPFOUR");
         custGeneralProfileResponse.setEngLname("NA TEETEEBEE");
         custGeneralProfileResponse.setThaFname("วันแอพสี่");
         custGeneralProfileResponse.setThaLname("ทีทีบี");
         custGeneralProfileResponse.setNationality("ทีทีบี");
-        custGeneralProfileResponse.setIdExpireDate("11/11/63");
+        custGeneralProfileResponse.setIdExpireDate("2019-11-03");
         custGeneralProfileResponse.setPhoneNoFull("0891117777");
         custGeneralProfileResponse.setCurrentAddrVillageOrbuilding("cv");
         custGeneralProfileResponse.setCurrentAddrMoo("1");
@@ -146,7 +147,7 @@ public class PersonalDetailServiceTest {
 
 
     @Test
-    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testGetPersonalDetailPersonalFlagNotYSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 
@@ -208,13 +209,13 @@ public class PersonalDetailServiceTest {
         custGeneralProfileResponse.setCurrentAddrdistrictNameTh("ปทุมวัน");
         custGeneralProfileResponse.setCurrentAddrFloorNo("6");
         custGeneralProfileResponse.setEmailAddress("40654@tmbbank.com");
-        custGeneralProfileResponse.setIdBirthDate("01/11/33");
+        custGeneralProfileResponse.setIdBirthDate("2019-11-33");
         custGeneralProfileResponse.setEngFname("ONEAPPFOUR");
         custGeneralProfileResponse.setEngLname("NA TEETEEBEE");
         custGeneralProfileResponse.setThaFname("วันแอพสี่");
         custGeneralProfileResponse.setThaLname("ทีทีบี");
         custGeneralProfileResponse.setNationality("ทีทีบี");
-        custGeneralProfileResponse.setIdExpireDate("11/11/63");
+        custGeneralProfileResponse.setIdExpireDate("2019-11-33");
         custGeneralProfileResponse.setPhoneNoFull("0891117777");
         custGeneralProfileResponse.setCurrentAddrVillageOrbuilding("cv");
         custGeneralProfileResponse.setCurrentAddrMoo("1");

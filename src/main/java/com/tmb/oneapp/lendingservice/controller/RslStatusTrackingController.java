@@ -57,6 +57,7 @@ public class RslStatusTrackingController {
     public ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> getRslStatusTracking(
             @ApiParam(value = "Citizen-ID", defaultValue = "1100400759800", required = true) @RequestHeader(name = "Citizen-ID", required = false) String citizenId,
             @ApiParam(value = "Mobile-No", defaultValue = "0811234567") @RequestHeader(name = "Mobile-No", required = false) String mobileNo,
+            @ApiParam(value = "Module", defaultValue = "2") @RequestHeader(name = "Module", required = false) String module,
             @ApiParam(value = "Correlation ID", defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId) {
 
         logger.info("Lending-service getRslStatusTracking method start Time : {} ", System.currentTimeMillis());
@@ -64,7 +65,7 @@ public class RslStatusTrackingController {
         TmbOneServiceResponse<List<RslStatusTrackingResponse>> rslStatusTrackingResponse = new TmbOneServiceResponse<>();
 
         try {
-            List<RslStatusTrackingResponse> rslStatusTracking = rslStatusTrackingService.getRslStatusTracking(citizenId, mobileNo, correlationId);
+            List<RslStatusTrackingResponse> rslStatusTracking = rslStatusTrackingService.getRslStatusTracking(citizenId, mobileNo, module, correlationId);
 
             if (rslStatusTracking.isEmpty()) {
                 rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND.getCode(),

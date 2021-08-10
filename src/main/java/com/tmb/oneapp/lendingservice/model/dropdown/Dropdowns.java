@@ -14,6 +14,10 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Dropdowns {
 
+    private Dropdowns() {
+
+    }
+
     @Getter
     @Setter
     @Builder

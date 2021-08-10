@@ -6,6 +6,11 @@ import com.tmb.oneapp.lendingservice.constant.RslResponseCodeEnum;
 import org.springframework.http.HttpStatus;
 
 public class RslServiceUtils {
+
+    private RslServiceUtils() {
+
+    }
+
     public static void checkRslResponse(String responseCode, String responseMessage) throws TMBCommonException {
         if(!RslResponseCodeEnum.SUCCESS.getCode().equals(responseCode)) {
             String message = String.format("[%s] %s", responseCode, responseMessage);

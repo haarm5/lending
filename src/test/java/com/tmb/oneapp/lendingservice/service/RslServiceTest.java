@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -63,6 +64,8 @@ public class RslServiceTest {
     LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
     @Mock
     LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
+    @Mock
+    LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
 
     @BeforeEach
     void setUp() {
@@ -553,6 +556,59 @@ public class RslServiceTest {
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
+    //Loan Submission Get Checklist Info
+    @Test
+    public void getLoanSubmissionChecklistInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        mockGetLoanSubmissionChecklistInfoSuccess();
+        LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+        request.setCaId(1L);
+        ResponseChecklist response = rslService.getDocumentList(request.getCaId());
+        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void getLoanSubmissionChecklistInfo_InvalidData() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+            request.setCaId(1L); //invalid caId
+            rslService.getDocumentList(request.getCaId());
+        });
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.INVALID_DATA.getCode(), exception.getErrorCode());
+        Assertions.assertEquals("invalid caId", exception.getErrorMessage());
+    }
+
+    @Test
+    public void getLoanSubmissionChecklistInfo_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
+
+            LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+            request.setCaId(1L);
+            rslService.getDocumentList(request.getCaId());
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void getLoanSubmissionChecklistInfo_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockGetLoanSubmissionChecklistInfoFail();
+            LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+            request.setCaId(1L);
+            rslService.getDocumentList(request.getCaId());
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+    }
+
 
     //Mock Data
     private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
@@ -824,5 +880,32 @@ public class RslServiceTest {
         response.setBody(body);
 
         doReturn(response).when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
+    }
+
+    private void mockGetLoanSubmissionChecklistInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseChecklist response = new ResponseChecklist();
+
+        com.tmb.common.model.legacy.rsl.ws.checklist.response.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Header();
+        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.checklist.response.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
+    }
+
+    private void mockGetLoanSubmissionChecklistInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseChecklist response = new ResponseChecklist();
+
+        com.tmb.common.model.legacy.rsl.ws.checklist.response.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Header();
+        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.checklist.response.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
     }
 }

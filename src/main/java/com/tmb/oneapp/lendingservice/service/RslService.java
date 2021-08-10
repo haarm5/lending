@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -39,6 +40,7 @@ public class RslService {
     private final LoanSubmissionInstantLoanSubmitApplicationClient loanSubmissionInstantLoanSubmitApplicationClient;
     private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
     private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
+    private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -106,6 +108,13 @@ public class RslService {
         checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }
+
+    public ResponseChecklist getDocumentList(Long caId) throws ServiceException, JsonProcessingException, TMBCommonException {
+        ResponseChecklist response = loanSubmissionGetChecklistInfoClient.getChecklistInfo(caId);
+        checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
+
 
     private void checkRslResponse(String responseCode, String responseMessage) throws TMBCommonException {
         if(!RslResponseCodeEnum.SUCCESS.getCode().equals(responseCode)) {

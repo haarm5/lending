@@ -178,9 +178,11 @@ public class PersonalDetailService {
     }
 
     private Calendar convertStringToCalender(String dateStr) throws ParseException {
-        Calendar calendar =  Calendar.getInstance();
-        Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
-        calendar.setTime(expireDate);
+        Calendar calendar = Calendar.getInstance();
+        if (dateStr != null || !dateStr.equals("")) {
+            Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
+            calendar.setTime(expireDate);
+        }
         return calendar;
     }
 }

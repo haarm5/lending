@@ -6,6 +6,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -604,6 +605,43 @@ public class RslControllerTest {
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
         Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    //Loan Submission Get Checklist Info
+    @Test
+    public void loanSubmissionGetChecklistInfo_Success() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+
+        ResponseChecklist response = new ResponseChecklist();
+        doReturn(response).when(rslService).getDocumentList(any());
+
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+        request.setCaId(2021071404188194L);
+
+        ResponseEntity<TmbOneServiceResponse<ResponseChecklist>> responseEntity = rslController.getDocumentList(correlationId, crmId, request);
+
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getCode(), Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+    }
+
+    @Test
+    public void loanSubmissionGetChecklistInfo_Fail() {
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
+        request.setCaId(2021071404188194L);
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new ServiceException("error")).when(rslService).getDocumentList(any());
+            rslController.getDocumentList(correlationId, crmId, request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+
     }
 
 }

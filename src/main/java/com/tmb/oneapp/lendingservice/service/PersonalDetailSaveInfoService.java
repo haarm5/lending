@@ -35,6 +35,7 @@ public class PersonalDetailSaveInfoService {
         Individual individual = getCustomerInfo(request.getCaId());
 
         Body body = new Body();
+
         individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
         individual.setPersonalInfoSavedFlag("Y");
         individual.setNationality(request.getNationality());

@@ -82,9 +82,9 @@ public class PersonalDetailSaveInfoService {
             if (individual != null) {
                 return individual;
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getDesc(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(),
+                        ResponseCode.RSL_FAILED.getDesc(),
+                        ResponseCode.RSL_FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
             logger.error("get customer info soap error", e);
@@ -92,6 +92,7 @@ public class PersonalDetailSaveInfoService {
         }
 
     }
+
 
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();

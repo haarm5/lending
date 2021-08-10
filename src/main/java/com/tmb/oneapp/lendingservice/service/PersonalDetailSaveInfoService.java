@@ -37,25 +37,26 @@ public class PersonalDetailSaveInfoService {
 
         Body body = new Body();
 
-        individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
-        individual.setPersonalInfoSavedFlag("Y");
-        individual.setNationality(request.getNationality());
-        individual.setMobileNo(request.getMobileNo());
-        individual.setThaiName(request.getThaiName());
-        individual.setThaiSalutationCode(request.getThaiSalutationCode());
-        individual.setThaiSurName(request.getThaiSurname());
-        individual.setNameLine1(request.getEngSurName());
-        individual.setNameLine2(request.getEngName());
-        individual.setEmail(request.getEmail());
-        individual.setIdIssueCtry1(request.getIdIssueCtry1());
-        individual.setResidentFlag(request.getResidentFlag());
-        individual.setExpiryDate(request.getExpiryDate());
-        individual.setBirthDate(request.getBirthDate());
-        individual.setAccounts(individual.getAccounts());
+        if (individual != null) {
+            individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
+            individual.setPersonalInfoSavedFlag("Y");
+            individual.setNationality(request.getNationality());
+            individual.setMobileNo(request.getMobileNo());
+            individual.setThaiName(request.getThaiName());
+            individual.setThaiSalutationCode(request.getThaiSalutationCode());
+            individual.setThaiSurName(request.getThaiSurname());
+            individual.setNameLine1(request.getEngSurName());
+            individual.setNameLine2(request.getEngName());
+            individual.setEmail(request.getEmail());
+            individual.setIdIssueCtry1(request.getIdIssueCtry1());
+            individual.setResidentFlag(request.getResidentFlag());
+            individual.setExpiryDate(request.getExpiryDate());
+            individual.setBirthDate(request.getBirthDate());
+            individual.setAccounts(individual.getAccounts());
 
-
-        body.setIndividual(individual);
-        responseIndividual.setBody(body);
+            body.setIndividual(individual);
+            responseIndividual.setBody(body);
+        }
 
         return saveCustomer(responseIndividual.getBody().getIndividual());
     }
@@ -87,9 +88,7 @@ public class PersonalDetailSaveInfoService {
             throw e;
         }
 
-        throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(),
-                ResponseCode.RSL_FAILED.getDesc(),
-                ResponseCode.RSL_FAILED.getService(), HttpStatus.NOT_FOUND, null);
+        return null;
     }
 
 

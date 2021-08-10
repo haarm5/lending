@@ -27,7 +27,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class WorkingDetailUpdateWorkingDetailService {
     private static final TMBLogger<WorkingDetailUpdateWorkingDetailService> logger = new TMBLogger<>(WorkingDetailUpdateWorkingDetailService.class);
-
+    static final String MSG_000 = "MSG_000";
 
     private final LoanSubmissionGetCustomerInfoClient customerInfoClient;
     private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
@@ -58,7 +58,7 @@ public class WorkingDetailUpdateWorkingDetailService {
             Individual individual = getCustomer(request.getCaId());
             prepareIndividual(individual, request, isTypeCC);
             com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual res = loanSubmissionUpdateCustomerClient.updateCustomerInfo(individual);
-            if (res.getHeader().getResponseCode().equals("MSG_000")) {
+            if (res.getHeader().getResponseCode().equals(MSG_000)) {
                 return res;
             } else {
                 throw new TMBCommonException(res.getHeader().getResponseCode(),
@@ -150,7 +150,7 @@ public class WorkingDetailUpdateWorkingDetailService {
             facility.setMailingPreference(mailingPreference);
             facility.setCardDelivery(mailingPreference);
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = loanSubmissionUpdateFacilityInfoClient.updateFacilityInfo(facility);
-            if (!response.getHeader().getResponseCode().equals("MSG_000")) {
+            if (!response.getHeader().getResponseCode().equals(MSG_000)) {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
                         response.getHeader().getResponseDescriptionEN(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
@@ -165,7 +165,7 @@ public class WorkingDetailUpdateWorkingDetailService {
     private Facility getFacility(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals("MSG_000")) {
+            if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
             } else {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
@@ -182,7 +182,7 @@ public class WorkingDetailUpdateWorkingDetailService {
     private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals("MSG_000")) {
+            if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
             } else {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
@@ -199,7 +199,7 @@ public class WorkingDetailUpdateWorkingDetailService {
     private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
-            if (response.getHeader().getResponseCode().equals("MSG_000")) {
+            if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
             } else {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),

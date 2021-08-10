@@ -34,6 +34,7 @@ public class UpdateWorkingDetailRequest {
     private BigDecimal incomeDeclared;
     private BigDecimal incomeTotalLastMthCreditAcct1;
     private String incomeType;
+    private String sourceFromCountry;
     private String mailingPreference;
     private String emailStatementFlag;
 }

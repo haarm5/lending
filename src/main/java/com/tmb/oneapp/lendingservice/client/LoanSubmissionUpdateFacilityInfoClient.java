@@ -74,7 +74,6 @@ public class LoanSubmissionUpdateFacilityInfoClient {
 
     private com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body setBody(Facility facility) {
         com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body();
-        facility.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
         body.setFacility(facility);
         return body;
     }

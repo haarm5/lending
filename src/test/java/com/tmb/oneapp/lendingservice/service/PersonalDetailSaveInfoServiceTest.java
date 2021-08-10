@@ -50,6 +50,8 @@ PersonalDetailSaveInfoServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         Address address = new Address();
+        Address[] addresses = new Address[1];
+
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
         customerHeader.setModule("3");
@@ -66,6 +68,7 @@ PersonalDetailSaveInfoServiceTest {
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
         address.setAddress("xx");
+        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -76,7 +79,8 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
-        individual.setAddresses(new Address[]{address});
+        addresses[0] = address;
+        individual.setAddresses(addresses);
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -141,6 +145,7 @@ PersonalDetailSaveInfoServiceTest {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+
         Address address = new Address();
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
@@ -158,6 +163,7 @@ PersonalDetailSaveInfoServiceTest {
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
         address.setAddress("xx");
+        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -168,7 +174,9 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
-        individual.setAddresses(new Address[]{address});
+        Address[] addresses = new Address[1];
+        addresses[0] = address;
+        individual.setAddresses(addresses);
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -226,4 +234,5 @@ PersonalDetailSaveInfoServiceTest {
 
 
     }
+
 }

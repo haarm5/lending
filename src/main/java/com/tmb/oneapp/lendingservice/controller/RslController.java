@@ -9,6 +9,7 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -317,6 +318,35 @@ public class RslController {
 
         try {
             rslService.updateCustomerInfo(request);
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
+                    ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @ApiOperation("Loan Submission Get Checklist Info")
+    @PostMapping(value = "/LoanSubmissionGetChecklistInfo", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<ResponseChecklist>> getDocumentList(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody LoanSubmissionGetChecklistInfoRequest request
+    ) throws TMBCommonException {
+        TmbOneServiceResponse<ResponseChecklist> response = new TmbOneServiceResponse<>();
+
+        try {
+            ResponseChecklist responseChecklist = rslService.getDocumentList(request.getCaId());
+            response.setData(responseChecklist);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 

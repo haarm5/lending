@@ -36,21 +36,15 @@ public class WorkingDetailUpdateWorkingDetailService {
     private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
 
     public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateWorkDetail(UpdateWorkingDetailRequest request) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
-
-        try {
-            String productCode = request.getProductCode();
-            boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
-                    || productCode.equals("VG") || productCode.equals("VP")
-                    || productCode.equals("VT") || productCode.equals("MT")
-                    || productCode.equals("MS");
-            if (!isTypeCC) {
-                updateFacility(request.getCaId(), request.getMailingPreference());
-            }
-            return updateIndividual(request, isTypeCC);
-        } catch (Exception e) {
-            logger.error("update customer soap error", e);
-            throw e;
+        String productCode = request.getProductCode();
+        boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
+                || productCode.equals("VG") || productCode.equals("VP")
+                || productCode.equals("VT") || productCode.equals("MT")
+                || productCode.equals("MS");
+        if (!isTypeCC) {
+            updateFacility(request.getCaId(), request.getMailingPreference());
         }
+        return updateIndividual(request, isTypeCC);
     }
 
     public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateIndividual(UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {

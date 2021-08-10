@@ -14,14 +14,10 @@ import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Response
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.constant.RslResponseCodeEnum;
 import com.tmb.oneapp.lendingservice.model.rsl.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
-import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;

@@ -194,7 +194,7 @@ public class WorkingDetailUpdateWorkingDetailService {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                if (Objects.nonNull(response.getBody().getIndividuals())) {
+                if (Objects.isNull(response.getBody().getIndividuals())) {
                     return null;
                 } else {
                     return response.getBody().getIndividuals()[0];

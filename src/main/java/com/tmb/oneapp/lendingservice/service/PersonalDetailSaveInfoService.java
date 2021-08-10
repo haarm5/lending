@@ -29,8 +29,7 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-
-    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws Exception {
+    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(request.getCaId());
@@ -75,7 +74,7 @@ public class PersonalDetailSaveInfoService {
         }
     }
 
-    private Individual getCustomerInfo(Long caId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    private Individual getCustomerInfo(Long caId) throws RemoteException, TMBCommonException, JsonProcessingException, ServiceException {
         try {
             Individual individual = getCustomerInfoClient.searchCustomerInfoByCaID(caId).getBody().getIndividuals()[0];
             if (individual != null) {
@@ -91,6 +90,8 @@ public class PersonalDetailSaveInfoService {
         }
 
     }
+
+
 
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();

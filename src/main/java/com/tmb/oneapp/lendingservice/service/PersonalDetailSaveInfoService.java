@@ -28,7 +28,7 @@ public class PersonalDetailSaveInfoService {
     private static final TMBLogger<PersonalDetailSaveInfoService> logger = new TMBLogger<>(PersonalDetailSaveInfoService.class);
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
-    static final String MSG_000 = "MSG_000";
+
 
     public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws Exception {
         RequestIndividual responseIndividual = new RequestIndividual();

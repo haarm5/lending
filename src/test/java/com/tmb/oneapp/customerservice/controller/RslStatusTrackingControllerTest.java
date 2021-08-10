@@ -1,5 +1,6 @@
 package com.tmb.oneapp.customerservice.controller;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.controller.RslStatusTrackingController;
 import com.tmb.oneapp.lendingservice.model.RslStatusTrackingResponse;
@@ -30,7 +31,7 @@ class RslStatusTrackingControllerTest {
     private final String realCorrelationId = "32fbd3b2-3f97-4a89-ae39-b4f628fbc8da";
 
     @Test
-    void getCaseStatusTracking_success() {
+    void getCaseStatusTracking_success() throws TMBCommonException {
         String module = "2";
 
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList = getRealRslStatusTrackingResponseList();
@@ -47,7 +48,7 @@ class RslStatusTrackingControllerTest {
     }
 
     @Test
-    void getCaseStatusTracking_success_no_case() {
+    void getCaseStatusTracking_success_no_case() throws TMBCommonException {
         String fakeCitizenId = "12345";
         String module = "2";
 
@@ -61,7 +62,7 @@ class RslStatusTrackingControllerTest {
     }
 
     @Test
-    void getCaseStatusTracking_fail() {
+    void getCaseStatusTracking_fail() throws TMBCommonException {
         String fakeCitizenId = "";
         String fakeCorrelationId = "";
         String module = "";

@@ -57,7 +57,7 @@ public class RslStatusTrackingService {
      *
      * @return RslStatusTrackingResponse
      */
-    public List<RslStatusTrackingResponse> getRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) {
+    public List<RslStatusTrackingResponse> getRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) throws TMBCommonException {
         try {
             String result = fetchRslStatusTracking(citizenId, mobileNo, module, correlationId);
             List<ProductConfig> productConfigList = fetchProductConfig(correlationId);
@@ -72,10 +72,14 @@ public class RslStatusTrackingService {
             }
         } catch (Exception e) {
             logger.error("getRslStatusTracking method Error(Data Not Found) : {} ", e);
-            return null;    //NOSONAR lightweight logging
         }
 
-        return null;    //NOSONAR lightweight logging
+        throw new TMBCommonException(
+                ResponseCode.FAILED.getCode(),
+                ResponseCode.FAILED.getMessage(),
+                ResponseCode.FAILED.getService(),
+                HttpStatus.BAD_REQUEST,
+                null);
     }
 
     /**
@@ -85,7 +89,7 @@ public class RslStatusTrackingService {
      *
      * @return List<RslStatusTrackingResponse> list of RslStatusTrackingResponse model
      */
-    public List<RslStatusTrackingResponse> getRslStatusTrackingResponse(String xml) { //NOSONAR lightweight logging
+    public List<RslStatusTrackingResponse> getRslStatusTrackingResponse(String xml) throws TMBCommonException { //NOSONAR lightweight logging
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList = new ArrayList<>();
 
         try {
@@ -216,12 +220,17 @@ public class RslStatusTrackingService {
                     }
                 }
             }
+
             return rslStatusTrackingResponseList;
         } catch (Exception e) {
-            logger.error("getRslStatusTrackingResponseFromStringXML method Error(Data Not Found) : {} ", e);
+            logger.error("getRslStatusTrackingResponse method Error(Data Not Found) : {} ", e);
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.BAD_REQUEST,
+                    null);
         }
-
-        return null; //NOSONAR lightweight logging
     }
 
     /**
@@ -318,7 +327,7 @@ public class RslStatusTrackingService {
      * @return String result of rsl in String
      */
     @LogAround
-    public String fetchRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) {
+    public String fetchRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) throws TMBCommonException {
         String rslRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:trac=\"http://tracking.ws.sml.integrosys.com\" xmlns:req=\"http://request.tracking.ws.sml.integrosys.com\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
@@ -346,9 +355,14 @@ public class RslStatusTrackingService {
             return response.getBody();
         } catch (Exception e) {
             logger.error("fetchRslStatusTracking method Error(Data Not Found) : {} ", e);
-        }
 
-        return null;
+            throw new TMBCommonException(
+                    ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(),
+                    HttpStatus.BAD_REQUEST,
+                    null);
+        }
     }
 
     /**

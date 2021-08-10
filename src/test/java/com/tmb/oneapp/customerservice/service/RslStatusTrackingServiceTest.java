@@ -80,7 +80,7 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void getRslStatusTrackingAppTypeCompleteAndInComplete() throws JsonProcessingException {
+    void getRslStatusTrackingAppTypeCompleteAndInComplete() throws JsonProcessingException, TMBCommonException {
         ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
 
         when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
@@ -111,7 +111,7 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void getRslStatusTrackingDataNotFound() throws JsonProcessingException {
+    void getRslStatusTrackingDataNotFound() throws JsonProcessingException, TMBCommonException {
         String fakeCitizenId = "123";
 
         ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResultFail(), HttpStatus.OK);
@@ -133,8 +133,8 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
-    void getRslStatusTrackingFail() throws JsonProcessingException {
-        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+    void getRslStatusTrackingFail() throws JsonProcessingException, TMBCommonException {
+        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenThrow(new IllegalArgumentException());
 
         String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();
         List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
@@ -146,9 +146,9 @@ class RslStatusTrackingServiceTest {
 
         when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(null, realMobileNo, module,null);
-
-        assertNull(rslStatusTrackingResponseList_actual);
+        Assertions.assertThrows(TMBCommonException.class, () -> {
+            List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(null, realMobileNo, module,null);
+        });
     }
 
     private String getMockResult() {

@@ -95,9 +95,11 @@ public class WorkingDetailUpdateWorkingDetailService {
         individual.setEmailStatementFlag(request.getEmailStatementFlag());
         if (isTypeCC) {
             CreditCard[] creditCards = getCreditCard(request.getCaId());
-            creditCards[0].setMailPreference(request.getMailingPreference());
-            creditCards[0].setCardDeliveryAddress(request.getMailingPreference());
-            individual.setCreditCards(creditCards);
+            if (creditCards.length > 0 && Objects.nonNull(creditCards[0])) {
+                creditCards[0].setMailPreference(request.getMailingPreference());
+                creditCards[0].setCardDeliveryAddress(request.getMailingPreference());
+                individual.setCreditCards(creditCards);
+            }
         }
         return individual;
     }
@@ -141,6 +143,9 @@ public class WorkingDetailUpdateWorkingDetailService {
     private void updateFacility(Long caId, String mailingPreference) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             Facility facility = getFacility(caId);
+            if (Objects.isNull(facility)) {
+                return;
+            }
             facility.setMailingPreference(mailingPreference);
             facility.setCardDelivery(mailingPreference);
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = loanSubmissionUpdateFacilityInfoClient.updateFacilityInfo(facility);

@@ -81,16 +81,15 @@ public class PersonalDetailSaveInfoService {
             Individual individual = getCustomerInfoClient.searchCustomerInfoByCaID(caId).getBody().getIndividuals()[0];
             if (individual != null) {
                 return individual;
-            } else {
-                throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(),
-                        ResponseCode.RSL_FAILED.getDesc(),
-                        ResponseCode.RSL_FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
             logger.error("get customer info soap error", e);
             throw e;
         }
 
+        throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(),
+                ResponseCode.RSL_FAILED.getDesc(),
+                ResponseCode.RSL_FAILED.getService(), HttpStatus.NOT_FOUND, null);
     }
 
 

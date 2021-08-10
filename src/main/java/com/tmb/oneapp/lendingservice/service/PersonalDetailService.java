@@ -74,12 +74,17 @@ public class PersonalDetailService {
 
             } else {
                 //ec
+
+                if (custGeneralProfileResponse.getIdExpireDate() != null) {
+                    response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
+                }
                 response.setEmail(custGeneralProfileResponse.getEmailAddress());
                 response.setBirthDate(convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()));
                 response.setEngName(custGeneralProfileResponse.getEngFname());
                 response.setEngSurname(custGeneralProfileResponse.getEngLname());
                 response.setNationality(custGeneralProfileResponse.getNationality());
-                response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
+
+
                 response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
                 response.setThaiName(custGeneralProfileResponse.getThaFname());
                 response.setThaiSurname(custGeneralProfileResponse.getThaLname());
@@ -179,7 +184,7 @@ public class PersonalDetailService {
 
     private Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
-        if (dateStr != null || !dateStr.equals("")) {
+        if (dateStr != null && !dateStr.equals("")) {
             Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
             calendar.setTime(expireDate);
         }

@@ -54,6 +54,14 @@ public class WorkInfoProfileService {
 		response.setCountryIncomes(sourceCountryEntry);
 		try {
 			
+			List<CriteriaCodeEntry> sourceOfCountry = lendingCriteriaInfoService
+					.getDefaultforCountryType(countryOfIncome);
+			if (CollectionUtils.isNotEmpty(sourceOfCountry)) {
+				CriteriaCodeEntry defaultEntry = sourceOfCountry.get(0);
+				sourceCountryEntry.setName(defaultEntry.getEntryName());
+				sourceCountryEntry.setValue(defaultEntry.getEntryCode());
+			}
+			
 			List<CriteriaCodeEntry> workStatusByOccupationList = lendingCriteriaInfoService
 					.getWorkStatusByOccupationCode(occupationCode);
 			if (CollectionUtils.isNotEmpty(workStatusByOccupationList)) {
@@ -102,16 +110,6 @@ public class WorkInfoProfileService {
 				sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
 				sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
 			}
-			
-			
-			List<CriteriaCodeEntry> sourceOfCountry = lendingCriteriaInfoService
-					.getDefaultforCountryType(countryOfIncome);
-			if (CollectionUtils.isNotEmpty(sourceOfCountry)) {
-				CriteriaCodeEntry defaultEntry = sourceOfCountry.get(0);
-				sourceCountryEntry.setName(defaultEntry.getEntryName());
-				sourceCountryEntry.setValue(defaultEntry.getEntryCode());
-			}
-			
 			
 		} catch (Exception e) {
 			logger.error(e.toString(), e);

@@ -1,15 +1,17 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.RslStatusTrackingClient;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.ProductConfig;
 import com.tmb.oneapp.lendingservice.model.RslMessage;
 import com.tmb.oneapp.lendingservice.model.RslStatusTrackingResponse;
-import com.tmb.oneapp.lendingservice.repository.RslMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -35,18 +37,15 @@ public class RslStatusTrackingService {
     private static final TMBLogger<RslStatusTrackingService> logger = new TMBLogger<>(RslStatusTrackingService.class);
     private final RslStatusTrackingClient rslStatusTrackingClient;
     private final CommonServiceFeignClient commonServiceFeignClient;
-    private final RslMessageRepository rslMessageRepository;
 
     /**
      * Constructor
      */
     @Autowired
     public RslStatusTrackingService(RslStatusTrackingClient rslStatusTrackingClient,
-                                    CommonServiceFeignClient commonServiceFeignClient,
-                                    RslMessageRepository rslMessageRepository) {
+                                    CommonServiceFeignClient commonServiceFeignClient) {
         this.rslStatusTrackingClient = rslStatusTrackingClient;
         this.commonServiceFeignClient = commonServiceFeignClient;
-        this.rslMessageRepository = rslMessageRepository;
     }
 
     /**
@@ -58,9 +57,9 @@ public class RslStatusTrackingService {
      *
      * @return RslStatusTrackingResponse
      */
-    public List<RslStatusTrackingResponse> getRslStatusTracking(String citizenId, String mobileNo, String correlationId) {
+    public List<RslStatusTrackingResponse> getRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) {
         try {
-            String result = fetchRslStatusTracking(citizenId, mobileNo, correlationId);
+            String result = fetchRslStatusTracking(citizenId, mobileNo, module, correlationId);
             List<ProductConfig> productConfigList = fetchProductConfig(correlationId);
 
             if(!productConfigList.isEmpty()) {
@@ -319,7 +318,7 @@ public class RslStatusTrackingService {
      * @return String result of rsl in String
      */
     @LogAround
-    public String fetchRslStatusTracking(String citizenId, String mobileNo, String correlationId) {
+    public String fetchRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) {
         String rslRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:trac=\"http://tracking.ws.sml.integrosys.com\" xmlns:req=\"http://request.tracking.ws.sml.integrosys.com\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
@@ -332,7 +331,7 @@ public class RslStatusTrackingService {
                 "            </req:body>\n" +
                 "            <req:header>\n" +
                 "               <req:channel>MIB</req:channel>\n" +
-                "               <req:module>2</req:module>\n" +
+                "               <req:module>" + module + "</req:module>\n" +
                 "               <req:requestID>" + correlationId + "</req:requestID>\n" +
                 "            </req:header>\n" +
                 "         </trac:req>\n" +
@@ -382,35 +381,25 @@ public class RslStatusTrackingService {
     /**
      * Method responsible for getting Line Message from MongoDB
      *
+     * @param appStatus String
      * @param loanType type of loan from customer
      *
      * @return RslLineMessage RslLineMessage Model
      */
     @LogAround
-    public RslMessage fetchMessage(String appStatus, String loanType){
-        String appStatusWithLoanTypeNumber = appStatus + getTypeOfAppStatusNumber(loanType);
-        String aggregateMatchCommand = "{$match:{'Desc_Detail." + appStatusWithLoanTypeNumber + ".status_code':\"" + appStatus + "\",'Desc_Detail." + appStatusWithLoanTypeNumber + ".loantype':\"" + loanType + "\"}}"; //NOSONAR lightweight logging
-        String aggregateGroupCommand = "{$group:{_id:\"$_id\",\"group_msgth\":{\"$first\":\"$Desc_Detail." + appStatusWithLoanTypeNumber + ".group_msgth\"},\"group_msgen\":{\"$first\":\"$Desc_Detail." + appStatusWithLoanTypeNumber + ".group_msgen\"},\"line_descth\":{\"$first\":\"$Desc_Detail." + appStatusWithLoanTypeNumber + ".line_descth\"},\"line_descen\":{\"$first\":\"$Desc_Detail." + appStatusWithLoanTypeNumber + ".line_descen\"}}}"; //NOSONAR lightweight logging
-
+    public RslMessage fetchMessage(String appStatus, String loanType) throws TMBCommonException {
         try {
             logger.info("fetchMessage Calling MongoDB start time : {}", System.currentTimeMillis());
 
-            return rslMessageRepository.getMsg(appStatusWithLoanTypeNumber, appStatus, loanType);
+            ResponseEntity<TmbOneServiceResponse<RslMessage>> response = commonServiceFeignClient.getRslMessage(appStatus, loanType);
+
+            return response.getBody().getData();    //NOSONAR lightweight logging
         } catch (Exception e) {
             logger.error("fetchMessage method Error(Bad Request) : {} ", e);
+            throw new TMBCommonException("0001","failed",
+                    ResponseCode.BAD_REQUEST.getService(),
+                    HttpStatus.BAD_REQUEST,
+                    null);
         }
-
-        return null;
-    }
-
-    /**
-     * Method will change appStatus to typenumber.
-     *
-     * @param appStatus String
-     *
-     * @return String String
-     */
-    public String getTypeOfAppStatusNumber(String appStatus) {
-        return (appStatus.equals("PL") || appStatus.equals("CC") || appStatus.equals("SP")) ? "1" : "2";
     }
 }

@@ -70,7 +70,7 @@ public class PersonalDetailControllerTest {
     }
 
     @Test
-    public void testUpdatePersonalDetailSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
+    public void testUpdatePersonalDetailSuccess() throws Exception {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
 

@@ -30,45 +30,43 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     static final String MSG_000 = "MSG_000";
 
-    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws Exception {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(request.getCaId());
 
         Body body = new Body();
 
-        if (individual != null) {
-            individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
-            individual.setPersonalInfoSavedFlag("Y");
-            individual.setNationality(request.getNationality());
-            individual.setMobileNo(request.getMobileNo());
-            individual.setThaiName(request.getThaiName());
-            individual.setThaiSalutationCode(request.getThaiSalutationCode());
-            individual.setThaiSurName(request.getThaiSurname());
-            individual.setNameLine1(request.getEngSurName());
-            individual.setNameLine2(request.getEngName());
-            individual.setEmail(request.getEmail());
-            individual.setIdIssueCtry1(request.getIdIssueCtry1());
-            individual.setResidentFlag(request.getResidentFlag());
-            individual.setExpiryDate(request.getExpiryDate());
-            individual.setBirthDate(request.getBirthDate());
-            individual.setAccounts(individual.getAccounts());
+        individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
+        individual.setPersonalInfoSavedFlag("Y");
+        individual.setNationality(request.getNationality());
+        individual.setMobileNo(request.getMobileNo());
+        individual.setThaiName(request.getThaiName());
+        individual.setThaiSalutationCode(request.getThaiSalutationCode());
+        individual.setThaiSurName(request.getThaiSurname());
+        individual.setNameLine1(request.getEngSurName());
+        individual.setNameLine2(request.getEngName());
+        individual.setEmail(request.getEmail());
+        individual.setIdIssueCtry1(request.getIdIssueCtry1());
+        individual.setResidentFlag(request.getResidentFlag());
+        individual.setExpiryDate(request.getExpiryDate());
+        individual.setBirthDate(request.getBirthDate());
+        individual.setAccounts(individual.getAccounts());
 
-            body.setIndividual(individual);
-            responseIndividual.setBody(body);
-        }
-
+        body.setIndividual(individual);
+        responseIndividual.setBody(body);
         return saveCustomer(responseIndividual.getBody().getIndividual());
     }
 
     private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
+            if (response != null) {
                 return response;
             } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(), ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getDesc(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
 
         } catch (Exception e) {
@@ -82,15 +80,17 @@ public class PersonalDetailSaveInfoService {
             Individual individual = getCustomerInfoClient.searchCustomerInfoByCaID(caId).getBody().getIndividuals()[0];
             if (individual != null) {
                 return individual;
+            } else {
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getDesc(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
             logger.error("get customer info soap error", e);
             throw e;
         }
 
-        return null;
     }
-
 
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();

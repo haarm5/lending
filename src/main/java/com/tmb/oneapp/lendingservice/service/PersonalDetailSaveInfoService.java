@@ -28,6 +28,7 @@ public class PersonalDetailSaveInfoService {
     private static final TMBLogger<PersonalDetailSaveInfoService> logger = new TMBLogger<>(PersonalDetailSaveInfoService.class);
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
+    static final String MSG_000 = "MSG_000";
 
     public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         RequestIndividual responseIndividual = new RequestIndividual();
@@ -62,10 +63,11 @@ public class PersonalDetailSaveInfoService {
     private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
-            if (response != null) {
+            if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response;
             } else {
-                throw setTMBException();
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(), ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
 
         } catch (Exception e) {
@@ -80,7 +82,9 @@ public class PersonalDetailSaveInfoService {
             if (individual != null) {
                 return individual;
             } else {
-                throw setTMBException();
+                throw new TMBCommonException(ResponseCode.RSL_FAILED.getCode(),
+                        ResponseCode.RSL_FAILED.getDesc(),
+                        ResponseCode.RSL_FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
             logger.error("get customer info soap error", e);
@@ -89,11 +93,6 @@ public class PersonalDetailSaveInfoService {
 
     }
 
-    private TMBCommonException setTMBException() {
-        return new TMBCommonException(ResponseCode.FAILED.getCode(),
-                ResponseCode.FAILED.getDesc(),
-                ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-    }
 
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();

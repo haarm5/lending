@@ -1,7 +1,5 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
@@ -12,21 +10,18 @@ import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import org.junit.jupiter.api.Test;
 
 @RunWith(JUnit4.class)
 public class
@@ -45,11 +40,13 @@ PersonalDetailSaveInfoServiceTest {
     }
 
     @Test
-    public void testSaveCustomerSuccess() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
+    public void testSaveCustomerSuccess() throws Exception {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         Address address = new Address();
+        Address[] addresses = new Address[1];
+
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
         customerHeader.setModule("3");
@@ -66,6 +63,7 @@ PersonalDetailSaveInfoServiceTest {
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
         address.setAddress("xx");
+        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -76,7 +74,8 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
-        individual.setAddresses(new Address[]{address});
+        addresses[0] = address;
+        individual.setAddresses(addresses);
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -137,10 +136,11 @@ PersonalDetailSaveInfoServiceTest {
     }
 
     @Test
-    public void testSaveCustomerFail() throws ServiceException, RemoteException, TMBCommonException, ParseException, JsonProcessingException {
+    public void testSaveCustomerFail() throws Exception {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+
         Address address = new Address();
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
@@ -158,6 +158,7 @@ PersonalDetailSaveInfoServiceTest {
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
         address.setAddress("xx");
+        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -168,7 +169,9 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
-        individual.setAddresses(new Address[]{address});
+        Address[] addresses = new Address[1];
+        addresses[0] = address;
+        individual.setAddresses(addresses);
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
@@ -226,4 +229,6 @@ PersonalDetailSaveInfoServiceTest {
 
 
     }
+
+
 }

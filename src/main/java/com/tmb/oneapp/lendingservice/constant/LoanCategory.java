@@ -8,6 +8,7 @@ public enum LoanCategory {
 	PRODUCT("26", "Product"), 
 	SUBPRODUCT("27", "Sub product"), 
 	RM_OCCUPATION("RM_OCCUPATION", "RM Occupation"),
+	PROFFESIONAL("PROFFESIONAL", "Proffesional"),
 	EMPLOYMENT_STATUS("EMPLOYMENT_STATUS", "Employment"), 
 	BUSINESS_TYPE("BUSINESS_TYPE", "Business Type"),
 	BUSINESS_SUB_TYPE("BUSINESS_SUB_TYPE", "Business Sub Type"), 
@@ -15,7 +16,8 @@ public enum LoanCategory {
 	SCI_COUNTRY("SCI_COUNTRY", "Source of country"), 
 	FEATURE_ENABLE("FEATURE_ENABLE", "Feature enable"),
 	TENURE("TENURE", "Tenor (refEntryCode=RSL)"),
-	PYMT_CRITERIA("PYMT_CRITERIA", "Payment Criteria");
+	PYMT_CRITERIA("PYMT_CRITERIA", "Payment Criteria"),
+	PAYROLL_BANK("PAYROLL_BANK", "Payroll Bank");
 
 	private String code;
 	private String name;

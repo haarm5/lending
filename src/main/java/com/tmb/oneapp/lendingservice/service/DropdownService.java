@@ -76,6 +76,7 @@ public class DropdownService {
                         .code(employmentStatus.getEntryCode())
                         .name(employmentStatus.getEntryName())
                         .name2(employmentStatus.getEntryName2())
+                        .refEntryCode(employmentStatus.getRefEntryCode())
                         .build())
                 .collect(Collectors.toList());
         logger.info("Dropdown EmploymentStatus: {}", TMBUtils.convertJavaObjectToString(employmentStatusList));
@@ -93,6 +94,8 @@ public class DropdownService {
                                 .code(rmOccupation.getEntryCode())
                                 .name(rmOccupation.getEntryName())
                                 .name2(rmOccupation.getEntryName2())
+                                .refEntryCode(rmOccupation.getRefEntryCode())
+                                .groupId(rmOccupation.getGroupId())
                                 .occupation(getDropdownOccupation(rmOccupation.getExtValue2()))
                                 .build();
                     } catch (Exception e) {
@@ -198,6 +201,7 @@ public class DropdownService {
                         .code(incomeType.getEntryCode())
                         .name(incomeType.getEntryName())
                         .name2(incomeType.getEntryName2())
+                        .extValue2(incomeType.getExtValue2())
                         .build())
                 .collect(Collectors.toList());
         logger.info("Dropdown IncomeType: {}", TMBUtils.convertJavaObjectToString(incomeTypeList));

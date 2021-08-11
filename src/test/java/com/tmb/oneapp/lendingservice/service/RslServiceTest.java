@@ -17,7 +17,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Res
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.constant.RslResponseCodeEnum;
+import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.rsl.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,12 +75,12 @@ public class RslServiceTest {
 
     //Loan Submission Get Application Info
     @Test
-    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+    public void getLoanSubmissionApplicationInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         mockGetLoanSubmissionApplicationInfoSuccess();
         LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
         request.setCaId("1");
         ResponseApplication response = rslService.getLoanSubmissionApplicationInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -134,7 +134,7 @@ public class RslServiceTest {
         LoanSubmissionGetCreditcardInfoRequest request = new LoanSubmissionGetCreditcardInfoRequest();
         request.setCaId("1");
         ResponseCreditcard response = rslService.getLoanSubmissionCreditCardInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -188,7 +188,7 @@ public class RslServiceTest {
         LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
         request.setCaId("1");
         ResponseIndividual response = rslService.getLoanSubmissionCustomerInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -230,7 +230,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -241,7 +241,7 @@ public class RslServiceTest {
         LoanSubmissionGetDropdownListRequest request = new LoanSubmissionGetDropdownListRequest();
         request.setCategoryCode("categoryCode");
         ResponseDropdown response = rslService.getLoanSubmissionDropdownList(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -271,7 +271,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -282,7 +282,7 @@ public class RslServiceTest {
         LoanSubmissionGetFacilityInfoRequest request = new LoanSubmissionGetFacilityInfoRequest();
         request.setCaId("1");
         ResponseFacility response = rslService.getLoanSubmissionFacilityInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -325,7 +325,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -337,7 +337,7 @@ public class RslServiceTest {
         request.setTriggerFlag("Y");
         request.setCaId("1");
         ResponseInstantLoanCalUW response = rslService.getLoanSubmissionInstantLoanCalUW(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -382,7 +382,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -392,7 +392,7 @@ public class RslServiceTest {
         mockLoanInstantGetCustomerInfoSuccess();
         String rmId = "00000018593707";
         ResponseInstantLoanGetCustInfo response = rslService.getSubmissionInstantLoanCustomerInfo(rmId);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -420,7 +420,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -432,7 +432,7 @@ public class RslServiceTest {
         request.setSubmittedFlag("Y");
         request.setCaId("1");
         ResponseInstantLoanSubmit response = rslService.submitInstantLoanApplication(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -478,7 +478,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -488,7 +488,7 @@ public class RslServiceTest {
         mockUpdateFacilityInfoSuccess();
         Facility request = new Facility();
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = rslService.updateFacilityInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -516,16 +516,16 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
     //Loan Submission Update Customer
     @Test
-    public void updateCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public void updateCustomerInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         mockUpdateCustomerInfoSuccess();
         Individual request = new Individual();
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = rslService.updateCustomerInfo(request);
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
     @Test
@@ -553,7 +553,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
     //Loan Submission Get Checklist Info
@@ -563,7 +563,7 @@ public class RslServiceTest {
         LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
         request.setCaId(1L);
         ResponseChecklist response = rslService.getDocumentList(request.getCaId());
-        Assertions.assertEquals(RslResponseCodeEnum.SUCCESS.getCode(), response.getHeader().getResponseCode());
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
 
@@ -594,7 +594,7 @@ public class RslServiceTest {
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
-        Assertions.assertEquals(String.format("[%s] %s", RslResponseCodeEnum.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 
@@ -603,7 +603,7 @@ public class RslServiceTest {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
@@ -617,7 +617,7 @@ public class RslServiceTest {
         ResponseApplication response = new ResponseApplication();
 
         com.tmb.common.model.legacy.rsl.ws.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.application.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -631,7 +631,7 @@ public class RslServiceTest {
         ResponseCreditcard response = new ResponseCreditcard();
 
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header header = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body body = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Body();
@@ -644,7 +644,7 @@ public class RslServiceTest {
         ResponseCreditcard response = new ResponseCreditcard();
 
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header header = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -658,7 +658,7 @@ public class RslServiceTest {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
@@ -671,7 +671,7 @@ public class RslServiceTest {
         ResponseIndividual response = new ResponseIndividual();
 
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -685,7 +685,7 @@ public class RslServiceTest {
         ResponseDropdown response = new ResponseDropdown();
 
         com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header header = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body body = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body();
@@ -698,7 +698,7 @@ public class RslServiceTest {
         ResponseDropdown response = new ResponseDropdown();
 
         com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header header = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -712,7 +712,7 @@ public class RslServiceTest {
         ResponseFacility response = new ResponseFacility();
 
         com.tmb.common.model.legacy.rsl.ws.facility.response.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.facility.response.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.response.Body();
@@ -725,7 +725,7 @@ public class RslServiceTest {
         ResponseFacility response = new ResponseFacility();
 
         com.tmb.common.model.legacy.rsl.ws.facility.response.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -739,7 +739,7 @@ public class RslServiceTest {
         ResponseInstantLoanCalUW response = new ResponseInstantLoanCalUW();
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Body();
@@ -752,7 +752,7 @@ public class RslServiceTest {
         ResponseInstantLoanCalUW response = new ResponseInstantLoanCalUW();
 
         com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -766,7 +766,7 @@ public class RslServiceTest {
         ResponseInstantLoanGetCustInfo response = new ResponseInstantLoanGetCustInfo();
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Body();
@@ -779,7 +779,7 @@ public class RslServiceTest {
         ResponseInstantLoanGetCustInfo response = new ResponseInstantLoanGetCustInfo();
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -793,7 +793,7 @@ public class RslServiceTest {
         ResponseInstantLoanSubmit response = new ResponseInstantLoanSubmit();
 
         com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Body();
@@ -806,7 +806,7 @@ public class RslServiceTest {
         ResponseInstantLoanSubmit response = new ResponseInstantLoanSubmit();
 
         com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.submit.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -820,7 +820,7 @@ public class RslServiceTest {
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
 
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Body();
@@ -833,7 +833,7 @@ public class RslServiceTest {
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility();
 
         com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.facility.update.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -847,7 +847,7 @@ public class RslServiceTest {
        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         Body body = new Body();
@@ -860,7 +860,7 @@ public class RslServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 
@@ -874,7 +874,7 @@ public class RslServiceTest {
         ResponseChecklist response = new ResponseChecklist();
 
         com.tmb.common.model.legacy.rsl.ws.checklist.response.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
         com.tmb.common.model.legacy.rsl.ws.checklist.response.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Body();
@@ -887,7 +887,7 @@ public class RslServiceTest {
         ResponseChecklist response = new ResponseChecklist();
 
         com.tmb.common.model.legacy.rsl.ws.checklist.response.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
 

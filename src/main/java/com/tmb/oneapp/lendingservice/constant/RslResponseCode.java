@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public enum RslResponseCodeEnum implements Serializable {
+public enum RslResponseCode implements Serializable {
         SUCCESS("MSG_000", "Success"),
         FAIL("MSG_001", "Fail");
 

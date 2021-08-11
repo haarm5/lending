@@ -18,8 +18,10 @@ import org.springframework.http.ResponseEntity;
 import javax.xml.rpc.ServiceException;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 class DropdownControllerTest {
 
@@ -44,6 +46,34 @@ class DropdownControllerTest {
         Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assertions.assertEquals(ResponseCode.SUCCESS.getCode(), Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
         Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+    }
+
+    @Test
+    public void getDropdownLoanSubmissionWorkingDetailThrowTMBCommonException() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString());
+
+            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void getDropdownLoanSubmissionWorkingDetailThrowException() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new IllegalArgumentException())
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString());
+
+            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
     }
 
 }

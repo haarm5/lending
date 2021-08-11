@@ -60,14 +60,21 @@ public class RslStatusTrackingService {
     public List<RslStatusTrackingResponse> getRslStatusTracking(String citizenId, String mobileNo, String module, String correlationId) throws TMBCommonException {
         try {
             String result = fetchRslStatusTracking(citizenId, mobileNo, module, correlationId);
-            List<ProductConfig> productConfigList = fetchProductConfig(correlationId);
 
-            if(!productConfigList.isEmpty()) {
-                if (result.isEmpty()) {
-                    return new ArrayList<>();
-                } else if (!result.isEmpty()) {
-                    List<RslStatusTrackingResponse> rslStatusTrackingResponseList = getRslStatusTrackingResponse(result);
-                    return addImageUrlElement(rslStatusTrackingResponseList, productConfigList);
+            if(module.equals("1")) {
+                return getRslStatusTrackingResponse(result, module);
+            }
+
+            if(module.equals("2")) {
+                List<ProductConfig> productConfigList = fetchProductConfig(correlationId);
+
+                if (!productConfigList.isEmpty()) {
+                    if (result.isEmpty()) {
+                        return null;  //NOSONAR lightweight logging
+                    } else if (!result.isEmpty()) {
+                        List<RslStatusTrackingResponse> rslStatusTrackingResponseList = getRslStatusTrackingResponse(result, module);
+                        return addImageUrlElement(rslStatusTrackingResponseList, productConfigList);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -89,7 +96,7 @@ public class RslStatusTrackingService {
      *
      * @return List<RslStatusTrackingResponse> list of RslStatusTrackingResponse model
      */
-    public List<RslStatusTrackingResponse> getRslStatusTrackingResponse(String xml) throws TMBCommonException { //NOSONAR lightweight logging
+    public List<RslStatusTrackingResponse> getRslStatusTrackingResponse(String xml, String module) throws TMBCommonException { //NOSONAR lightweight logging
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList = new ArrayList<>();
 
         try {
@@ -110,6 +117,10 @@ public class RslStatusTrackingService {
             }
 
             if(responseDescriptionEN.equals("Success")) {
+                if(module.equals("1"))
+                {
+                    return rslStatusTrackingResponseList;
+                }
                 NodeList applicationsList = doc.getElementsByTagName("application");
                 for (int i = 0; i < applicationsList.getLength(); i++) {
                     Node applicationNode = applicationsList.item(i);
@@ -219,9 +230,11 @@ public class RslStatusTrackingService {
                         rslStatusTrackingResponseList.add(rslStatusTrackingResponse);
                     }
                 }
-            }
 
-            return rslStatusTrackingResponseList;
+                return rslStatusTrackingResponseList;
+            } else {
+                return null;    //NOSONAR lightweight logging
+            }
         } catch (Exception e) {
             logger.error("getRslStatusTrackingResponse method Error(Data Not Found) : {} ", e);
             throw new TMBCommonException(

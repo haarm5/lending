@@ -100,6 +100,26 @@ class RslStatusTrackingServiceTest {
     }
 
     @Test
+    void getRslStatusTrackingAppTypeCompleteAndInComplete_module_1_success() throws JsonProcessingException, TMBCommonException {
+        ResponseEntity<String> mockRslResponse = new ResponseEntity<>(getMockResult(), HttpStatus.OK);
+
+        when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenReturn(mockRslResponse);
+
+        String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();
+        List<ProductConfig> productConfigResponses = mapper.readValue(mockResultProductConfig, new TypeReference<>() {
+        });
+        TmbOneServiceResponse<List<ProductConfig>> mockProductConfig = new TmbOneServiceResponse<>();
+        mockProductConfig.setData(productConfigResponses);
+
+        when(commonServiceFeignClient.getProductConfig(anyString())).thenReturn(new ResponseEntity<>(mockProductConfig, HttpStatus.OK));
+
+        when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
+
+        List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(realCitizenId, realMobileNo, "1", realCorrelationId);
+        assertNotNull(rslStatusTrackingResponseList_actual);
+    }
+
+    @Test
     void getStatusAppType() {
         assertEquals("completed", rslStatusTrackingService.getStatus("MNSTP"));
         assertEquals("in_progress", rslStatusTrackingService.getStatus("1STAP"));
@@ -129,11 +149,11 @@ class RslStatusTrackingServiceTest {
         when(commonServiceFeignClient.getRslMessage(anyString(), anyString())).thenReturn(getMockResultRslMessage());
 
         List<RslStatusTrackingResponse> rslStatusTrackingResponseList_actual = rslStatusTrackingService.getRslStatusTracking(fakeCitizenId, realMobileNo, module, realCorrelationId);
-        assertNotNull(rslStatusTrackingResponseList_actual);
+        assertNull(rslStatusTrackingResponseList_actual);
     }
 
     @Test
-    void getRslStatusTrackingFail() throws JsonProcessingException, TMBCommonException {
+    void getRslStatusTrackingFail() throws JsonProcessingException {
         when(rslStatusTrackingClient.getRslStatusTracking(anyString())).thenThrow(new IllegalArgumentException());
 
         String mockResultProductConfig = getMockResultProductConfigAppTypeCompleteAndInComplete();

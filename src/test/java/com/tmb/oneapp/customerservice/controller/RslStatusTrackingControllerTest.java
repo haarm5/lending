@@ -48,13 +48,23 @@ class RslStatusTrackingControllerTest {
     }
 
     @Test
-    void getCaseStatusTracking_success_no_case() throws TMBCommonException {
+    void getCaseStatusTracking_success_MODULE_1_SUCCESS() throws TMBCommonException {
         String fakeCitizenId = "12345";
         String module = "2";
 
-        List<RslStatusTrackingResponse> rslStatusTrackingResponseList = new ArrayList<>();
+        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenReturn(new ArrayList<>());
 
-        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenReturn(rslStatusTrackingResponseList);
+        ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, module, realCorrelationId);
+
+        assertEquals(200, response_actual.getStatusCodeValue());
+    }
+
+    @Test
+    void getCaseStatusTracking_success_DATA_NOT_FOUND() throws TMBCommonException {
+        String fakeCitizenId = "12345";
+        String module = "2";
+
+        when(rslStatusTrackingService.getRslStatusTracking(anyString(), anyString(), anyString(), anyString())).thenReturn(null);
 
         ResponseEntity<TmbOneServiceResponse<List<RslStatusTrackingResponse>>> response_actual = rslStatusTrackingController.getRslStatusTracking(fakeCitizenId, realMobileNo, module, realCorrelationId);
 

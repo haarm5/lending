@@ -30,6 +30,8 @@ public class LoanSubmissionGetChecklistInfoClient {
     LoanSubmissionGetChecklistInfoServiceLocator locator = new LoanSubmissionGetChecklistInfoServiceLocator();
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
+    private static final String CHECKLIST_TYPE = "CC";
+    private static final String INCOMPLETE_DOC_FLAG = "N";
 
     public LoanSubmissionGetChecklistInfoClient(ObjectMapper mapper) {
         this.mapper = mapper;
@@ -52,6 +54,8 @@ public class LoanSubmissionGetChecklistInfoClient {
         RequestChecklist request = new RequestChecklist();
         com.tmb.common.model.legacy.rsl.ws.checklist.request.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.request.Body();
         body.setCaID(caId);
+        body.setChecklistType(CHECKLIST_TYPE);
+        body.setIncompleteDocFlag(INCOMPLETE_DOC_FLAG);
         request.setBody(body);
 
         com.tmb.common.model.legacy.rsl.ws.checklist.request.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.request.Header();

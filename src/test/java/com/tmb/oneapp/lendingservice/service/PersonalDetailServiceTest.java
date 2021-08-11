@@ -14,6 +14,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
@@ -45,7 +46,7 @@ public class PersonalDetailServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient customerInfoClient;
     @Mock
-    private DropdownService dropdownService;
+    private LoanSubmissionGetDropdownListClient dropdownListClient;
 
     @InjectMocks
     PersonalDetailService personalDetailService;
@@ -144,7 +145,7 @@ public class PersonalDetailServiceTest {
         CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
         dropdownsBody.setCommonCodeEntries(commonCodeEntries);
         responseDropdown.setBody(dropdownsBody);
-        doReturn(responseDropdown).when(dropdownService).getDropdown(anyString());
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);
@@ -241,7 +242,7 @@ public class PersonalDetailServiceTest {
         CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
         dropdownsBody.setCommonCodeEntries(commonCodeEntries);
         responseDropdown.setBody(dropdownsBody);
-        doReturn(responseDropdown).when(dropdownService).getDropdown(anyString());
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);

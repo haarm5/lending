@@ -11,6 +11,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
@@ -32,7 +33,7 @@ public class PersonalDetailService {
     private static final TMBLogger<PersonalDetailService> logger = new TMBLogger<>(PersonalDetailService.class);
     private final LoanSubmissionGetCustomerInfoClient customerInfoClient;
     private final CustomerServiceClient customerServiceClient;
-    private final DropdownService dropdownService;
+    private final LoanSubmissionGetDropdownListClient dropdownListClient;
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
@@ -150,7 +151,7 @@ public class PersonalDetailService {
     }
 
     private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseDropdown getDropdownListResp = dropdownService.getDropdown(categoryCode);
+        ResponseDropdown getDropdownListResp = dropdownListClient.getDropDownListByCode(categoryCode);
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 

@@ -21,7 +21,6 @@ import java.util.List;
 public class ChecklistService {
     private static final TMBLogger<ChecklistService> logger = new TMBLogger<>(ChecklistService.class);
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
-    static final String MSG_000 = "MSG_000";
 
     public List<ChecklistResponse> getDocuments(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseChecklist responseChecklist = checklistDocument(caId);
@@ -53,8 +52,8 @@ public class ChecklistService {
             if (response != null) {
                 return response;
             } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
+                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                        ResponseCode.FAILED.getDesc(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {

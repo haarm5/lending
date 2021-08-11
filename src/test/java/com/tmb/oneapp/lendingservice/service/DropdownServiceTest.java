@@ -9,7 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.constant.RslResponseCodeEnum;
+import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.dropdown.DropdownsLoanSubmissionWorkingDetail;
 import org.junit.jupiter.api.Assertions;
@@ -260,8 +260,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {empStatus01, empStatus02, empStatus03, empStatusNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -355,8 +355,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {rmOccupation01, rmOccupation02, rmOccupation03, rmOccupation04, rmOccupation05, rmOccupationNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -450,8 +450,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {rmOccupation01, rmOccupation02, rmOccupation03, rmOccupation04, rmOccupation05, rmOccupationNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -545,8 +545,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {businessSubType01, businessSubType02, businessSubType03, businessSubType04, businessSubType05, businessSubTypeNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -614,8 +614,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {businessType01, businessType02, businessType03, businessTypeNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -683,8 +683,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {incomeBank01, incomeBank02, incomeBank03, businessTypeNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -778,8 +778,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {incomeType01, incomeType02, incomeType03, incomeType04, incomeType05, businessTypeNotActive};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -821,8 +821,8 @@ public class DropdownServiceTest {
         CommonCodeEntry[] commonCodeEntries = {sciCountry01, sciCountry02};
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.SUCCESS.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.SUCCESS.getMessage());
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
 
         Body body = new Body();
         body.setCommonCodeEntries(commonCodeEntries);
@@ -836,8 +836,8 @@ public class DropdownServiceTest {
         ResponseDropdown dropdownEmploymentStatus = new ResponseDropdown();
 
         Header header = new Header();
-        header.setResponseCode(RslResponseCodeEnum.FAIL.getCode());
-        header.setResponseDescriptionEN(RslResponseCodeEnum.FAIL.getMessage());
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.FAIL.getMessage());
 
         dropdownEmploymentStatus.setHeader(header);
         return dropdownEmploymentStatus;

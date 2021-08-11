@@ -18,11 +18,12 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
@@ -33,26 +34,26 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Calendar;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class PersonalDetailServiceTest {
 
     @Mock
-    private LoanSubmissionGetDropdownListClient dropdownListClient;
-    @Mock
     private CustomerServiceClient customerServiceClient;
     @Mock
     private LoanSubmissionGetCustomerInfoClient customerInfoClient;
+    @Mock
+    private LoanSubmissionGetDropdownListClient dropdownListClient;
 
+    @InjectMocks
     PersonalDetailService personalDetailService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailService = new PersonalDetailService(customerInfoClient,customerServiceClient,dropdownListClient);
     }
 
     @Test
@@ -137,11 +138,17 @@ public class PersonalDetailServiceTest {
 
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
-        when(dropdownListClient.getDropDownListByCode(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
 
     }
 
@@ -228,11 +235,17 @@ public class PersonalDetailServiceTest {
 
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
-        when(dropdownListClient.getDropDownListByCode(any())).thenReturn(mockResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
 
     }
 

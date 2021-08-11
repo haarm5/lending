@@ -13,7 +13,10 @@ import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.personal.*;
+import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
+import com.tmb.oneapp.lendingservice.model.personal.Address;
+import com.tmb.oneapp.lendingservice.model.personal.DropDown;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,10 +25,7 @@ import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +34,6 @@ public class PersonalDetailService {
     private final LoanSubmissionGetCustomerInfoClient customerInfoClient;
     private final CustomerServiceClient customerServiceClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
-    static final String MSG_000 = "MSG_000";
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
@@ -115,15 +114,19 @@ public class PersonalDetailService {
     }
 
 
-    private Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
+            if (response.getHeader().getResponseCode().equals(RslResponseCode.SUCCESS.getCode())) {
+                if(response.getBody().getIndividuals() == null) {
+                    throw new TMBCommonException(response.getHeader().getResponseCode(),
+                            ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+                }
                 return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
             } else {
+                String errorMessage = String.format("[%s] %s", response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                        errorMessage, ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
             }
         } catch (Exception e) {
             logger.error("get customer soap error", e);
@@ -189,5 +192,10 @@ public class PersonalDetailService {
             calendar.setTime(expireDate);
         }
         return calendar;
+    }
+
+    public boolean personalInfoSaved(Individual individual) {
+        logger.info("PersonalInfoSavedFlag is : {}", individual.getPersonalInfoSavedFlag());
+        return individual.getPersonalInfoSavedFlag().equals("Y");
     }
 }

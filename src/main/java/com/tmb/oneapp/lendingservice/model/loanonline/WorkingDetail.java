@@ -26,10 +26,11 @@ public class WorkingDetail {
     private BigDecimal incomeOtherIncome;
     private String incomeBank;
     private String incomeBankAccountNumber;
-    private String incomeDeclared;
-    private String incometotalLastMthCreditAcct1;
-    private String incomeSharedHolderPercent;
+    private BigDecimal incomeDeclared;
+    private BigDecimal incometotalLastMthCreditAcct1;
+    private BigDecimal incomeSharedHolderPercent;
     private String incomeType;
+    private String sciCountry;
     private String cardDelivery;
     private String emailStatementFlag;
 }

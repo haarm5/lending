@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.UUID;
 
@@ -74,7 +73,6 @@ public class LoanSubmissionUpdateFacilityInfoClient {
 
     private com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body setBody(Facility facility) {
         com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.update.request.Body();
-        facility.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
         body.setFacility(facility);
         return body;
     }

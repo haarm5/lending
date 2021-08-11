@@ -29,12 +29,13 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(request.getCaId());
 
         Body body = new Body();
+
         individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
         individual.setPersonalInfoSavedFlag("Y");
         individual.setNationality(request.getNationality());
@@ -51,10 +52,8 @@ public class PersonalDetailSaveInfoService {
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());
 
-
         body.setIndividual(individual);
         responseIndividual.setBody(body);
-
         return saveCustomer(responseIndividual.getBody().getIndividual());
     }
 
@@ -75,7 +74,7 @@ public class PersonalDetailSaveInfoService {
         }
     }
 
-    private Individual getCustomerInfo(Long caId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    private Individual getCustomerInfo(Long caId) throws RemoteException, TMBCommonException, JsonProcessingException, ServiceException {
         try {
             Individual individual = getCustomerInfoClient.searchCustomerInfoByCaID(caId).getBody().getIndividuals()[0];
             if (individual != null) {
@@ -91,6 +90,8 @@ public class PersonalDetailSaveInfoService {
         }
 
     }
+
+
 
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();

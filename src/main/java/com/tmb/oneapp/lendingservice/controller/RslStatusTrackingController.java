@@ -74,7 +74,11 @@ public class RslStatusTrackingController {
                         .headers(TMBUtils.getResponseHeaders())
                         .body(rslStatusTrackingResponse);
             } else if(!rslStatusTracking.isEmpty()) {
-                rslStatusTrackingResponse.setData(rslStatusTracking);
+                if(module.equals("1")) {
+                    rslStatusTrackingResponse.setData(null);
+                } else if(module.equals("2")){
+                    rslStatusTrackingResponse.setData(rslStatusTracking);
+                }
                 rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
                         ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
                 return ResponseEntity.status(HttpStatus.OK)

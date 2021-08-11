@@ -101,9 +101,9 @@ public class PersonalDetailService {
                 address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
                 address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
                 address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
+                address.setNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
             }
 
-            address.setNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
             response.setAddress(address);
         }
 

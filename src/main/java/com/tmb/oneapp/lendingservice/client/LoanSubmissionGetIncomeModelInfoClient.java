@@ -57,7 +57,7 @@ public class LoanSubmissionGetIncomeModelInfoClient {
         req.setBody(body);
         logger.info(" Request from Client to get income info is {} : " + mapper.writeValueAsString(req));
         ResponseIncomeModel res = stub.getIncomeModelInfo(req);
-        logger.info(" Request from Client to createApplication is {} : " + mapper.writeValueAsString(res));
+        logger.info(" Response from Client to get income info is {} : " + mapper.writeValueAsString(res));
         return res;
     }
 

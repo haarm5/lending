@@ -138,7 +138,13 @@ public class PersonalDetailServiceTest {
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-        doReturn(new ResponseDropdown()).when(dropdownService).getDropdown(anyString());
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownService).getDropdown(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);
@@ -229,7 +235,13 @@ public class PersonalDetailServiceTest {
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-        doReturn(new ResponseDropdown()).when(dropdownService).getDropdown(anyString());
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownService).getDropdown(anyString());
 
         PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);

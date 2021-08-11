@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.model.loanonline;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +10,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UpdateWorkingDetailRequest {
     private String productCode;
     private Long caId;

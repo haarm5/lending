@@ -67,16 +67,16 @@ public class RslStatusTrackingController {
         try {
             List<RslStatusTrackingResponse> rslStatusTracking = rslStatusTrackingService.getRslStatusTracking(citizenId, mobileNo, module, correlationId);
 
-            if (rslStatusTracking.isEmpty()) {
+            if (rslStatusTracking == null) {
                 rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.DATA_NOT_FOUND.getCode(),
                         ResponseCode.DATA_NOT_FOUND.getMessage(), ResponseCode.DATA_NOT_FOUND.getService()));
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .headers(TMBUtils.getResponseHeaders())
                         .body(rslStatusTrackingResponse);
-            } else if(!rslStatusTracking.isEmpty()) {
-                if(module.equals("1")) {
+            } else {
+                if(rslStatusTracking.isEmpty()) {
                     rslStatusTrackingResponse.setData(null);
-                } else if(module.equals("2")){
+                } else {
                     rslStatusTrackingResponse.setData(rslStatusTracking);
                 }
                 rslStatusTrackingResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),

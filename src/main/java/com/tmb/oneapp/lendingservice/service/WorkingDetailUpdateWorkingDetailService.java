@@ -41,10 +41,12 @@ public class WorkingDetailUpdateWorkingDetailService {
                 || productCode.equals("VG") || productCode.equals("VP")
                 || productCode.equals("VT") || productCode.equals("MT")
                 || productCode.equals("MS");
+
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual result = updateIndividual(request, isTypeCC);
         if (!isTypeCC) {
             updateFacility(request.getCaId(), request.getMailingPreference());
         }
-        return updateIndividual(request, isTypeCC);
+        return result;
     }
 
     public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateIndividual(UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {

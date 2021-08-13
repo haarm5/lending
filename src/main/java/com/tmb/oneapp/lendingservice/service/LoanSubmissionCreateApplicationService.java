@@ -107,7 +107,8 @@ public class LoanSubmissionCreateApplicationService {
         individuals[0].setIncomeBasicSalary(req.getIncomeBasicSalary());
         individuals[0].setInTotalIncome(req.getInTotalIncome());
         individuals[0].setIncomeOtherIncome(req.getIncomeOtherIncome());
-        individuals[0].setEmploymentFinalTotalIncome(req.getEmploymentFinalTotalIncome());
+        individuals[0].setIncomeDeclared(req.getIncomeBasicSalary());
+        individuals[0].setEmploymentFinalTotalIncome(req.getIncomeBasicSalary());
         application.setIndividuals(individuals);
         return application;
     }

@@ -53,7 +53,7 @@ public class LoanSubmissionCreateApplicationService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            loging("create app soap error",e);
+            loging("create app soap error", e);
             throw e;
         }
     }
@@ -95,6 +95,9 @@ public class LoanSubmissionCreateApplicationService {
         individuals[0].setThaiSalutationCode("-");
         individuals[0].setThaiName(customer.getThaFname());
         individuals[0].setThaiSurName(customer.getThaLname());
+        if (!customer.getMiddleName().isEmpty()) {
+            individuals[0].setThaiSurName(customer.getMiddleName() + " " + customer.getThaLname());
+        }
         individuals[0].setMobileNo(customer.getPhoneNoFull());
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -188,7 +191,7 @@ public class LoanSubmissionCreateApplicationService {
         }
     }
 
-    private void loging(String error, Exception e)  {
+    private void loging(String error, Exception e) {
         logger.error(error, e);
     }
 }

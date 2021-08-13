@@ -95,7 +95,7 @@ public class LoanSubmissionCreateApplicationService {
         individuals[0].setThaiSalutationCode("-");
         individuals[0].setThaiName(customer.getThaFname());
         individuals[0].setThaiSurName(customer.getThaLname());
-        if (!customer.getMiddleName().isEmpty()) {
+        if (customer.getMiddleName() != null) {
             individuals[0].setThaiSurName(customer.getMiddleName() + " " + customer.getThaLname());
         }
         individuals[0].setMobileNo(customer.getPhoneNoFull());

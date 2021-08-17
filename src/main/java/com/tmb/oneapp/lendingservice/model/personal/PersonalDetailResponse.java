@@ -14,6 +14,7 @@ import java.util.List;
 public class PersonalDetailResponse {
     private List<DropDown> thaiSalutationCode;
     private String citizenId;
+    private String prefix;
     private String engName;
     private String engSurname;
     private String thaiName;

@@ -78,7 +78,7 @@ public class PersonalDetailService {
 
         response.setAddress(address);
         response.setResidentFlag(getResidents());
-        response.setThaiSalutationCode(getThaiSalutationCodes(individual.getTitleTypeCode()));
+        response.setThaiSalutationCode(getThaiSalutationCodes());
 
         return response;
     }
@@ -140,16 +140,15 @@ public class PersonalDetailService {
         return residents;
     }
 
-    private List<DropDown> getThaiSalutationCodes(String titleCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
         List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
-        List<CommonCodeEntry> sortedList =
-                Arrays.stream(entries)
+        List<CommonCodeEntry> sortedList = Arrays.stream(entries)
                 .sorted((entryId, entryCode) -> {
                     if (entryCode.getEntryCode().startsWith("G")) {
                         return entryCode.getEntryCode().compareTo("G");
                     }
-                    return 1;
+                    return -1;
                 })
                 .collect(Collectors.toList());
 

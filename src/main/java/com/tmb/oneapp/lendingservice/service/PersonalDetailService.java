@@ -143,10 +143,11 @@ public class PersonalDetailService {
     private List<DropDown> getThaiSalutationCodes(String titleCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
-        List<CommonCodeEntry> sortedList = Arrays.stream(entries)
+        List<CommonCodeEntry> sortedList =
+                Arrays.stream(entries)
                 .sorted((entryId, entryCode) -> {
                     if (entryCode.getEntryCode().startsWith("G")) {
-                        return -1;
+                        return entryCode.getEntryCode().compareTo("G");
                     }
                     return 1;
                 })
@@ -161,7 +162,6 @@ public class PersonalDetailService {
             thaiSalutationCode.setEntryNameTh(e.getEntryName2());
             thaiSalutationCode.setEntrySource(e.getEntrySource());
             thaiSalutationCodes.add(thaiSalutationCode);
-
         }
 
         return thaiSalutationCodes;

@@ -11,6 +11,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,14 +30,14 @@ public class PersonalDetailSaveInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
 
-    public ResponseIndividual updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public PersonalDetailResponse updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         RequestIndividual responseIndividual = new RequestIndividual();
 
         Individual individual = getCustomerInfo(request.getCaId());
 
         Body body = new Body();
 
-        individual.setAddresses(prepareAddress(individual,request.getAddress()).getAddresses());
+        individual.setAddresses(prepareAddress(individual, request.getAddress()).getAddresses());
         individual.setPersonalInfoSavedFlag("Y");
         individual.setNationality(request.getNationality());
         individual.setMobileNo(request.getMobileNo());
@@ -54,14 +55,48 @@ public class PersonalDetailSaveInfoService {
 
         body.setIndividual(individual);
         responseIndividual.setBody(body);
-        return saveCustomer(responseIndividual.getBody().getIndividual());
+        return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual());
     }
 
-    private ResponseIndividual saveCustomer(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private PersonalDetailResponse saveCustomer(Long caId, Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
+            PersonalDetailResponse detailResponse = new PersonalDetailResponse();
+            Address address = new Address();
+
             if (response != null) {
-                return response;
+                Individual responseIndividual = getCustomerInfo(caId);
+
+                Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(responseIndividual.getAddresses()).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
+                if (responseAddress.isPresent()) {
+                    com.tmb.common.model.legacy.rsl.common.ob.address.Address personalAddress = responseAddress.get();
+                    address.setId(personalAddress.getId());
+                    address.setNo(personalAddress.getAddress());
+                    address.setAmphur(personalAddress.getAmphur());
+                    address.setTumbol(personalAddress.getTumbol());
+                    address.setProvince(personalAddress.getProvince());
+                    address.setRoad(personalAddress.getRoad());
+                    address.setStreetName(personalAddress.getStreetName());
+                    address.setPostalCode(personalAddress.getPostalCode());
+                    address.setMoo(personalAddress.getMoo());
+                    address.setFloor(personalAddress.getFloor());
+                    address.setCountry(personalAddress.getCountry());
+                    address.setBuildingName(personalAddress.getBuildingName());
+                }
+
+                detailResponse.setAddress(address);
+                detailResponse.setCitizenId(responseIndividual.getIdNo1());
+                detailResponse.setThaiName(responseIndividual.getThaiName());
+                detailResponse.setThaiSurname(responseIndividual.getThaiSurName());
+                detailResponse.setNationality(responseIndividual.getNationality());
+                detailResponse.setMobileNo(responseIndividual.getMobileNo());
+                detailResponse.setEmail(responseIndividual.getEmail());
+                detailResponse.setBirthDate(responseIndividual.getBirthDate());
+                detailResponse.setEngName(responseIndividual.getNameLine2());
+                detailResponse.setEngSurname(responseIndividual.getNameLine1());
+                detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
+                detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
+                return detailResponse;
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getDesc(),
@@ -92,15 +127,14 @@ public class PersonalDetailSaveInfoService {
     }
 
 
-
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();
         if (Objects.nonNull(individualAddresses)) {
-            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("R")).findFirst();
+            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
 
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
             newAddress.setCifId(individual.getCifId());
-            newAddress.setAddrTypCode("R");
+            newAddress.setAddrTypCode("H");
             newAddress.setAddress(address.getNo());
             newAddress.setBuildingName(address.getBuildingName() + " " + address.getRoomNo());
             newAddress.setFloor(address.getFloor());
@@ -117,7 +151,7 @@ public class PersonalDetailSaveInfoService {
                 com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();
                 newAddress.setId(workingAddress.getId());
                 for (int i = 0; i < individual.getAddresses().length; i++) {
-                    if (individual.getAddresses()[i].getAddrTypCode().equals("R")) {
+                    if (individual.getAddresses()[i].getAddrTypCode().equals("H")) {
                         individual.getAddresses()[i] = newAddress;
                         break;
                     }
@@ -126,5 +160,4 @@ public class PersonalDetailSaveInfoService {
         }
         return individual;
     }
-
 }

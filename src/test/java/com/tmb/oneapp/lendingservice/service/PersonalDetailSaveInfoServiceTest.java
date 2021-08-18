@@ -7,6 +7,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,9 +129,14 @@ PersonalDetailSaveInfoServiceTest {
         address1.setAmphur("xxx");
         request.setAddress(address1);
         request.setCaId(2021071404188196L);
+        PersonalDetailResponse response = new PersonalDetailResponse();
+        response.setPrefix("G01");
+        response.setEngSurname("xxx");
+        response.setCitizenId("1111");
+        response.setIdIssueCtry1("111");
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
-        Assert.assertNotNull(responseIndividual);
+        response = personalDetailSaveInfoService.updateCustomerInfo(request);
+        Assert.assertNotNull(response);
 
 
     }
@@ -193,7 +199,6 @@ PersonalDetailSaveInfoServiceTest {
         request.setMobileNo("0626027648");
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
-        request.setIdIssueCtry1("xx");
         request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
@@ -224,7 +229,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setAddress(address1);
         request.setCaId(2021071404188196L);
 
-        responseIndividual = personalDetailSaveInfoService.updateCustomerInfo(request);
+        personalDetailSaveInfoService.updateCustomerInfo(request);
         Assert.assertTrue(responseIndividual.getHeader().getResponseCode().equals("MSG_999"));
 
 

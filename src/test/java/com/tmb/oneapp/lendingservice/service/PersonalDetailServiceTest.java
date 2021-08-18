@@ -16,6 +16,7 @@ import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import org.junit.jupiter.api.Assertions;
@@ -65,12 +66,15 @@ public class PersonalDetailServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         Address address = new Address();
+
+
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
         customerHeader.setModule("3");
         customerHeader.setResponseDescriptionEN("Success");
         Individual individual = new Individual();
         individual.setEmail("kk@kk.com");
+        individual.setTitleTypeCode("G");
         individual.setPersonalInfoSavedFlag("Y");
         individual.setBirthDate(Calendar.getInstance());
         individual.setNameLine1("ttn");
@@ -80,6 +84,7 @@ public class PersonalDetailServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        address.setAddrTypCode("H");
         address.setAddress("xx");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
@@ -91,6 +96,7 @@ public class PersonalDetailServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
+        address.setTumbol("xx");
         individual.setAddresses(new Address[]{address});
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);
@@ -98,8 +104,15 @@ public class PersonalDetailServiceTest {
 
         ResponseDropdown mockResponse = new ResponseDropdown();
         Body body = new Body();
+        DropDown dropDown = new DropDown();
+        dropDown.setEntryCode("H");
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDown.setEntryId(BigDecimal.ONE);
+
         CommonCodeEntry item1 = new CommonCodeEntry();
-        item1.setEntryCode("M");
+        item1.setEntryCode("H");
         item1.setEntryName("Mortgages");
         item1.setEntryName2("อยู่ระหว่างผ่อนชำระ");
         item1.setEntrySource("HOST");
@@ -147,7 +160,8 @@ public class PersonalDetailServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
-        PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
+        PersonalDetailResponse response = personalDetailService.
+                getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);
 
     }
@@ -195,8 +209,15 @@ public class PersonalDetailServiceTest {
 
         ResponseDropdown mockResponse = new ResponseDropdown();
         Body body = new Body();
+        DropDown dropDown = new DropDown();
+        dropDown.setEntryCode("H");
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDown.setEntryId(BigDecimal.ONE);
+
         CommonCodeEntry item1 = new CommonCodeEntry();
-        item1.setEntryCode("M");
+        item1.setEntryCode("H");
         item1.setEntryName("Mortgages");
         item1.setEntryName2("อยู่ระหว่างผ่อนชำระ");
         item1.setEntrySource("HOST");

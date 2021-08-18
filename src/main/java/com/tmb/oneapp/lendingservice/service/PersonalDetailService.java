@@ -12,6 +12,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
+import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
@@ -26,6 +27,7 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -38,75 +40,52 @@ public class PersonalDetailService {
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
 
-    public PersonalDetailResponse getPersonalDetail(String crmid, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
+    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
+        if (individual != null) {
+            return individual;
+        }
+        return custGeneralProfileResponse;
+    }
+
+
+
+    public PersonalDetailResponse getPersonalDetail(String crmId, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
+        // rsl
         Individual individual = getCustomer(caId);
-        CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmid);
+        // ec
+        CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmId);
+        response.setExpiryDate(individual.getExpiryDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()) : individual.getExpiryDate());
+        response.setBirthDate(individual.getBirthDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
+        response.setEmail(prepareData(individual.getEmail(), custGeneralProfileResponse.getEmailAddress()).toString());
+        response.setNationality(prepareData(individual.getNationality(), custGeneralProfileResponse.getNationality()).toString());
+        response.setThaiName(prepareData(individual.getThaiName(), custGeneralProfileResponse.getThaFname()).toString());
+        response.setThaiSurname(prepareData(individual.getThaiSurName(), custGeneralProfileResponse.getThaLname()).toString());
+        response.setEngName(prepareData(individual.getNameLine2(), custGeneralProfileResponse.getEngFname()).toString());
+        response.setEngSurname(prepareData(individual.getNameLine1(), custGeneralProfileResponse.getEngLname()).toString());
+        response.setMobileNo(prepareData(individual.getMobileNo(), custGeneralProfileResponse.getPhoneNoFull()).toString());
+        response.setCitizenId(prepareData(individual.getIdNo1(), custGeneralProfileResponse.getCitizenId()).toString());
+        response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
+        response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
 
-        if (individual != null) {
-            //rsl
-            if (individual.getPersonalInfoSavedFlag().equals("Y")) {
-                response.setEmail(individual.getEmail());
-                response.setBirthDate(individual.getBirthDate());
-                response.setEngName(individual.getNameLine2());
-                response.setEngSurname(individual.getNameLine1());
-                response.setNationality(individual.getNationality());
-                response.setExpiryDate(individual.getExpiryDate());
-                response.setMobileNo(individual.getMobileNo());
-                response.setThaiName(individual.getThaiName());
-                response.setThaiSurname(individual.getThaiSurName());
-                response.setCitizenId(individual.getIdNo1());
-
-                address.setAmphur(individual.getAddresses()[0].getAmphur());
-                address.setCountry(individual.getAddresses()[0].getCountry());
-                address.setFloor(individual.getAddresses()[0].getFloor());
-                address.setBuildingName(individual.getAddresses()[0].getBuildingName());
-                address.setMoo(individual.getAddresses()[0].getMoo());
-                address.setNo(individual.getAddresses()[0].getAddress());
-                address.setProvince(individual.getAddresses()[0].getProvince());
-                address.setRoad(individual.getAddresses()[0].getRoad());
-                address.setPostalCode(individual.getAddresses()[0].getPostalCode());
-                address.setStreetName(individual.getAddresses()[0].getStreetName());
-                address.setTumbol(individual.getAddresses()[0].getTumbol());
-                address.setAddrTypCode(individual.getAddresses()[0].getAddrTypCode());
-
-            } else {
-                //ec
-
-                if (custGeneralProfileResponse.getIdExpireDate() != null) {
-                    response.setExpiryDate(convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()));
-                }
-                response.setEmail(custGeneralProfileResponse.getEmailAddress());
-                response.setBirthDate(convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()));
-                response.setEngName(custGeneralProfileResponse.getEngFname());
-                response.setEngSurname(custGeneralProfileResponse.getEngLname());
-                response.setNationality(custGeneralProfileResponse.getNationality());
-
-
-                response.setMobileNo(custGeneralProfileResponse.getPhoneNoFull());
-                response.setThaiName(custGeneralProfileResponse.getThaFname());
-                response.setThaiSurname(custGeneralProfileResponse.getThaLname());
-                response.setCitizenId(custGeneralProfileResponse.getCitizenId());
-
-                address.setAmphur(custGeneralProfileResponse.getCurrentAddrdistrictNameTh());
-                address.setCountry(custGeneralProfileResponse.getNationality());
-                address.setFloor(custGeneralProfileResponse.getCurrentAddrFloorNo());
-                address.setBuildingName(custGeneralProfileResponse.getCurrentAddrVillageOrbuilding());
-                address.setMoo(custGeneralProfileResponse.getCurrentAddrMoo());
-                address.setNo(custGeneralProfileResponse.getCurrentAddrHouseNo());
-                address.setProvince(custGeneralProfileResponse.getCurrentAddrProvinceNameTh());
-                address.setRoad(custGeneralProfileResponse.getCurrentAddrStreet());
-                address.setPostalCode(custGeneralProfileResponse.getCurrentAddrZipcode());
-                address.setStreetName(custGeneralProfileResponse.getCurrentAddrSoi());
-                address.setTumbol(custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh());
-                address.setNo(custGeneralProfileResponse.getCurrentAddrRoomNo());
-            }
-
-            response.setAddress(address);
+        Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
+        if (responseAddress.isPresent()) {
+            address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
+            address.setCountry(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString());
+            address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
+            address.setBuildingName(prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString());
+            address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
+            address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
+            address.setProvince(prepareData(responseAddress.get().getProvince(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());
+            address.setRoad(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setPostalCode(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
+            address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
+            address.setAddrTypCode(responseAddress.get().getAddrTypCode());
         }
 
-
+        response.setAddress(address);
         response.setResidentFlag(getResidents());
         response.setThaiSalutationCode(getThaiSalutationCodes());
 
@@ -118,11 +97,11 @@ public class PersonalDetailService {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
             if (response.getHeader().getResponseCode().equals(RslResponseCode.SUCCESS.getCode())) {
-                if(response.getBody().getIndividuals() == null) {
+                if (response.getBody().getIndividuals()[0] == null) {
                     throw new TMBCommonException(response.getHeader().getResponseCode(),
                             ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
                 }
-                return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
+                return response.getBody().getIndividuals()[0];
             } else {
                 String errorMessage = String.format("[%s] %s", response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
@@ -171,24 +150,35 @@ public class PersonalDetailService {
     }
 
     private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> residents = new ArrayList<>();
+        List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
-        for (CommonCodeEntry e : entries) {
-            DropDown resident = new DropDown();
-            resident.setEntryId(e.getEntryID());
-            resident.setEntryCode(e.getEntryCode());
-            resident.setEntryNameEng(e.getEntryName());
-            resident.setEntryNameTh(e.getEntryName2());
-            resident.setEntrySource(e.getEntrySource());
-            residents.add(resident);
+        List<CommonCodeEntry> sortedList = Arrays.stream(entries)
+                .sorted((entryId, entryCode) -> {
+                    if (entryCode.getEntryCode().startsWith("G")) {
+                        return entryCode.getEntryCode().compareTo("G");
+                    }
+                    return -1;
+                })
+                .collect(Collectors.toList());
+
+
+        for (CommonCodeEntry e : sortedList) {
+            DropDown thaiSalutationCode = new DropDown();
+            thaiSalutationCode.setEntryId(e.getEntryID());
+            thaiSalutationCode.setEntryCode(e.getEntryCode());
+            thaiSalutationCode.setEntryNameEng(e.getEntryName());
+            thaiSalutationCode.setEntryNameTh(e.getEntryName2());
+            thaiSalutationCode.setEntrySource(e.getEntrySource());
+            thaiSalutationCodes.add(thaiSalutationCode);
         }
-        return residents;
+
+        return thaiSalutationCodes;
     }
 
-    private Calendar convertStringToCalender(String dateStr) throws ParseException {
+    private  Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
         if (dateStr != null && !dateStr.equals("")) {
-            Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
+            Date expireDate = new SimpleDateFormat(PATTERN_DATE,Locale.ENGLISH).parse(dateStr);
             calendar.setTime(expireDate);
         }
         return calendar;

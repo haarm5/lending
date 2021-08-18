@@ -129,7 +129,7 @@ class LoanOnlineSubmissionControllerTest {
 		CustomerInfoApplicationInfo res = new CustomerInfoApplicationInfo();
 		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoAndApplicationInfo(any())).thenReturn(res);
 		ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> responseEntity = loanOnlineSubmissionController
-				.loanSubmissionGetCustomerInfoAndApplicationInfo("caId");
+				.loanSubmissionGetCustomerInfoAndApplicationInfo("correlationId", "crmId","caId");
 
 		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
@@ -143,7 +143,7 @@ class LoanOnlineSubmissionControllerTest {
 			doThrow(new IllegalArgumentException()).when(loanSubmissionGetCustInfoAppInfoService)
 					.getCustomerInfoAndApplicationInfo(any());
 
-			loanOnlineSubmissionController.loanSubmissionGetCustomerInfoAndApplicationInfo("caId");
+			loanOnlineSubmissionController.loanSubmissionGetCustomerInfoAndApplicationInfo("correlationId", "crmId","caId");
 		});
 
 		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

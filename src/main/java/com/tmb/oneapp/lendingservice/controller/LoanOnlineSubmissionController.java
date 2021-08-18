@@ -12,6 +12,7 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionCreateApplicationService;
+import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetCustInfoAppInfoService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetWorkingDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +36,7 @@ public class LoanOnlineSubmissionController {
     private final LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
     private final LoanOnlineSubmissionCheckWaiveDocService loanOnlineSubmissionCheckWaiveDocService;
     private final LoanSubmissionGetWorkingDetailService loanSubmissionGetWorkingDetailService;
+    private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     @GetMapping("/getIncomeInfo")
@@ -111,4 +113,27 @@ public class LoanOnlineSubmissionController {
     private void setHeader() {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
     }
+
+	@ApiOperation("Loan Submission Get Customer Info and Application Info")
+	@GetMapping(value = "/get-customer-info-application-info", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> loanSubmissionGetCustomerInfoAndApplicationInfo(
+			@RequestParam(value = "caId") String caId) throws TMBCommonException {
+		TmbOneServiceResponse<CustomerInfoApplicationInfo> response = new TmbOneServiceResponse<>();
+
+		try {
+			CustomerInfoApplicationInfo customerInfoApplicationInfo = loanSubmissionGetCustInfoAppInfoService
+					.getCustomerInfoAndApplicationInfo(caId);
+			response.setData(customerInfoApplicationInfo);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
+		} catch (Exception e) {
+			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+		}
+	}
+    
 }

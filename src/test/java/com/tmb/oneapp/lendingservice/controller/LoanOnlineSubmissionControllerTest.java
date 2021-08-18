@@ -5,11 +5,13 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInfoApplicationInfo;
 import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionCreateApplicationService;
+import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetCustInfoAppInfoService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetWorkingDetailService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +43,9 @@ class LoanOnlineSubmissionControllerTest {
 
     @Mock
     LoanSubmissionGetWorkingDetailService loanSubmissionGetWorkingDetailService;
+    
+    @Mock
+    LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
 
     @BeforeEach
     void setUp() {
@@ -118,5 +123,32 @@ class LoanOnlineSubmissionControllerTest {
         Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
         Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
     }
+    
+	@Test
+	public void loanSubmissionGetCustomerInfoAndApplicationInfoSuccess() throws Exception {
+		CustomerInfoApplicationInfo res = new CustomerInfoApplicationInfo();
+		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoAndApplicationInfo(any())).thenReturn(res);
+		ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> responseEntity = loanOnlineSubmissionController
+				.loanSubmissionGetCustomerInfoAndApplicationInfo("caId");
+
+		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+		Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
+				Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+		Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+	}
+
+	@Test
+	public void loanSubmissionGetCustomerInfoAndApplicationInfoThrowException() {
+		TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+			doThrow(new IllegalArgumentException()).when(loanSubmissionGetCustInfoAppInfoService)
+					.getCustomerInfoAndApplicationInfo(any());
+
+			loanOnlineSubmissionController.loanSubmissionGetCustomerInfoAndApplicationInfo("caId");
+		});
+
+		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+		Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+		Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+	}
 
 }

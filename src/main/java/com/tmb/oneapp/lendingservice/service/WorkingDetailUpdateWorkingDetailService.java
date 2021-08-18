@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -69,6 +70,16 @@ public class WorkingDetailUpdateWorkingDetailService {
 
 
     private Individual prepareIndividual(Individual individual, UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, JsonProcessingException {
+
+        // hardcode for waiting N'Kwan assign from personal
+        individual.setIdenPresentToBank("02");
+        individual.setCustomerLevel(BigDecimal.valueOf(12l));
+        individual.setAge(BigDecimal.valueOf(20));
+        individual.setAgeMonth(BigDecimal.valueOf(12l));
+        individual.setNationality("TH");
+        individual.setCompanyType("4");
+
+
         individual.setEmploymentStatus(request.getEmploymentStatus());
         individual.setEmploymentOccupation(request.getOccupation());
         individual.setRmOccupation(request.getRmOccupation());
@@ -89,20 +100,14 @@ public class WorkingDetailUpdateWorkingDetailService {
         individual.setIncomeBankName(request.getIncomeBank());
         individual.setIncomeBankAccoutNumber(request.getIncomeBankAccountNumber());
         individual.setIncomeSharedHolderPercent(request.getIncomeSharedHolderPercent());
-        individual.setIncomeDeclared(request.getIncomeDeclared());
         individual.setIncometotalLastMthCreditAcct1(request.getIncomeTotalLastMthCreditAcct1());
         individual.setIncomeType(request.getIncomeType());
         individual.setSourceFromCountry(request.getSourceFromCountry());
         individual.setMailingPreference(request.getMailingPreference());
         individual.setEmailStatementFlag(request.getEmailStatementFlag());
-        if (isTypeCC) {
-            CreditCard[] creditCards = getCreditCard(request.getCaId());
-            if (Objects.nonNull(Objects.requireNonNull(creditCards)[0])) {
-                creditCards[0].setMailPreference(request.getMailingPreference());
-                creditCards[0].setCardDeliveryAddress(request.getMailingPreference());
-                individual.setCreditCards(creditCards);
-            }
-        }
+
+        individual.setEmploymentInfoSavedFlag("Y");
+        individual.setIncomeInfoSavedFlag("Y");
         return individual;
     }
 

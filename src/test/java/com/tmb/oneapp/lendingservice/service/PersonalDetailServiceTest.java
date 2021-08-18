@@ -96,6 +96,7 @@ public class PersonalDetailServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
+        address.setTumbol("xx");
         individual.setAddresses(new Address[]{address});
         customerBody.setIndividuals(new Individual[]{individual});
         mockCustomerInfoResponse.setBody(customerBody);

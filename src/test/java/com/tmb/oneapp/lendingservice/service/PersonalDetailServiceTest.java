@@ -66,6 +66,8 @@ public class PersonalDetailServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         Address address = new Address();
+
+
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
         customerHeader.setModule("3");
@@ -82,6 +84,7 @@ public class PersonalDetailServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        address.setAddrTypCode("H");
         address.setAddress("xx");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");

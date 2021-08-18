@@ -88,11 +88,11 @@ public class PersonalDetailService {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
             if (response.getHeader().getResponseCode().equals(RslResponseCode.SUCCESS.getCode())) {
-                if (response.getBody().getIndividuals() == null) {
+                if (response.getBody().getIndividuals()[0] == null) {
                     throw new TMBCommonException(response.getHeader().getResponseCode(),
                             ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
                 }
-                return response.getBody().getIndividuals() == null ? null : response.getBody().getIndividuals()[0];
+                return response.getBody().getIndividuals()[0];
             } else {
                 String errorMessage = String.format("[%s] %s", response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
@@ -143,21 +143,15 @@ public class PersonalDetailService {
     private List<DropDown> getThaiSalutationCodes(String titleCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
-
-        List<CommonCodeEntry> sortedList  = Arrays.stream(entries)
-                .sorted((o1,o2) -> {
-                    if (o1.getEntryCode().startsWith(titleCode)) {
-                        DropDown thaiSalutationCode = new DropDown();
-                        thaiSalutationCode.setEntryId(o1.getEntryID());
-                        thaiSalutationCode.setEntryCode(o1.getEntryCode());
-                        thaiSalutationCode.setEntryNameEng(o1.getEntryName());
-                        thaiSalutationCode.setEntryNameTh(o1.getEntryName2());
-                        thaiSalutationCode.setEntrySource(o1.getEntrySource());
-                        return o1.getEntryCode().compareTo(o2.getEntryName());
+        List<CommonCodeEntry> sortedList = Arrays.stream(entries)
+                .sorted((entryId, entryCode) -> {
+                    if (entryCode.getEntryCode().startsWith("G")) {
+                        return -1;
                     }
-                    return -1;
+                    return 1;
                 })
                 .collect(Collectors.toList());
+
 
         for (CommonCodeEntry e : sortedList) {
             DropDown thaiSalutationCode = new DropDown();
@@ -169,6 +163,7 @@ public class PersonalDetailService {
             thaiSalutationCodes.add(thaiSalutationCode);
 
         }
+
         return thaiSalutationCodes;
     }
 

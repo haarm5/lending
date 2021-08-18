@@ -5,7 +5,6 @@ import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
@@ -33,15 +32,12 @@ PersonalDetailSaveInfoServiceTest {
     @Mock
     private LoanSubmissionGetCustomerInfoClient customerInfoClient;
 
-    @Mock
-    private LoanSubmissionGetDropdownListClient dropdownListClient;
-
     PersonalDetailSaveInfoService personalDetailSaveInfoService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, customerInfoClient,dropdownListClient);
+        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, customerInfoClient);
     }
 
     @Test
@@ -133,9 +129,14 @@ PersonalDetailSaveInfoServiceTest {
         address1.setAmphur("xxx");
         request.setAddress(address1);
         request.setCaId(2021071404188196L);
+        PersonalDetailResponse response = new PersonalDetailResponse();
+        response.setPrefix("G01");
+        response.setEngSurname("xxx");
+        response.setCitizenId("1111");
+        response.setIdIssueCtry1("111");
 
-        PersonalDetailResponse personalDetailResponse = personalDetailSaveInfoService.updateCustomerInfo(request);
-        Assert.assertNotNull(personalDetailResponse);
+        response = personalDetailSaveInfoService.updateCustomerInfo(request);
+        Assert.assertNotNull(response);
 
 
     }
@@ -198,7 +199,6 @@ PersonalDetailSaveInfoServiceTest {
         request.setMobileNo("0626027648");
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
-        request.setIdIssueCtry1("xx");
         request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
@@ -229,8 +229,8 @@ PersonalDetailSaveInfoServiceTest {
         request.setAddress(address1);
         request.setCaId(2021071404188196L);
 
-        PersonalDetailResponse personalDetailResponse = personalDetailSaveInfoService.updateCustomerInfo(request);
-        Assert.assertNull(personalDetailResponse);
+        personalDetailSaveInfoService.updateCustomerInfo(request);
+        Assert.assertTrue(responseIndividual.getHeader().getResponseCode().equals("MSG_999"));
 
 
     }

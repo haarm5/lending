@@ -3,24 +3,25 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
-import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.personal.*;
+import com.tmb.oneapp.lendingservice.model.personal.Address;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,9 +29,6 @@ public class PersonalDetailSaveInfoService {
     private static final TMBLogger<PersonalDetailSaveInfoService> logger = new TMBLogger<>(PersonalDetailSaveInfoService.class);
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
-    private final LoanSubmissionGetDropdownListClient dropdownListClient;
-    static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
-    static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
 
     public PersonalDetailResponse updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         RequestIndividual responseIndividual = new RequestIndividual();
@@ -57,10 +55,10 @@ public class PersonalDetailSaveInfoService {
 
         body.setIndividual(individual);
         responseIndividual.setBody(body);
-        return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual(), request);
+        return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual());
     }
 
-    private PersonalDetailResponse saveCustomer(Long caId, Individual individual, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    private PersonalDetailResponse saveCustomer(Long caId, Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
             PersonalDetailResponse detailResponse = new PersonalDetailResponse();
@@ -69,7 +67,7 @@ public class PersonalDetailSaveInfoService {
             if (response != null) {
                 Individual responseIndividual = getCustomerInfo(caId);
 
-                Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(responseIndividual.getAddresses()).filter(x -> x.getAddrTypCode().equals("R")).findFirst();
+                Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(responseIndividual.getAddresses()).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
                 if (responseAddress.isPresent()) {
                     com.tmb.common.model.legacy.rsl.common.ob.address.Address personalAddress = responseAddress.get();
                     address.setId(personalAddress.getId());
@@ -98,10 +96,6 @@ public class PersonalDetailSaveInfoService {
                 detailResponse.setEngSurname(responseIndividual.getNameLine1());
                 detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
                 detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
-                detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE,request.getThaiSalutationCode()));
-                detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE,request.getResidentFlag()));
-
-
                 return detailResponse;
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -136,11 +130,11 @@ public class PersonalDetailSaveInfoService {
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();
         if (Objects.nonNull(individualAddresses)) {
-            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("R")).findFirst();
+            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
 
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
             newAddress.setCifId(individual.getCifId());
-            newAddress.setAddrTypCode("R");
+            newAddress.setAddrTypCode("H");
             newAddress.setAddress(address.getNo());
             newAddress.setBuildingName(address.getBuildingName() + " " + address.getRoomNo());
             newAddress.setFloor(address.getFloor());
@@ -157,7 +151,7 @@ public class PersonalDetailSaveInfoService {
                 com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();
                 newAddress.setId(workingAddress.getId());
                 for (int i = 0; i < individual.getAddresses().length; i++) {
-                    if (individual.getAddresses()[i].getAddrTypCode().equals("R")) {
+                    if (individual.getAddresses()[i].getAddrTypCode().equals("H")) {
                         individual.getAddresses()[i] = newAddress;
                         break;
                     }
@@ -165,37 +159,5 @@ public class PersonalDetailSaveInfoService {
             }
         }
         return individual;
-    }
-
-    private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseDropdown getDropdownListResp = dropdownListClient.getDropDownListByCode(categoryCode);
-        return getDropdownListResp.getBody().getCommonCodeEntries();
-    }
-
-    private List<DropDown> getDropDown(String type) throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> dropDowns = new ArrayList<>();
-        CommonCodeEntry[] entries = getDropdownList(type);
-        for (CommonCodeEntry e : entries) {
-            DropDown dropDown = new DropDown();
-            dropDown.setEntryId(e.getEntryID());
-            dropDown.setEntryCode(e.getEntryCode());
-            dropDown.setEntryNameEng(e.getEntryName());
-            dropDown.setEntryNameTh(e.getEntryName2());
-            dropDown.setEntrySource(e.getEntrySource());
-            dropDowns.add(dropDown);
-        }
-        return dropDowns;
-    }
-
-    private List<DropDown> prepareDropDown(String type, String flag) throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> commonCodeEntry = getDropDown(type);
-        List<DropDown> filterList = new ArrayList<>();
-        commonCodeEntry.forEach(e -> {
-            if (flag.equals(e.getEntryCode())) {
-                filterList.add(e);
-            }
-        });
-
-        return filterList;
     }
 }

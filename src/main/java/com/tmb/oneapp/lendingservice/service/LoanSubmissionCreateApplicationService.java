@@ -7,13 +7,16 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.application.Application;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionCreateApplicationClient;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetIncomeModelInfoClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
@@ -26,6 +29,7 @@ import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -37,6 +41,7 @@ public class LoanSubmissionCreateApplicationService {
     private final LoanSubmissionCreateApplicationClient loanSubmissionCreateApplicationClient;
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
     private final CustomerServiceClient customerServiceClient;
+    private final LoanSubmissionGetDropdownListClient dropdownListClient;
 
 
     public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws TMBCommonException, ServiceException, ParseException, RemoteException, JsonProcessingException {
@@ -53,7 +58,7 @@ public class LoanSubmissionCreateApplicationService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            loging("create app soap error",e);
+            loging("create app soap error", e);
             throw e;
         }
     }
@@ -79,11 +84,10 @@ public class LoanSubmissionCreateApplicationService {
         application.setBookBranchCode("026");
         application.setSaleChannel("05");
         application.setAuthenCode("Access Pin");
-        application.setNcbConsentFlag("Y");
         return application;
     }
 
-    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException {
+    private Application mapIndividual(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException, ServiceException, JsonProcessingException {
         CustGeneralProfileResponse customer = getCustomerEC(rmId);
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();
@@ -92,9 +96,12 @@ public class LoanSubmissionCreateApplicationService {
         individuals[0].setIdNo1(customer.getIdNo());
         individuals[0].setHostCifNo(StringUtils.right(rmId, 14));
         individuals[0].setIdIssueCtry1(customer.getNationality());
-        individuals[0].setThaiSalutationCode("-");
+        individuals[0].setThaiSalutationCode(getThaiSalutationCode(customer.getThaTname()));
         individuals[0].setThaiName(customer.getThaFname());
         individuals[0].setThaiSurName(customer.getThaLname());
+        if (customer.getMiddleName() != null) {
+            individuals[0].setThaiSurName(customer.getMiddleName() + " " + customer.getThaLname());
+        }
         individuals[0].setMobileNo(customer.getPhoneNoFull());
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -107,7 +114,8 @@ public class LoanSubmissionCreateApplicationService {
         individuals[0].setIncomeBasicSalary(req.getIncomeBasicSalary());
         individuals[0].setInTotalIncome(req.getInTotalIncome());
         individuals[0].setIncomeOtherIncome(req.getIncomeOtherIncome());
-        individuals[0].setEmploymentFinalTotalIncome(req.getEmploymentFinalTotalIncome());
+        individuals[0].setIncomeDeclared(req.getIncomeDeclared());
+        individuals[0].setEmploymentFinalTotalIncome(req.getIncomeBasicSalary());
         application.setIndividuals(individuals);
         return application;
     }
@@ -171,6 +179,16 @@ public class LoanSubmissionCreateApplicationService {
         }
     }
 
+    private String getThaiSalutationCode(String titleName) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown getDropdownListResp = dropdownListClient.getDropDownListByCode("SALUTATION");
+        CommonCodeEntry[] entries = getDropdownListResp.getBody().getCommonCodeEntries();
+        var entry = Arrays.stream(entries).filter(a -> a.getEntryName().equals(titleName)).findFirst();
+        if (entry.isPresent()) {
+            return entry.get().getEntryCode();
+        }
+        return "-";
+    }
+
     private CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
@@ -187,7 +205,7 @@ public class LoanSubmissionCreateApplicationService {
         }
     }
 
-    private void loging(String error, Exception e)  {
+    private void loging(String error, Exception e) {
         logger.error(error, e);
     }
 }

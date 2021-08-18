@@ -185,23 +185,6 @@ public class WorkingDetailUpdateWorkingDetailService {
     }
 
 
-    private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        try {
-            ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-            }
-        } catch (Exception e) {
-            logger.error("update customer then get facility soap error", e);
-            throw e;
-        }
-    }
-
-
     private Individual getCustomer(Long caId) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caId);

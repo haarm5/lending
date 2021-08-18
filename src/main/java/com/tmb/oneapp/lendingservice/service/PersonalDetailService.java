@@ -19,6 +19,7 @@ import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,15 @@ public class PersonalDetailService {
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
 
+    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
+        if (individual != null) {
+            return individual;
+        }
+        return custGeneralProfileResponse;
+    }
+
+
+
     public PersonalDetailResponse getPersonalDetail(String crmId, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
@@ -47,32 +57,32 @@ public class PersonalDetailService {
         Individual individual = getCustomer(caId);
         // ec
         CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmId);
-
-        response.setEmail(individual.getEmail() == null ? custGeneralProfileResponse.getEmailAddress() : individual.getEmail());
-        response.setBirthDate(individual.getBirthDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
-        response.setEngName(individual.getNameLine2() == null ? custGeneralProfileResponse.getEngFname() : individual.getNameLine2());
-        response.setEngSurname(individual.getNameLine1() == null ? custGeneralProfileResponse.getEngLname() : individual.getNameLine1());
-        response.setNationality(individual.getNationality() == null ? custGeneralProfileResponse.getNationality() : individual.getNationality());
         response.setExpiryDate(individual.getExpiryDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()) : individual.getExpiryDate());
-        response.setMobileNo(individual.getMobileNo() == null ? custGeneralProfileResponse.getPhoneNoFull() : individual.getMobileNo());
-        response.setThaiName(individual.getThaiName() == null ? custGeneralProfileResponse.getThaFname() : individual.getThaiName());
-        response.setThaiSurname(individual.getThaiSurName() == null ? custGeneralProfileResponse.getThaLname() : individual.getThaiSurName());
-        response.setCitizenId(individual.getIdNo1() == null ? custGeneralProfileResponse.getCitizenId() : individual.getIdNo1());
-        response.setPrefix(individual.getThaiSalutationCode());
-        Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
+        response.setBirthDate(individual.getBirthDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
+        response.setEmail(prepareData(individual.getEmail(), custGeneralProfileResponse.getEmailAddress()).toString());
+        response.setNationality(prepareData(individual.getNationality(), custGeneralProfileResponse.getNationality()).toString());
+        response.setThaiName(prepareData(individual.getThaiName(), custGeneralProfileResponse.getThaFname()).toString());
+        response.setThaiSurname(prepareData(individual.getThaiSurName(), custGeneralProfileResponse.getThaLname()).toString());
+        response.setEngName(prepareData(individual.getNameLine2(), custGeneralProfileResponse.getEngFname()).toString());
+        response.setEngSurname(prepareData(individual.getNameLine1(), custGeneralProfileResponse.getEngLname()).toString());
+        response.setMobileNo(prepareData(individual.getMobileNo(), custGeneralProfileResponse.getPhoneNoFull()).toString());
+        response.setCitizenId(prepareData(individual.getIdNo1(), custGeneralProfileResponse.getCitizenId()).toString());
+        response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
+        response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
 
+        Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
         if (responseAddress.isPresent()) {
-            address.setAmphur(responseAddress.get().getAmphur() == null ? custGeneralProfileResponse.getCurrentAddrdistrictNameTh() : responseAddress.get().getAmphur());
-            address.setCountry(responseAddress.get().getCountry() == null ? custGeneralProfileResponse.getNationality() : responseAddress.get().getCountry());
-            address.setFloor(responseAddress.get().getFloor() == null ? custGeneralProfileResponse.getCurrentAddrFloorNo() : responseAddress.get().getFloor());
-            address.setBuildingName(responseAddress.get().getBuildingName() == null ? custGeneralProfileResponse.getCurrentAddrVillageOrbuilding() : responseAddress.get().getBuildingName());
-            address.setMoo(responseAddress.get().getMoo() == null ? custGeneralProfileResponse.getCurrentAddrMoo() : responseAddress.get().getMoo());
-            address.setNo(responseAddress.get().getAddress() == null ? custGeneralProfileResponse.getCurrentAddrHouseNo() : responseAddress.get().getAddress());
-            address.setProvince(responseAddress.get().getProvince() == null ? custGeneralProfileResponse.getCurrentAddrProvinceNameTh() : responseAddress.get().getProvince());
-            address.setRoad(responseAddress.get().getRoad() == null ? custGeneralProfileResponse.getCurrentAddrStreet() : responseAddress.get().getRoad());
-            address.setPostalCode(responseAddress.get().getPostalCode() == null ? custGeneralProfileResponse.getCurrentAddrZipcode() : responseAddress.get().getPostalCode());
-            address.setStreetName(responseAddress.get().getStreetName() == null ? custGeneralProfileResponse.getCurrentAddrStreet() : responseAddress.get().getStreetName());
-            address.setTumbol(responseAddress.get().getTumbol() == null ? custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh() : responseAddress.get().getTumbol());
+            address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
+            address.setCountry(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString());
+            address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
+            address.setBuildingName(prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString());
+            address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
+            address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
+            address.setProvince(prepareData(responseAddress.get().getProvince(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());
+            address.setRoad(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setPostalCode(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
+            address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
         }
 
@@ -166,10 +176,10 @@ public class PersonalDetailService {
         return thaiSalutationCodes;
     }
 
-    private Calendar convertStringToCalender(String dateStr) throws ParseException {
+    private  Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
         if (dateStr != null && !dateStr.equals("")) {
-            Date expireDate = new SimpleDateFormat(PATTERN_DATE).parse(dateStr);
+            Date expireDate = new SimpleDateFormat(PATTERN_DATE,Locale.ENGLISH).parse(dateStr);
             calendar.setTime(expireDate);
         }
         return calendar;

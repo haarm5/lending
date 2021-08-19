@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -102,15 +101,6 @@ public class Dropdowns {
         private String code;
         private String name;
         private String name2;
-    }
-
-    @Getter
-    @Setter
-    @Builder
-    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-    public static class TotalIncome {
-        private BigDecimal min;
-        private BigDecimal max;
     }
 
 }

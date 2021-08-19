@@ -39,7 +39,7 @@ public class DropdownController {
         TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> response = new TmbOneServiceResponse<>();
 
         try {
-            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = dropdownService.getDropdownsLoanSubmissionWorkingDetail(crmId);
+            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = dropdownService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId);
             response.setData(dropdownsLoanSubmissionWorkingDetail);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

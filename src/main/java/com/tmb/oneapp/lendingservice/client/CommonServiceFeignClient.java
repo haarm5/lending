@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.ProductConfig;
@@ -27,4 +28,11 @@ public interface CommonServiceFeignClient {
     @GetMapping(value = "/apis/common/rsl-message")
     ResponseEntity<TmbOneServiceResponse<RslMessage>> getRslMessage(
             @RequestHeader(value = "app-status") String appStatus, @RequestHeader(value = "loan-type") String loanType);
+
+    @GetMapping(value = "/apis/common/internal/lovmaster")
+    TmbOneServiceResponse<List<LovMaster>> getLovmasterConfig(
+            @RequestHeader(value = LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @RequestHeader(value = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @RequestParam(value = "type") String searchType,
+            @RequestParam(value = "lang") String defaultLang);
 }

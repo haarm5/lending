@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.LovMaster;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.util.TMBUtils;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
@@ -18,10 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +31,7 @@ public class DropdownService {
 
     private final LoanSubmissionGetDropdownListClient loanSubmissionGetDropdownListClient;
     private final PersonalDetailService personalDetailService;
+    private final CommonServiceFeignClient commonServiceFeignClient;
 
     private static final String DROPDOWN_EMPLOYMENT_STATUS = "EMPLOYMENT_STATUS";
     private static final String DROPDOWN_RM_OCCUPATION = "RM_OCCUPATION";
@@ -43,17 +44,16 @@ public class DropdownService {
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
-    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
+    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
         CustGeneralProfileResponse customerInfo = personalDetailService.getCustomerEC(crmId);
         String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());
         response.setRmOccupation(getDropdownRmOccupation(employmentStatus));
         response.setBusinessType(getDropdownBusinessType());
-        response.setTotalIncome(getDropdownTotalIncome());
         response.setIncomeBank(getDropdownIncomeBank());
         response.setIncomeType(getDropdownIncomeType(employmentStatus));
-        response.setSciCountry(getDropdownSciCountry());
+        response.setSciCountry(getDropdownSciCountry(correlationId, crmId));
         response.setCardDelivery(getDropdownCardDelivery());
         response.setEmailStatementFlag(getDropdownEmailStatementFlag());
         return response;
@@ -62,7 +62,7 @@ public class DropdownService {
     public String getEmploymentStatus(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownRmOccupation = getDropdown(DROPDOWN_RM_OCCUPATION);
         CommonCodeEntry rmOccupationList = Arrays.stream(dropdownRmOccupation.getBody().getCommonCodeEntries())
-                .filter(dropdown->occupationCode.equals(dropdown.getEntryCode())).findFirst()
+                .filter(dropdown->occupationCode.equals(dropdown.getExtValue2())).findFirst()
                 .orElseThrow(()->new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), ResponseCode.DATA_NOT_FOUND.getMessage(), ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null));
 
         return rmOccupationList.getExtValue1();
@@ -208,53 +208,36 @@ public class DropdownService {
         return incomeTypeList;
     }
 
-    public List<Dropdowns.SciCountry> getDropdownSciCountry() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public List<Dropdowns.SciCountry> getDropdownSciCountry(String correlationId, String crmId) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownSciCountry = getDropdown(DROPDOWN_SCI_COUNTRY);
-        List<Dropdowns.SciCountry> sciCountryList = Arrays.stream(dropdownSciCountry.getBody().getCommonCodeEntries())
-                .filter(sciCountry -> ACTIVE_STATUS.equals(sciCountry.getActiveStatus()))
-                .map(sciCountry -> Dropdowns.SciCountry.builder()
+        Map<String, String> countryTh = getCountryTH(correlationId, crmId);
+
+        List<Dropdowns.SciCountry> sciCountryList = new ArrayList<>();
+        for(CommonCodeEntry sciCountry : dropdownSciCountry.getBody().getCommonCodeEntries()) {
+            if(ACTIVE_STATUS.equals(sciCountry.getActiveStatus())) {
+                Dropdowns.SciCountry dropdownCountry = Dropdowns.SciCountry.builder()
                         .code(sciCountry.getEntryCode())
                         .name(sciCountry.getEntryName())
-                        .name2(sciCountry.getEntryName2())
-                        .build())
-                .collect(Collectors.toList());
+                        .name2(countryTh.get(sciCountry.getEntryCode())!=null?countryTh.get(sciCountry.getEntryCode()):sciCountry.getEntryName2())
+                        .build();
+                if("TH".equals(sciCountry.getEntryCode())) {
+                    sciCountryList.add(0, dropdownCountry);
+                }else {
+                    sciCountryList.add(dropdownCountry);
+                }
+            }
+        }
         logger.info("Dropdown SciCountry: {}", TMBUtils.convertJavaObjectToString(sciCountryList));
         return sciCountryList;
     }
 
-    public List<Dropdowns.TotalIncome> getDropdownTotalIncome() {
-        List<Dropdowns.TotalIncome> totalIncomeList = new ArrayList<>();
-        Dropdowns.TotalIncome tier1 = Dropdowns.TotalIncome.builder()
-                .max(BigDecimal.valueOf(15000))
-                .max(BigDecimal.valueOf(29999))
-                .build();
-
-        Dropdowns.TotalIncome tier2 = Dropdowns.TotalIncome.builder()
-                .max(BigDecimal.valueOf(30000))
-                .max(BigDecimal.valueOf(49999))
-                .build();
-
-        Dropdowns.TotalIncome tier3 = Dropdowns.TotalIncome.builder()
-                .max(BigDecimal.valueOf(50000))
-                .max(BigDecimal.valueOf(99999))
-                .build();
-
-        Dropdowns.TotalIncome tier4 = Dropdowns.TotalIncome.builder()
-                .max(BigDecimal.valueOf(100000))
-                .max(BigDecimal.valueOf(199999))
-                .build();
-
-        Dropdowns.TotalIncome tier5 = Dropdowns.TotalIncome.builder()
-                .max(BigDecimal.valueOf(200000))
-                .max(BigDecimal.valueOf(999999999))
-                .build();
-
-        totalIncomeList.add(tier1);
-        totalIncomeList.add(tier2);
-        totalIncomeList.add(tier3);
-        totalIncomeList.add(tier4);
-        totalIncomeList.add(tier5);
-        return totalIncomeList;
+    private Map<String, String> getCountryTH(String correlationId, String crmId) throws TMBCommonException {
+        TmbOneServiceResponse<List<LovMaster>> countryTH = commonServiceFeignClient.getLovmasterConfig(correlationId, crmId, "COUNTRY", "th_TH");
+        if(!ResponseCode.SUCCESS.getCode().equals(countryTH.getStatus().getCode())){
+            String errorMessage = String.format("[%s] %s", countryTH.getStatus().getCode(), countryTH.getStatus().getMessage());
+            throw new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), errorMessage, ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+        return countryTH.getData().stream().collect(Collectors.toMap(LovMaster::getLovCode, LovMaster::getLovDesc));
     }
 
     public List<String> getDropdownCardDelivery() {

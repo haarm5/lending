@@ -14,7 +14,6 @@ public class DropdownsLoanSubmissionWorkingDetail {
     private List<Dropdowns.EmploymentStatus> employmentStatus;
     private List<Dropdowns.RmOccupation> rmOccupation;
     private List<Dropdowns.BusinessType> businessType;
-    private List<Dropdowns.TotalIncome> totalIncome;
     private List<Dropdowns.IncomeBank> incomeBank;
     private List<Dropdowns.IncomeType> incomeType;
     private List<Dropdowns.SciCountry> sciCountry;

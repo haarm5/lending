@@ -9,6 +9,8 @@ import com.tmb.oneapp.lendingservice.service.DropdownService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+@RunWith(JUnit4.class)
 class DropdownControllerTest {
 
     @InjectMocks
@@ -39,7 +42,7 @@ class DropdownControllerTest {
     @Test
     public void getDropdownLoanSubmissionWorkingDetailSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
         DropdownsLoanSubmissionWorkingDetail dropdownWorkingDetailResp = new DropdownsLoanSubmissionWorkingDetail();
-        doReturn(dropdownWorkingDetailResp).when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString());
+        doReturn(dropdownWorkingDetailResp).when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
 
         ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
 
@@ -52,7 +55,7 @@ class DropdownControllerTest {
     public void getDropdownLoanSubmissionWorkingDetailThrowTMBCommonException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString());
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
 
             dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
         });
@@ -66,7 +69,7 @@ class DropdownControllerTest {
     public void getDropdownLoanSubmissionWorkingDetailThrowException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new IllegalArgumentException())
-                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString());
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
 
             dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
         });

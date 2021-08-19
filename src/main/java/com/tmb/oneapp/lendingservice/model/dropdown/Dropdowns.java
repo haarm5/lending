@@ -104,13 +104,4 @@ public class Dropdowns {
         private String name2;
     }
 
-    @Getter
-    @Setter
-    @Builder
-    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-    public static class TotalIncome {
-        private BigDecimal min;
-        private BigDecimal max;
-    }
-
 }

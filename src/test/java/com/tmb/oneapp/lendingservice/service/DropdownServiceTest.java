@@ -170,9 +170,8 @@ public class DropdownServiceTest {
 
     @Test
     public void getDropdownsLoanSubmissionWorkingDetail_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
-        String employmentStatus = "01";
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
-        customerInfo.setOccupationCode(employmentStatus);
+        customerInfo.setOccupationCode("101");
         doReturn(customerInfo).when(personalDetailService).getCustomerEC(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
         doReturn(mockDropdownOccupation()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
@@ -221,7 +220,7 @@ public class DropdownServiceTest {
         CommonCodeEntry empStatus01 = new CommonCodeEntry();
         empStatus01.setActiveStatus("1");
         empStatus01.setCategoryCode(DROPDOWN_EMPLOYMENT_STATUS);
-        empStatus01.setEntryCode("01");
+        empStatus01.setEntryCode("101");
         empStatus01.setEntryID(BigDecimal.valueOf(73079));
         empStatus01.setEntryName("Salary-Cash");
         empStatus01.setEntryName2("รับรายได้ด้วยเงินสด");
@@ -287,7 +286,7 @@ public class DropdownServiceTest {
         CommonCodeEntry rmOccupation01 = new CommonCodeEntry();
         rmOccupation01.setActiveStatus("1");
         rmOccupation01.setCategoryCode(DROPDOWN_PROFFESIONAL);
-        rmOccupation01.setEntryCode("1");
+        rmOccupation01.setEntryCode("101");
         rmOccupation01.setEntryID(BigDecimal.valueOf(80347));
         rmOccupation01.setEntryName("แพทย์ / ทันตแพทย์ / สัตวแพทย์");
         rmOccupation01.setEntryName2("แพทย์ / ทันตแพทย์ / สัตวแพทย์");

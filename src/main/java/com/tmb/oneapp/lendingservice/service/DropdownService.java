@@ -62,7 +62,7 @@ public class DropdownService {
     public String getEmploymentStatus(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownRmOccupation = getDropdown(DROPDOWN_RM_OCCUPATION);
         CommonCodeEntry rmOccupationList = Arrays.stream(dropdownRmOccupation.getBody().getCommonCodeEntries())
-                .filter(dropdown->occupationCode.equals(dropdown.getExtValue2())).findFirst()
+                .filter(dropdown->occupationCode.equals(dropdown.getEntryCode())).findFirst()
                 .orElseThrow(()->new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), ResponseCode.DATA_NOT_FOUND.getMessage(), ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null));
 
         return rmOccupationList.getExtValue1();

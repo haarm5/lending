@@ -5,12 +5,10 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import lombok.AllArgsConstructor;
@@ -18,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -69,6 +68,16 @@ public class WorkingDetailUpdateWorkingDetailService {
 
 
     private Individual prepareIndividual(Individual individual, UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, JsonProcessingException {
+
+        // hardcode for waiting N'Kwan assign from personal
+        individual.setIdenPresentToBank("02");
+        individual.setCustomerLevel(BigDecimal.valueOf(12l));
+        individual.setAge(BigDecimal.valueOf(20));
+        individual.setAgeMonth(BigDecimal.valueOf(12l));
+        individual.setNationality("TH");
+        individual.setCompanyType("4");
+
+
         individual.setEmploymentStatus(request.getEmploymentStatus());
         individual.setEmploymentOccupation(request.getOccupation());
         individual.setRmOccupation(request.getRmOccupation());
@@ -89,20 +98,14 @@ public class WorkingDetailUpdateWorkingDetailService {
         individual.setIncomeBankName(request.getIncomeBank());
         individual.setIncomeBankAccoutNumber(request.getIncomeBankAccountNumber());
         individual.setIncomeSharedHolderPercent(request.getIncomeSharedHolderPercent());
-        individual.setIncomeDeclared(request.getIncomeDeclared());
         individual.setIncometotalLastMthCreditAcct1(request.getIncomeTotalLastMthCreditAcct1());
         individual.setIncomeType(request.getIncomeType());
         individual.setSourceFromCountry(request.getSourceFromCountry());
         individual.setMailingPreference(request.getMailingPreference());
         individual.setEmailStatementFlag(request.getEmailStatementFlag());
-        if (isTypeCC) {
-            CreditCard[] creditCards = getCreditCard(request.getCaId());
-            if (Objects.nonNull(Objects.requireNonNull(creditCards)[0])) {
-                creditCards[0].setMailPreference(request.getMailingPreference());
-                creditCards[0].setCardDeliveryAddress(request.getMailingPreference());
-                individual.setCreditCards(creditCards);
-            }
-        }
+
+        individual.setEmploymentInfoSavedFlag("Y");
+        individual.setIncomeInfoSavedFlag("Y");
         return individual;
     }
 
@@ -168,23 +171,6 @@ public class WorkingDetailUpdateWorkingDetailService {
             ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-            }
-        } catch (Exception e) {
-            logger.error("update customer then get facility soap error", e);
-            throw e;
-        }
-    }
-
-
-    private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        try {
-            ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
             } else {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
                         response.getHeader().getResponseDescriptionEN(),

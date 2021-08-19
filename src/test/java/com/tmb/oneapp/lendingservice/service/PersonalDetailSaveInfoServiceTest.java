@@ -4,7 +4,7 @@ import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -30,14 +29,17 @@ PersonalDetailSaveInfoServiceTest {
     @Mock
     private LoanSubmissionUpdateCustomerClient updateCustomerClient;
     @Mock
-    private LoanSubmissionGetCustomerInfoClient customerInfoClient;
+    private LoanSubmissionGetDropdownListClient dropdownListClient;
+    @Mock
+    private  PersonalDetailService personalDetailService;
 
     PersonalDetailSaveInfoService personalDetailSaveInfoService;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, customerInfoClient);
+        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, dropdownListClient, personalDetailService);
     }
 
     @Test
@@ -92,7 +94,7 @@ PersonalDetailSaveInfoServiceTest {
         header.setResponseCode("MSG_000");
         responseIndividual.setHeader(header);
 
-        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
+//        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");
@@ -193,7 +195,7 @@ PersonalDetailSaveInfoServiceTest {
         header.setResponseCode("MSG_999");
         responseIndividual.setHeader(header);
 
-        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
+//        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");

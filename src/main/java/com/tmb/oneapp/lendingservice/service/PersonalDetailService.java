@@ -40,15 +40,6 @@ public class PersonalDetailService {
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
 
-    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
-        if (individual != null) {
-            return individual;
-        }
-        return custGeneralProfileResponse;
-    }
-
-
-
     public PersonalDetailResponse getPersonalDetail(String crmId, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
@@ -182,6 +173,13 @@ public class PersonalDetailService {
             calendar.setTime(expireDate);
         }
         return calendar;
+    }
+
+    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
+        if (individual != null) {
+            return individual;
+        }
+        return custGeneralProfileResponse;
     }
 
     public boolean personalInfoSaved(Individual individual) {

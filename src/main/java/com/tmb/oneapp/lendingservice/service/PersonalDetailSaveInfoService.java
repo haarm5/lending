@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,10 +47,12 @@ public class PersonalDetailSaveInfoService {
     static final String YES = "Y";
     static final String NO = "N";
 
-    public PersonalDetailResponse updateCustomerInfo(PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public PersonalDetailResponse updateCustomerInfo(String crmId , PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         RequestIndividual responseIndividual = new RequestIndividual();
         //rsl
         Individual individual = personalDetailService.getCustomer(request.getCaId());
+        // ec
+        CustGeneralProfileResponse ecResponse = personalDetailService.getCustomerEC(crmId);
 
         Body body = new Body();
 
@@ -69,7 +73,7 @@ public class PersonalDetailSaveInfoService {
         individual.setAccounts(individual.getAccounts());
         individual.setWorkingAddrCopyFrom(RESIDENCE);
 
-        int customerType = Integer.parseInt(individual.getCustomerType());
+        int customerType = Integer.parseInt("920"); //
         String idenPresentToBank;
         String lifeTimeFlag;
 
@@ -92,6 +96,20 @@ public class PersonalDetailSaveInfoService {
         individual.setIdenPresentToBank(idenPresentToBank);
         individual.setLifeTimeFlag(lifeTimeFlag);
         individual.setCompanyType("4");
+        individual.setIssuedDate(individual.getIssuedDate()); // issuedDate
+        individual.setAge(BigDecimal.valueOf(34));
+        individual.setAgeMonth(BigDecimal.valueOf(2));
+        individual.setSourceFromCountry("TH"); //country_of_income
+        individual.setEducationLevel("02"); // education_code
+        individual.setMaritalStatus("U"); // marital_status
+        individual.setGender("M"); // gender
+        individual.setCustomerType("101"); //customer_type
+        individual.setCustomerLevel(BigDecimal.valueOf(1)); // customer_level
+
+        individual.setEmploymentYear("5");
+        individual.setEmploymentMonth("4");
+        individual.setIncomeType("2");
+        individual.setIncomeBankName("xxx");
         body.setIndividual(individual);
         responseIndividual.setBody(body);
         return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual(), request);
@@ -135,8 +153,8 @@ public class PersonalDetailSaveInfoService {
                 detailResponse.setEngSurname(responseIndividual.getNameLine1());
                 detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
                 detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
-                detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
-                detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
+             //   detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
+             //   detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
                 return detailResponse;
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),

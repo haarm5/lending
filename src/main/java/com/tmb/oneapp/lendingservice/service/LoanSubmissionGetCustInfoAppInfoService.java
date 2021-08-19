@@ -1,18 +1,17 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInfoApplicationInfo;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
+import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 
 import lombok.AllArgsConstructor;
 
@@ -56,23 +55,36 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoApplicationInfo.setThaiName(individual.getThaiName());
 		customerInfoApplicationInfo.setThaiSurName(individual.getThaiSurName());
 		customerInfoApplicationInfo.setCitizenIdOrPassportNo(individual.getIdNo1());
-		customerInfoApplicationInfo.setBirthDate(parseDateThaiFormat(individual.getBirthDate().getTime()));
+		customerInfoApplicationInfo.setBirthDate(getThaiDate(individual.getBirthDate().getTime().toString()));
 		customerInfoApplicationInfo.setMobileNo(individual.getMobileNo());
-		customerInfoApplicationInfo.setAppType(applicationInfoResponse.getBody().getAppType());
+		customerInfoApplicationInfo.setProductName(applicationInfoResponse.getBody().getProductDescTH());
 		customerInfoApplicationInfo.setMemberRef(applicationInfoResponse.getBody().getMemberref());
 		customerInfoApplicationInfo.setCustContactTime(individual.getCustContactTime());
 		customerInfoApplicationInfo.setChannel("TTB APP");
 		customerInfoApplicationInfo.setModule("Access PIN");
+		customerInfoApplicationInfo.setCreateDate(applicationInfoResponse.getBody().getApplicationDate());
+		customerInfoApplicationInfo.setAppRefNo(applicationInfoResponse.getBody().getAppRefNo());
 		
 		return customerInfoApplicationInfo;
 	}
 
-	private String parseDateThaiFormat(Date date) {
-		if (date != null) {
-			SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy", new Locale("th", "TH"));
-			return formatter.format(date);
-		}
-		return "-";
+	private String getThaiDate(String dateEng) {
+		if (StringUtils.isBlank(dateEng))
+			return "";
+		String dob = dateEng;
+		dob = dob.substring(0, 10);
+		
+		String[] dateArray = dob.split("-");
+		String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
+		String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
+		StringBuilder thaiDate = new StringBuilder();
+		thaiDate.append(dateArray[2]);
+		thaiDate.append(LendingServiceConstant.SPACE);
+		thaiDate.append(thaiMonth);
+		thaiDate.append(LendingServiceConstant.SPACE);
+		thaiDate.append(thaiYear);
+		return thaiDate.toString();
 	}
+
 
 }

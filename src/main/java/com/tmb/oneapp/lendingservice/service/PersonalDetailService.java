@@ -166,7 +166,7 @@ public class PersonalDetailService {
         return thaiSalutationCodes;
     }
 
-    private  Calendar convertStringToCalender(String dateStr) throws ParseException {
+    public Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
         if (dateStr != null && !dateStr.equals("")) {
             Date expireDate = new SimpleDateFormat(PATTERN_DATE,Locale.ENGLISH).parse(dateStr);

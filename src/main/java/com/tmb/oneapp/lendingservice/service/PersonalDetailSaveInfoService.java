@@ -25,6 +25,7 @@ import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -47,7 +48,7 @@ public class PersonalDetailSaveInfoService {
     static final String YES = "Y";
     static final String NO = "N";
 
-    public PersonalDetailResponse updateCustomerInfo(String crmId , PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public PersonalDetailResponse updateCustomerInfo(String crmId, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
         RequestIndividual responseIndividual = new RequestIndividual();
         //rsl
         Individual individual = personalDetailService.getCustomer(request.getCaId());
@@ -73,7 +74,14 @@ public class PersonalDetailSaveInfoService {
         individual.setAccounts(individual.getAccounts());
         individual.setWorkingAddrCopyFrom(RESIDENCE);
 
-        int customerType = Integer.parseInt("920"); //
+        String educationLevel = prepareData(individual.getEducationLevel(), ecResponse.getEducationCode()).toString();
+        String maritalStatus = prepareData(individual.getMaritalStatus(), ecResponse.getMaritalStatus()).toString();
+        String gender = prepareData(individual.getGender(), ecResponse.getGender()).toString();
+        String cusType = prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString();
+        String sourceFromCountry = prepareData(individual.getSourceFromCountry(), ecResponse.getCountryOfIncome()).toString();
+        BigDecimal customerLevel = BigDecimal.valueOf(Long.parseLong(prepareData(individual.getCustomerLevel(), ecResponse.getCustomerLevel()).toString()));
+
+        int customerType = Integer.parseInt(cusType); // customerType
         String idenPresentToBank;
         String lifeTimeFlag;
 
@@ -96,20 +104,17 @@ public class PersonalDetailSaveInfoService {
         individual.setIdenPresentToBank(idenPresentToBank);
         individual.setLifeTimeFlag(lifeTimeFlag);
         individual.setCompanyType("4");
-        individual.setIssuedDate(individual.getIssuedDate()); // issuedDate
+
+        individual.setIssuedDate(individual.getBirthDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
         individual.setAge(BigDecimal.valueOf(34));
         individual.setAgeMonth(BigDecimal.valueOf(2));
-        individual.setSourceFromCountry("TH"); //country_of_income
-        individual.setEducationLevel("02"); // education_code
-        individual.setMaritalStatus("U"); // marital_status
-        individual.setGender("M"); // gender
-        individual.setCustomerType("101"); //customer_type
-        individual.setCustomerLevel(BigDecimal.valueOf(1)); // customer_level
+        individual.setSourceFromCountry(sourceFromCountry); //country_of_income
+        individual.setEducationLevel(educationLevel); // education_code
+        individual.setMaritalStatus(maritalStatus); // marital_status
+        individual.setGender(gender); // gender
+        individual.setCustomerType(cusType); //customer_type
+        individual.setCustomerLevel(customerLevel); // customer_level
 
-        individual.setEmploymentYear("5");
-        individual.setEmploymentMonth("4");
-        individual.setIncomeType("2");
-        individual.setIncomeBankName("xxx");
         body.setIndividual(individual);
         responseIndividual.setBody(body);
         return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual(), request);
@@ -153,8 +158,12 @@ public class PersonalDetailSaveInfoService {
                 detailResponse.setEngSurname(responseIndividual.getNameLine1());
                 detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
                 detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
-             //   detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
-             //   detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
+                detailResponse.setPrefix(responseIndividual.getThaiSalutationCode());
+                if (request.getThaiSalutationCode() != null) {
+                    detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
+                }
+
+                detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
                 return detailResponse;
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -236,5 +245,13 @@ public class PersonalDetailSaveInfoService {
 
         return filterList;
     }
+
+    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
+        if (individual != null) {
+            return individual;
+        }
+        return custGeneralProfileResponse;
+    }
+
 
 }

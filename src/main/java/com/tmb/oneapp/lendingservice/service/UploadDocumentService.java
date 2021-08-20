@@ -6,7 +6,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
-import com.tmb.oneapp.lendingservice.controller.RslController;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;

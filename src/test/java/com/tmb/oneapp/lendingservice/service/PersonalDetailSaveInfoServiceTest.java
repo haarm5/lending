@@ -1,11 +1,17 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
+import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
@@ -19,9 +25,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -30,14 +38,19 @@ PersonalDetailSaveInfoServiceTest {
     @Mock
     private LoanSubmissionUpdateCustomerClient updateCustomerClient;
     @Mock
-    private LoanSubmissionGetCustomerInfoClient customerInfoClient;
+    private LoanSubmissionGetDropdownListClient dropdownListClient;
+    @Mock
+    private PersonalDetailService personalDetailService;
+    @Mock
+    private PersonalDetailServiceTest personalDetailServiceTest;
 
     PersonalDetailSaveInfoService personalDetailSaveInfoService;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, customerInfoClient);
+        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, dropdownListClient, personalDetailService);
     }
 
     @Test
@@ -47,6 +60,13 @@ PersonalDetailSaveInfoServiceTest {
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
         Address address = new Address();
         Address[] addresses = new Address[1];
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+
+        customerHeader.setResponseCode("MSG_000");
+        customerHeader.setChannel("MIB");
+        customerHeader.setModule("3");
+        customerHeader.setResponseDescriptionEN("Success");
 
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
@@ -54,6 +74,7 @@ PersonalDetailSaveInfoServiceTest {
         customerHeader.setResponseDescriptionEN("Success");
         Individual individual = new Individual();
         individual.setEmail("kk@kk.com");
+        individual.setTitleTypeCode("G");
         individual.setPersonalInfoSavedFlag("Y");
         individual.setBirthDate(Calendar.getInstance());
         individual.setNameLine1("ttn");
@@ -63,8 +84,9 @@ PersonalDetailSaveInfoServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        individual.setCountryOfRegAddr("Y");
+        address.setAddrTypCode("H");
         address.setAddress("xx");
-        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -75,15 +97,81 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
+        address.setTumbol("xx");
+        individual.setAddresses(new Address[]{address});
+        customerBody.setIndividuals(new Individual[]{individual});
+
+        ResponseDropdown mockResponse = new ResponseDropdown();
+        com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body body1 = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body();
+        DropDown dropDown = new DropDown();
+        dropDown.setEntryCode("H");
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDown.setEntryId(BigDecimal.ONE);
+
+        CommonCodeEntry item1 = new CommonCodeEntry();
+        item1.setEntryCode("H");
+        item1.setEntryName("Mortgages");
+        item1.setEntryName2("อยู่ระหว่างผ่อนชำระ");
+        item1.setEntrySource("HOST");
+        item1.setEntryID(BigDecimal.ONE);
+        CommonCodeEntry[] entries = new CommonCodeEntry[]{item1};
+        body1.setCommonCodeEntries(entries);
+        mockResponse.setBody(body1);
+        com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header header1 = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header();
+        header1.setResponseCode("MSG_000");
+        mockResponse.setHeader(header1);
+
+        address.setId(BigDecimal.ONE);
+        address.setPostalCode("10400");
+        address.setProvince("กทม");
+        address.setAddrTypCode("H");
+        address.setMoo("1");
+        address.setFloor("6");
+        address.setCountry("Th");
+        address.setRoad("xx");
+        address.setStreetName("xx");
         addresses[0] = address;
         individual.setAddresses(addresses);
-        customerBody.setIndividuals(new Individual[]{individual});
+        Individual[] individuals = new Individual[1];
+        individuals[0] = individual;
+        customerBody.setIndividuals(individuals);
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
 
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual responseIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual requestIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual();
+
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        CustGeneralProfileResponse custGeneralProfileResponse = new CustGeneralProfileResponse();
+        custGeneralProfileResponse.setCitizenId("122");
+        custGeneralProfileResponse.setCurrentAddrdistrictNameTh("ปทุมวัน");
+        custGeneralProfileResponse.setCurrentAddrFloorNo("6");
+        custGeneralProfileResponse.setEmailAddress("40654@tmbbank.com");
+        custGeneralProfileResponse.setIdBirthDate("2019-11-03");
+        custGeneralProfileResponse.setEngFname("ONEAPPFOUR");
+        custGeneralProfileResponse.setEngLname("NA TEETEEBEE");
+        custGeneralProfileResponse.setThaFname("วันแอพสี่");
+        custGeneralProfileResponse.setThaLname("ทีทีบี");
+        custGeneralProfileResponse.setNationality("ทีทีบี");
+        custGeneralProfileResponse.setIdExpireDate("2019-11-03");
+        custGeneralProfileResponse.setPhoneNoFull("0891117777");
+        custGeneralProfileResponse.setCurrentAddrVillageOrbuilding("cv");
+        custGeneralProfileResponse.setCurrentAddrMoo("1");
+        custGeneralProfileResponse.setCurrentAddrProvinceNameTh("dm,");
+        custGeneralProfileResponse.setCurrentAddrStreet("ลาดพร้าว");
+        custGeneralProfileResponse.setWorkAddrZipcode("10240");
+        custGeneralProfileResponse.setWorkAddrSubDistrictNameTh("แขงวังทองหลาง");
+        custGeneralProfileResponse.setCountryOfIncome("TH");
+        custGeneralProfileResponse.setEducationCode("02");
+        custGeneralProfileResponse.setCustomerLevel("02");
+        custGeneralProfileResponse.setCustomerType("902");
+        custGeneralProfileResponse.setGender("M");
+        custGeneralProfileResponse.setMaritalStatus("M");
+
+
         body.setIndividual(individual);
         requestIndividual.setBody(body);
 
@@ -92,8 +180,17 @@ PersonalDetailSaveInfoServiceTest {
         header.setResponseCode("MSG_000");
         responseIndividual.setHeader(header);
 
-        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
+        when(personalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
+        when(personalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
+
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");
         request.setNationality("TH");
@@ -134,8 +231,10 @@ PersonalDetailSaveInfoServiceTest {
         response.setEngSurname("xxx");
         response.setCitizenId("1111");
         response.setIdIssueCtry1("111");
+        response.setAddress(address1);
+        response.setResidentFlag(Collections.singletonList(resident));
 
-        response = personalDetailSaveInfoService.updateCustomerInfo(request);
+        response = personalDetailSaveInfoService.updateCustomerInfo("001100000000000000000018593707", request);
         Assert.assertNotNull(response);
 
 
@@ -146,14 +245,19 @@ PersonalDetailSaveInfoServiceTest {
         ResponseIndividual mockCustomerInfoResponse = new ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body customerBody = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.response.Header customerHeader = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
-
         Address address = new Address();
+        Address[] addresses = new Address[1];
+        TmbStatus tmbStatus = new TmbStatus();
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+
         customerHeader.setResponseCode("MSG_000");
         customerHeader.setChannel("MIB");
         customerHeader.setModule("3");
         customerHeader.setResponseDescriptionEN("Success");
+
         Individual individual = new Individual();
         individual.setEmail("kk@kk.com");
+        individual.setTitleTypeCode("G");
         individual.setPersonalInfoSavedFlag("Y");
         individual.setBirthDate(Calendar.getInstance());
         individual.setNameLine1("ttn");
@@ -163,8 +267,9 @@ PersonalDetailSaveInfoServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        individual.setCountryOfRegAddr("Y");
+        address.setAddrTypCode("H");
         address.setAddress("xx");
-        address.setAddrTypCode("R");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
         address.setId(BigDecimal.ONE);
@@ -175,30 +280,103 @@ PersonalDetailSaveInfoServiceTest {
         address.setCountry("Th");
         address.setRoad("xx");
         address.setStreetName("xx");
-        Address[] addresses = new Address[1];
+        address.setTumbol("xx");
+        individual.setAddresses(new Address[]{address});
+        customerBody.setIndividuals(new Individual[]{individual});
+
+        ResponseDropdown mockResponse = new ResponseDropdown();
+        com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body body1 = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body();
+        DropDown dropDown = new DropDown();
+        dropDown.setEntryCode("H");
+        dropDown.setEntryNameEng("Mortgages");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
+        dropDown.setEntrySource("HOST");
+        dropDown.setEntryId(BigDecimal.ONE);
+
+        CommonCodeEntry item1 = new CommonCodeEntry();
+        item1.setEntryCode("H");
+        item1.setEntryName("Mortgages");
+        item1.setEntryName2("อยู่ระหว่างผ่อนชำระ");
+        item1.setEntrySource("HOST");
+        item1.setEntryID(BigDecimal.ONE);
+        CommonCodeEntry[] entries = new CommonCodeEntry[]{item1};
+        body1.setCommonCodeEntries(entries);
+        mockResponse.setBody(body1);
+        com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header header1 = new com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header();
+        header1.setResponseCode("MSG_000");
+        mockResponse.setHeader(header1);
+
+        address.setId(BigDecimal.ONE);
+        address.setPostalCode("10400");
+        address.setProvince("กทม");
+        address.setAddrTypCode("H");
+        address.setMoo("1");
+        address.setFloor("6");
+        address.setCountry("Th");
+        address.setRoad("xx");
+        address.setStreetName("xx");
         addresses[0] = address;
         individual.setAddresses(addresses);
-        customerBody.setIndividuals(new Individual[]{individual});
+        Individual[] individuals = new Individual[1];
+        individuals[0] = individual;
+        customerBody.setIndividuals(individuals);
         mockCustomerInfoResponse.setBody(customerBody);
         mockCustomerInfoResponse.setHeader(customerHeader);
 
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual responseIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body();
         com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual requestIndividual = new com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual();
+
+        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
+        CustGeneralProfileResponse custGeneralProfileResponse = new CustGeneralProfileResponse();
+        custGeneralProfileResponse.setCitizenId("122");
+        custGeneralProfileResponse.setCurrentAddrdistrictNameTh("ปทุมวัน");
+        custGeneralProfileResponse.setCurrentAddrFloorNo("6");
+        custGeneralProfileResponse.setEmailAddress("40654@tmbbank.com");
+        custGeneralProfileResponse.setIdBirthDate("2019-11-03");
+        custGeneralProfileResponse.setEngFname("ONEAPPFOUR");
+        custGeneralProfileResponse.setEngLname("NA TEETEEBEE");
+        custGeneralProfileResponse.setThaFname("วันแอพสี่");
+        custGeneralProfileResponse.setThaLname("ทีทีบี");
+        custGeneralProfileResponse.setNationality("ทีทีบี");
+        custGeneralProfileResponse.setIdExpireDate("2019-11-03");
+        custGeneralProfileResponse.setPhoneNoFull("0891117777");
+        custGeneralProfileResponse.setCurrentAddrVillageOrbuilding("cv");
+        custGeneralProfileResponse.setCurrentAddrMoo("1");
+        custGeneralProfileResponse.setCurrentAddrProvinceNameTh("dm,");
+        custGeneralProfileResponse.setCurrentAddrStreet("ลาดพร้าว");
+        custGeneralProfileResponse.setWorkAddrZipcode("10240");
+        custGeneralProfileResponse.setWorkAddrSubDistrictNameTh("แขงวังทองหลาง");
+        custGeneralProfileResponse.setCountryOfIncome("TH");
+        custGeneralProfileResponse.setEducationCode("02");
+        custGeneralProfileResponse.setCustomerLevel("02");
+        custGeneralProfileResponse.setCustomerType("902");
+        custGeneralProfileResponse.setGender("M");
+        custGeneralProfileResponse.setMaritalStatus("M");
+
         body.setIndividual(individual);
         requestIndividual.setBody(body);
-
 
         Header header = new Header();
         header.setResponseCode("MSG_999");
         responseIndividual.setHeader(header);
 
-        when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
+        when(personalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
+        when(personalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+        Body dropdownsBody = new Body();
+        CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
+        CommonCodeEntry[] commonCodeEntries = {commonCodeEntry};
+        dropdownsBody.setCommonCodeEntries(commonCodeEntries);
+        responseDropdown.setBody(dropdownsBody);
+        doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
+
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");
         request.setNationality("TH");
         request.setExpiryDate(Calendar.getInstance());
+        request.setIdIssueCtry1("xx");
         request.setThaiSurname("xx");
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
@@ -207,6 +385,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setEmail("xxx@gmail.com");
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
+        request.setExpiryDate(Calendar.getInstance());
         DropDown resident = new DropDown();
         resident.setEntryNameEng("xxx");
         resident.setEntryNameTh("xxx");
@@ -228,10 +407,16 @@ PersonalDetailSaveInfoServiceTest {
         address1.setAmphur("xxx");
         request.setAddress(address1);
         request.setCaId(2021071404188196L);
+        PersonalDetailResponse response = new PersonalDetailResponse();
+        response.setPrefix("G01");
+        response.setEngSurname("xxx");
+        response.setCitizenId("1111");
+        response.setIdIssueCtry1("111");
+        response.setAddress(address1);
+        response.setResidentFlag(Collections.singletonList(resident));
 
-        personalDetailSaveInfoService.updateCustomerInfo(request);
-        Assert.assertTrue(responseIndividual.getHeader().getResponseCode().equals("MSG_999"));
-
+        personalDetailSaveInfoService.updateCustomerInfo("001100000000000000000018593707", request);
+        Assert.assertFalse(responseIndividual.getHeader().getResponseCode().equals("MSG_000"));
 
     }
 

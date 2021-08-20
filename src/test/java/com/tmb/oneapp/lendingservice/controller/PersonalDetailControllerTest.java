@@ -111,13 +111,13 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setMobileNo("xx");
         personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updateCustomerInfo(any())).thenReturn(mockPersonalDetailResponseData().getData());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> result = personalDetailController.updatePersonalDetail(personalDetailSaveInfoRequest);
+        when(personalDetailSaveInfoService.updateCustomerInfo(any(),any())).thenReturn(mockPersonalDetailResponseData().getData());
+        ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.updatePersonalDetail("001100000000000000000018593707",personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
 
-    private TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
+    public TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();
 
         PersonalDetailResponse response = new PersonalDetailResponse();

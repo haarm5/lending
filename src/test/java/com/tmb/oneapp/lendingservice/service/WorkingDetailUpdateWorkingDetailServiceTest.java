@@ -20,8 +20,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -46,11 +48,17 @@ class WorkingDetailUpdateWorkingDetailServiceTest {
     @Mock
     private LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
 
+    @Mock
+    private LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        workingDetailUpdateWorkingDetailService = new WorkingDetailUpdateWorkingDetailService(customerInfoClient, loanSubmissionUpdateCustomerClient, loanSubmissionGetFacilityInfoClient, loanSubmissionUpdateFacilityInfoClient, loanSubmissionGetCreditcardInfoClient);
+        workingDetailUpdateWorkingDetailService = new WorkingDetailUpdateWorkingDetailService(
+                customerInfoClient, loanSubmissionUpdateCustomerClient,
+                loanSubmissionGetFacilityInfoClient, loanSubmissionUpdateFacilityInfoClient,
+                loanSubmissionGetCreditcardInfoClient, loanSubmissionUpdateCreditCardClient);
     }
 
     @Test
@@ -108,7 +116,6 @@ class WorkingDetailUpdateWorkingDetailServiceTest {
     public void testUpdateWorkDetailSuccessCaseCC() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
 
 
-
         com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header creditCardHeader = new com.tmb.common.model.legacy.rsl.ws.creditcard.response.Header();
         creditCardHeader.setResponseCode("MSG_000");
         CreditCard[] creditCards = new CreditCard[1];
@@ -119,6 +126,13 @@ class WorkingDetailUpdateWorkingDetailServiceTest {
         responseCreditcard.setHeader(creditCardHeader);
         responseCreditcard.setBody(creditCardBody);
         when(loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(anyLong())).thenReturn(responseCreditcard);
+
+
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header updateCreditCardResponseHeader = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header();
+        updateCreditCardResponseHeader.setResponseCode("MSG_000");
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard updateCreditCardResponse = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard();
+        updateCreditCardResponse.setHeader(updateCreditCardResponseHeader);
+        when(loanSubmissionUpdateCreditCardClient.updateCreditCard(any())).thenReturn(updateCreditCardResponse);
 
 
         Header header = new Header();

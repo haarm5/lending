@@ -3,8 +3,10 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.*;
@@ -33,6 +35,7 @@ public class WorkingDetailUpdateWorkingDetailService {
     private final LoanSubmissionGetFacilityInfoClient loanSubmissionGetFacilityInfoClient;
     private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
     private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
+    private final LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
 
     public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateWorkDetail(UpdateWorkingDetailRequest request) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         String productCode = request.getProductCode();
@@ -51,9 +54,12 @@ public class WorkingDetailUpdateWorkingDetailService {
     public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateIndividual(UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         try {
             Individual individual = getCustomer(request.getCaId());
-            prepareIndividual(individual, request, isTypeCC);
+            prepareIndividual(individual, request);
             com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual res = loanSubmissionUpdateCustomerClient.updateCustomerInfo(individual);
             if (res.getHeader().getResponseCode().equals(MSG_000)) {
+                if (isTypeCC) {
+                    updateCreditCard(prepareCreditCard(request.getCaId(), request.getMailingPreference()));
+                }
                 return res;
             } else {
                 throw new TMBCommonException(res.getHeader().getResponseCode(),
@@ -61,22 +67,13 @@ public class WorkingDetailUpdateWorkingDetailService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("update customer soap error", e);
+            logger.error("working detail service => update customer soap error", e);
             throw e;
         }
     }
 
 
-    private Individual prepareIndividual(Individual individual, UpdateWorkingDetailRequest request, boolean isTypeCC) throws ServiceException, TMBCommonException, JsonProcessingException {
-
-        // hardcode for waiting N'Kwan assign from personal
-        individual.setIdenPresentToBank("02");
-        individual.setCustomerLevel(BigDecimal.valueOf(12l));
-        individual.setAge(BigDecimal.valueOf(20));
-        individual.setAgeMonth(BigDecimal.valueOf(12l));
-        individual.setNationality("TH");
-        individual.setCompanyType("4");
-
+    private Individual prepareIndividual(Individual individual, UpdateWorkingDetailRequest request) {
 
         individual.setEmploymentStatus(request.getEmploymentStatus());
         individual.setEmploymentOccupation(request.getOccupation());
@@ -103,10 +100,20 @@ public class WorkingDetailUpdateWorkingDetailService {
         individual.setSourceFromCountry(request.getSourceFromCountry());
         individual.setMailingPreference(request.getMailingPreference());
         individual.setEmailStatementFlag(request.getEmailStatementFlag());
-
         individual.setEmploymentInfoSavedFlag("Y");
         individual.setIncomeInfoSavedFlag("Y");
         return individual;
+    }
+
+    private CreditCard prepareCreditCard(Long caId, String preference) throws ServiceException, TMBCommonException, JsonProcessingException {
+        CreditCard[] creditCards = getCreditCard(caId);
+        if (Objects.nonNull(Objects.requireNonNull(creditCards)[0])) {
+            creditCards[0].setMailPreference(preference);
+            creditCards[0].setCardDeliveryAddress(preference);
+            creditCards[0].setCreditcardSavedFlag("Y");
+            return creditCards[0];
+        }
+        return null;
     }
 
     private Individual prepareAddress(Individual individual, Address address) {
@@ -145,6 +152,7 @@ public class WorkingDetailUpdateWorkingDetailService {
         return individual;
     }
 
+
     private void updateFacility(Long caId, String mailingPreference) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             Facility facility = getFacility(caId);
@@ -160,7 +168,7 @@ public class WorkingDetailUpdateWorkingDetailService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("update customer then update facility soap error", e);
+            logger.error("working detail service => update facility soap error", e);
             throw e;
         }
     }
@@ -177,7 +185,38 @@ public class WorkingDetailUpdateWorkingDetailService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("update customer then get facility soap error", e);
+            logger.error("working detail service => get facility soap error", e);
+            throw e;
+        }
+    }
+
+
+    private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        try {
+            ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
+            if (response.getHeader().getResponseCode().equals(MSG_000)) {
+                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
+            } else {
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+            }
+        } catch (Exception e) {
+            logger.error("working detail service => get credit card soap error", e);
+            throw e;
+        }
+    }
+
+    private void updateCreditCard(CreditCard creditCard) throws ServiceException, TMBCommonException, JsonProcessingException {
+        try {
+            com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = loanSubmissionUpdateCreditCardClient.updateCreditCard(creditCard);
+            if (!response.getHeader().getResponseCode().equals(MSG_000)) {
+                throw new TMBCommonException(response.getHeader().getResponseCode(),
+                        response.getHeader().getResponseDescriptionEN(),
+                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+            }
+        } catch (Exception e) {
+            logger.error("working detail service => update credit card soap error", e);
             throw e;
         }
     }
@@ -198,7 +237,7 @@ public class WorkingDetailUpdateWorkingDetailService {
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
         } catch (Exception e) {
-            logger.error("update customer then get customer soap error", e);
+            logger.error("working detail service => get customer soap error", e);
             throw e;
         }
     }

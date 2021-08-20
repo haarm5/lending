@@ -3,10 +3,14 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.LovMaster;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
@@ -24,6 +28,7 @@ import org.springframework.http.HttpStatus;
 
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +43,8 @@ public class DropdownServiceTest {
 
     @Mock
     private LoanSubmissionGetDropdownListClient loanSubmissionGetDropdownListClient;
+    @Mock
+    private CommonServiceFeignClient commonServiceFeignClient;
     @Mock
     private PersonalDetailService personalDetailService;
 
@@ -154,21 +161,23 @@ public class DropdownServiceTest {
     @Test
     public void getDropdownSciCountry_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         doReturn(mockDropdownSciCountry()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+        doReturn(mockLovmasterConfigCountry()).when(commonServiceFeignClient).getLovmasterConfig(anyString(), anyString(), anyString(), anyString());
 
-        List<Dropdowns.SciCountry> response = dropdownService.getDropdownSciCountry();
-        Assertions.assertEquals(2, response.size());
+        List<Dropdowns.SciCountry> response = dropdownService.getDropdownSciCountry("correlationId", "crmId");
+        Assertions.assertEquals(3, response.size());
+        Assertions.assertEquals("TH", response.get(0).getCode());
     }
 
     @Test
     public void getDropdownsLoanSubmissionWorkingDetail_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
-        String employmentStatus = "01";
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
-        customerInfo.setOccupationCode(employmentStatus);
+        customerInfo.setOccupationCode("101");
         doReturn(customerInfo).when(personalDetailService).getCustomerEC(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+        doReturn(mockDropdownOccupation()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+        doReturn(mockLovmasterConfigCountry()).when(commonServiceFeignClient).getLovmasterConfig(anyString(), anyString(), anyString(), anyString());
 
-        DropdownsLoanSubmissionWorkingDetail response = dropdownService.getDropdownsLoanSubmissionWorkingDetail("crmId");
-        Assertions.assertEquals(5, response.getTotalIncome().size());
+        DropdownsLoanSubmissionWorkingDetail response = dropdownService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId");
         Assertions.assertEquals(2, response.getCardDelivery().size());
         Assertions.assertEquals(2, response.getEmailStatementFlag().size());
     }
@@ -196,7 +205,7 @@ public class DropdownServiceTest {
 
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doReturn(mockGetDropdownFail()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
-            dropdownService.getDropdownsLoanSubmissionWorkingDetail("crmId");
+            dropdownService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId");
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
@@ -211,7 +220,7 @@ public class DropdownServiceTest {
         CommonCodeEntry empStatus01 = new CommonCodeEntry();
         empStatus01.setActiveStatus("1");
         empStatus01.setCategoryCode(DROPDOWN_EMPLOYMENT_STATUS);
-        empStatus01.setEntryCode("01");
+        empStatus01.setEntryCode("101");
         empStatus01.setEntryID(BigDecimal.valueOf(73079));
         empStatus01.setEntryName("Salary-Cash");
         empStatus01.setEntryName2("รับรายได้ด้วยเงินสด");
@@ -277,13 +286,13 @@ public class DropdownServiceTest {
         CommonCodeEntry rmOccupation01 = new CommonCodeEntry();
         rmOccupation01.setActiveStatus("1");
         rmOccupation01.setCategoryCode(DROPDOWN_PROFFESIONAL);
-        rmOccupation01.setEntryCode("1");
+        rmOccupation01.setEntryCode("101");
         rmOccupation01.setEntryID(BigDecimal.valueOf(80347));
         rmOccupation01.setEntryName("แพทย์ / ทันตแพทย์ / สัตวแพทย์");
         rmOccupation01.setEntryName2("แพทย์ / ทันตแพทย์ / สัตวแพทย์");
         rmOccupation01.setEntrySource("01,02,03,04,05,06,07,08,09,10,11,12,13,14");
         rmOccupation01.setExtValue1("");
-        rmOccupation01.setExtValue2("");
+        rmOccupation01.setExtValue2("01");
         rmOccupation01.setGroupId("");
         rmOccupation01.setRefEntryCode("");
 
@@ -296,7 +305,7 @@ public class DropdownServiceTest {
         rmOccupation02.setEntryName2("อาจารย์ (ปวช ปวส มหาวิทยาลัย)");
         rmOccupation02.setEntrySource("01,02,03,04,05,06,07,08,09,10,11,12,13,14");
         rmOccupation02.setExtValue1("");
-        rmOccupation02.setExtValue2("");
+        rmOccupation02.setExtValue2("01");
         rmOccupation02.setGroupId("");
         rmOccupation02.setRefEntryCode("");
 
@@ -309,7 +318,7 @@ public class DropdownServiceTest {
         rmOccupation03.setEntryName2("อื่นๆ");
         rmOccupation03.setEntrySource("01,02,03,04,05,06,07,08,09,10,11,12,13,14");
         rmOccupation03.setExtValue1("");
-        rmOccupation03.setExtValue2("");
+        rmOccupation03.setExtValue2("01");
         rmOccupation03.setGroupId("");
         rmOccupation03.setRefEntryCode("");
 
@@ -322,7 +331,7 @@ public class DropdownServiceTest {
         rmOccupation04.setEntryName2("พนักงานราชการ");
         rmOccupation04.setEntrySource("02");
         rmOccupation04.setExtValue1("");
-        rmOccupation04.setExtValue2("");
+        rmOccupation04.setExtValue2("01");
         rmOccupation04.setGroupId("");
         rmOccupation04.setRefEntryCode("");
 
@@ -335,7 +344,7 @@ public class DropdownServiceTest {
         rmOccupation05.setEntryName2("ลูกจ้างประจำหน่วยงานราชการ");
         rmOccupation05.setEntrySource("02");
         rmOccupation05.setExtValue1("");
-        rmOccupation05.setExtValue2("");
+        rmOccupation05.setExtValue2("02");
         rmOccupation05.setGroupId("");
         rmOccupation05.setRefEntryCode("");
 
@@ -348,7 +357,7 @@ public class DropdownServiceTest {
         rmOccupation05.setEntryName2("ทดสอบ not active");
         rmOccupation05.setEntrySource("01,02,03,04,05,06,07,08,09,10,11,12,13,14");
         rmOccupation05.setExtValue1("");
-        rmOccupation05.setExtValue2("");
+        rmOccupation05.setExtValue2("02");
         rmOccupation05.setGroupId("");
         rmOccupation04.setRefEntryCode("");
 
@@ -818,7 +827,20 @@ public class DropdownServiceTest {
         sciCountry02.setGroupId("");
         sciCountry02.setRefEntryCode("");
 
-        CommonCodeEntry[] commonCodeEntries = {sciCountry01, sciCountry02};
+        CommonCodeEntry sciCountry03 = new CommonCodeEntry();
+        sciCountry03.setActiveStatus("1");
+        sciCountry03.setCategoryCode(DROPDOWN_SCI_COUNTRY);
+        sciCountry03.setEntryCode("SG");
+        sciCountry03.setEntryID(BigDecimal.valueOf(35416));
+        sciCountry03.setEntryName("Singapore");
+        sciCountry03.setEntryName2("Singapore");
+        sciCountry03.setEntrySource("");
+        sciCountry03.setExtValue1("");
+        sciCountry03.setExtValue2("");
+        sciCountry03.setGroupId("");
+        sciCountry03.setRefEntryCode("");
+
+        CommonCodeEntry[] commonCodeEntries = {sciCountry02, sciCountry01, sciCountry03};
 
         Header header = new Header();
         header.setResponseCode(RslResponseCode.SUCCESS.getCode());
@@ -830,6 +852,36 @@ public class DropdownServiceTest {
         dropdownSciCountry.setHeader(header);
         dropdownSciCountry.setBody(body);
         return dropdownSciCountry;
+    }
+
+    private TmbOneServiceResponse mockLovmasterConfigCountry() {
+        List<LovMaster> lovMasters = new ArrayList<>();
+        LovMaster lovMasterTH = new LovMaster();
+        lovMasterTH.setLovType("COUNTRY");
+        lovMasterTH.setLovCode("TH");
+        lovMasterTH.setLovLang("th_TH");
+        lovMasterTH.setLovDesc("ไทย");
+        lovMasterTH.setCreatedBy("TMB");
+        lovMasterTH.setLovStatus("01");
+
+        LovMaster lovMasterSG = new LovMaster();
+        lovMasterSG.setLovType("COUNTRY");
+        lovMasterSG.setLovCode("SG");
+        lovMasterSG.setLovLang("th_TH");
+        lovMasterSG.setLovDesc("สิงค์โปร์");
+        lovMasterSG.setCreatedBy("TMB");
+        lovMasterSG.setLovStatus("01");
+
+        lovMasters.add(lovMasterTH);
+        lovMasters.add(lovMasterSG);
+
+        TmbOneServiceResponse response = new TmbOneServiceResponse();
+        TmbStatus status = new TmbStatus();
+        status.setCode(ResponseCode.SUCCESS.getCode());
+        response.setStatus(status);
+        response.setData(lovMasters);
+
+        return response;
     }
 
     private ResponseDropdown mockGetDropdownFail() {

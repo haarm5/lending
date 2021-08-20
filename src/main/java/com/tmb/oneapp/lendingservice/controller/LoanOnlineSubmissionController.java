@@ -12,6 +12,7 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionCreateApplicationService;
+import com.tmb.oneapp.lendingservice.service.LoanSubmissionGenNCBFileService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetCustInfoAppInfoService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetWorkingDetailService;
 import io.swagger.annotations.Api;
@@ -37,6 +38,7 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionCheckWaiveDocService loanOnlineSubmissionCheckWaiveDocService;
     private final LoanSubmissionGetWorkingDetailService loanSubmissionGetWorkingDetailService;
     private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     @GetMapping("/getIncomeInfo")
@@ -129,6 +131,28 @@ public class LoanOnlineSubmissionController {
 			CustomerInfoApplicationInfo customerInfoApplicationInfo = loanSubmissionGetCustInfoAppInfoService
 					.getCustomerInfoAndApplicationInfo(caId);
 			response.setData(customerInfoApplicationInfo);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
+		} catch (Exception e) {
+			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+		}
+	}
+	
+	@ApiOperation("Loan submission generate NCB file and store to sFTP")
+	@PostMapping(value = "/update-ncb-consent-flag", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<String>> loanSubmissionGenerateNCBFile(
+			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+			@ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+			@RequestParam(value = "caId") String caId) throws TMBCommonException {
+		TmbOneServiceResponse<String> response = new TmbOneServiceResponse<>();
+
+		try {
+			loanSubmissionGenNCBFileService.storeNCBfile(crmId, caId);
 			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
 					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 

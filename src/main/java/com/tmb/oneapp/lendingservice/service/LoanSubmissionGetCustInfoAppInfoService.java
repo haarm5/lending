@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +57,8 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoApplicationInfo.setThaiName(individual.getThaiName());
 		customerInfoApplicationInfo.setThaiSurName(individual.getThaiSurName());
 		customerInfoApplicationInfo.setCitizenIdOrPassportNo(individual.getIdNo1());
-		customerInfoApplicationInfo.setBirthDate(getThaiDate(individual.getBirthDate().getTime().toString()));
+		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(individual.getBirthDate().getTime());
+		customerInfoApplicationInfo.setBirthDate(getThaiDate(birthDateStr));
 		customerInfoApplicationInfo.setMobileNo(individual.getMobileNo());
 		customerInfoApplicationInfo.setProductName(applicationInfoResponse.getBody().getProductDescTH());
 		customerInfoApplicationInfo.setMemberRef(applicationInfoResponse.getBody().getMemberref());

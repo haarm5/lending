@@ -105,9 +105,19 @@ public class PersonalDetailSaveInfoService {
         individual.setLifeTimeFlag(lifeTimeFlag);
         individual.setCompanyType("4");
 
+        Calendar year = individual.getBirthDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar currentYear = Calendar.getInstance();
+
+        int year1 = year.get(Calendar.YEAR);
+        int year2 = currentYear.get(Calendar.YEAR);
+        int month1 = year.get(Calendar.MONTH);
+        int month2 = currentYear.get(Calendar.MONTH);
+        int ageYear = year2 - year1;
+        int ageMonth = month2 - month1;
+
         individual.setIssuedDate(individual.getBirthDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
-        individual.setAge(BigDecimal.valueOf(34));
-        individual.setAgeMonth(BigDecimal.valueOf(2));
+        individual.setAge(BigDecimal.valueOf(ageYear));
+        individual.setAgeMonth(BigDecimal.valueOf(ageMonth));
         individual.setSourceFromCountry(sourceFromCountry); //country_of_income
         individual.setEducationLevel(educationLevel); // education_code
         individual.setMaritalStatus(maritalStatus); // marital_status

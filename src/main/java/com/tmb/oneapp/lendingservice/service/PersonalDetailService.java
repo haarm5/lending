@@ -40,15 +40,6 @@ public class PersonalDetailService {
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String PATTERN_DATE = "yyyy-MM-dd";
 
-    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
-        if (individual != null) {
-            return individual;
-        }
-        return custGeneralProfileResponse;
-    }
-
-
-
     public PersonalDetailResponse getPersonalDetail(String crmId, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         PersonalDetailResponse response = new PersonalDetailResponse();
         Address address = new Address();
@@ -134,7 +125,7 @@ public class PersonalDetailService {
         return getDropdownListResp.getBody().getCommonCodeEntries();
     }
 
-    private List<DropDown> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public List<DropDown> getResidents() throws ServiceException, TMBCommonException, JsonProcessingException {
         List<DropDown> residents = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_RESIDENT_TYPE);
         for (CommonCodeEntry e : entries) {
@@ -149,7 +140,7 @@ public class PersonalDetailService {
         return residents;
     }
 
-    private List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
         List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
         List<CommonCodeEntry> sortedList = Arrays.stream(entries)
@@ -175,13 +166,20 @@ public class PersonalDetailService {
         return thaiSalutationCodes;
     }
 
-    private  Calendar convertStringToCalender(String dateStr) throws ParseException {
+    public Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
         if (dateStr != null && !dateStr.equals("")) {
             Date expireDate = new SimpleDateFormat(PATTERN_DATE,Locale.ENGLISH).parse(dateStr);
             calendar.setTime(expireDate);
         }
         return calendar;
+    }
+
+    public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
+        if (individual != null) {
+            return individual;
+        }
+        return custGeneralProfileResponse;
     }
 
     public boolean personalInfoSaved(Individual individual) {

@@ -64,14 +64,17 @@ public class PersonalDetailController {
     @ApiOperation(value = "update personal detail info")
     @LogAround
     @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual>> updatePersonalDetail(
-                                                                                          @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) throws TMBCommonException, JsonProcessingException {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> updatePersonalDetail(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+                                                                                                                                                        @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) throws TMBCommonException, JsonProcessingException {
         logger.info(TMBUtils.convertJavaObjectToString(personalDetailReg));
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
-        TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            updatePersonalDetail.updateCustomerInfo(personalDetailReg);
+            PersonalDetailResponse personalDetailResponse = updatePersonalDetail.updateCustomerInfo(crmId,personalDetailReg);
+            oneTmbOneServiceResponse.setData(personalDetailResponse);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);

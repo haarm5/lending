@@ -128,7 +128,7 @@ public class LoanOnlineSubmissionController {
     }
 
 	@ApiOperation("Loan Submission Get Customer Information")
-	@GetMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
 	@LogAround
 	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionGetCustomerInformation(
 			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)

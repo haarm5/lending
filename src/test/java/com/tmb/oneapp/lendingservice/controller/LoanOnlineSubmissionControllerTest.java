@@ -5,9 +5,10 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInfoApplicationInfo;
+import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
 import com.tmb.oneapp.lendingservice.service.LoanSubmissionCreateApplicationService;
@@ -126,10 +127,10 @@ class LoanOnlineSubmissionControllerTest {
     
 	@Test
 	public void loanSubmissionGetCustomerInfoAndApplicationInfoSuccess() throws Exception {
-		CustomerInfoApplicationInfo res = new CustomerInfoApplicationInfo();
-		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoAndApplicationInfo(any())).thenReturn(res);
-		ResponseEntity<TmbOneServiceResponse<CustomerInfoApplicationInfo>> responseEntity = loanOnlineSubmissionController
-				.loanSubmissionGetCustomerInfoAndApplicationInfo("correlationId", "crmId","caId");
+		CustomerInformationResponse res = new CustomerInformationResponse();
+		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(any())).thenReturn(res);
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanOnlineSubmissionController
+				.loanSubmissionGetCustomerInformation("correlationId", "crmId", new UpdateNCBConsentFlagRequest());
 
 		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
@@ -141,9 +142,10 @@ class LoanOnlineSubmissionControllerTest {
 	public void loanSubmissionGetCustomerInfoAndApplicationInfoThrowException() {
 		TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
 			doThrow(new IllegalArgumentException()).when(loanSubmissionGetCustInfoAppInfoService)
-					.getCustomerInfoAndApplicationInfo(any());
+					.getCustomerInformation(any());
 
-			loanOnlineSubmissionController.loanSubmissionGetCustomerInfoAndApplicationInfo("correlationId", "crmId","caId");
+			loanOnlineSubmissionController.loanSubmissionGetCustomerInformation("correlationId", "crmId",
+					new UpdateNCBConsentFlagRequest());
 		});
 
 		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

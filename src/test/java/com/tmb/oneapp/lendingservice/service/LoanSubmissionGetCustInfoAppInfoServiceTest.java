@@ -14,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 
 @RunWith(JUnit4.class)
 public class LoanSubmissionGetCustInfoAppInfoServiceTest {
@@ -48,16 +48,10 @@ public class LoanSubmissionGetCustInfoAppInfoServiceTest {
 		Individual[] individuals = {individual};
 		body.setIndividuals(individuals);
 		individualResponse.setBody(body);
-		ResponseApplication applicationInfoResponse = new ResponseApplication();
-		com.tmb.common.model.legacy.rsl.ws.application.response.Body bodyApp = new com.tmb.common.model.legacy.rsl.ws.application.response.Body();
-		bodyApp.setAppType("");
-		bodyApp.setMemberref("");
-		applicationInfoResponse.setBody(bodyApp);
-
+		UpdateNCBConsentFlagRequest request = new UpdateNCBConsentFlagRequest();
 		when(rslService.getLoanSubmissionCustomerInfo(any())).thenReturn(individualResponse);
-		when(rslService.getLoanSubmissionApplicationInfo(any())).thenReturn(applicationInfoResponse);
 
-		Assert.assertNotNull(loanSubmissionGetCustInfoAppInfoService.getCustomerInfoAndApplicationInfo("caId"));
+		Assert.assertNotNull(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(request));
 	}
 
 }

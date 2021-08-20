@@ -9,10 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CustomerInfoApplicationInfo {
+public class CustomerInformationResponse {
     
-	private String thaiName;
-    private String thaiSurName;
+	private String fullName;
     private String citizenIdOrPassportNo;
     private String birthDate;
     private String mobileNo;

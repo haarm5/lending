@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
-import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInfoApplicationInfo;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 
@@ -25,50 +24,44 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 
 	private final RslService rslService;
 
-	public CustomerInfoApplicationInfo getCustomerInfoAndApplicationInfo(String caId) {
-		CustomerInfoApplicationInfo customerInfoApplicationInfo = new CustomerInfoApplicationInfo();
+	public CustomerInformationResponse getCustomerInformation(UpdateNCBConsentFlagRequest request) {
+		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		try {
 			LoanSubmissionGetCustomerInfoRequest requestCust = new LoanSubmissionGetCustomerInfoRequest();
-			LoanSubmissionGetApplicationInfoRequest requestApp = new LoanSubmissionGetApplicationInfoRequest();
-			requestCust.setCaId(caId);
-			requestApp.setCaId(caId);
+			requestCust.setCaId(request.getCaId());
 
 			logger.info("Get customer info from [RSL]");
 			ResponseIndividual individualResponse = rslService.getLoanSubmissionCustomerInfo(requestCust);
-			logger.info("Get application info from [RSL]");
-			ResponseApplication applicationInfoResponse = rslService.getLoanSubmissionApplicationInfo(requestApp);
 
-			if (individualResponse != null && applicationInfoResponse != null) {
-				customerInfoApplicationInfo = parseCustomerInfoApplicationInfo(individualResponse,
-						applicationInfoResponse);
+			if (individualResponse != null) {
+				customerInfoRes = parseCustomerInformation(individualResponse, request);
 			}
-
 		} catch (Exception e) {
-			logger.error("getGetCustomerInfoAndApplicationInfo got ExecutionException:{}", e);
+			logger.error("getGetCustomerInformation got ExecutionException:{}", e);
 		}
-		return customerInfoApplicationInfo;
+		return customerInfoRes;
 	}
 
-	private CustomerInfoApplicationInfo parseCustomerInfoApplicationInfo(ResponseIndividual individualResponse,
-			ResponseApplication applicationInfoResponse) {
-		CustomerInfoApplicationInfo customerInfoApplicationInfo = new CustomerInfoApplicationInfo();
+	private CustomerInformationResponse parseCustomerInformation(ResponseIndividual individualResponse,
+			UpdateNCBConsentFlagRequest updateNCBConsentFlagRequest) {
+		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		Individual individual = individualResponse.getBody().getIndividuals()[0];
-		
-		customerInfoApplicationInfo.setThaiName(individual.getThaiName());
-		customerInfoApplicationInfo.setThaiSurName(individual.getThaiSurName());
-		customerInfoApplicationInfo.setCitizenIdOrPassportNo(individual.getIdNo1());
-		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(individual.getBirthDate().getTime());
-		customerInfoApplicationInfo.setBirthDate(getThaiDate(birthDateStr));
-		customerInfoApplicationInfo.setMobileNo(individual.getMobileNo());
-		customerInfoApplicationInfo.setProductName(applicationInfoResponse.getBody().getProductDescTH());
-		customerInfoApplicationInfo.setMemberRef(applicationInfoResponse.getBody().getMemberref());
-		customerInfoApplicationInfo.setCustContactTime(individual.getCustContactTime());
-		customerInfoApplicationInfo.setChannel("TTB APP");
-		customerInfoApplicationInfo.setModule("Access PIN");
-		customerInfoApplicationInfo.setCreateDate(applicationInfoResponse.getBody().getApplicationDate());
-		customerInfoApplicationInfo.setAppRefNo(applicationInfoResponse.getBody().getAppRefNo());
-		
-		return customerInfoApplicationInfo;
+
+		customerInfoRes.setFullName(individual.getThaiName() + " " + individual.getThaiSurName());
+		customerInfoRes.setCitizenIdOrPassportNo(individual.getIdNo1());
+		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+				.format(individual.getBirthDate().getTime());
+		customerInfoRes.setBirthDate(getThaiDate(birthDateStr));
+		customerInfoRes.setMobileNo(individual.getMobileNo());
+		if ("PL".equalsIgnoreCase(updateNCBConsentFlagRequest.getAppType())) {
+			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (05)");
+		} else {
+			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (22)");
+		}
+		customerInfoRes.setChannel("TTB APP");
+		customerInfoRes.setModule("Access PIN");
+
+		return customerInfoRes;
 	}
 
 	private String getThaiDate(String dateEng) {
@@ -76,7 +69,7 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 			return "";
 		String dob = dateEng;
 		dob = dob.substring(0, 10);
-		
+
 		String[] dateArray = dob.split("-");
 		String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
 		String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
@@ -88,6 +81,5 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		thaiDate.append(thaiYear);
 		return thaiDate.toString();
 	}
-
 
 }

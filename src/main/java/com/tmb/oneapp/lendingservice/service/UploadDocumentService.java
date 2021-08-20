@@ -2,9 +2,11 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
+import com.tmb.oneapp.lendingservice.controller.RslController;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
@@ -19,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UploadDocumentService {
     private final LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
+    private static final TMBLogger<UploadDocumentService> logger = new TMBLogger<>(UploadDocumentService.class);
 
     public UploadDocumentResponse upload(UploadDocumentRequest request) throws TMBCommonException, ServiceException, JsonProcessingException {
         UploadDocumentResponse response = new UploadDocumentResponse();
@@ -31,6 +34,7 @@ public class UploadDocumentService {
     }
 
     private List<UploadDocumentResponse.Document> parseDocuments(UploadDocumentRequest request) {
+        logger.info("caId: {} ", request.getCaId());
         UploadDocumentResponse.Document docSuccess = UploadDocumentResponse.Document.builder()
                 .docCode("ID01")
                 .pdfFileName("mock1.pdf")

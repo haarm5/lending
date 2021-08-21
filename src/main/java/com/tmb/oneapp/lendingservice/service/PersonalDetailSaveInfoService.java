@@ -79,11 +79,17 @@ public class PersonalDetailSaveInfoService {
         String gender = prepareData(individual.getGender(), ecResponse.getGender()).toString();
         String cusType = prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString();
         String sourceFromCountry = prepareData(individual.getSourceFromCountry(), ecResponse.getCountryOfIncome()).toString();
-        BigDecimal customerLevel = BigDecimal.valueOf(Long.parseLong(prepareData(individual.getCustomerLevel(), ecResponse.getCustomerLevel()).toString()));
+        String customerLevel = prepareData(individual.getCustomerLevel(), ecResponse.getCustomerLevel()).toString();
 
-        int customerType = Integer.parseInt(cusType); // customerType
+
         String idenPresentToBank;
         String lifeTimeFlag;
+        int customerType = 0;
+        if (!cusType.equals("")) {
+            customerType = Integer.parseInt(cusType); // customerType
+        } else {
+            customerType = 0;
+        }
 
         if (customerType == 920) {
             idenPresentToBank = IDEN_PRESENT_BANK_03;
@@ -123,7 +129,14 @@ public class PersonalDetailSaveInfoService {
         individual.setMaritalStatus(maritalStatus); // marital_status
         individual.setGender(gender); // gender
         individual.setCustomerType(cusType); //customer_type
-        individual.setCustomerLevel(customerLevel); // customer_level
+        Character secondDigit = customerLevel.charAt(1);
+        int cusLevel = Integer.parseInt(String.valueOf(secondDigit));
+        individual.setCustomerLevel(BigDecimal.valueOf(cusLevel)); // customer_level
+
+        individual.setEmploymentYear("0");
+        individual.setEmploymentMonth("0");
+        individual.setIncomeType("2");
+        individual.setIncomeBankName("011");
 
         body.setIndividual(individual);
         responseIndividual.setBody(body);

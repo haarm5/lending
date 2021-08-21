@@ -200,7 +200,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
-        request.setEngSurName("xxxx");
+        request.setEngSurname("xxxx");
         request.setEmail("xxx@gmail.com");
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");
@@ -381,7 +381,7 @@ PersonalDetailSaveInfoServiceTest {
         request.setThaiName("xxx");
         request.setThaiSalutationCode("xxx");
         request.setEngName("xxx");
-        request.setEngSurName("xxxx");
+        request.setEngSurname("xxxx");
         request.setEmail("xxx@gmail.com");
         request.setBirthDate(Calendar.getInstance());
         request.setNationality("TH");

@@ -64,7 +64,7 @@ public class PersonalDetailSaveInfoService {
         individual.setThaiName(request.getThaiName());
         individual.setThaiSalutationCode(request.getThaiSalutationCode());
         individual.setThaiSurName(request.getThaiSurname());
-        individual.setNameLine1(request.getEngSurName());
+        individual.setNameLine1(request.getEngSurname());
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
@@ -84,7 +84,7 @@ public class PersonalDetailSaveInfoService {
 
         String idenPresentToBank;
         String lifeTimeFlag;
-        int customerType = 0;
+        int customerType;
         if (!cusType.equals("")) {
             customerType = Integer.parseInt(cusType); // customerType
         } else {

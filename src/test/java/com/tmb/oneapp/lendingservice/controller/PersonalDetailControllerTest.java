@@ -99,7 +99,7 @@ public class PersonalDetailControllerTest {
 
         personalDetailSaveInfoRequest.setThaiSalutationCode("xx");
         personalDetailSaveInfoRequest.setEngName("xx");
-        personalDetailSaveInfoRequest.setEngSurName("xx");
+        personalDetailSaveInfoRequest.setEngSurname("xx");
         personalDetailSaveInfoRequest.setThaiName("xx");
         personalDetailSaveInfoRequest.setThaiSurname("xx");
         personalDetailSaveInfoRequest.setEmail("xx");

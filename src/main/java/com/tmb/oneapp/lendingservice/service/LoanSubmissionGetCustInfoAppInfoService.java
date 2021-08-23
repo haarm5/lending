@@ -60,6 +60,7 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		}
 		customerInfoRes.setChannel("TTB APP");
 		customerInfoRes.setModule("Access PIN");
+		customerInfoRes.setAppRefNo(updateNCBConsentFlagRequest.getAppRefNo());
 
 		return customerInfoRes;
 	}

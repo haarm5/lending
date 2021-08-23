@@ -17,4 +17,13 @@ public interface FTPClient {
      * @throws IOException
      */
     boolean storeFile(List<SFTPStoreFileInfo> storeFileInfo);
+    
+    /**
+     * Remove file to ftp server
+     *
+     * @param storeFileInfo
+     * @return
+     * @throws IOException
+     */
+    boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList);
 }

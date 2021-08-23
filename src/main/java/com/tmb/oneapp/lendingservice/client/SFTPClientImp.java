@@ -116,4 +116,31 @@ public class SFTPClientImp implements FTPClient {
         }
         return false;
     }
+
+
+	@Override
+	public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
+        ChannelSftp channelSftp = null;
+        String dst = null;
+        try {
+            channelSftp = (ChannelSftp) setupJsch();
+            channelSftp.connect();
+            for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
+                String dstDir = sftpStoreFileInfo.getDstDir();
+                if (dstDir != null) {
+                    mkdir(channelSftp, sftpStoreFileInfo.getRootPath(), sftpStoreFileInfo.getDstDir());
+                    dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sftpStoreFileInfo.getDstDir();
+                    channelSftp.rmdir(dst);
+                }
+                logger.info("sftp deleted success:{}", dst);
+            }
+            channelSftp.exit();
+            return true;
+        } catch (JSchException e) {
+            logger.error("error sftp connection:{}", e);
+        } catch (SftpException e) {
+            logger.error("error sftp operation:{}", e);
+        }
+        return false;
+    }
 }

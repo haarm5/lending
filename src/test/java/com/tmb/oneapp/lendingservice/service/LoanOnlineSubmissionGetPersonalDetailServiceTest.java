@@ -40,7 +40,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-public class PersonalDetailServiceTest {
+public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
 
     @Mock
     private CustomerServiceClient customerServiceClient;
@@ -50,7 +50,7 @@ public class PersonalDetailServiceTest {
     private LoanSubmissionGetDropdownListClient dropdownListClient;
 
     @InjectMocks
-    PersonalDetailService personalDetailService;
+    LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
     @BeforeEach
     void setUp() {
@@ -160,7 +160,7 @@ public class PersonalDetailServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
-        PersonalDetailResponse response = personalDetailService.
+        PersonalDetailResponse response = loanOnlineSubmissionGetPersonalDetailService.
                 getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);
 
@@ -265,7 +265,7 @@ public class PersonalDetailServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
-        PersonalDetailResponse response = personalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
+        PersonalDetailResponse response = loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail("001100000000000000000018593707",request.getCaId());
         Assertions.assertNotNull(response);
 
     }

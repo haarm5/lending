@@ -25,8 +25,8 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class WorkingDetailUpdateWorkingDetailService {
-    private static final TMBLogger<WorkingDetailUpdateWorkingDetailService> logger = new TMBLogger<>(WorkingDetailUpdateWorkingDetailService.class);
+public class LoanOnlineSubmissionUpdateWorkingDetailService {
+    private static final TMBLogger<LoanOnlineSubmissionUpdateWorkingDetailService> logger = new TMBLogger<>(LoanOnlineSubmissionUpdateWorkingDetailService.class);
     static final String MSG_000 = "MSG_000";
 
     private final LoanSubmissionGetCustomerInfoClient customerInfoClient;

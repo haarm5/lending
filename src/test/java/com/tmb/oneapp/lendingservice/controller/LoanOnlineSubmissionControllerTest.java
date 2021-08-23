@@ -318,29 +318,29 @@ class LoanOnlineSubmissionControllerTest {
         List<DropDown> dropDownList = new ArrayList<>();
         DropDown dropDown = new DropDown();
 
-        address.setAmphur("à¹�à¸‚à¸‡à¸§à¸±à¸‡à¸—à¸­à¸‡à¸«à¸¥à¸²à¸‡");
+        address.setAmphur("แขงวังทองหลาง");
         address.setCountry("TH");
-        address.setBuildingName("à¸¡à¸š.à¸›à¸£à¸µà¸Šà¸² 3");
+        address.setBuildingName("มบ.ปรีชา 3");
         address.setFloor("6");
         address.setMoo("2");
         address.setNo("11");
         address.setPostalCode("10400");
         address.setProvince("dm,");
-        address.setRoad("à¸¥à¸²à¸”à¸žà¸£à¹‰à¸²à¸§");
-        address.setTumbol("à¸›à¸—à¸¸à¸¡à¸§à¸±à¸™");
-        address.setStreetName("à¸¥à¸²à¸”à¸žà¸£à¹‰à¸²à¸§");
+        address.setRoad("ลาดพร้าว");
+        address.setTumbol("ปทุมวัน");
+        address.setStreetName("ลาดพร้าว");
 
         resident.setEntryCode("H");
         resident.setEntryId(BigDecimal.valueOf(65239));
         resident.setEntryNameEng("Mortgages");
-        resident.setEntryNameTh("à¸­à¸¢à¸¹à¹ˆà¸£à¸°à¸«à¸§à¹ˆà¸²à¸‡à¸œà¹ˆà¸­à¸™à¸Šà¸³à¸£à¸°");
+        resident.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
         resident.setEntrySource("HOST");
         residentList.add(resident);
 
         dropDown.setEntryCode("H");
         dropDown.setEntryId(BigDecimal.valueOf(65239));
         dropDown.setEntryNameEng("Mortgages");
-        dropDown.setEntryNameTh("à¸­à¸¢à¸¹à¹ˆà¸£à¸°à¸«à¸§à¹ˆà¸²à¸‡à¸œà¹ˆà¸­à¸™à¸Šà¸³à¸£à¸°");
+        dropDown.setEntryNameTh("อยู่ระหว่างผ่อนชำระ");
         dropDown.setEntrySource("HOST");
         dropDownList.add(dropDown);
 
@@ -353,8 +353,8 @@ class LoanOnlineSubmissionControllerTest {
         response.setIdIssueCtry1("dd");
         response.setMobileNo("0987654321");
         response.setNationality("TH");
-        response.setThaiName("à¸—à¸µà¸—à¸µà¸šà¸µ");
-        response.setThaiSurname("à¹�à¸šà¸‡à¸„à¹Œ");
+        response.setThaiName("ทีทีบี");
+        response.setThaiSurname("แบงค์");
         response.setThaiSalutationCode(dropDownList);
         response.setAddress(address);
         response.setResidentFlag(residentList);

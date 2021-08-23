@@ -1,18 +1,22 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.legacy.rsl.common.ob.checklist.Checklist;
-import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
-import com.tmb.common.model.legacy.rsl.ws.checklist.response.Body;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.loanonline.*;
-import com.tmb.oneapp.lendingservice.model.personal.*;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.lendingservice.service.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
+
+import javax.xml.rpc.ServiceException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,20 +26,39 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
-import java.math.BigDecimal;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.checklist.Checklist;
+import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
+import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
+import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
+import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
+import com.tmb.oneapp.lendingservice.model.personal.Address;
+import com.tmb.oneapp.lendingservice.model.personal.ChecklistRequest;
+import com.tmb.oneapp.lendingservice.model.personal.ChecklistResponse;
+import com.tmb.oneapp.lendingservice.model.personal.DropDown;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
+import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCreateApplicationService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustomerAgeService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetDocumentListService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetWorkingDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdatePersonalDetailInfoService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateWorkingDetailService;
 
 class LoanOnlineSubmissionControllerTest {
 
@@ -52,7 +75,10 @@ class LoanOnlineSubmissionControllerTest {
     LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
 
     @Mock
-    LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
+    
+    @Mock
+    LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;;
 
     @Mock
     LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;
@@ -146,6 +172,34 @@ class LoanOnlineSubmissionControllerTest {
         Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
         Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
     }
+
+	@Test
+	public void oanSubmissionUpdateNCBConsentFlagAndStoreFileSuccess() throws Exception {
+		CustomerInformationResponse res = new CustomerInformationResponse();
+		when(updateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any())).thenReturn(res);
+		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanOnlineSubmissionController
+				.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId", new UpdateNCBConsentFlagRequest());
+
+		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+		Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
+				Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+		Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+	}
+
+	@Test
+	public void loanSubmissionUpdateNCBConsentFlagAndStoreFileThrowException() {
+		TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+			doThrow(new IllegalArgumentException()).when(updateNCBConsentFlagAndStoreFileService)
+					.updateNCBConsentFlagAndStoreFile(any());
+
+			loanOnlineSubmissionController.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId",
+					new UpdateNCBConsentFlagRequest());
+		});
+
+		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+		Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+		Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+	}
 
     @Test
     public void loanSubmissionGetCustomerInfoAndApplicationInfoSuccess() throws Exception {

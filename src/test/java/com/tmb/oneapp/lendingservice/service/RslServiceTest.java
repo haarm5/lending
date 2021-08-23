@@ -1,5 +1,26 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+
+import java.rmi.RemoteException;
+
+import javax.xml.rpc.ServiceException;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
@@ -15,28 +36,29 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
-import com.tmb.oneapp.lendingservice.client.*;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetChecklistInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanGetCustomerInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanSubmitApplicationClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateFacilityInfoClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateNCBConsentFlagClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
-import com.tmb.oneapp.lendingservice.model.rsl.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-
-import javax.xml.rpc.ServiceException;
-
-import java.rmi.RemoteException;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetChecklistInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCreditcardInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetDropdownListRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetFacilityInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanCalUWRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanSubmitApplicationRequest;
 
 @RunWith(JUnit4.class)
 public class RslServiceTest {
@@ -66,6 +88,8 @@ public class RslServiceTest {
     LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
     @Mock
     LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
+    @Mock
+    LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
 
     @BeforeEach
     void setUp() {
@@ -597,7 +621,43 @@ public class RslServiceTest {
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
+  //Loan Submission Update NCB Consent Flag
+    @Test
+    public void updateNCBConsentFlag_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        mockUpdateNCBConsentFlagSuccess();
+        UpdateNCBConsentFlagRequest request = new UpdateNCBConsentFlagRequest();
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = rslService.updateNCBConsentFlag(request);
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
 
+    @Test
+    public void updateNCBConsentFlag_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionUpdateNCBConsentFlagClient).updateNCBConsentFlag(any());
+
+            UpdateNCBConsentFlagRequest request = new UpdateNCBConsentFlagRequest();
+            rslService.updateNCBConsentFlag(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void updateNCBConsentFlag_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockUpdateNCBConsentFlagFail();
+            UpdateNCBConsentFlagRequest request = new UpdateNCBConsentFlagRequest();
+            rslService.updateNCBConsentFlag(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+    }
+    
     //Mock Data
     private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseApplication response = new ResponseApplication();
@@ -896,4 +956,32 @@ public class RslServiceTest {
 
         doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
     }
+    
+    private void mockUpdateNCBConsentFlagSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+    	com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
+
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateNCBConsentFlagClient).updateNCBConsentFlag(any());
+    }
+
+    private void mockUpdateNCBConsentFlagFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+    	com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
+
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header();
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateNCBConsentFlagClient).updateNCBConsentFlag(any());
+    }
+
 }

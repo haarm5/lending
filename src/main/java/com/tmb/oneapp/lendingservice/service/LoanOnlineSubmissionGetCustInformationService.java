@@ -18,9 +18,9 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionGetCustInfoAppInfoService {
-	private static final TMBLogger<LoanSubmissionGetCustInfoAppInfoService> logger = new TMBLogger<>(
-			LoanSubmissionGetCustInfoAppInfoService.class);
+public class LoanOnlineSubmissionGetCustInformationService {
+	private static final TMBLogger<LoanOnlineSubmissionGetCustInformationService> logger = new TMBLogger<>(
+			LoanOnlineSubmissionGetCustInformationService.class);
 
 	private final RslService rslService;
 
@@ -51,7 +51,7 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoRes.setCitizenIdOrPassportNo(individual.getIdNo1());
 		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 				.format(individual.getBirthDate().getTime());
-		customerInfoRes.setBirthDate(getThaiDate(birthDateStr));
+		customerInfoRes.setBirthDate(concertToThaiDate(birthDateStr));
 		customerInfoRes.setMobileNo(individual.getMobileNo());
 		if ("PL".equalsIgnoreCase(updateNCBConsentFlagRequest.getAppType())) {
 			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (05)");
@@ -60,26 +60,26 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		}
 		customerInfoRes.setChannel("TTB APP");
 		customerInfoRes.setModule("Access PIN");
+		customerInfoRes.setAppRefNo(updateNCBConsentFlagRequest.getAppRefNo());
 
 		return customerInfoRes;
 	}
 
-	private String getThaiDate(String dateEng) {
+	public String concertToThaiDate(String dateEng) {
 		if (StringUtils.isBlank(dateEng))
 			return "";
 		String dob = dateEng;
 		dob = dob.substring(0, 10);
-
-		String[] dateArray = dob.split("-");
-		String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
-		String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
-		StringBuilder thaiDate = new StringBuilder();
-		thaiDate.append(dateArray[2]);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiMonth);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiYear);
-		return thaiDate.toString();
+		String[] dates = dob.split("-");
+		String year = CommonServiceUtils.getThaiYear(dates[0]);
+		String month = CommonServiceUtils.getThaiMonth(dates[1]);
+		StringBuilder dateResult = new StringBuilder();
+		dateResult.append(dates[2]);
+		dateResult.append(LendingServiceConstant.SPACE);
+		dateResult.append(month);
+		dateResult.append(LendingServiceConstant.SPACE);
+		dateResult.append(year);
+		return dateResult.toString();
 	}
 
 }

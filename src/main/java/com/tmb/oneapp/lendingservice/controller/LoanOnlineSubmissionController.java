@@ -26,6 +26,18 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseAppl
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
+import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
+import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
+import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +50,8 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionCreateApplicationService loanOnlineSubmissionCreateApplicationService;
     private final LoanOnlineSubmissionCheckWaiveDocService loanOnlineSubmissionCheckWaiveDocService;
     private final LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
-    private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;
     private final LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
@@ -121,30 +134,6 @@ public class LoanOnlineSubmissionController {
 
     }
 
-    @ApiOperation("Loan Submission Get Customer Information")
-    @PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
-    @LogAround
-    public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionGetCustomerInformation(
-            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
-            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
-            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
-        TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
-        try {
-            CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
-                    .getCustomerInformation(request);
-            response.setData(customerInfoRes);
-            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-                    ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
-
-        } catch (Exception e) {
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-                    ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-        }
-    }
-
     @ApiOperation(value = "update working detail")
     @LogAround
     @PutMapping(value = "/updateWorkingDetail", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -186,6 +175,55 @@ public class LoanOnlineSubmissionController {
 
     }
 
+	@ApiOperation("Loan Submission Get Customer Information")
+	@PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionGetCustomerInformation(
+			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
+		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+		try {
+			CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
+					.getCustomerInformation(request);
+			response.setData(customerInfoRes);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
+		} catch (Exception e) {
+			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+		}
+	}
+	
+	@ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
+	@PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
+	@LogAround
+	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionUpdateNCBConsentFlagAndStoreFile(
+			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
+		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+		try {
+			request.setCrmId(crmId);
+			CustomerInformationResponse customerInfoRes = updateNCBConsentFlagAndStoreFileService
+					.updateNCBConsentFlagAndStoreFile(request);
+			response.setData(customerInfoRes);
+			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+
+		} catch (Exception e) {
+			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+		}
+	}
+	
     @ApiOperation(value = "update personal detail info")
     @LogAround
     @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -14,6 +14,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.Response
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
@@ -39,6 +40,7 @@ public class RslService {
     private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
     private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
+    private final LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -109,6 +111,12 @@ public class RslService {
 
     public ResponseChecklist getDocumentList(Long caId) throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseChecklist response = loanSubmissionGetChecklistInfoClient.getChecklistInfo(caId);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
+    
+    public com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag updateNCBConsentFlag(UpdateNCBConsentFlagRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
+    	com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = loanSubmissionUpdateNCBConsentFlagClient.updateNCBConsentFlag(request);
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }

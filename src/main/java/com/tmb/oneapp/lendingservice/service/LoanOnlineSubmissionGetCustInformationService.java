@@ -65,7 +65,7 @@ public class LoanOnlineSubmissionGetCustInformationService {
 		return customerInfoRes;
 	}
 
-	private String concertToThaiDate(String dateEng) {
+	public String concertToThaiDate(String dateEng) {
 		if (StringUtils.isBlank(dateEng))
 			return "";
 		String dob = dateEng;

@@ -10,7 +10,6 @@ import com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Respo
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 
 import lombok.AllArgsConstructor;
 
@@ -21,7 +20,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService.class);
 
 	private final RslService rslService;
-	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
+	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInformationService;
 	private final LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
 	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) {
@@ -31,7 +30,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			ResponseUpdateNCBConsentFlag updateNCBConsentFlagResponse = rslService.updateNCBConsentFlag(request);
 
 			logger.info("Generate and Store NCB File");
-			customerInfoRes = loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(request);
+			customerInfoRes = loanSubmissionGetCustInformationService.getCustomerInformation(request);
 			customerInfoRes.setMemberRef(updateNCBConsentFlagResponse.getBody().getMemberref());
 			customerInfoRes.setNcbConsentDate(
 					getDateAndTimeForLOC(updateNCBConsentFlagResponse.getBody().getNcbConsentDate()));
@@ -52,22 +51,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 		String[] dateAndTimeArry = dateAndTime.split("T");
 		String dateEng = dateAndTimeArry[0];
 		String curTime = dateAndTimeArry[1];
-		return getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "")
+		return loanSubmissionGetCustInformationService.concertToThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "")
 				+ LendingServiceConstant.SPACE + "น.";
-	}
-
-	private String getThaiDate(String dateEng) {
-		if (StringUtils.isBlank(dateEng))
-			return "";
-		String[] dateArray = dateEng.split("-");
-		String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
-		String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
-		StringBuilder thaiDate = new StringBuilder();
-		thaiDate.append(dateArray[2]);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiMonth);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiYear);
-		return thaiDate.toString();
 	}
 }

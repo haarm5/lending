@@ -175,7 +175,9 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
                     if (!personalAddress.getBuildingName().isBlank() || !personalAddress.getBuildingName().isEmpty()) {
                         String[] roomNo = personalAddress.getBuildingName().split(" ");
                         address.setRoomNo(roomNo[0]);
-                        address.setBuildingName(roomNo[1]);
+                        if (roomNo.length > 1) {
+                            address.setBuildingName(roomNo[1]);
+                        }
                     }
                 }
 

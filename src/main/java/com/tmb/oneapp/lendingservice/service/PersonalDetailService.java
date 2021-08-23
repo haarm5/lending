@@ -65,7 +65,6 @@ public class PersonalDetailService {
             address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
             address.setCountry(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString());
             address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
-            address.setBuildingName(prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString());
             address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
             address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
             address.setProvince(prepareData(responseAddress.get().getProvince(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());
@@ -74,6 +73,15 @@ public class PersonalDetailService {
             address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
             address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
+
+            String buildingName = prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString();
+            if (!buildingName.isEmpty() || !buildingName.isBlank()) {
+                String[] roomNo = buildingName.split(" ");
+                address.setRoomNo(roomNo[0]);
+                if (roomNo.length > 1) {
+                    address.setBuildingName(roomNo[1]);
+                }
+            }
         }
 
         response.setAddress(address);
@@ -169,7 +177,7 @@ public class PersonalDetailService {
     public Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
         if (dateStr != null && !dateStr.equals("")) {
-            Date expireDate = new SimpleDateFormat(PATTERN_DATE,Locale.ENGLISH).parse(dateStr);
+            Date expireDate = new SimpleDateFormat(PATTERN_DATE, Locale.ENGLISH).parse(dateStr);
             calendar.setTime(expireDate);
         }
         return calendar;

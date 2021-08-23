@@ -121,7 +121,7 @@ public class PersonalDetailSaveInfoService {
         int ageYear = year2 - year1;
         int ageMonth = month2 - month1;
 
-        individual.setIssuedDate(individual.getBirthDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
+        individual.setIssuedDate(individual.getIssuedDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
         individual.setAge(BigDecimal.valueOf(ageYear));
         individual.setAgeMonth(BigDecimal.valueOf(ageMonth));
         individual.setSourceFromCountry(sourceFromCountry); //country_of_income
@@ -129,7 +129,13 @@ public class PersonalDetailSaveInfoService {
         individual.setMaritalStatus(maritalStatus); // marital_status
         individual.setGender(gender); // gender
         individual.setCustomerType(cusType); //customer_type
-        Character secondDigit = customerLevel.charAt(1);
+        Character secondDigit;
+        if (customerLevel.length() < 2) {
+            secondDigit = customerLevel.charAt(0);
+        } else {
+             secondDigit = customerLevel.charAt(1);
+        }
+
         int cusLevel = Integer.parseInt(String.valueOf(secondDigit));
         individual.setCustomerLevel(BigDecimal.valueOf(cusLevel)); // customer_level
 

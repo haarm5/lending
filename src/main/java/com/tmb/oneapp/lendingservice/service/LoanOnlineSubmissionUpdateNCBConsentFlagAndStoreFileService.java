@@ -16,13 +16,13 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionUpdateNCBConsentFlagAndStoreFileService {
-	private static final TMBLogger<LoanSubmissionUpdateNCBConsentFlagAndStoreFileService> logger = new TMBLogger<>(
-			LoanSubmissionUpdateNCBConsentFlagAndStoreFileService.class);
+public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
+	private static final TMBLogger<LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService> logger = new TMBLogger<>(
+			LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService.class);
 
 	private final RslService rslService;
-	private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
-	private final LoanSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
+	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
+	private final LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
 	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();

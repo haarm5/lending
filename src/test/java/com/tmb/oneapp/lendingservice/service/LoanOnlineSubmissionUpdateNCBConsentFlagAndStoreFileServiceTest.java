@@ -19,21 +19,21 @@ import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationRespons
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 
 @RunWith(JUnit4.class)
-public class LoanSubmissionUpdateNCBConsentFlagAndStoreFileServiceTest {
+public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileServiceTest {
 
 	@Mock
 	private RslService rslService;
 	@Mock
-	LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+	LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
 	@Mock
-	LoanSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
+	LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
-	LoanSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
+	LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService loanSubmissionUpdateNCBConsentFlagAndStoreFileService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		loanSubmissionUpdateNCBConsentFlagAndStoreFileService = new LoanSubmissionUpdateNCBConsentFlagAndStoreFileService(
+		loanSubmissionUpdateNCBConsentFlagAndStoreFileService = new LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService(
 				rslService, loanSubmissionGetCustInfoAppInfoService, loanSubmissionGenNCBFileService);
 
 	}

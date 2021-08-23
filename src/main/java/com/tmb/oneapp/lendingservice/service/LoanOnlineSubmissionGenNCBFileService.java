@@ -23,9 +23,9 @@ import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationRespons
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 
 @Service
-public class LoanSubmissionGenNCBFileService {
-	private static final TMBLogger<LoanSubmissionGenNCBFileService> logger = new TMBLogger<>(
-			LoanSubmissionGenNCBFileService.class);
+public class LoanOnlineSubmissionGenNCBFileService {
+	private static final TMBLogger<LoanOnlineSubmissionGenNCBFileService> logger = new TMBLogger<>(
+			LoanOnlineSubmissionGenNCBFileService.class);
 	private final ImageGeneratorService imageGeneratorService;
 	private final FTPClient ftpClient;
 	private static final String SEPARATOR = "/";
@@ -35,7 +35,7 @@ public class LoanSubmissionGenNCBFileService {
 
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	public LoanSubmissionGenNCBFileService(ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
+	public LoanOnlineSubmissionGenNCBFileService(ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
 		this.imageGeneratorService = imageGeneratorService;
 		this.ftpClient = ftpClient;
 	}

@@ -2,11 +2,13 @@ package com.tmb.oneapp.lendingservice.service;
 
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
@@ -16,9 +18,9 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionGetCustInfoAppInfoService {
-	private static final TMBLogger<LoanSubmissionGetCustInfoAppInfoService> logger = new TMBLogger<>(
-			LoanSubmissionGetCustInfoAppInfoService.class);
+public class LoanOnlineSubmissionGetCustInformationService {
+	private static final TMBLogger<LoanOnlineSubmissionGetCustInformationService> logger = new TMBLogger<>(
+			LoanOnlineSubmissionGetCustInformationService.class);
 
 	private final RslService rslService;
 
@@ -49,7 +51,7 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoRes.setCitizenIdOrPassportNo(individual.getIdNo1());
 		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 				.format(individual.getBirthDate().getTime());
-		customerInfoRes.setBirthDate(CommonServiceUtils.getThaiDate(birthDateStr));
+		customerInfoRes.setBirthDate(concertToThaiDate(birthDateStr));
 		customerInfoRes.setMobileNo(individual.getMobileNo());
 		if ("PL".equalsIgnoreCase(updateNCBConsentFlagRequest.getAppType())) {
 			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (05)");
@@ -61,6 +63,23 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoRes.setAppRefNo(updateNCBConsentFlagRequest.getAppRefNo());
 
 		return customerInfoRes;
+	}
+
+	private String concertToThaiDate(String dateEng) {
+		if (StringUtils.isBlank(dateEng))
+			return "";
+		String dob = dateEng;
+		dob = dob.substring(0, 10);
+		String[] dates = dob.split("-");
+		String year = CommonServiceUtils.getThaiYear(dates[0]);
+		String month = CommonServiceUtils.getThaiMonth(dates[1]);
+		StringBuilder dateResult = new StringBuilder();
+		dateResult.append(dates[2]);
+		dateResult.append(LendingServiceConstant.SPACE);
+		dateResult.append(month);
+		dateResult.append(LendingServiceConstant.SPACE);
+		dateResult.append(year);
+		return dateResult.toString();
 	}
 
 }

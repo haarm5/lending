@@ -19,17 +19,17 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 
 @RunWith(JUnit4.class)
-public class LoanSubmissionGetCustInfoAppInfoServiceTest {
+public class LoanOnlineSubmissionGetCustInformationServiceTest {
 
 	@Mock
 	private RslService rslService;
 	@Mock
-	LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+	LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		loanSubmissionGetCustInfoAppInfoService = new LoanSubmissionGetCustInfoAppInfoService(rslService);
+		loanSubmissionGetCustInfoAppInfoService = new LoanOnlineSubmissionGetCustInformationService(rslService);
 	}
 
 	@Test

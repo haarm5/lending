@@ -55,8 +55,8 @@ import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDeta
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetWorkingDetailService;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdatePersonalDetailInfoService;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateWorkingDetailService;
-import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetCustInfoAppInfoService;
-import com.tmb.oneapp.lendingservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
 
 class LoanOnlineSubmissionControllerTest {
 
@@ -73,10 +73,10 @@ class LoanOnlineSubmissionControllerTest {
     LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
     
     @Mock
-    LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
+    LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
     
     @Mock
-    LoanSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;;
+    LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;;
 
     @Mock
     LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;

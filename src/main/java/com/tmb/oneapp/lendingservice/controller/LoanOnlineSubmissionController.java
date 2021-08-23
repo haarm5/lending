@@ -31,8 +31,8 @@ import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplic
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
-import com.tmb.oneapp.lendingservice.service.LoanSubmissionGetCustInfoAppInfoService;
-import com.tmb.oneapp.lendingservice.service.LoanSubmissionUpdateNCBConsentFlagAndStoreFileService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,8 +49,8 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionCreateApplicationService loanOnlineSubmissionCreateApplicationService;
     private final LoanOnlineSubmissionCheckWaiveDocService loanOnlineSubmissionCheckWaiveDocService;
     private final LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
-    private final LoanSubmissionGetCustInfoAppInfoService loanSubmissionGetCustInfoAppInfoService;
-    private final LoanSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;
+    private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
+    private final LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;
     private final LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;

@@ -46,7 +46,7 @@ public class DropdownServiceTest {
     @Mock
     private CommonServiceFeignClient commonServiceFeignClient;
     @Mock
-    private PersonalDetailService personalDetailService;
+    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
     private static final String DROPDOWN_EMPLOYMENT_STATUS = "EMPLOYMENT_STATUS";
     private static final String DROPDOWN_RM_OCCUPATION = "RM_OCCUPATION";
@@ -172,7 +172,7 @@ public class DropdownServiceTest {
     public void getDropdownsLoanSubmissionWorkingDetail_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
         customerInfo.setOccupationCode("101");
-        doReturn(customerInfo).when(personalDetailService).getCustomerEC(anyString());
+        doReturn(customerInfo).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
         doReturn(mockDropdownOccupation()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
         doReturn(mockLovmasterConfigCountry()).when(commonServiceFeignClient).getLovmasterConfig(anyString(), anyString(), anyString(), anyString());
@@ -201,7 +201,7 @@ public class DropdownServiceTest {
         String employmentStatus = "01";
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
         customerInfo.setOccupationCode(employmentStatus);
-        doReturn(customerInfo).when(personalDetailService).getCustomerEC(anyString());
+        doReturn(customerInfo).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
 
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doReturn(mockGetDropdownFail()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());

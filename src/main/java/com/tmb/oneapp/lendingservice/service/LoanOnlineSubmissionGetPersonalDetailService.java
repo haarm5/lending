@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class PersonalDetailService {
-    private static final TMBLogger<PersonalDetailService> logger = new TMBLogger<>(PersonalDetailService.class);
+public class LoanOnlineSubmissionGetPersonalDetailService {
+    private static final TMBLogger<LoanOnlineSubmissionGetPersonalDetailService> logger = new TMBLogger<>(LoanOnlineSubmissionGetPersonalDetailService.class);
     private final LoanSubmissionGetCustomerInfoClient customerInfoClient;
     private final CustomerServiceClient customerServiceClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;

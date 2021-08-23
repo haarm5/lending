@@ -25,12 +25,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
-public class LoanSubmissionGetWorkingDetailServiceTest {
+public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
     @InjectMocks
-    private LoanSubmissionGetWorkingDetailService getWorkingDetailService;
+    private LoanOnlineSubmissionGetWorkingDetailService getWorkingDetailService;
 
     @Mock
-    private PersonalDetailService personalDetailService;
+    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     @Mock
     private DropdownService dropdownService;
 
@@ -41,9 +41,9 @@ public class LoanSubmissionGetWorkingDetailServiceTest {
 
     @Test
     public void getWorkingDetail_PersonalInfoNotSaved_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
-        doReturn(mockIndividual()).when(personalDetailService).getCustomer(anyLong());
-        doReturn(mockCustGeneralProfileResponse()).when(personalDetailService).getCustomerEC(anyString());
-        doReturn(false).when(personalDetailService).personalInfoSaved(any());
+        doReturn(mockIndividual()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomer(anyLong());
+        doReturn(mockCustGeneralProfileResponse()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
+        doReturn(false).when(loanOnlineSubmissionGetPersonalDetailService).personalInfoSaved(any());
         doReturn("01").when(dropdownService).getEmploymentStatus(anyString());
         List<Dropdowns.IncomeType> dropdownIncomeType = new ArrayList<>();
         Dropdowns.IncomeType incomeType = Dropdowns.IncomeType.builder().code("1").build();
@@ -56,8 +56,8 @@ public class LoanSubmissionGetWorkingDetailServiceTest {
 
     @Test
     public void getWorkingDetail_PersonalInfoSaved_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
-        doReturn(mockIndividual()).when(personalDetailService).getCustomer(anyLong());
-        doReturn(true).when(personalDetailService).personalInfoSaved(any());
+        doReturn(mockIndividual()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomer(anyLong());
+        doReturn(true).when(loanOnlineSubmissionGetPersonalDetailService).personalInfoSaved(any());
 
         WorkingDetail response = getWorkingDetailService.getWorkingDetail("crmId", 1L);
         Assertions.assertNotNull(response);

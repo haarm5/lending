@@ -30,16 +30,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-public class ChecklistServiceTest {
+public class LoanOnlineSubmissionGetDocumentListServiceTest {
     @Mock
     private LoanSubmissionGetChecklistInfoClient checklistInfoClient;
 
-    ChecklistService checklistService;
+    LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        checklistService = new ChecklistService(checklistInfoClient);
+        loanOnlineSubmissionGetDocumentListService = new LoanOnlineSubmissionGetDocumentListService(checklistInfoClient);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ChecklistServiceTest {
         checklistResponse.setLosCifId(BigDecimal.ONE);
         checklistResponses.add(checklistResponse);
 
-        checklistResponses = checklistService.getDocuments(request.getCaId());
+        checklistResponses = loanOnlineSubmissionGetDocumentListService.getDocuments(request.getCaId());
         Assertions.assertNotNull(checklistResponses);
 
     }
@@ -83,7 +83,7 @@ public class ChecklistServiceTest {
         when(checklistInfoClient.getChecklistInfo(anyLong())).thenReturn(oneServiceResponse.getData());
 
         assertThrows(Exception.class, () ->
-                checklistService.getDocuments(request.getCaId()));
+                loanOnlineSubmissionGetDocumentListService.getDocuments(request.getCaId()));
 
     }
 

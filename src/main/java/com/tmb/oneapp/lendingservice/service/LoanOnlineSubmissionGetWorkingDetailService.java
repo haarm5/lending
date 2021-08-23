@@ -20,21 +20,21 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionGetWorkingDetailService {
-    private static final TMBLogger<LoanSubmissionGetWorkingDetailService> logger = new TMBLogger<>(LoanSubmissionGetWorkingDetailService.class);
+public class LoanOnlineSubmissionGetWorkingDetailService {
+    private static final TMBLogger<LoanOnlineSubmissionGetWorkingDetailService> logger = new TMBLogger<>(LoanOnlineSubmissionGetWorkingDetailService.class);
 
-    private final PersonalDetailService personalDetailService;
+    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final DropdownService dropdownService;
 
     public WorkingDetail getWorkingDetail(String crmId, Long caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
-        Individual individual = personalDetailService.getCustomer(caId);
+        Individual individual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
 
-        if (personalDetailService.personalInfoSaved(individual)) {
+        if (loanOnlineSubmissionGetPersonalDetailService.personalInfoSaved(individual)) {
             logger.info("Get personal info from [EC]");
             return parseLoanSubmissionWorkingDetail(individual);
         } else {
             logger.info("Get personal info from [RSL]");
-            CustGeneralProfileResponse customerEc = personalDetailService.getCustomerEC(crmId);
+            CustGeneralProfileResponse customerEc = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
             return parseLoanSubmissionWorkingDetailEc(customerEc);
         }
 

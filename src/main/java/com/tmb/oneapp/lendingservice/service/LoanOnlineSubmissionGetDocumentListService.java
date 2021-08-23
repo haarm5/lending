@@ -18,8 +18,8 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class ChecklistService {
-    private static final TMBLogger<ChecklistService> logger = new TMBLogger<>(ChecklistService.class);
+public class LoanOnlineSubmissionGetDocumentListService {
+    private static final TMBLogger<LoanOnlineSubmissionGetDocumentListService> logger = new TMBLogger<>(LoanOnlineSubmissionGetDocumentListService.class);
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
 
     public List<ChecklistResponse> getDocuments(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {

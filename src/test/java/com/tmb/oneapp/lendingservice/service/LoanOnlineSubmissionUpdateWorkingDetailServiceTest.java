@@ -29,9 +29,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
-class WorkingDetailUpdateWorkingDetailServiceTest {
+class LoanOnlineSubmissionUpdateWorkingDetailServiceTest {
 
-    WorkingDetailUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
+    LoanOnlineSubmissionUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
 
     @Mock
     private LoanSubmissionGetCustomerInfoClient customerInfoClient;
@@ -55,7 +55,7 @@ class WorkingDetailUpdateWorkingDetailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        workingDetailUpdateWorkingDetailService = new WorkingDetailUpdateWorkingDetailService(
+        workingDetailUpdateWorkingDetailService = new LoanOnlineSubmissionUpdateWorkingDetailService(
                 customerInfoClient, loanSubmissionUpdateCustomerClient,
                 loanSubmissionGetFacilityInfoClient, loanSubmissionUpdateFacilityInfoClient,
                 loanSubmissionGetCreditcardInfoClient, loanSubmissionUpdateCreditCardClient);

@@ -204,7 +204,7 @@ public class InstantLoanCreateApplicationService {
         locRequest2.setConsentbyCustomer("Access PIN");
         String dob = locRequest2.getNCBDateofbirth();
         dob = dob.substring(0, 10);
-        locRequest2.setNCBDateofbirth(getThaiDate(dob));
+        locRequest2.setNCBDateofbirth(CommonServiceUtils.getThaiDate(dob));
 
         String mobno = locRequest2.getNCBMobileNo();
         locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
@@ -421,25 +421,8 @@ public class InstantLoanCreateApplicationService {
         String[] dateAndTimeArry = dateAndTime.split("T");
         String dateEng = dateAndTimeArry[0];
         String curTime = dateAndTimeArry[1];
-        return getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "");
+        return CommonServiceUtils.getThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "");
 
     }
-
-
-    private String getThaiDate(String dateEng) {
-        if (StringUtils.isBlank(dateEng))
-            return "";
-        String[] dateArray = dateEng.split("-");
-        String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
-        String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
-        StringBuilder thaiDate = new StringBuilder();
-        thaiDate.append(dateArray[2]);
-        thaiDate.append(LendingServiceConstant.SPACE);
-        thaiDate.append(thaiMonth);
-        thaiDate.append(LendingServiceConstant.SPACE);
-        thaiDate.append(thaiYear);
-        return thaiDate.toString();
-    }
-
 
 }

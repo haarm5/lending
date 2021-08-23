@@ -2,13 +2,11 @@ package com.tmb.oneapp.lendingservice.service;
 
 import java.text.SimpleDateFormat;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
@@ -51,7 +49,7 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoRes.setCitizenIdOrPassportNo(individual.getIdNo1());
 		String birthDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 				.format(individual.getBirthDate().getTime());
-		customerInfoRes.setBirthDate(getThaiDate(birthDateStr));
+		customerInfoRes.setBirthDate(CommonServiceUtils.getThaiDate(birthDateStr));
 		customerInfoRes.setMobileNo(individual.getMobileNo());
 		if ("PL".equalsIgnoreCase(updateNCBConsentFlagRequest.getAppType())) {
 			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (05)");
@@ -63,24 +61,6 @@ public class LoanSubmissionGetCustInfoAppInfoService {
 		customerInfoRes.setAppRefNo(updateNCBConsentFlagRequest.getAppRefNo());
 
 		return customerInfoRes;
-	}
-
-	private String getThaiDate(String dateEng) {
-		if (StringUtils.isBlank(dateEng))
-			return "";
-		String dob = dateEng;
-		dob = dob.substring(0, 10);
-
-		String[] dateArray = dob.split("-");
-		String thaiYear = CommonServiceUtils.getThaiYear(dateArray[0]);
-		String thaiMonth = CommonServiceUtils.getThaiMonth(dateArray[1]);
-		StringBuilder thaiDate = new StringBuilder();
-		thaiDate.append(dateArray[2]);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiMonth);
-		thaiDate.append(LendingServiceConstant.SPACE);
-		thaiDate.append(thaiYear);
-		return thaiDate.toString();
 	}
 
 }

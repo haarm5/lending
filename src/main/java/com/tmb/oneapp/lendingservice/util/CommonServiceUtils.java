@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.util;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,21 @@ public class CommonServiceUtils {
         }catch (Exception e) {
             throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid listString", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
         }
+    }
+    
+    public static  String getThaiDate(String dateEng) {
+        if (StringUtils.isBlank(dateEng))
+            return "";
+        String[] dateArray = dateEng.split("-");
+        String thaiYear = getThaiYear(dateArray[0]);
+        String thaiMonth = getThaiMonth(dateArray[1]);
+        StringBuilder thaiDate = new StringBuilder();
+        thaiDate.append(dateArray[2]);
+        thaiDate.append(LendingServiceConstant.SPACE);
+        thaiDate.append(thaiMonth);
+        thaiDate.append(LendingServiceConstant.SPACE);
+        thaiDate.append(thaiYear);
+        return thaiDate.toString();
     }
 
 }

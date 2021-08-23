@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
 import com.tmb.oneapp.lendingservice.model.personal.*;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
 import com.tmb.oneapp.lendingservice.service.*;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +43,7 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
     private final LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
+    private final LoanOnlineSubmissionGetCustomerAgeService loanOnlineSubmissionGetCustomerAgeService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     private TmbStatus getStatus(String responseCode, String responseService, String responseMessage, String error) {
@@ -228,6 +230,26 @@ public class LoanOnlineSubmissionController {
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
+    }
 
+    @ApiOperation(value = "get customer age")
+    @LogAround
+    @GetMapping("/customerAge")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {
+        responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            LoanSubmissionGetCustomerAgeResponse response = loanOnlineSubmissionGetCustomerAgeService.getAge(crmId);
+            oneTmbOneServiceResponse.setData(response);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
+            setHeader();
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("error while get customer age: {}", e);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
     }
 }

@@ -133,7 +133,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         if (customerLevel.length() < 2) {
             secondDigit = customerLevel.charAt(0);
         } else {
-             secondDigit = customerLevel.charAt(1);
+            secondDigit = customerLevel.charAt(1);
         }
 
         int cusLevel = Integer.parseInt(String.valueOf(secondDigit));
@@ -172,7 +172,11 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
                     address.setMoo(personalAddress.getMoo());
                     address.setFloor(personalAddress.getFloor());
                     address.setCountry(personalAddress.getCountry());
-                    address.setBuildingName(personalAddress.getBuildingName());
+                    if (!personalAddress.getBuildingName().isBlank() || !personalAddress.getBuildingName().isEmpty()) {
+                        String[] roomNo = personalAddress.getBuildingName().split(" ");
+                        address.setRoomNo(roomNo[0]);
+                        address.setBuildingName(roomNo[1]);
+                    }
                 }
 
                 detailResponse.setAddress(address);
@@ -215,7 +219,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("H");
             newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(address.getBuildingName() + " " + address.getRoomNo());
+            newAddress.setBuildingName("ห้อง" + address.getRoomNo() + " " + address.getBuildingName());
             newAddress.setFloor(address.getFloor());
             newAddress.setStreetName(address.getStreetName());
             newAddress.setRoad(address.getRoad());

@@ -9,8 +9,8 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.*;
-import com.tmb.oneapp.lendingservice.service.PersonalDetailSaveInfoService;
-import com.tmb.oneapp.lendingservice.service.PersonalDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdatePersonalDetailInfoService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +30,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
@@ -39,15 +38,15 @@ public class PersonalDetailControllerTest {
     PersonalDetailController personalDetailController;
 
     @Mock
-    PersonalDetailService personalDetailService;
+    LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
     @Mock
-    PersonalDetailSaveInfoService personalDetailSaveInfoService;
+    LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailController = new PersonalDetailController(personalDetailService,personalDetailSaveInfoService);
+        personalDetailController = new PersonalDetailController(loanOnlineSubmissionGetPersonalDetailService, loanOnlineSubmissionUpdatePersonalDetailInfoService);
     }
 
     @Test
@@ -55,7 +54,7 @@ public class PersonalDetailControllerTest {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
-        when(personalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseData().getData());
+        when(loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail(any(), any())).thenReturn(mockPersonalDetailResponseData().getData());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid, request);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
@@ -65,7 +64,7 @@ public class PersonalDetailControllerTest {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
-        when(personalDetailService.getPersonalDetail(any(), any())).thenThrow(new NullPointerException());
+        when(loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail(any(), any())).thenThrow(new NullPointerException());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.getPersonalDetail(crmid, request);
         assertTrue(result.getStatusCode().isError());
     }
@@ -111,7 +110,7 @@ public class PersonalDetailControllerTest {
         personalDetailSaveInfoRequest.setMobileNo("xx");
         personalDetailSaveInfoRequest.setResidentFlag(resident.getEntryCode());
 
-        when(personalDetailSaveInfoService.updateCustomerInfo(any(),any())).thenReturn(mockPersonalDetailResponseData().getData());
+        when(loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo(any(),any())).thenReturn(mockPersonalDetailResponseData().getData());
         ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> result = personalDetailController.updatePersonalDetail("001100000000000000000018593707",personalDetailSaveInfoRequest);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }

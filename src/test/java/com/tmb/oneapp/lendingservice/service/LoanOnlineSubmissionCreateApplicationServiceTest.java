@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(JUnit4.class)
-class LoanSubmissionCreateApplicationServiceTest {
+class LoanOnlineSubmissionCreateApplicationServiceTest {
 
 
     @Mock
@@ -43,12 +43,12 @@ class LoanSubmissionCreateApplicationServiceTest {
     private LoanSubmissionGetDropdownListClient dropdownListClient;
 
 
-    LoanSubmissionCreateApplicationService loanSubmissionCreateApplicationService;
+    LoanOnlineSubmissionCreateApplicationService loanOnlineSubmissionCreateApplicationService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanSubmissionCreateApplicationService = new LoanSubmissionCreateApplicationService(
+        loanOnlineSubmissionCreateApplicationService = new LoanOnlineSubmissionCreateApplicationService(
                 loanSubmissionCreateApplicationClient, loanSubmissionGetIncomeModelInfoClient,
                 customerServiceClient, dropdownListClient);
     }
@@ -111,7 +111,7 @@ class LoanSubmissionCreateApplicationServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
-        ResponseApplication result = loanSubmissionCreateApplicationService.createApplication(req, "rmId");
+        ResponseApplication result = loanOnlineSubmissionCreateApplicationService.createApplication(req, "rmId");
         assertEquals("test", result.getBody().getAppType());
     }
 
@@ -172,7 +172,7 @@ class LoanSubmissionCreateApplicationServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
-        ResponseApplication result = loanSubmissionCreateApplicationService.createApplication(req, "rmId");
+        ResponseApplication result = loanOnlineSubmissionCreateApplicationService.createApplication(req, "rmId");
         assertEquals("test", result.getBody().getAppType());
     }
 }

@@ -36,8 +36,8 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
-public class LoanSubmissionCreateApplicationService {
-    private static final TMBLogger<LoanSubmissionCreateApplicationService> logger = new TMBLogger<>(LoanSubmissionCreateApplicationService.class);
+public class LoanOnlineSubmissionCreateApplicationService {
+    private static final TMBLogger<LoanOnlineSubmissionCreateApplicationService> logger = new TMBLogger<>(LoanOnlineSubmissionCreateApplicationService.class);
     private final LoanSubmissionCreateApplicationClient loanSubmissionCreateApplicationClient;
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
     private final CustomerServiceClient customerServiceClient;

@@ -29,15 +29,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.tmb.oneapp.lendingservice.service.PersonalDetailService.PATTERN_DATE;
+import static com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDetailService.PATTERN_DATE;
 
 @Service
 @AllArgsConstructor
-public class PersonalDetailSaveInfoService {
-    private static final TMBLogger<PersonalDetailSaveInfoService> logger = new TMBLogger<>(PersonalDetailSaveInfoService.class);
+public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
+    private static final TMBLogger<LoanOnlineSubmissionUpdatePersonalDetailInfoService> logger = new TMBLogger<>(LoanOnlineSubmissionUpdatePersonalDetailInfoService.class);
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
-    private final PersonalDetailService personalDetailService;
+    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String IDEN_PRESENT_BANK_03 = "03";
@@ -51,9 +51,9 @@ public class PersonalDetailSaveInfoService {
     public PersonalDetailResponse updateCustomerInfo(String crmId, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
         RequestIndividual responseIndividual = new RequestIndividual();
         //rsl
-        Individual individual = personalDetailService.getCustomer(request.getCaId());
+        Individual individual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(request.getCaId());
         // ec
-        CustGeneralProfileResponse ecResponse = personalDetailService.getCustomerEC(crmId);
+        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
 
         Body body = new Body();
 
@@ -111,7 +111,7 @@ public class PersonalDetailSaveInfoService {
         individual.setLifeTimeFlag(lifeTimeFlag);
         individual.setCompanyType("4");
 
-        Calendar year = individual.getBirthDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
         Calendar currentYear = Calendar.getInstance();
 
         int year1 = year.get(Calendar.YEAR);
@@ -121,7 +121,7 @@ public class PersonalDetailSaveInfoService {
         int ageYear = year2 - year1;
         int ageMonth = month2 - month1;
 
-        individual.setIssuedDate(individual.getIssuedDate() == null ? personalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
+        individual.setIssuedDate(individual.getIssuedDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
         individual.setAge(BigDecimal.valueOf(ageYear));
         individual.setAgeMonth(BigDecimal.valueOf(ageMonth));
         individual.setSourceFromCountry(sourceFromCountry); //country_of_income
@@ -156,7 +156,7 @@ public class PersonalDetailSaveInfoService {
             Address address = new Address();
 
             if (response != null) {
-                Individual responseIndividual = personalDetailService.getCustomer(caId);
+                Individual responseIndividual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
 
                 Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(responseIndividual.getAddresses()).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
                 if (responseAddress.isPresent()) {

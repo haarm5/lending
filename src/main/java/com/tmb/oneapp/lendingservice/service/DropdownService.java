@@ -30,7 +30,7 @@ public class DropdownService {
     private static final TMBLogger<DropdownService> logger = new TMBLogger<>(DropdownService.class);
 
     private final LoanSubmissionGetDropdownListClient loanSubmissionGetDropdownListClient;
-    private final PersonalDetailService personalDetailService;
+    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final CommonServiceFeignClient commonServiceFeignClient;
 
     private static final String DROPDOWN_EMPLOYMENT_STATUS = "EMPLOYMENT_STATUS";
@@ -45,7 +45,7 @@ public class DropdownService {
     private static final String ACTIVE_STATUS = "1";
 
     public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
-        CustGeneralProfileResponse customerInfo = personalDetailService.getCustomerEC(crmId);
+        CustGeneralProfileResponse customerInfo = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
         String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());

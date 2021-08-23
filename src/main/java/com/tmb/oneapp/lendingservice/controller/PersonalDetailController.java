@@ -12,8 +12,8 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
-import com.tmb.oneapp.lendingservice.service.PersonalDetailSaveInfoService;
-import com.tmb.oneapp.lendingservice.service.PersonalDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdatePersonalDetailInfoService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,8 +34,8 @@ import java.time.Instant;
 @RestController
 public class PersonalDetailController {
     private static final TMBLogger<PersonalDetailController> logger = new TMBLogger<>(PersonalDetailController.class);
-    private final PersonalDetailService personalDetailService;
-    private final PersonalDetailSaveInfoService updatePersonalDetail;
+    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+    private final LoanOnlineSubmissionUpdatePersonalDetailInfoService updatePersonalDetail;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     @ApiOperation(value = "get personal detail")
@@ -48,7 +48,7 @@ public class PersonalDetailController {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PersonalDetailResponse personalDetailResponse = personalDetailService.getPersonalDetail(crmId,request.getCaId());
+            PersonalDetailResponse personalDetailResponse = loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail(crmId,request.getCaId());
             oneTmbOneServiceResponse.setData(personalDetailResponse);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
             setHeader();

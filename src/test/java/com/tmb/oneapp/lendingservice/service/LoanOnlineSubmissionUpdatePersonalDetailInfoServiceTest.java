@@ -34,23 +34,23 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class
-PersonalDetailSaveInfoServiceTest {
+LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
     @Mock
     private LoanSubmissionUpdateCustomerClient updateCustomerClient;
     @Mock
     private LoanSubmissionGetDropdownListClient dropdownListClient;
     @Mock
-    private PersonalDetailService personalDetailService;
+    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     @Mock
-    private PersonalDetailServiceTest personalDetailServiceTest;
+    private LoanOnlineSubmissionGetPersonalDetailServiceTest personalDetailServiceTest;
 
-    PersonalDetailSaveInfoService personalDetailSaveInfoService;
+    LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
 
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        personalDetailSaveInfoService = new PersonalDetailSaveInfoService(updateCustomerClient, dropdownListClient, personalDetailService);
+        loanOnlineSubmissionUpdatePersonalDetailInfoService = new LoanOnlineSubmissionUpdatePersonalDetailInfoService(updateCustomerClient, dropdownListClient, loanOnlineSubmissionGetPersonalDetailService);
     }
 
     @Test
@@ -181,8 +181,8 @@ PersonalDetailSaveInfoServiceTest {
         responseIndividual.setHeader(header);
 
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
-        when(personalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
-        when(personalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
+        when(loanOnlineSubmissionGetPersonalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
+        when(loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
         ResponseDropdown responseDropdown = new ResponseDropdown();
         Body dropdownsBody = new Body();
         CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
@@ -234,7 +234,7 @@ PersonalDetailSaveInfoServiceTest {
         response.setAddress(address1);
         response.setResidentFlag(Collections.singletonList(resident));
 
-        response = personalDetailSaveInfoService.updateCustomerInfo("001100000000000000000018593707", request);
+        response = loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo("001100000000000000000018593707", request);
         Assert.assertNotNull(response);
 
 
@@ -362,8 +362,8 @@ PersonalDetailSaveInfoServiceTest {
         responseIndividual.setHeader(header);
 
         when(updateCustomerClient.updateCustomerInfo(any())).thenReturn(responseIndividual);
-        when(personalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
-        when(personalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
+        when(loanOnlineSubmissionGetPersonalDetailService.getCustomer(any())).thenReturn(customerBody.getIndividuals()[0]);
+        when(loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(any())).thenReturn(custGeneralProfileResponse);
         ResponseDropdown responseDropdown = new ResponseDropdown();
         Body dropdownsBody = new Body();
         CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
@@ -415,7 +415,7 @@ PersonalDetailSaveInfoServiceTest {
         response.setAddress(address1);
         response.setResidentFlag(Collections.singletonList(resident));
 
-        personalDetailSaveInfoService.updateCustomerInfo("001100000000000000000018593707", request);
+        loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo("001100000000000000000018593707", request);
         Assert.assertFalse(responseIndividual.getHeader().getResponseCode().equals("MSG_000"));
 
     }

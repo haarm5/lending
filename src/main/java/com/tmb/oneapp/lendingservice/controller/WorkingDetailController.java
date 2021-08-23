@@ -9,7 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseAppl
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
-import com.tmb.oneapp.lendingservice.service.WorkingDetailUpdateWorkingDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateWorkingDetailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import java.time.Instant;
 @RestController
 public class WorkingDetailController {
     private static final TMBLogger<WorkingDetailController> logger = new TMBLogger<>(WorkingDetailController.class);
-    private final WorkingDetailUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
+    private final LoanOnlineSubmissionUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
 

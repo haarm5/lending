@@ -5,9 +5,8 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
-import com.tmb.oneapp.lendingservice.service.WorkingDetailUpdateWorkingDetailService;
+import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateWorkingDetailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +29,7 @@ class WorkingDetailControllerTest {
     WorkingDetailController workingDetailController;
 
     @Mock
-    private WorkingDetailUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
+    private LoanOnlineSubmissionUpdateWorkingDetailService workingDetailUpdateWorkingDetailService;
 
     @BeforeEach
     void setUp() {

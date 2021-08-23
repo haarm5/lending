@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.checklist.Checklist;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
@@ -58,6 +60,9 @@ class LoanOnlineSubmissionControllerTest {
 
     @Mock
     LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
+
+    @Mock
+    LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
 
 
     @BeforeEach
@@ -304,7 +309,66 @@ class LoanOnlineSubmissionControllerTest {
         oneServiceResponse.setData(response);
 
         return oneServiceResponse;
+    }
 
+    @Test
+    public void testGetDocumentsSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ChecklistRequest request = new ChecklistRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        when(loanOnlineSubmissionGetDocumentListService.getDocuments(any())).thenReturn(mockChecklistResponseData().getData());
+        ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> result = loanOnlineSubmissionController.getDocuments(crmid, request);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+    }
+
+    @Test
+    public void testGetDocumentsFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ChecklistRequest request = new ChecklistRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        when(loanOnlineSubmissionGetDocumentListService.getDocuments(any())).thenThrow(new NullPointerException());
+        ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> result = loanOnlineSubmissionController.getDocuments(crmid, request);
+        assertTrue(result.getStatusCode().isError());
+    }
+
+    private TmbOneServiceResponse<List<ChecklistResponse>> mockChecklistResponseData() {
+        TmbOneServiceResponse<List<ChecklistResponse>> oneServiceResponse = new TmbOneServiceResponse<List<ChecklistResponse>>();
+        Body body = new Body();
+        Checklist checklist = new Checklist();
+        List<ChecklistResponse> checklists = new ArrayList<>();
+        ChecklistResponse checklistResponse = new ChecklistResponse();
+        checklistResponse.setChecklistType("CC");
+        checklistResponse.setCifRelCode("M");
+        checklistResponse.setStatus("ACTIVE");
+        checklistResponse.setDocDescription("xx");
+        checklistResponse.setDocId(BigDecimal.ONE);
+        checklistResponse.setDocumentCode("ID01");
+        checklistResponse.setIncompletedDocReasonCd("xx");
+        checklistResponse.setIncompletedDocReasonDesc("xx");
+        checklistResponse.setId(BigDecimal.ONE);
+        checklistResponse.setIsMandatory("Y");
+        checklistResponse.setLosCifId(BigDecimal.ONE);
+        checklists.add(checklistResponse);
+
+        Checklist[] checklists1 = new Checklist[1];
+        checklist.setChecklistType("CC");
+        checklist.setCifRelCode("M");
+        checklist.setStatus("ACTIVE");
+        checklist.setDocDescription("xx");
+        checklist.setDocId(BigDecimal.ONE);
+        checklist.setDocumentCode("ID01");
+        checklist.setIncompletedDocReasonCd("xx");
+        checklist.setIncompletedDocReasonDesc("xx");
+        checklist.setId(BigDecimal.ONE);
+        checklist.setIsMandatory("Y");
+        checklist.setLosCifId(BigDecimal.ONE);
+        checklists1[0] = checklist;
+
+        body.setCustomerChecklists(checklists1);
+
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(oneServiceResponse.getData());
+        return oneServiceResponse;
     }
 
 }

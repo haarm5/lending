@@ -1,14 +1,13 @@
 package com.tmb.oneapp.lendingservice.controller;
 
 import java.time.Instant;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
-import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
-import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
-import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
+import com.tmb.oneapp.lendingservice.model.personal.*;
 import com.tmb.oneapp.lendingservice.service.*;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +41,7 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
+    private final LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     private TmbStatus getStatus(String responseCode, String responseService, String responseMessage, String error) {
@@ -205,6 +205,28 @@ public class LoanOnlineSubmissionController {
             throw e;
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @ApiOperation(value = "get personal detail")
+    @LogAround
+    @GetMapping("/documents")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+    public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+                                                                                       @Valid ChecklistRequest request) {
+        responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        TmbOneServiceResponse<List<ChecklistResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getDocuments(request.getCaId());
+            oneTmbOneServiceResponse.setData(responseChecklist);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
+            setHeader();
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("error while get checklist document upload: {}", e);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
     }

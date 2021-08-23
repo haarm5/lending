@@ -72,32 +72,33 @@ public class LoanSubmissionGenNCBFileService {
 		}
 	}
 
-	private void constructRequestForLOCCompleteImage(LOCRequest locRequest2) {
+	private void constructRequestForLOCCompleteImage(LOCRequest locRequest) {
+		List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
 		logger.info("constructRequestForLOCCompleteImage Start");
-		locRequest2.setConsentbyCustomer("Access PIN");
+		locRequest.setConsentbyCustomer("Access PIN");
 
-		String mobno = locRequest2.getNCBMobileNo();
-		locRequest2.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
+		String mobno = locRequest.getNCBMobileNo();
+		locRequest.setNCBMobileNo(CommonServiceUtils.formatPhoneNumber(mobno));
 
-		String customerId = locRequest2.getNcbid();
-		locRequest2.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
+		String customerId = locRequest.getNcbid();
+		locRequest.setNcbid(CommonServiceUtils.formatCustomerId(customerId));
 
 		try {
-			String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
-			String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
-			List<SFTPStoreFileInfo> sftpStoreFileInfoList = new ArrayList<>();
-			String[] locationTokens = sftpLocations.split(",");
-			SFTPStoreFileInfo sftpStoreFileInfo;
-			for (int i = 0; i < locationTokens.length; i++) {
-				sftpStoreFileInfo = new SFTPStoreFileInfo();
-				sftpStoreFileInfo.setSrcFile(jpgFile);
-				sftpStoreFileInfo.setRootPath(locationTokens[i]);
-				if (i == 0)
-					sftpStoreFileInfo.setDstDir(directoryPath);
-				sftpStoreFileInfoList.add(sftpStoreFileInfo);
+			String jpgFile = imageGeneratorService.generateLOCImage(locRequest);
+			String directoryPath = locRequest.getCrmId() + SEPARATOR + locRequest.getAppRefNo();
+			String[] locations = sftpLocations.split(",");
+			SFTPStoreFileInfo sftpStoreFile;
+			for (int i = 0; i < locations.length; i++) {
+				sftpStoreFile = new SFTPStoreFileInfo();
+				sftpStoreFile.setSrcFile(jpgFile);
+				sftpStoreFile.setRootPath(locations[i]);
+				if (i == 0) {
+					sftpStoreFile.setDstDir(directoryPath);
+				}
+				sftpStoreFiles.add(sftpStoreFile);
 			}
-			ftpClient.removeFile(sftpStoreFileInfoList);
-			ftpClient.storeFile(sftpStoreFileInfoList);
+			ftpClient.removeFile(sftpStoreFiles);
+			ftpClient.storeFile(sftpStoreFiles);
 			Files.delete(Paths.get(jpgFile));
 		} catch (IOException e) {
 			logger.error("constructRequestForLOCCompleteImage got error:{}", e);

@@ -27,6 +27,9 @@ public enum ResponseCode implements Serializable {
 			LendingServiceConstant.DATA_NOT_FOUND),
 	GENERAL_ERROR("0001", "general error", Constants.SERVICE_NAME, "unknown error"),
 
+	//SFTP
+	SFTP_FAILED("0010", "sftp failed", Constants.SERVICE_NAME, "sftp failed"),
+
 	//RSL
 	RSL_CONNECTION_ERROR("RSL0001", "rsl connection error", Constants.SERVICE_NAME, "rsl connection error"),
 	RSL_FAILED("RSL0002", "rsl failed", Constants.RSL_SERVICE_NAME, "rsl failed");

@@ -42,7 +42,7 @@ public class UploadDocumentController {
         TmbOneServiceResponse<UploadDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(request);
+            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(crmId, request);
             response.setData(uploadDocumentResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

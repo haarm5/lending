@@ -32,6 +32,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
+
 @Service
 @RequiredArgsConstructor
 public class UploadDocumentService {
@@ -118,7 +120,7 @@ public class UploadDocumentService {
         String baseDir = System.getProperty("user.dir");
         File outputDir = new File(baseDir + File.separator + "documents");
         outputDir.mkdir();
-        String filePath = outputDir + "/" + fileName;
+        String filePath = outputDir + SEPARATOR + fileName;
 
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(decoder);

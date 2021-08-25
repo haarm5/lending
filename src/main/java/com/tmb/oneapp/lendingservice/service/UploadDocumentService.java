@@ -108,7 +108,7 @@ public class UploadDocumentService {
         if (docTypeList.isEmpty()) {
             throw new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), "Doc code " + docCode + " is not found.", ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
-        String docName = docTypeList.get(0).getExtValue1();
+        String docName = docTypeList.get(0).getRefEntryCode();
         String fileName = String.format("01_%s_%s_%s.pdf", appDate, appRefNo, docName);
         logger.info("Document name : {}", fileName);
         return fileName;

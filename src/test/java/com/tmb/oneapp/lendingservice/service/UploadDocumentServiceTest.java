@@ -61,7 +61,7 @@ public class UploadDocumentServiceTest {
         doReturn(true).when(sftpClientImp).removeFile(anyList());
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
-        entry.setExtValue1("test");
+        entry.setRefEntryCode("test");
         List<CriteriaCodeEntry> docTypeList = new ArrayList<>();
         docTypeList.add(entry);
         doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());

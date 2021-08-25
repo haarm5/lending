@@ -95,7 +95,6 @@ public class UploadDocumentService {
             sftpStoreFile.setSrcFile(srcFile);
             sftpStoreFiles.add(sftpStoreFile);
 
-            sftpClientImp.removeFile(sftpStoreFiles);
             sftpClientImp.storeFile(sftpStoreFiles);
             Files.delete(Paths.get(srcFile));
         } catch (Exception e) {

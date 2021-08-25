@@ -58,7 +58,6 @@ public class UploadDocumentServiceTest {
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
-        doReturn(true).when(sftpClientImp).removeFile(anyList());
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
         entry.setRefEntryCode("test");

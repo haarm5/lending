@@ -24,6 +24,13 @@ public class CommonServiceUtils {
         return formatter.format(date);
 
     }
+
+    public static String getDateAndTimeInYYMMDDHHMMSS(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmss");
+        return formatter.format(date);
+
+    }
+
     public static String getDateAndTimeInYYYYMMDDHHMMSS() {
         return getDateAndTimeInYYYYMMDDHHMMSS(new Date());
     }
@@ -70,7 +77,9 @@ public class CommonServiceUtils {
 
     public static String getRmId(String crmId) throws TMBCommonException {
         try {
-            return new StringBuilder(new StringBuilder(crmId).reverse().substring(0, 14)).reverse().toString();
+            String rmId = new StringBuilder(new StringBuilder(crmId).reverse().substring(0, 14)).reverse().toString();
+            logger.info("rmId : {}", rmId);
+            return rmId;
         }catch (Exception e) {
             throw new TMBCommonException(ResponseCode.INVALID_DATA.getCode(), "invalid crmId", ResponseCode.INVALID_DATA.getService(), HttpStatus.BAD_REQUEST, e);
         }

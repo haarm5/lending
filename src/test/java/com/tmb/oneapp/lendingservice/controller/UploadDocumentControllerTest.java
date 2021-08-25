@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
@@ -48,7 +49,7 @@ public class UploadDocumentControllerTest {
         request.setDocuments(documents);
 
         UploadDocumentResponse response = new UploadDocumentResponse();
-        doReturn(response).when(uploadDocumentService).upload(any());
+        doReturn(response).when(uploadDocumentService).upload(anyString(), any());
 
         ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> responseEntity = uploadDocumentController.uploadDocument("correlationId", "crmId", request);
         Assertions.assertEquals(true, responseEntity.getStatusCode().is2xxSuccessful());

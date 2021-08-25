@@ -6,7 +6,9 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
+import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
+import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import org.junit.jupiter.api.Assertions;
@@ -18,11 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doReturn;
-
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
 public class UploadDocumentServiceTest {
@@ -32,6 +36,10 @@ public class UploadDocumentServiceTest {
 
     @Mock
     private LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
+    @Mock
+    private SFTPClientImp sftpClientImp;
+    @Mock
+    private LendingCriteriaInfoService lendingCriteriaInfoService;
 
     @BeforeEach
     void setUp() {
@@ -41,10 +49,24 @@ public class UploadDocumentServiceTest {
     @Test
     public void upload_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
         UploadDocumentRequest request = new UploadDocumentRequest();
+        UploadDocumentRequest.Document document = new UploadDocumentRequest.Document();
+        document.setDocCode("ID01");
+        document.setPdfFile("base64");
+        List<UploadDocumentRequest.Document> documents = new ArrayList<>();
+        documents.add(document);
+        request.setDocuments(documents);
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(true).when(sftpClientImp).storeFile(anyList());
+        doReturn(true).when(sftpClientImp).removeFile(anyList());
 
-        UploadDocumentResponse response = uploadDocumentService.upload(request);
+        CriteriaCodeEntry entry = new CriteriaCodeEntry();
+        entry.setExtValue1("test");
+        List<CriteriaCodeEntry> docTypeList = new ArrayList<>();
+        docTypeList.add(entry);
+        doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
+
+        UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", request);
         Assertions.assertEquals("success", response.getDocuments().get(0).getStatus());
     }
 

@@ -17,7 +17,8 @@ public enum LoanCategory {
 	FEATURE_ENABLE("FEATURE_ENABLE", "Feature enable"),
 	TENURE("TENURE", "Tenor (refEntryCode=RSL)"),
 	PYMT_CRITERIA("PYMT_CRITERIA", "Payment Criteria"),
-	PAYROLL_BANK("PAYROLL_BANK", "Payroll Bank");
+	PAYROLL_BANK("PAYROLL_BANK", "Payroll Bank"),
+	BRMS_ECM_DOC_TYPE("BRMS_ECM_DOC_TYPE", "Brms Ecm Doc Type");
 
 	private String code;
 	private String name;

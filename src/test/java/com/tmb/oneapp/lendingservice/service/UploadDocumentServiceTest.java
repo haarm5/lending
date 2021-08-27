@@ -19,6 +19,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
@@ -49,12 +51,15 @@ public class UploadDocumentServiceTest {
     @Test
     public void upload_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
         UploadDocumentRequest request = new UploadDocumentRequest();
-        UploadDocumentRequest.Document document = new UploadDocumentRequest.Document();
-        document.setDocCode("ID01");
-        document.setPdfFile("base64");
-        List<UploadDocumentRequest.Document> documents = new ArrayList<>();
-        documents.add(document);
-        request.setDocuments(documents);
+        request.setDocCode("ID01");
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "hello.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes()
+        );
+        request.setFile(file);
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());

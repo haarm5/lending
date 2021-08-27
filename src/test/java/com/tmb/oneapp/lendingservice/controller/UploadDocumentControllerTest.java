@@ -14,11 +14,11 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 
 import javax.xml.rpc.ServiceException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,11 +42,15 @@ public class UploadDocumentControllerTest {
     public void uploadDocument_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
         UploadDocumentRequest request = new UploadDocumentRequest();
         request.setCaId(1L);
-
-        List<UploadDocumentRequest.Document> documents = new ArrayList<>();
-        UploadDocumentRequest.Document document = new UploadDocumentRequest.Document();
-        documents.add(document);
-        request.setDocuments(documents);
+        request.setDocCode("ID01");
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "hello.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes()
+        );
+        request.setFile(file);
 
         UploadDocumentResponse response = new UploadDocumentResponse();
         doReturn(response).when(uploadDocumentService).upload(anyString(), any());

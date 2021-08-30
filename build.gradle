@@ -18,6 +18,7 @@ buildscript {
                 password = 'ad123Tmb*'
             }
         }
+
     }
 }
 
@@ -29,6 +30,7 @@ repositories {
             password = 'ad123Tmb*'
         }
     }
+
 }
 
 apply plugin: 'java'
@@ -47,7 +49,7 @@ sourceCompatibility = '11'
 if (project.hasProperty('projVersion')) {
     project.version = project.projVersion
 } else {
-    project.version = '2.2.0'
+    project.version = '2.1.0'
 }
 
 springBoot {

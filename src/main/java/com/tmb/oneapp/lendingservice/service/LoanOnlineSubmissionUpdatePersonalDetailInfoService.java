@@ -194,6 +194,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
                 detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
                 detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
                 detailResponse.setPrefix(responseIndividual.getThaiSalutationCode());
+                detailResponse.setResidentStatus(responseIndividual.getResidentFlag());
                 if (request.getThaiSalutationCode() != null) {
                     detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
                 }

@@ -36,9 +36,9 @@ import java.util.Map;
  */
 @Api(tags = "Loan Submission- Instant Loan Create Application")
 @RestController
-public class InstantLoanCreateApplicationController {
-	private static final TMBLogger<InstantLoanCreateApplicationController> logger = new TMBLogger<>(
-			InstantLoanCreateApplicationController.class);
+public class InstantLoanAppController {
+	private static final TMBLogger<InstantLoanAppController> logger = new TMBLogger<>(
+			InstantLoanAppController.class);
 	private final InstantLoanCreateApplicationService instantLoanCreateApplicationService;
 
 	/**
@@ -46,7 +46,7 @@ public class InstantLoanCreateApplicationController {
 	 *
 	 * @param instantLoanCreateApplicationService
 	 */
-	public InstantLoanCreateApplicationController(
+	public InstantLoanAppController(
 			InstantLoanCreateApplicationService instantLoanCreateApplicationService) {
 		this.instantLoanCreateApplicationService = instantLoanCreateApplicationService;
 	}

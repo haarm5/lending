@@ -260,16 +260,16 @@ public class InstantLoanCreateApplicationService {
 			throws ParseException {
 		InstantIndividual individual = new InstantIndividual();
 		CustomerInfo customerInfo = request.getCustomerInfo();
-		String birthDate = customerInfo.getBirthDate() + "T00:00:00.000Z";
-		String issueDate = customerInfo.getIssuedDate() + "T00:00:00.000Z";
-		Calendar calBirthDate = Calendar.getInstance();
-		Calendar calIssueDate = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSS", Locale.ENGLISH);
 		if (StringUtils.isNotBlank(customerInfo.getBirthDate())) {
+			Calendar calBirthDate = Calendar.getInstance();
+			String birthDate = customerInfo.getBirthDate() + "T00:00:00.000Z";
 			calBirthDate.setTime(sdf.parse(birthDate));
 			individual.setBirthDate(calBirthDate);
 		}
 		if (StringUtils.isNotBlank(customerInfo.getIssuedDate())) {
+			String issueDate = customerInfo.getIssuedDate() + "T00:00:00.000Z";
+			Calendar calIssueDate = Calendar.getInstance();
 			calIssueDate.setTime(sdf.parse(issueDate));
 			individual.setIssuedDate(calIssueDate);
 		}

@@ -84,6 +84,7 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        individual.setResidentFlag("H");
         address.setAddrTypCode("H");
         address.setAddress("xx");
         address.setBuildingName("xxx");
@@ -146,6 +147,7 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         custGeneralProfileResponse.setCurrentAddrStreet("ลาดพร้าว");
         custGeneralProfileResponse.setWorkAddrZipcode("10240");
         custGeneralProfileResponse.setWorkAddrSubDistrictNameTh("แขงวังทองหลาง");
+        custGeneralProfileResponse.setRegisAddressFlag("H");
         oneServiceResponse.setData(custGeneralProfileResponse);
         oneServiceResponse.setStatus(tmbStatus);
 
@@ -191,6 +193,7 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         individual.setNationality("TH");
         individual.setExpiryDate(Calendar.getInstance());
         individual.setThaiSalutationCode("111");
+        individual.setResidentFlag("H");
         address.setAddress("xx");
         address.setBuildingName("xxx");
         address.setAmphur("xxx");
@@ -251,6 +254,7 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         custGeneralProfileResponse.setCurrentAddrStreet("ลาดพร้าว");
         custGeneralProfileResponse.setWorkAddrZipcode("10240");
         custGeneralProfileResponse.setWorkAddrSubDistrictNameTh("แขงวังทองหลาง");
+        custGeneralProfileResponse.setRegisAddressFlag("H");
         oneServiceResponse.setData(custGeneralProfileResponse);
         oneServiceResponse.setStatus(tmbStatus);
 

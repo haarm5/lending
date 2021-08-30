@@ -18,6 +18,7 @@ buildscript {
                 password = 'ad123Tmb*'
             }
         }
+
     }
 }
 
@@ -29,6 +30,7 @@ repositories {
             password = 'ad123Tmb*'
         }
     }
+
 }
 
 apply plugin: 'java'

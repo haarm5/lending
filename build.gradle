@@ -11,24 +11,30 @@ buildscript {
     }
 
     repositories {
-        maven {
-            url 'https://nexus.tmbbank.local:8081/repository/oneapp'
-            credentials {
-                username = 'oneapp_lib'
-                password = 'ad123Tmb*'
-            }
-        }
+//        maven {
+//            url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+//            credentials {
+//                username = 'oneapp_lib'
+//                password = 'ad123Tmb*'
+//            }
+//        }
+
+        mavenCentral()
+        mavenLocal()
     }
 }
 
 repositories {
-    maven {
-        url 'https://nexus.tmbbank.local:8081/repository/oneapp'
-        credentials {
-            username = 'oneapp_lib'
-            password = 'ad123Tmb*'
-        }
-    }
+//    maven {
+//        url 'https://nexus.tmbbank.local:8081/repository/oneapp'
+//        credentials {
+//            username = 'oneapp_lib'
+//            password = 'ad123Tmb*'
+//        }
+//    }
+
+    mavenCentral()
+    mavenLocal()
 }
 
 apply plugin: 'java'
@@ -47,7 +53,7 @@ sourceCompatibility = '11'
 if (project.hasProperty('projVersion')) {
     project.version = project.projVersion
 } else {
-    project.version = '2.2.0'
+    project.version = '2.1.0'
 }
 
 springBoot {
@@ -73,7 +79,7 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'com.tmb.common:tmb_common_utility:0.0.240'
+    implementation 'com.tmb.common:tmb_common_utility:0.0.247'
     implementation group: 'redis.clients', name: 'jedis', version: '3.5.1'
     implementation 'org.springframework.kafka:spring-kafka'
     testCompile("junit:junit:4.12")

@@ -39,7 +39,7 @@ public class LoanServiceResponseParser {
      * @return
      * @throws TMBCommonException
      */
-    public static ResponseTracking parseLoanStatusTracking(ResponseTracking responseTracking) throws TMBCommonException {
+    public static ResponseTracking parseLoanStatusTracking(ResponseTracking responseTracking) {
         Header header = responseTracking.getHeader();
         if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());

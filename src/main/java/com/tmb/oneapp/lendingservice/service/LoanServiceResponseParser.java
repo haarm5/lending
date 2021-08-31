@@ -28,7 +28,7 @@ public class LoanServiceResponseParser {
         if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("EligibleProducts got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseInstantLoanGetEligibleProduct);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+            return responseInstantLoanGetEligibleProduct;
         }
         return responseInstantLoanGetEligibleProduct;
     }

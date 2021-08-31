@@ -100,7 +100,8 @@ public class LoanService {
     private LoanObjectMapper loanObjectMapper = new LoanObjectMapper();
 
     private static final TMBLogger<LoanService> logger = new TMBLogger<>(LoanService.class);
-
+    private static final String SUCCESS_CODE = "MSG_000";
+    private static final String SUCCESS_DESC = "Success";
     /**
      * Models ProductResponse
      *
@@ -347,12 +348,20 @@ public class LoanService {
     }
 
 
-    private boolean containInCreditCardEligibleProduct(String crmId, String productCode) throws TMBCommonException {
-        ResponseInstantLoanGetEligibleProduct eligibleProducts = Fetch.fetch(() -> eligibleProductClient.getEligibleProduct(crmId), LoanServiceResponseParser::parseEligibleProducts);
-        List<InstantCreditCard> hasligibleProducts = Arrays.stream(eligibleProducts.getBody().getInstantCreditCard()).filter(instantCreditCard -> instantCreditCard.getProductType().equalsIgnoreCase(productCode)).collect(Collectors.toList());
-        return !hasligibleProducts.isEmpty();
-
-    }
+	private boolean containInCreditCardEligibleProduct(String crmId, String productCode) throws TMBCommonException {
+		ResponseInstantLoanGetEligibleProduct eligibleProducts = Fetch.fetch(
+				() -> eligibleProductClient.getEligibleProduct(crmId),
+				LoanServiceResponseParser::parseEligibleProducts);
+		if (SUCCESS_CODE.equalsIgnoreCase(eligibleProducts.getHeader().getResponseCode())
+				&& SUCCESS_DESC.equalsIgnoreCase(eligibleProducts.getHeader().getResponseDescriptionEN())) {
+			List<InstantCreditCard> hasligibleProducts = Arrays
+					.stream(eligibleProducts.getBody().getInstantCreditCard())
+					.filter(instantCreditCard -> instantCreditCard.getProductType().equalsIgnoreCase(productCode))
+					.collect(Collectors.toList());
+			return !hasligibleProducts.isEmpty();
+		}
+		return false;
+	}
 
     /**
      * Handles credit card product detail
@@ -431,23 +440,28 @@ public class LoanService {
 			ResponseInstantLoanGetEligibleProduct eligibleProducts = Fetch.fetch(
 					() -> eligibleProductClient.getEligibleProduct(crmId),
 					LoanServiceResponseParser::parseEligibleProducts);
-			List<InstantFacility> foundProductsC2G01 = Arrays.stream(eligibleProducts.getBody().getInstantFacility())
-					.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G01")
-							&& instantFacility.getProductCode().equalsIgnoreCase(productCode))
-					.collect(Collectors.toList());
-			if (haveInAccounts(loanSummary)) {
-				List<InstantFacility> foundProductsC2G02 = Arrays.stream(eligibleProducts.getBody().getInstantFacility())
-						.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G02")
+			if (SUCCESS_CODE.equalsIgnoreCase(eligibleProducts.getHeader().getResponseCode())
+					&& SUCCESS_DESC.equalsIgnoreCase(eligibleProducts.getHeader().getResponseDescriptionEN())) {
+				List<InstantFacility> foundProductsC2G01 = Arrays
+						.stream(eligibleProducts.getBody().getInstantFacility())
+						.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G01")
 								&& instantFacility.getProductCode().equalsIgnoreCase(productCode))
 						.collect(Collectors.toList());
-				if (foundProductsC2G02.isEmpty()) {
-					productDetailResponse.setAlreadyHasProduct(true);
-					return productDetailResponse;
-				}
-				return handleFlexiLoanFlow(crmId, productCode, loanType);
+				if (haveInAccounts(loanSummary)) {
+					List<InstantFacility> foundProductsC2G02 = Arrays
+							.stream(eligibleProducts.getBody().getInstantFacility())
+							.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G02")
+									&& instantFacility.getProductCode().equalsIgnoreCase(productCode))
+							.collect(Collectors.toList());
+					if (foundProductsC2G02.isEmpty()) {
+						productDetailResponse.setAlreadyHasProduct(true);
+						return productDetailResponse;
+					}
+					return handleFlexiLoanFlow(crmId, productCode, loanType);
 
-			} else if (!foundProductsC2G01.isEmpty()) {
-				return handleFlexiLoanFlow(crmId, productCode, loanType);
+				} else if (!foundProductsC2G01.isEmpty()) {
+					return handleFlexiLoanFlow(crmId, productCode, loanType);
+				}
 			}
 			return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
 		}
@@ -459,11 +473,14 @@ public class LoanService {
 		ResponseInstantLoanGetEligibleProduct eligibleProducts = Fetch.fetch(
 				() -> eligibleProductClient.getEligibleProduct(crmId),
 				LoanServiceResponseParser::parseEligibleProducts);
-		List<InstantFacility> foundProducts = Arrays.stream(eligibleProducts.getBody().getInstantFacility())
-				.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase(productCode))
-				.collect(Collectors.toList());
-		if (!foundProducts.isEmpty()) {
-			return handleFlexiLoanFlow(crmId, productCode, loanType);
+		if (SUCCESS_CODE.equalsIgnoreCase(eligibleProducts.getHeader().getResponseCode())
+				&& SUCCESS_DESC.equalsIgnoreCase(eligibleProducts.getHeader().getResponseDescriptionEN())) {
+			List<InstantFacility> foundProducts = Arrays.stream(eligibleProducts.getBody().getInstantFacility())
+					.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase(productCode))
+					.collect(Collectors.toList());
+			if (!foundProducts.isEmpty()) {
+				return handleFlexiLoanFlow(crmId, productCode, loanType);
+			}
 		}
 		return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
     }
@@ -596,9 +613,11 @@ public class LoanService {
         String productCode = request.getProductCode();
         List<CommonCodeEntry> master26 = lendingModuleCache.getListByCategoryCode(LoanCategory.PRODUCT.getCode());
         LoanType loanType = LoanType.PERSONAL_LOAN;
-        List<CommonCodeEntry> creditCardProducts = master26.stream().filter(commonCodeEntry -> productCode.equalsIgnoreCase(commonCodeEntry.getEntryCode())).collect(Collectors.toList());
-        if (!creditCardProducts.isEmpty()) {
-            loanType = LoanType.CREDIT_CARD;
+        List<CommonCodeEntry> cardProducts = master26.stream().filter(commonCodeEntry -> productCode.equalsIgnoreCase(commonCodeEntry.getEntryCode())).collect(Collectors.toList());
+        if (!cardProducts.isEmpty()) {
+        	if(!"PL".equals((cardProducts.get(0).getRefEntryCode()) )){
+        		loanType = LoanType.CREDIT_CARD;
+        	}
         }
         List<LendingModuleConfig> lendingModuleConfigs = Fetch.fetch(() -> commonServiceClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module"));
         LendingModuleConfig lendingModuleConfig = lendingModuleConfigs.get(0);

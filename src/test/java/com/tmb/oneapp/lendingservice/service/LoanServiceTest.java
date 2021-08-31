@@ -1099,7 +1099,7 @@ public class LoanServiceTest {
 
     @Test
     void fetchProductOrientation_PersonalLoan_ProductCode_Is_RC_ContainInAccountCreditCard_ShouldReturn_AlreadyHasProduct()
-            throws TMBCommonException {
+            throws TMBCommonException, ServiceException, RemoteException  {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
@@ -1110,7 +1110,10 @@ public class LoanServiceTest {
         c1.setAccountStatus("active");
         when(customerExpServiceClient.getCreditCards(any(), any()))
                 .thenReturn(LoanServiceUtils.mockOneAppCreditCardResponse(c1));
-
+        InstantFacility f = new InstantFacility();
+        f.setProductCode("rc01");
+        when(eligibleProductClient.getEligibleProduct(any()))
+                .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
         ProductDetailRequest request = new ProductDetailRequest();
         request.setProductCode(requestProductCode);
         ProductDetailResponse productDetailResponse = loanService.fetchProductOrientation(crmId, request);

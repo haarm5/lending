@@ -21,7 +21,7 @@ public class LoanServiceResponseParser {
     private static final String SUCCESS_DESC = "Success";
 
     private LoanServiceResponseParser(){}
-    public static ResponseInstantLoanGetEligibleProduct parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) throws TMBCommonException {
+    public static ResponseInstantLoanGetEligibleProduct parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) {
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header header = responseInstantLoanGetEligibleProduct.getHeader();
 

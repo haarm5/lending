@@ -494,12 +494,16 @@ public class LoanService {
         String citizenId = customerResponse.getData().getCitizenId();
         ResponseTracking loanStatusTrackingResponse = Fetch.fetch(() -> loanStatusTrackingClient.searchAppStatusByID(citizenId), LoanServiceResponseParser::parseLoanStatusTracking);
         Application[] applications = loanStatusTrackingResponse.getBody().getApplication();
-        return Arrays.stream(applications)
-                .filter(application -> !Arrays.stream(application.getApplicants())
-                        .filter(applicant -> !Arrays.stream(applicant.getProducts())
-                                .filter(product -> product.getProductCode().equalsIgnoreCase(productCode))
-                                .collect(Collectors.toList()).isEmpty())
-                        .collect(Collectors.toList()).isEmpty()).collect(Collectors.toList());
+		if (applications != null) {
+			return Arrays.stream(applications)
+					.filter(application -> !Arrays.stream(application.getApplicants())
+							.filter(applicant -> !Arrays.stream(applicant.getProducts())
+									.filter(product -> product.getProductCode().equalsIgnoreCase(productCode))
+									.collect(Collectors.toList()).isEmpty())
+							.collect(Collectors.toList()).isEmpty())
+					.collect(Collectors.toList());
+		}
+		return new ArrayList<Application>();
     }
 
     /**

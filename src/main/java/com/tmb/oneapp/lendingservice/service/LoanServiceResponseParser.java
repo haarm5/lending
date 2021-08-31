@@ -43,9 +43,9 @@ public class LoanServiceResponseParser {
         Header header = responseTracking.getHeader();
         if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
-            logError(responseTracking);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-        }
+			logError(responseTracking);
+			return responseTracking;
+		}
         return responseTracking;
     }
 

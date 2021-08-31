@@ -44,7 +44,7 @@ public class InstantLoanCreateApplicationServiceTest {
     @Mock
     ImageGeneratorService imageGeneratorService;
 
-    private String crmId = "123";
+    private String crmId = "001100000000000000000018593707";
 
     @BeforeEach
     void setUp() throws JsonProcessingException {

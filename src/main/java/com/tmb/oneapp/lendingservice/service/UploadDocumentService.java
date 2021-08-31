@@ -18,17 +18,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.rpc.ServiceException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -54,23 +54,22 @@ public class UploadDocumentService {
         String appRefNo = applicationInfo.getAppRefNo();
         String appDate = applicationInfo.getApplicationDate();
 
-        for (UploadDocumentRequest.Document document : request.getDocuments()) {
             UploadDocumentResponse.Document uploadResponse = new UploadDocumentResponse.Document();
             try {
-                uploadResponse.setDocCode(document.getDocCode());
-                String fileName = parsePdfFileName(document.getDocCode(), appRefNo, convertAppDate(appDate));
+                uploadResponse.setDocCode(request.getDocCode());
+                String fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
                 uploadResponse.setPdfFileName(fileName);
-                String srcFile = generatePDFFromBase64(fileName, document.getPdfFile());
+                String srcFile = storeFile(fileName, request.getFile());
                 sftpStoreDocuments(rmId, appRefNo, srcFile);
                 uploadResponse.setStatus("success");
 
             } catch (Exception e) {
-                logger.error("Sftp document code [{}] fail: {}", document.getDocCode(), e.getCause().getMessage());
+                logger.error("Sftp document code [{}] fail: {}", request.getDocCode(), e.getCause().getMessage());
                 uploadResponse.setStatus("fail");
             } finally {
                 uploadDocuments.add(uploadResponse);
             }
-        }
+
         response.setDocuments(uploadDocuments);
         response.setAppRefNo(applicationInfo.getAppRefNo());
         response.setAppType(applicationInfo.getAppType());
@@ -113,16 +112,14 @@ public class UploadDocumentService {
         return fileName;
     }
 
-    private String generatePDFFromBase64(String fileName, String base64) throws IOException {
-        String base64String = base64.replace("data:application/pdf;base64,", "");
-        byte[] decoder = Base64.getDecoder().decode(base64String);
+    private String storeFile(String fileName, MultipartFile file) throws IOException {
         String baseDir = System.getProperty("user.dir");
         File outputDir = new File(baseDir + File.separator + "documents");
         outputDir.mkdir();
         String filePath = outputDir + SEPARATOR + fileName;
 
-        try (FileOutputStream fos = new FileOutputStream(filePath)) {
-            fos.write(decoder);
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
         }
 
         return filePath;

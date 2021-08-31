@@ -30,14 +30,14 @@ public class UploadDocumentController {
     private final UploadDocumentService uploadDocumentService;
 
     @ApiOperation("Upload documents")
-    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @LogAround
     public ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @Valid @RequestBody UploadDocumentRequest request
+            @Valid @ModelAttribute UploadDocumentRequest request
     ) throws TMBCommonException {
         TmbOneServiceResponse<UploadDocumentResponse> response = new TmbOneServiceResponse<>();
 

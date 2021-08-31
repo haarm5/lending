@@ -14,6 +14,7 @@ import java.util.List;
 public class PersonalDetailResponse {
     private String citizenId;
     private String prefix;
+    private String residentStatus;
     private String engName;
     private String engSurname;
     private String thaiName;

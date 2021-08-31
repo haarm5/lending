@@ -59,6 +59,12 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         response.setCitizenId(prepareData(individual.getIdNo1(), custGeneralProfileResponse.getCitizenId()).toString());
         response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
         response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
+        if(individual.getResidentFlag() != null && !individual.getResidentFlag().isEmpty()) {
+            response.setResidentStatus(individual.getResidentFlag());
+        } else {
+            response.setResidentStatus(" ");
+        }
+
 
         Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
         if (responseAddress.isPresent()) {

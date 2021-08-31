@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class UploadDocumentController {
     private final UploadDocumentService uploadDocumentService;
 
     @ApiOperation("Upload documents")
-    @PostMapping(value = "/upload")
+    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @LogAround
     public ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> uploadDocument(
             @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)

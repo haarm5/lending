@@ -503,7 +503,7 @@ public class LoanService {
 							.collect(Collectors.toList()).isEmpty())
 					.collect(Collectors.toList());
 		}
-		return new ArrayList<Application>();
+		return new ArrayList<>();
     }
 
     /**

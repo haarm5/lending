@@ -115,6 +115,7 @@ public class InstantLoanCreateApplicationService {
 				logger.info("soapCreditCardList size is  {} : ", String.valueOf(soapCreditCardList.size()));
 			}
 			soapInstantIndividual.setAddresses(soapAddressList.toArray(new Address[0]));
+			soapInstantIndividual.setHostCifNo(crmId.substring(16));
 			logger.info("soapAddressList size is  {} : ", String.valueOf(soapAddressList.size()));
 
 			InstantApplication soapInstantApplication = new InstantApplication();
@@ -273,7 +274,7 @@ public class InstantLoanCreateApplicationService {
 			calIssueDate.setTime(sdf.parse(issueDate));
 			individual.setIssuedDate(calIssueDate);
 		}
-		individual.setBusinessSubType(null);
+		individual.setBusinessSubType(customerInfo.getBusinessSubType());
 		individual.setBusinessType(customerInfo.getBusinessType());
 		individual.setCifRelCode("M");
 		individual.setDiscloseCustInfoFlag(customerInfo.getDiscloseCustInfoFlag());
@@ -284,7 +285,6 @@ public class InstantLoanCreateApplicationService {
 		individual.setEmploymentStatus(customerInfo.getEmploymentStatus());
 		individual.setEmploymentTelephoneDirectNo(customerInfo.getEmploymentTelephoneDirectNo());
 		individual.setEmploymentTelephoneExtNo(customerInfo.getEmploymentTelephoneExtNo());
-		individual.setHostCifNo(customerInfo.getHostCifNo());
 		individual.setIdNo1(customerInfo.getIdNo1());
 		individual.setIdType1(customerInfo.getIdType1());
 

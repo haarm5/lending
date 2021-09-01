@@ -10,7 +10,6 @@ import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
-import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
@@ -21,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.rpc.ServiceException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,34 +47,31 @@ public class UploadDocumentService {
     @Value("${sftp.locations.loan.documents}")
     private String sftpLocations;
 
-    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, ServiceException, JsonProcessingException {
+    public UploadDocumentResponse upload(String crmId, MultipartFile file, long caId, String docCode) throws TMBCommonException, ServiceException, JsonProcessingException {
         UploadDocumentResponse response = new UploadDocumentResponse();
-        Body applicationInfo = getApplicationInfo(request.getCaId());
-        List<UploadDocumentResponse.Document> uploadDocuments = new ArrayList<>();
+        Body applicationInfo = getApplicationInfo(caId);
         String rmId = CommonServiceUtils.getRmId(crmId);
         String appRefNo = applicationInfo.getAppRefNo();
         String appDate = applicationInfo.getApplicationDate();
-
-            UploadDocumentResponse.Document uploadResponse = new UploadDocumentResponse.Document();
-            try {
-                uploadResponse.setDocCode(request.getDocCode());
-                String fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
-                uploadResponse.setPdfFileName(fileName);
-                String srcFile = storeFile(fileName, request.getFile());
-                sftpStoreDocuments(rmId, appRefNo, srcFile);
-                uploadResponse.setStatus("success");
-
-            } catch (Exception e) {
-                logger.error("Sftp document code [{}] fail: {}", request.getDocCode(), e.getCause().getMessage());
-                uploadResponse.setStatus("fail");
-            } finally {
-                uploadDocuments.add(uploadResponse);
-            }
-
-        response.setDocuments(uploadDocuments);
         response.setAppRefNo(applicationInfo.getAppRefNo());
         response.setAppType(applicationInfo.getAppType());
         response.setProductDescTh(applicationInfo.getProductDescTH());
+
+        try {
+            String fileName = parsePdfFileName(docCode, appRefNo, convertAppDate(appDate));
+            response.setPdfFileName(fileName);
+
+            String srcFile = storeFile(fileName, file);
+            sftpStoreDocuments(rmId, appRefNo, srcFile);
+            response.setStatus("success");
+
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("upload document code [{}] fail: {}", docCode, e.getCause().getMessage());
+            response.setStatus("fail");
+        }
+
         return response;
     }
 

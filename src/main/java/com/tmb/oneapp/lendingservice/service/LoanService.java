@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
@@ -61,6 +62,7 @@ import com.tmb.oneapp.lendingservice.model.creditcard.CreditCardResponse;
 import com.tmb.oneapp.lendingservice.model.loan.ContinueApplyNextScreen;
 import com.tmb.oneapp.lendingservice.model.loan.ContinueApplyParams;
 import com.tmb.oneapp.lendingservice.model.loan.EligibleProductResponse;
+import com.tmb.oneapp.lendingservice.model.loan.FlowType;
 import com.tmb.oneapp.lendingservice.model.loan.LoanObjectMapper;
 import com.tmb.oneapp.lendingservice.model.loan.LoanStatusTrackingResponse;
 import com.tmb.oneapp.lendingservice.model.loan.LoanType;
@@ -519,7 +521,7 @@ public class LoanService {
             loanType, LendingModuleConfig lendingModuleConfig) throws TMBCommonException {
         ProductDetailResponse productDetailResponse = new ProductDetailResponse();
         productDetailResponse.setLoanType(loanType);
-
+        productDetailResponse.setFlowType(FlowType.LOAN_SUBMISSION);
         List<Application> foundApplication = findApplication(crmId, productCode);
         if (foundApplication.isEmpty()) {
             productDetailResponse.setStatus(ProductStatus.APPLY_WITH_PRODUCT_NAME);
@@ -559,7 +561,7 @@ public class LoanService {
             TMBCommonException {
         ProductDetailResponse productDetailResponse = new ProductDetailResponse();
         productDetailResponse.setLoanType(loanType);
-        productDetailResponse.setFlowType("FLEXI");
+        productDetailResponse.setFlowType(FlowType.FLEXI);
         List<Application> foundApplication = findApplication(crmId, productCode);
         if (foundApplication.isEmpty()) {
             productDetailResponse.setStatus(ProductStatus.APPLY_WITH_PRODUCT_NAME);
@@ -645,6 +647,13 @@ public class LoanService {
 		productDetailResponse.setProductCode(productCode);
 		productDetailResponse.setLoanType(loanType);
 		processGetProducts(productDetailResponse, crmId);
+		
+		if (lendingModuleConfig.getDefaultRslCode() != null) {
+			List<RslCode> defaultRslCodes = lendingModuleConfig.getDefaultRslCode().stream().filter(
+					defaultRslCode -> defaultRslCode.getRslCode().toLowerCase().contains(productCode.toLowerCase()))
+					.collect(Collectors.toList());
+			productDetailResponse.setDefaultRslCode(defaultRslCodes);
+		}
 		return productDetailResponse;
 	}
 
@@ -652,7 +661,7 @@ public class LoanService {
 		ProductRequest request = new ProductRequest();
 		request.setCrmId(crmId);
 		if (ProductStatus.APPLY_WITH_PRODUCT_NAME == productDetailResponse.getStatus()
-				&& "FLEXI".equalsIgnoreCase(productDetailResponse.getFlowType())) {
+				&& FlowType.FLEXI == productDetailResponse.getFlowType()) {
 			ensureCacheMasterData();
 			CompletableFuture<ServiceResponse> accountListFuture = CompletableFuture
 					.supplyAsync(() -> this.getAccountList(request.getCrmId()));

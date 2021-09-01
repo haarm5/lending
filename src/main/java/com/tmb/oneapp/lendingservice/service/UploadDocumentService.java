@@ -65,8 +65,10 @@ public class UploadDocumentService {
             sftpStoreDocuments(rmId, appRefNo, srcFile);
             response.setStatus("success");
 
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            logger.error("Sftp document code [{}] fail: {}", docCode, e.getCause().getMessage());
+            logger.error("upload document code [{}] fail: {}", docCode, e.getCause().getMessage());
             response.setStatus("fail");
         }
 

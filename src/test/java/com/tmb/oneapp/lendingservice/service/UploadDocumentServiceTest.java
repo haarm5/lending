@@ -9,7 +9,6 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClie
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
-import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
-
 @RunWith(JUnit4.class)
 public class UploadDocumentServiceTest {
 
@@ -50,8 +48,6 @@ public class UploadDocumentServiceTest {
 
     @Test
     public void upload_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
-        UploadDocumentRequest request = new UploadDocumentRequest();
-        request.setDocCode("ID01");
         MockMultipartFile file
                 = new MockMultipartFile(
                 "file",
@@ -59,7 +55,6 @@ public class UploadDocumentServiceTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
-        request.setFile(file);
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
@@ -70,8 +65,8 @@ public class UploadDocumentServiceTest {
         docTypeList.add(entry);
         doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
 
-        UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", request);
-        Assertions.assertEquals("success", response.getDocuments().get(0).getStatus());
+        UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", file, 1L, "ID01");
+        Assertions.assertEquals("success", response.getStatus());
     }
 
     private ResponseApplication mockResponseApplication() {

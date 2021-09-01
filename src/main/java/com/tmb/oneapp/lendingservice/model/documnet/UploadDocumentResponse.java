@@ -13,18 +13,10 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UploadDocumentResponse {
 
-    private List<Document> documents;
+    private String pdfFileName;
+    private String status;
     private String appRefNo;
     private String appType;
     private String productDescTh;
-
-    @Getter
-    @Setter
-    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-    public static class Document {
-        private String docCode;
-        private String pdfFileName;
-        private String status;
-    }
 
 }

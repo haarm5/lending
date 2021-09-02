@@ -58,7 +58,7 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
 
         Body body = new Body();
         body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.valueOf(2021071404188196L));
+        body.setCaId(BigDecimal.valueOf(2021090204189030L));
         request.setBody(body);
 
         when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
@@ -66,7 +66,8 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("RC01");
         calUWReq.setTriggerFlag("Y");
-        calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
+        calUWReq.setLoanDay1Set("Y");
+        calUWReq.setCaId(BigDecimal.valueOf(2021090204189030L));
 
         when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 
@@ -77,12 +78,12 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     }
 
     @Test
-    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    public void testCheckCalculateUnderwritingApproveC2G() throws ServiceException, TMBCommonException, JsonProcessingException {
         RequestInstantLoanCalUW request = new RequestInstantLoanCalUW();
 
         Body body = new Body();
         body.setTriggerFlag("Y");
-        body.setCaId(BigDecimal.valueOf(2021071404188196L));
+        body.setCaId(BigDecimal.valueOf(2021090204189030L));
         request.setBody(body);
 
         when(loanCalUWClient.calculateUnderwriting(any(), any())).thenReturn(mockCalUW());
@@ -90,7 +91,8 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
         InstantLoanCalUWRequest calUWReq = new InstantLoanCalUWRequest();
         calUWReq.setProduct("C2G02");
         calUWReq.setTriggerFlag("Y");
-        calUWReq.setCaId(BigDecimal.valueOf(2021071404188196L));
+        calUWReq.setLoanDay1Set("Y");
+        calUWReq.setCaId(BigDecimal.valueOf(2021090204189030L));
 
         when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacility());
 

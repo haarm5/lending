@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.service.UploadDocumentService;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +39,9 @@ public class UploadDocumentControllerTest {
 
     @Test
     public void uploadDocument_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+        UploadDocumentRequest request = new UploadDocumentRequest();
+        request.setDocCode("ID01");
+        request.setCaId("1");
         MockMultipartFile file
                 = new MockMultipartFile(
                 "file",
@@ -45,11 +49,12 @@ public class UploadDocumentControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes()
         );
+        request.setFile(file);
 
         UploadDocumentResponse response = new UploadDocumentResponse();
         doReturn(response).when(uploadDocumentService).upload(anyString(), any(), anyLong(), any());
 
-        ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> responseEntity = uploadDocumentController.uploadDocument("correlationId", "crmId", file, "1", "ID01");
+        ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> responseEntity = uploadDocumentController.uploadDocument("correlationId", "crmId", request);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 }

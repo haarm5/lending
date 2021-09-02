@@ -104,7 +104,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
         }
         individuals[0].setMobileNo(customer.getPhoneNoFull());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(customer.getIdBirthDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);

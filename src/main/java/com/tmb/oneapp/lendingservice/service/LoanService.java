@@ -152,7 +152,7 @@ public class LoanService {
 		List<PaymentCriteriaOption> masterDataPymt = localMasterDataPymtCriteria.stream()
 				.sorted((o1, o2) -> o2.getEntryID().compareTo(o1.getEntryID())).map(commonCodeEntry -> {
 					PaymentCriteriaOption paymentCriteriaOption = new PaymentCriteriaOption();
-					paymentCriteriaOption.setOptionId(commonCodeEntry.getEntrySource());
+					paymentCriteriaOption.setOptionId(commonCodeEntry.getEntryCode());
 					paymentCriteriaOption.setOptionNameEn(commonCodeEntry.getEntryName());
 					paymentCriteriaOption.setOptionNameTh(commonCodeEntry.getEntryName2());
 					paymentCriteriaOption.setEntrySource(commonCodeEntry.getEntrySource());

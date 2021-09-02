@@ -21,6 +21,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.common.model.loan.stagingbar.StagingDetails;
+import com.tmb.oneapp.lendingservice.model.LoanStagingbarRequest;
 import com.tmb.oneapp.lendingservice.service.LoanStagingBarService;
 
 @RunWith(JUnit4.class)
@@ -41,6 +42,9 @@ public class LoanStagingBarControllerTest {
 	public void fetchLoanStagingBarSuccess() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 		String crmId = "001100000000000000000018593707";
+		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
+		loanStagingbarReq.setLoanType("flexi");
+		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
 		LoanStagingbar loanStagingbar = new LoanStagingbar();
 		loanStagingbar.setLoanType("flexi");
 		loanStagingbar.setProductHeaderKey("apply-personal-loan");
@@ -57,7 +61,7 @@ public class LoanStagingBarControllerTest {
 		when(loanStagingBarService.fetchLoanStagingBar(any(), any(), any())).thenReturn(loanStagingbar);
 
 		ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> result = loanStagingBarController
-				.fetchLoanStagingBar(correlationId, crmId, loanStagingbar);
+				.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
 		assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
 
 	}
@@ -66,6 +70,9 @@ public class LoanStagingBarControllerTest {
 	public void fetchLoanStagingBarFailKeyNull() throws TMBCommonException {
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 		String crmId = "001100000000000000000018593707";
+		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
+		loanStagingbarReq.setLoanType(null);
+		loanStagingbarReq.setProductHeaderKey(null);
 		LoanStagingbar loanStagingbar = new LoanStagingbar();
 		loanStagingbar.setLoanType(null);
 		loanStagingbar.setProductHeaderKey(null);
@@ -79,7 +86,7 @@ public class LoanStagingBarControllerTest {
 		loanStagingbar.setStagingDetails(stagingDetailsList);
 		loanStagingbar.setStagesCount("1");
 		try {
-			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbar);
+			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
 			Assertions.fail("Should have TMBCommonException");
 		} catch (TMBCommonException e) {
 		}
@@ -90,6 +97,9 @@ public class LoanStagingBarControllerTest {
 
 		String correlationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
 		String crmId = "001100000000000000000018593707";
+		LoanStagingbarRequest loanStagingbarReq = new LoanStagingbarRequest();
+		loanStagingbarReq.setLoanType("flexi");
+		loanStagingbarReq.setProductHeaderKey("apply-personal-loan");
 		LoanStagingbar loanStagingbar = new LoanStagingbar();
 		loanStagingbar.setLoanType("flexi");
 		loanStagingbar.setProductHeaderKey("apply-personal-loan");
@@ -106,7 +116,7 @@ public class LoanStagingBarControllerTest {
 		when(loanStagingBarService.fetchLoanStagingBar(any(), any(), any())).thenThrow(new TMBCommonException(crmId));
 
 		try {
-			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbar);
+			loanStagingBarController.fetchLoanStagingBar(correlationId, crmId, loanStagingbarReq);
 			Assertions.fail("Should have TMBCommonException");
 		} catch (TMBCommonException e) {
 		}

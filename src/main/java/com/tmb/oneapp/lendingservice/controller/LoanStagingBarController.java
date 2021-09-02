@@ -20,6 +20,7 @@ import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.LoanStagingbarRequest;
 import com.tmb.oneapp.lendingservice.service.LoanStagingBarService;
 
 import io.swagger.annotations.Api;
@@ -41,7 +42,7 @@ public class LoanStagingBarController {
 	public ResponseEntity<TmbOneServiceResponse<LoanStagingbar>> fetchLoanStagingBar(
 			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
 			@ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true) @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-			@Valid @RequestBody LoanStagingbar request) throws TMBCommonException {
+			@Valid @RequestBody LoanStagingbarRequest request) throws TMBCommonException {
 		TmbOneServiceResponse<LoanStagingbar> response = new TmbOneServiceResponse<>();
 		if (request.getLoanType() == null || request.getProductHeaderKey() == null) {
 			logger.error("error exception fetch loan staging bar : key value is null");

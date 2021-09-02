@@ -4,6 +4,7 @@ import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.model.LoanStagingbarRequest;
 import com.tmb.oneapp.lendingservice.model.ProductConfig;
 import com.tmb.oneapp.lendingservice.model.RslMessage;
 import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
@@ -43,5 +44,5 @@ public interface CommonServiceFeignClient {
     TmbOneServiceResponse<LoanStagingbar> fetchLoanStagingBar(
             @RequestHeader(value = LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @RequestHeader(value = LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @RequestBody(required = true) LoanStagingbar request);
+            @RequestBody(required = true) LoanStagingbarRequest request);
 }

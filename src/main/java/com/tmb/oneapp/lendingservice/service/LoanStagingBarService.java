@@ -9,6 +9,7 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.LoanStagingbarRequest;
 
 import lombok.AllArgsConstructor;
 
@@ -22,7 +23,7 @@ public class LoanStagingBarService {
 	private static final TMBLogger<LoanStagingBarService> logger = new TMBLogger<>(LoanStagingBarService.class);
 	private final CommonServiceFeignClient commonServiceFeignClient;
 
-	public LoanStagingbar fetchLoanStagingBar(String correlationId, String crmId, LoanStagingbar request)
+	public LoanStagingbar fetchLoanStagingBar(String correlationId, String crmId, LoanStagingbarRequest request)
 			throws TMBCommonException {
 		try {
 			TmbOneServiceResponse<LoanStagingbar> loanStagingbar = commonServiceFeignClient

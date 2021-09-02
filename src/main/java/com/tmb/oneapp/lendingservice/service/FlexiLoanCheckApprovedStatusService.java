@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
+import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
@@ -16,6 +17,7 @@ import com.tmb.oneapp.lendingservice.model.flexiloan.LoanCustomerPricing;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,8 @@ public class FlexiLoanCheckApprovedStatusService {
     static final String APPROVE = "APPROVE";
     static final String FLASH = "RC01";
     static final String C2G02 = "C2G02";
-    static final  String MSG_000 = "MSG_000";
+    static final String YES = "Y";
+    static final String MSG_000 = "MSG_000";
 
     public InstantLoanCalUWResponse checkCalculateUnderwriting(InstantLoanCalUWRequest request) throws TMBCommonException {
 
@@ -39,45 +42,48 @@ public class FlexiLoanCheckApprovedStatusService {
         requestInstantLoanCalUW.setBody(body);
 
 
-        return calculateUnderwriting(requestInstantLoanCalUW, request.getProduct());
+        return calculateUnderwriting(requestInstantLoanCalUW, request);
     }
 
-    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, String productCode) throws TMBCommonException {
+    private InstantLoanCalUWResponse calculateUnderwriting(RequestInstantLoanCalUW request, InstantLoanCalUWRequest instantLoanCalUWRequest) throws TMBCommonException {
         try {
 
             ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.calculateUnderwriting(request.getBody().getTriggerFlag(), request.getBody().getCaId());
             ResponseFacility facilityInfo = new ResponseFacility();
 
             if (responseInstantLoanCalUW.getHeader().getResponseCode().equals(MSG_000)) {
-                if (productCode.equals(FLASH)) {
+                if (instantLoanCalUWRequest.getProduct().equals(FLASH)) {
                     facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getBody().getCaId().longValue());
                 }
-                return parseResponse(facilityInfo, responseInstantLoanCalUW, productCode);
-            }else {
+                return parseResponse(facilityInfo, responseInstantLoanCalUW, instantLoanCalUWRequest);
+            } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
                         ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                     e.getMessage(),
                     ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         }
     }
+
     private InstantLoanCalUWResponse parseResponse(ResponseFacility facilityInfo,
                                                    ResponseInstantLoanCalUW loanCalUWResponse,
-                                                   String productCode
+                                                   InstantLoanCalUWRequest request
     ) {
         InstantLoanCalUWResponse response = new InstantLoanCalUWResponse();
         String underWriting = loanCalUWResponse.getBody().getUnderwritingResult();
 
         response.setStatus(underWriting);
-        response.setProduct(productCode);
+        response.setProduct(request.getProduct());
+
+        setAmount(response, request.getLoanDay1Set(), request.getProduct(), facilityInfo, loanCalUWResponse);
+
 
         if (underWriting.equals(APPROVE)) {
-            if (productCode.equals(FLASH) && facilityInfo.getBody().getFacilities() != null) {
-                response.setRequestAmount(facilityInfo.getBody().getFacilities()[0].getFeature().getRequestAmount());
+            if (request.getProduct().equals(FLASH) && facilityInfo.getBody().getFacilities() != null) {
                 Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
                 List<LoanCustomerPricing> pricingList = new ArrayList<>();
 
@@ -95,19 +101,16 @@ public class FlexiLoanCheckApprovedStatusService {
                 response.setPricings(pricingList);
 
 
-            }else if (productCode.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null){
-                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
 
 
-            if(loanCalUWResponse.getBody().getApprovalMemoFacilities()!=null){
+            if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
                 ApprovalMemoFacility approvalMemoFacility = loanCalUWResponse.getBody().getApprovalMemoFacilities()[0];
 
                 response.setTenor(approvalMemoFacility.getTenor());
                 response.setPayDate(approvalMemoFacility.getPayDate());
                 response.setInterestRate(approvalMemoFacility.getInterestRate());
                 response.setDisburstAccountNo(approvalMemoFacility.getDisburstAccountNo());
-                response.setCreditLimit(approvalMemoFacility.getCreditLimit());
 
                 response.setFirstPaymentDueDate(approvalMemoFacility.getFirstPaymentDueDate());
                 response.setLoanContractDate(approvalMemoFacility.getLoanContractDate());
@@ -119,4 +122,27 @@ public class FlexiLoanCheckApprovedStatusService {
 
         return response;
     }
+
+    private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response ,String loanDay1Set, String product, ResponseFacility responseFacility, ResponseInstantLoanCalUW loanCalUWResponse) {
+        if (loanDay1Set.equals(YES)) {
+            if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+                response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+            }
+            if (product.equals(FLASH) && responseFacility.getBody().getFacilities()[0] != null) {
+                response.setRequestAmount(responseFacility.getBody().getFacilities()[0].getFeature().getRequestAmount());
+            } else if (product.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
+            }
+
+        } else {
+            response.setCreditLimit(BigDecimal.valueOf(500000));
+            if (product.equals(FLASH)) {
+                response.setRequestAmount(BigDecimal.valueOf(5000));
+            } else if (product.equals(C2G02)) {
+                response.setRequestAmount(BigDecimal.valueOf(10000));
+            }
+        }
+        return response;
+    }
+
 }

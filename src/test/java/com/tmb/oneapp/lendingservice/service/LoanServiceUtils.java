@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.model.RslCode;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.InstantCreditCard;
@@ -52,6 +53,7 @@ public class LoanServiceUtils {
         mockLendingModuleConfig.setApplyCreditCards(new ArrayList<>(productConfigHashMap.values()));
         mockLendingModuleConfig.setApplyPersonalLoans(new ArrayList<>());
         mockLendingModuleConfig.setIncompleteDocStatus(new ArrayList<>(Arrays.asList("IDOFD", "IDDFD")));
+        mockLendingModuleConfig.setDefaultRslCode(new ArrayList<>(Arrays.asList(new RslCode("C2G01","","",""))));
         TmbOneServiceResponse<List<LendingModuleConfig>> oneServiceResponse = new TmbOneServiceResponse<>();
         oneServiceResponse.setData(new ArrayList<>(Arrays.asList(mockLendingModuleConfig)));
         TmbStatus tmbStatus = new TmbStatus();

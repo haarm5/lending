@@ -29,8 +29,8 @@ public class LoanOnlineSubmissionGetCustomerAgeService {
             LocalDate birtDate = LocalDate.parse(customer.getIdBirthDate());
             LocalDate currentDate = LocalDate.now();
             LoanSubmissionGetCustomerAgeResponse response = new LoanSubmissionGetCustomerAgeResponse();
-            response.setYearOld(birtDate.until(currentDate, ChronoUnit.YEARS));
-            response.setBirtDate(customer.getIdBirthDate());
+            response.setAge(birtDate.until(currentDate, ChronoUnit.YEARS));
+            response.setBirthDate(customer.getIdBirthDate());
             return response;
         }
         return null;

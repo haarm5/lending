@@ -21,14 +21,14 @@ public class LoanServiceResponseParser {
     private static final String SUCCESS_DESC = "Success";
 
     private LoanServiceResponseParser(){}
-    public static ResponseInstantLoanGetEligibleProduct parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) throws TMBCommonException {
+    public static ResponseInstantLoanGetEligibleProduct parseEligibleProducts(ResponseInstantLoanGetEligibleProduct responseInstantLoanGetEligibleProduct) {
 
         com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Header header = responseInstantLoanGetEligibleProduct.getHeader();
 
         if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("EligibleProducts got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
             logError(responseInstantLoanGetEligibleProduct);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
+            return responseInstantLoanGetEligibleProduct;
         }
         return responseInstantLoanGetEligibleProduct;
     }
@@ -39,13 +39,13 @@ public class LoanServiceResponseParser {
      * @return
      * @throws TMBCommonException
      */
-    public static ResponseTracking parseLoanStatusTracking(ResponseTracking responseTracking) throws TMBCommonException {
+    public static ResponseTracking parseLoanStatusTracking(ResponseTracking responseTracking) {
         Header header = responseTracking.getHeader();
         if (!SUCCESS_CODE.equalsIgnoreCase(header.getResponseCode()) || !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
             logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(), header.getResponseDescriptionEN());
-            logError(responseTracking);
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
-        }
+			logError(responseTracking);
+			return responseTracking;
+		}
         return responseTracking;
     }
 

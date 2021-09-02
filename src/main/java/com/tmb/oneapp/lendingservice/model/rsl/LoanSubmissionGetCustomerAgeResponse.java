@@ -1,11 +1,14 @@
 package com.tmb.oneapp.lendingservice.model.rsl;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanSubmissionGetCustomerAgeResponse {
-    private Long yearOld;
-    private String birtDate;
+    private Long age;
+    private String birthDate;
 }

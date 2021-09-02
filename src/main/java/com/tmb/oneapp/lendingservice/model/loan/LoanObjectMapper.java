@@ -207,6 +207,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setProductNameTh(masterDataItem.getEntryName2());
             oneAppEligibleProduct.setProductCode(instantFacility.getProductCode());
             oneAppEligibleProduct.setProductCategory("loan");
+            oneAppEligibleProduct.setCampaignCode(instantFacility.getCaCampaignCode());
             oneAppEligibleProduct.setFacilityCode(instantFacility.getFacilityCode());
             oneAppEligibleProduct.setInterestRate(String.valueOf(instantFacility.getInterestRate()));
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantFacility.getLoanReqMax()));

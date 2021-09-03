@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
@@ -26,6 +27,8 @@ import javax.validation.Valid;
 @RequestMapping("/document")
 @RestController
 public class UploadDocumentController {
+    private static final TMBLogger<UploadDocumentController> logger = new TMBLogger<>(UploadDocumentController.class);
+
 
     private final UploadDocumentService uploadDocumentService;
 
@@ -41,6 +44,7 @@ public class UploadDocumentController {
             @ApiParam(value = "caId", required = true) @Valid @RequestPart String caId,
             @ApiParam(value = "docCode", required = true) @Valid @RequestPart String docCode
     ) throws TMBCommonException {
+        logger.info("file: {}", file);
         TmbOneServiceResponse<UploadDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {

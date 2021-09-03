@@ -51,7 +51,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 		String[] dateAndTimeArry = dateAndTime.split("T");
 		String dateEng = dateAndTimeArry[0];
 		String curTime = dateAndTimeArry[1];
-		return loanSubmissionGetCustInformationService.concertToThaiDate(dateEng) + LendingServiceConstant.SPACE + curTime.replace(".000Z", "")
-				+ LendingServiceConstant.SPACE + "น.";
+		return loanSubmissionGetCustInformationService.concertToThaiDate(dateEng) + LendingServiceConstant.SPACE
+				+ curTime.replace(".000Z", "");
 	}
 }

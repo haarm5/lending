@@ -7,7 +7,6 @@ import com.tmb.common.model.TmbStatus;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.service.UploadDocumentService;
 import io.swagger.annotations.Api;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -36,12 +36,14 @@ public class UploadDocumentController {
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @Valid @ModelAttribute UploadDocumentRequest request
+            @ApiParam(value = "file", required = true) @Valid @RequestPart MultipartFile file,
+            @ApiParam(value = "caId", required = true) @Valid @RequestPart String caId,
+            @ApiParam(value = "docCode", required = true) @Valid @RequestPart String docCode
     ) throws TMBCommonException {
         TmbOneServiceResponse<UploadDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(crmId, request.getFile(), Long.parseLong(request.getCaId()), request.getDocCode());
+            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(crmId, file, Long.parseLong(caId), docCode);
             response.setData(uploadDocumentResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

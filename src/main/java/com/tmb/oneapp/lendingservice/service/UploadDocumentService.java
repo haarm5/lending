@@ -18,17 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.rpc.ServiceException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -106,26 +102,13 @@ public class UploadDocumentService {
         return fileName;
     }
 
-    private String storeFile(String fileName, MultipartFile file) throws IOException {
-        String baseDir = System.getProperty("user.dir");
-        File outputDir = new File(baseDir + File.separator + "documents");
-        outputDir.mkdir();
-        String filePath = outputDir + SEPARATOR + fileName;
-
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return filePath;
-    }
-
     private String generatePDFFromBase64(String fileName, String base64) throws IOException {
         String base64String = base64.replace("data:application/pdf;base64,", "");
         byte[] decoder = Base64.getDecoder().decode(base64String);
         String baseDir = System.getProperty("user.dir");
         File outputDir = new File(baseDir + File.separator + "documents");
         outputDir.mkdir();
-        String filePath = outputDir + "/" + fileName;
+        String filePath = outputDir + SEPARATOR + fileName;
 
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fos.write(decoder);

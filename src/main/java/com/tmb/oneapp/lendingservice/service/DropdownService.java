@@ -42,6 +42,7 @@ public class DropdownService {
     private static final String DROPDOWN_INCOME_TYPE = "INCOME_TYPE";
     private static final String DROPDOWN_SCI_COUNTRY = "SCI_COUNTRY";
     private static final String DROPDOWN_MARITAL_STATUS = "MARITAL_STATUS";
+    private static final String DROPDOWN_EDUCATION_LEVEL = "EDUCATION_LEVEL";
     private static final String DROPDOWN_RESIDENT_TYP = "RESIDENT_TYP";
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
@@ -275,6 +276,28 @@ public class DropdownService {
                 .collect(Collectors.toList());
         logger.info("Dropdown Resident Type: {}", TMBUtils.convertJavaObjectToString(residentTypeList));
         return residentTypeList;
+    }
+
+    public List<Dropdowns.EducationLevel> getDropdownEducationLevel(String educationLevel) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown dropdownEducationLevel = getDropdown(DROPDOWN_EDUCATION_LEVEL);
+        List<Dropdowns.EducationLevel> educationLevelList= Arrays.stream(dropdownEducationLevel.getBody().getCommonCodeEntries())
+                .filter(education-> {
+                    try {
+                        return ACTIVE_STATUS.equals(education.getActiveStatus())
+                                && CommonServiceUtils.parseStringToList(education.getEntryCode()).contains(educationLevel);
+                    } catch (Exception e) {
+                        logger.error("Get dropdown Education Level fail: {}", e);
+                        return false;
+                    }
+                })
+                .map(education -> Dropdowns.EducationLevel.builder()
+                        .code(education.getEntryCode())
+                        .name(education.getEntryName())
+                        .name2(education.getEntryName2())
+                        .build())
+                .collect(Collectors.toList());
+        logger.info("Dropdown Education Level: {}", TMBUtils.convertJavaObjectToString(educationLevelList));
+        return educationLevelList;
     }
 
     private Map<String, String> getCountryTH(String correlationId, String crmId) throws TMBCommonException {

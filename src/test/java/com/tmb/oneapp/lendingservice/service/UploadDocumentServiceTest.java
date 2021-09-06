@@ -70,6 +70,7 @@ public class UploadDocumentServiceTest {
         UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", request);
         Assertions.assertEquals("026PL64000674", response.getAppRefNo());
         Assertions.assertEquals("PL", response.getAppType());
+        Assertions.assertEquals("Y", response.getNcbConsentFlag());
     }
 
     @Test

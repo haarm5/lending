@@ -14,5 +14,6 @@ public class UploadDocumentResponse {
     private String appRefNo;
     private String appType;
     private String productDescTh;
+    private String ncbConsentFlag;
 
 }

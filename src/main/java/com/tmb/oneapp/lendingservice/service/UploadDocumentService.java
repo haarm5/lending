@@ -56,9 +56,11 @@ public class UploadDocumentService {
         String rmId = CommonServiceUtils.getRmId(crmId);
         String appRefNo = applicationInfo.getAppRefNo();
         String appDate = applicationInfo.getApplicationDate();
-        response.setAppRefNo(applicationInfo.getAppRefNo());
+
+        response.setAppRefNo(appRefNo);
         response.setAppType(applicationInfo.getAppType());
         response.setProductDescTh(applicationInfo.getProductDescTH());
+        response.setNcbConsentFlag(applicationInfo.getNcbConsentFlag());
 
         String fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
         response.setPdfFileName(fileName);

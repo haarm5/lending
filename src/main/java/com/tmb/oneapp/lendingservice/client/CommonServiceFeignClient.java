@@ -1,22 +1,19 @@
 package com.tmb.oneapp.lendingservice.client;
 
-import com.tmb.common.model.LovMaster;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.loan.stagingbar.LoanStagingbar;
-import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
-import com.tmb.oneapp.lendingservice.model.LoanStagingbarRequest;
-import com.tmb.oneapp.lendingservice.model.ProductConfig;
-import com.tmb.oneapp.lendingservice.model.RslMessage;
-import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.tmb.common.model.LovMaster;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.model.ProductConfig;
+import com.tmb.oneapp.lendingservice.model.RslMessage;
+import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
 
 @FeignClient(name = "${feign.common.service.name}", url = "${feign.common.service.url}")
 public interface CommonServiceFeignClient {

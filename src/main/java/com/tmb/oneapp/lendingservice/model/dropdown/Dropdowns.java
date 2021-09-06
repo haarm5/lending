@@ -103,4 +103,24 @@ public class Dropdowns {
         private String name2;
     }
 
+    @Getter
+    @Setter
+    @Builder
+    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+    public static class MaritalStatus {
+        private String code;
+        private String name;
+        private String name2;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+    public static class ResidentType {
+        private String code;
+        private String name;
+        private String name2;
+    }
+
 }

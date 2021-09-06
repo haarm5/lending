@@ -41,6 +41,8 @@ public class DropdownService {
     private static final String DROPDOWN_PAYROLL_BANK = "PAYROLL_BANK";
     private static final String DROPDOWN_INCOME_TYPE = "INCOME_TYPE";
     private static final String DROPDOWN_SCI_COUNTRY = "SCI_COUNTRY";
+    private static final String DROPDOWN_MARITAL_STATUS = "MARITAL_STATUS";
+    private static final String DROPDOWN_RESIDENT_TYP = "RESIDENT_TYP";
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
@@ -229,6 +231,52 @@ public class DropdownService {
         }
         logger.info("Dropdown SciCountry: {}", TMBUtils.convertJavaObjectToString(sciCountryList));
         return sciCountryList;
+    }
+
+    public List<Dropdowns.MaritalStatus> getDropdownMaritalStatus(String maritalStatusCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown dropdownMaritalStatus = getDropdown(DROPDOWN_MARITAL_STATUS);
+        List<Dropdowns.MaritalStatus> maritalStatusList= Arrays.stream(dropdownMaritalStatus.getBody().getCommonCodeEntries())
+                .filter(maritalStatus-> {
+                    try {
+                        return ACTIVE_STATUS.equals(maritalStatus.getActiveStatus())
+                                && CHANNEL_MIB.equals(maritalStatus.getExtValue1())
+                                && CommonServiceUtils.parseStringToList(maritalStatus.getEntryCode()).contains(maritalStatusCode);
+                    } catch (Exception e) {
+                        logger.error("Get dropdown Marital Status fail: {}", e);
+                        return false;
+                    }
+                })
+                .map(maritalStatus -> Dropdowns.MaritalStatus.builder()
+                        .code(maritalStatus.getEntryCode())
+                        .name(maritalStatus.getExtValue2())
+                        .name2(maritalStatus.getExtValue2())
+                        .build())
+                .collect(Collectors.toList());
+        logger.info("Dropdown Marital Status: {}", TMBUtils.convertJavaObjectToString(maritalStatusList));
+        return maritalStatusList;
+    }
+
+    public List<Dropdowns.ResidentType> getDropdownResidentType(String residentTypeCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown dropdownResidentType = getDropdown(DROPDOWN_RESIDENT_TYP);
+        List<Dropdowns.ResidentType> residentTypeList= Arrays.stream(dropdownResidentType.getBody().getCommonCodeEntries())
+                .filter(residentType-> {
+                    try {
+                        return ACTIVE_STATUS.equals(residentType.getActiveStatus())
+                                && CHANNEL_MIB.equals(residentType.getExtValue1())
+                                && CommonServiceUtils.parseStringToList(residentType.getEntryCode()).contains(residentTypeCode);
+                    } catch (Exception e) {
+                        logger.error("Get dropdown Resident Type fail: {}", e);
+                        return false;
+                    }
+                })
+                .map(residentType -> Dropdowns.ResidentType.builder()
+                        .code(residentType.getEntryCode())
+                        .name(residentType.getExtValue2())
+                        .name2(residentType.getExtValue2())
+                        .build())
+                .collect(Collectors.toList());
+        logger.info("Dropdown Resident Type: {}", TMBUtils.convertJavaObjectToString(residentTypeList));
+        return residentTypeList;
     }
 
     private Map<String, String> getCountryTH(String correlationId, String crmId) throws TMBCommonException {

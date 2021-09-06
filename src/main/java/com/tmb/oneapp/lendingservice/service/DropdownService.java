@@ -239,7 +239,6 @@ public class DropdownService {
                 .filter(maritalStatus-> {
                     try {
                         return ACTIVE_STATUS.equals(maritalStatus.getActiveStatus())
-                                && CHANNEL_MIB.equals(maritalStatus.getExtValue1())
                                 && CommonServiceUtils.parseStringToList(maritalStatus.getEntryCode()).contains(maritalStatusCode);
                     } catch (Exception e) {
                         logger.error("Get dropdown Marital Status fail: {}", e);
@@ -248,8 +247,8 @@ public class DropdownService {
                 })
                 .map(maritalStatus -> Dropdowns.MaritalStatus.builder()
                         .code(maritalStatus.getEntryCode())
-                        .name(maritalStatus.getExtValue2())
-                        .name2(maritalStatus.getExtValue2())
+                        .name(maritalStatus.getEntryName())
+                        .name2(maritalStatus.getEntryName2())
                         .build())
                 .collect(Collectors.toList());
         logger.info("Dropdown Marital Status: {}", TMBUtils.convertJavaObjectToString(maritalStatusList));
@@ -262,7 +261,6 @@ public class DropdownService {
                 .filter(residentType-> {
                     try {
                         return ACTIVE_STATUS.equals(residentType.getActiveStatus())
-                                && CHANNEL_MIB.equals(residentType.getExtValue1())
                                 && CommonServiceUtils.parseStringToList(residentType.getEntryCode()).contains(residentTypeCode);
                     } catch (Exception e) {
                         logger.error("Get dropdown Resident Type fail: {}", e);
@@ -271,8 +269,8 @@ public class DropdownService {
                 })
                 .map(residentType -> Dropdowns.ResidentType.builder()
                         .code(residentType.getEntryCode())
-                        .name(residentType.getExtValue2())
-                        .name2(residentType.getExtValue2())
+                        .name(residentType.getEntryName())
+                        .name2(residentType.getEntryName2())
                         .build())
                 .collect(Collectors.toList());
         logger.info("Dropdown Resident Type: {}", TMBUtils.convertJavaObjectToString(residentTypeList));

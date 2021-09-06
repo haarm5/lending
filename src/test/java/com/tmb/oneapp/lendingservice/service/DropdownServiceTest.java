@@ -56,6 +56,8 @@ public class DropdownServiceTest {
     private static final String DROPDOWN_PAYROLL_BANK = "PAYROLL_BANK";
     private static final String DROPDOWN_INCOME_TYPE = "INCOME_TYPE";
     private static final String DROPDOWN_SCI_COUNTRY = "SCI_COUNTRY";
+    private static final String DROPDOWN_MARITAL_STATUS = "MARITAL_STATUS";
+    private static final String DROPDOWN_RESIDENT_TYP = "RESIDENT_TYP";
 
     @BeforeEach
     void setUp() {
@@ -132,6 +134,7 @@ public class DropdownServiceTest {
         Assertions.assertEquals(3, response.size());
     }
 
+
     @Test
     public void getDropdownIncomeBank_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         doReturn(mockDropdownIncomeBank()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
@@ -166,6 +169,24 @@ public class DropdownServiceTest {
         List<Dropdowns.SciCountry> response = dropdownService.getDropdownSciCountry("correlationId", "crmId");
         Assertions.assertEquals(3, response.size());
         Assertions.assertEquals("TH", response.get(0).getCode());
+    }
+
+    @Test
+    public void getDropdownResident_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        doReturn(mockDropdownResidentType()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+
+        String residentTypeCode = "H";
+        List<Dropdowns.ResidentType> response = dropdownService.getDropdownResidentType(residentTypeCode);
+        Assertions.assertEquals(1, response.size());
+    }
+
+    @Test
+    public void getDropdownMarital_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        doReturn(mockDropdownMaritalStatus()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+
+        String maritalCode = "U";
+        List<Dropdowns.MaritalStatus> response = dropdownService.getDropdownMaritalStatus(maritalCode);
+        Assertions.assertEquals(1, response.size());
     }
 
     @Test
@@ -895,5 +916,67 @@ public class DropdownServiceTest {
         return dropdownEmploymentStatus;
     }
 
+
+    private ResponseDropdown mockDropdownResidentType() {
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+
+        CommonCodeEntry residentType = new CommonCodeEntry();
+        residentType.setActiveStatus("1");
+        residentType.setCategoryCode(DROPDOWN_RESIDENT_TYP);
+        residentType.setEntryCode("H");
+        residentType.setEntryID(BigDecimal.valueOf(65239));
+        residentType.setEntryName("Owns a house on land belonging to others");
+        residentType.setEntryName2("บ้านปลูกบนที่ดินคนอื่น");
+        residentType.setExtValue1("MIB");
+
+
+        CommonCodeEntry residentType02 = new CommonCodeEntry();
+        residentType02.setActiveStatus("1");
+        residentType02.setCategoryCode(DROPDOWN_RESIDENT_TYP);
+        residentType02.setEntryCode("R");
+        residentType02.setEntryID(BigDecimal.valueOf(65235));
+        residentType02.setEntryName("Rental");
+        residentType02.setEntryName2("เช่า");
+        residentType02.setExtValue1("MIB");
+
+        CommonCodeEntry[] commonCodeEntries = {residentType, residentType02};
+
+        Header header = new Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
+
+        Body body = new Body();
+        body.setCommonCodeEntries(commonCodeEntries);
+
+        responseDropdown.setHeader(header);
+        responseDropdown.setBody(body);
+        return responseDropdown;
+    }
+
+    private ResponseDropdown mockDropdownMaritalStatus() {
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+
+        CommonCodeEntry maritalStatus = new CommonCodeEntry();
+        maritalStatus.setActiveStatus("1");
+        maritalStatus.setCategoryCode(DROPDOWN_MARITAL_STATUS);
+        maritalStatus.setEntryCode("U");
+        maritalStatus.setEntryID(BigDecimal.valueOf(65239));
+        maritalStatus.setEntryName("Single");
+        maritalStatus.setEntryName2("โสด");
+        maritalStatus.setExtValue1("MIB");
+
+        CommonCodeEntry[] commonCodeEntries = {maritalStatus};
+
+        Header header = new Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
+
+        Body body = new Body();
+        body.setCommonCodeEntries(commonCodeEntries);
+
+        responseDropdown.setHeader(header);
+        responseDropdown.setBody(body);
+        return responseDropdown;
+    }
 
 }

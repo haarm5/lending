@@ -10,6 +10,7 @@ import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
+import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +21,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,14 +52,11 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void upload_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
-        MockMultipartFile file
-                = new MockMultipartFile(
-                "file",
-                "hello.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World!".getBytes()
-        );
+    public void upload_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
+        UploadDocumentRequest request = new UploadDocumentRequest();
+        request.setCaId("1");
+        request.setDocCode("ID01");
+        request.setFile("base64");
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
@@ -69,19 +67,18 @@ public class UploadDocumentServiceTest {
         docTypeList.add(entry);
         doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
 
-        UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", file, 1L, "ID01");
-        Assertions.assertEquals("success", response.getStatus());
+        UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", request);
+        Assertions.assertEquals("026PL64000674", response.getAppRefNo());
+        Assertions.assertEquals("PL", response.getAppType());
+        Assertions.assertEquals("Y", response.getNcbConsentFlag());
     }
 
     @Test
     public void upload_DocCodeNotFound() throws TMBCommonException, ServiceException, JsonProcessingException {
-        MockMultipartFile file
-                = new MockMultipartFile(
-                "file",
-                "hello.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World!".getBytes()
-        );
+        UploadDocumentRequest request = new UploadDocumentRequest();
+        request.setCaId("1");
+        request.setDocCode("ID01");
+        request.setFile("base64");
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
@@ -89,7 +86,7 @@ public class UploadDocumentServiceTest {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doReturn(new ArrayList<>()).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
 
-            uploadDocumentService.upload("001100000000000000000018593707", file, 1L, "ID01");
+            uploadDocumentService.upload("001100000000000000000018593707", request);
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

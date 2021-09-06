@@ -10,6 +10,7 @@ import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
+import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
@@ -17,19 +18,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.rpc.ServiceException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -47,30 +46,23 @@ public class UploadDocumentService {
     @Value("${sftp.locations.loan.documents}")
     private String sftpLocations;
 
-    public UploadDocumentResponse upload(String crmId, MultipartFile file, long caId, String docCode) throws TMBCommonException, ServiceException, JsonProcessingException {
+    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException {
         UploadDocumentResponse response = new UploadDocumentResponse();
-        Body applicationInfo = getApplicationInfo(caId);
+        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
         String rmId = CommonServiceUtils.getRmId(crmId);
         String appRefNo = applicationInfo.getAppRefNo();
         String appDate = applicationInfo.getApplicationDate();
-        response.setAppRefNo(applicationInfo.getAppRefNo());
+
+        response.setAppRefNo(appRefNo);
         response.setAppType(applicationInfo.getAppType());
         response.setProductDescTh(applicationInfo.getProductDescTH());
+        response.setNcbConsentFlag(applicationInfo.getNcbConsentFlag());
 
-        try {
-            String fileName = parsePdfFileName(docCode, appRefNo, convertAppDate(appDate));
-            response.setPdfFileName(fileName);
+        String fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
+        response.setPdfFileName(fileName);
 
-            String srcFile = storeFile(fileName, file);
-            sftpStoreDocuments(rmId, appRefNo, srcFile);
-            response.setStatus("success");
-
-        } catch (TMBCommonException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("upload document code [{}] fail: {}", docCode, e.getCause().getMessage());
-            response.setStatus("fail");
-        }
+        String srcFile = generatePDFFromBase64(fileName, request.getFile());
+        sftpStoreDocuments(rmId, appRefNo, srcFile);
 
         return response;
     }
@@ -110,14 +102,16 @@ public class UploadDocumentService {
         return fileName;
     }
 
-    private String storeFile(String fileName, MultipartFile file) throws IOException {
+    private String generatePDFFromBase64(String fileName, String base64) throws IOException {
+        String base64String = base64.replace("data:application/pdf;base64,", "");
+        byte[] decoder = Base64.getDecoder().decode(base64String);
         String baseDir = System.getProperty("user.dir");
         File outputDir = new File(baseDir + File.separator + "documents");
         outputDir.mkdir();
         String filePath = outputDir + SEPARATOR + fileName;
 
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(decoder);
         }
 
         return filePath;

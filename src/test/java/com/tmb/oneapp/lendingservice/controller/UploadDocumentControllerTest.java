@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
@@ -14,13 +13,14 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.text.ParseException;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
@@ -38,21 +38,14 @@ public class UploadDocumentControllerTest {
     }
 
     @Test
-    public void uploadDocument_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void uploadDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException {
         UploadDocumentRequest request = new UploadDocumentRequest();
-        request.setDocCode("ID01");
         request.setCaId("1");
-        MockMultipartFile file
-                = new MockMultipartFile(
-                "file",
-                "hello.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Hello, World!".getBytes()
-        );
-        request.setFile(file);
+        request.setDocCode("ID01");
+        request.setFile("base64");
 
         UploadDocumentResponse response = new UploadDocumentResponse();
-        doReturn(response).when(uploadDocumentService).upload(anyString(), any(), anyLong(), any());
+        doReturn(response).when(uploadDocumentService).upload(anyString(), any());
 
         ResponseEntity<TmbOneServiceResponse<UploadDocumentResponse>> responseEntity = uploadDocumentController.uploadDocument("correlationId", "crmId", request);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());

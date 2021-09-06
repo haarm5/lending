@@ -36,12 +36,12 @@ public class UploadDocumentController {
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @Valid @ModelAttribute UploadDocumentRequest request
+            @Valid @RequestBody UploadDocumentRequest request
     ) throws TMBCommonException {
         TmbOneServiceResponse<UploadDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(crmId, request.getFile(), Long.parseLong(request.getCaId()), request.getDocCode());
+            UploadDocumentResponse uploadDocumentResponse = uploadDocumentService.upload(crmId, request);
             response.setData(uploadDocumentResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

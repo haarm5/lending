@@ -116,13 +116,13 @@ public class LoanOnlineSubmissionEAppService {
             response.setIdType("พาสปอร์ต");
         }
         response.setIdNo(customer.getIdNo1());
-        response.setIssueCountry(customer.getIdIssueCtry1());
+        response.setIssueCountry(mapCountryName(customer.getIdIssueCtry1()));
         response.setIssueDate(customer.getIssuedDate());
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
         response.setBirthDay(customer.getBirthDate());
         response.setMobileNo(customer.getMobileNo());
-        response.setEducationLevel(customer.getEducationLevel());
+        response.setEducationLevel(mapEducationLevel(customer.getEducationLevel()));
         response.setSourceFromCountry(mapCountryName(customer.getSourceFromCountry()));
         response.setNationality(mapCountryName(customer.getNationality()));
         response.setMaritalStatus(mapMaritalStatus(customer.getMaritalStatus()));
@@ -291,6 +291,12 @@ public class LoanOnlineSubmissionEAppService {
         List<Dropdowns.IncomeBank> banks = dropdownService.getDropdownIncomeBank();
         Optional<Dropdowns.IncomeBank> filter = banks.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.IncomeBank::getName2).orElse(null);
+    }
+
+    private String mapEducationLevel(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<Dropdowns.EducationLevel> banks = dropdownService.getDropdownEducationLevel(code);
+        Optional<Dropdowns.EducationLevel> filter = banks.stream().filter(x -> x.getCode().equals(code)).findFirst();
+        return filter.map(Dropdowns.EducationLevel::getName2).orElse(null);
     }
 
 }

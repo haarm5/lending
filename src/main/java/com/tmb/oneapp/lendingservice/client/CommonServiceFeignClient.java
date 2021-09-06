@@ -40,9 +40,4 @@ public interface CommonServiceFeignClient {
             @RequestParam(value = "type") String searchType,
             @RequestParam(value = "lang") String defaultLang);
     
-    @PostMapping(value = "/apis/common/fetch/staging-bar")
-    TmbOneServiceResponse<LoanStagingbar> fetchLoanStagingBar(
-            @RequestHeader(value = LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
-            @RequestHeader(value = LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @RequestBody(required = true) LoanStagingbarRequest request);
 }

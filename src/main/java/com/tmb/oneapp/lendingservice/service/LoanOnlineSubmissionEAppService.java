@@ -20,7 +20,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class LoanOnlineSubmissionEAppService {
 
     private static final TMBLogger<LoanOnlineSubmissionEAppService> logger = new TMBLogger<>(LoanOnlineSubmissionEAppService.class);
@@ -46,26 +46,31 @@ public class LoanOnlineSubmissionEAppService {
 
     public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
-        CRM_ID = crmId;
-        CORRELATION_ID = correlationId;
-        EAppResponse response = new EAppResponse();
+        try {
+            CRM_ID = crmId;
+            CORRELATION_ID = correlationId;
+            EAppResponse response = new EAppResponse();
 
-        Body application = getApplicationInfo(caId);
-        Individual customer = getCustomerInfo(caId);
-        if (application.getAppType().equals("CC")) {
-            CreditCard creditCard = getCreditCard(caId);
-            mapDataFromCreditCard(creditCard, response);
-            response.setProductType("บัตรเครดิต");
-            response.setDelivery(mapDelivery(creditCard.getMailPreference()));
-        } else {
-            Facility facility = getFacility(caId);
-            mapDataFromFacility(facility, response);
-            response.setProductType("สินเชื่อส่วนบุคคล");
-            response.setDelivery(mapDelivery(facility.getMailingPreference()));
+            Body application = getApplicationInfo(caId);
+            Individual customer = getCustomerInfo(caId);
+            if (application.getAppType().equals("CC")) {
+                CreditCard creditCard = getCreditCard(caId);
+                mapDataFromCreditCard(creditCard, response);
+                response.setProductType("บัตรเครดิต");
+                response.setDelivery(mapDelivery(creditCard.getMailPreference()));
+            } else {
+                Facility facility = getFacility(caId);
+                mapDataFromFacility(facility, response);
+                response.setProductType("สินเชื่อส่วนบุคคล");
+                response.setDelivery(mapDelivery(facility.getMailingPreference()));
+            }
+            mapDataFromApplication(application, response);
+            mapDataFromCustomer(customer, response);
+            return response;
+        } catch (Exception e) {
+            logger.error("get e-app service error", e);
+            throw e;
         }
-        mapDataFromApplication(application, response);
-        mapDataFromCustomer(customer, response);
-        return response;
     }
 
     private EAppResponse mapDataFromApplication(Body application, EAppResponse response) throws ParseException {
@@ -112,7 +117,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private EAppResponse mapCustomerInformation(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
         response.setIdType("บัตรประจำตัวประชาชน");
-        if (customer.getIdNo1().equals("PP")) {
+        if (customer.getIdType1().equals("PP")) {
             response.setIdType("พาสปอร์ต");
         }
         response.setIdNo(customer.getIdNo1());
@@ -233,29 +238,6 @@ public class LoanOnlineSubmissionEAppService {
         return null;
     }
 
-    private Body getApplicationInfo(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseApplication response = loanSubmissionGetApplicationInfoClient.searchApplicationInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
-        return response.getBody();
-    }
-
-    private Individual getCustomerInfo(long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
-        ResponseIndividual response = loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
-        return response.getBody().getIndividuals()[0];
-    }
-
-    private Facility getFacility(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
-        return response.getBody().getFacilities()[0];
-    }
-
-    private CreditCard getCreditCard(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
-        return response.getBody().getCreditCards()[0];
-    }
 
     private String mapCountryName(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
         List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(CORRELATION_ID, CRM_ID);
@@ -297,6 +279,33 @@ public class LoanOnlineSubmissionEAppService {
         List<Dropdowns.EducationLevel> banks = dropdownService.getDropdownEducationLevel(code);
         Optional<Dropdowns.EducationLevel> filter = banks.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.EducationLevel::getName2).orElse(null);
+    }
+
+
+    //get data from rsl
+
+    private Body getApplicationInfo(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseApplication response = loanSubmissionGetApplicationInfoClient.searchApplicationInfoByCaID(caId);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response.getBody();
+    }
+
+    private Individual getCustomerInfo(long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        ResponseIndividual response = loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(caId);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response.getBody().getIndividuals()[0];
+    }
+
+    private Facility getFacility(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response.getBody().getFacilities()[0];
+    }
+
+    private CreditCard getCreditCard(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response.getBody().getCreditCards()[0];
     }
 
 }

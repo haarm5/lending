@@ -283,8 +283,7 @@ public class LoanOnlineSubmissionController {
             LoanSubmissionGetCustomerAgeResponse response = loanOnlineSubmissionGetCustomerAgeService.getAge(crmId);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
-            setHeader();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get customer age: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));

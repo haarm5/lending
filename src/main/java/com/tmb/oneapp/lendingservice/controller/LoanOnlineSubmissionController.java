@@ -274,9 +274,9 @@ public class LoanOnlineSubmissionController {
     @ApiOperation(value = "get customer age")
     @LogAround
     @GetMapping("/customerAge")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
@@ -292,19 +292,21 @@ public class LoanOnlineSubmissionController {
         }
     }
 
+
     @ApiOperation(value = "get e-app")
     @LogAround
     @GetMapping("/e-app")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
-    public ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEApp(@RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId, @Valid EAppRequest request,
-                                                                       @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
-                                                                       @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId
+    public ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEApp(
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid EAppRequest request,
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId
     ) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<EAppResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            EAppResponse response = loanOnlineSubmissionEAppService.getEApp(request.getCaId(),crmId,correlationId);
+            EAppResponse response = loanOnlineSubmissionEAppService.getEApp(request.getCaId(), crmId, correlationId);
             oneTmbOneServiceResponse.setData(response);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();

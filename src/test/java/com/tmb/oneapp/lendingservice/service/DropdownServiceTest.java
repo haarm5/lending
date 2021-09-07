@@ -181,6 +181,15 @@ public class DropdownServiceTest {
     }
 
     @Test
+    public void getDropdownEducation_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        doReturn(mockDropdownEducation()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
+
+        String educationLevel = "02";
+        List<Dropdowns.EducationLevel> response = dropdownService.getDropdownEducationLevel(educationLevel);
+        Assertions.assertEquals(1, response.size());
+    }
+
+    @Test
     public void getDropdownMarital_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         doReturn(mockDropdownMaritalStatus()).when(loanSubmissionGetDropdownListClient).getDropDownListByCode(anyString());
 
@@ -966,6 +975,32 @@ public class DropdownServiceTest {
         maritalStatus.setExtValue1("MIB");
 
         CommonCodeEntry[] commonCodeEntries = {maritalStatus};
+
+        Header header = new Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
+
+        Body body = new Body();
+        body.setCommonCodeEntries(commonCodeEntries);
+
+        responseDropdown.setHeader(header);
+        responseDropdown.setBody(body);
+        return responseDropdown;
+    }
+
+    private ResponseDropdown mockDropdownEducation() {
+        ResponseDropdown responseDropdown = new ResponseDropdown();
+
+        CommonCodeEntry education = new CommonCodeEntry();
+        education.setActiveStatus("1");
+        education.setCategoryCode(DROPDOWN_MARITAL_STATUS);
+        education.setEntryCode("02");
+        education.setEntryID(BigDecimal.valueOf(65239));
+        education.setEntryName("xx");
+        education.setEntryName2("xx");
+        education.setExtValue1("MIB");
+
+        CommonCodeEntry[] commonCodeEntries = {education};
 
         Header header = new Header();
         header.setResponseCode(RslResponseCode.SUCCESS.getCode());

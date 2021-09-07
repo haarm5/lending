@@ -3,7 +3,7 @@ package com.tmb.oneapp.lendingservice.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +17,8 @@ import java.util.Objects;
 
 import javax.xml.rpc.ServiceException;
 
+import com.tmb.oneapp.lendingservice.model.loanonline.*;
+import com.tmb.oneapp.lendingservice.service.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,12 +37,6 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseAppl
 import com.tmb.common.model.legacy.rsl.ws.checklist.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
-import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
-import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
-import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.personal.ChecklistRequest;
 import com.tmb.oneapp.lendingservice.model.personal.ChecklistResponse;
@@ -49,16 +45,6 @@ import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCreateApplicationService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustomerAgeService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetDocumentListService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetPersonalDetailService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetWorkingDetailService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdatePersonalDetailInfoService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateWorkingDetailService;
 
 class LoanOnlineSubmissionControllerTest {
 
@@ -94,6 +80,9 @@ class LoanOnlineSubmissionControllerTest {
 
     @Mock
     LoanOnlineSubmissionGetCustomerAgeService loanOnlineSubmissionGetCustomerAgeService;
+
+    @Mock
+    LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
 
 
     @BeforeEach
@@ -265,6 +254,28 @@ class LoanOnlineSubmissionControllerTest {
     }
 
     @Test
+    public void testGetEAppSuccess() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        String corrationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        when(loanOnlineSubmissionEAppService.getEApp(anyLong(),anyString(),anyString())).thenReturn(mockEAppData().getData());
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> result = loanOnlineSubmissionController.getEApp(crmid, request,corrationId);
+        assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
+    }
+
+    @Test
+    public void testGetEAppFail() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException, ParseException {
+        EAppRequest request = new EAppRequest();
+        request.setCaId(2021071404188196L);
+        String crmid = "001100000000000000000018593707";
+        String corrationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
+        when(loanOnlineSubmissionEAppService.getEApp(anyLong(), any(),any())).thenThrow(new NullPointerException());
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> result = loanOnlineSubmissionController.getEApp(crmid, request, corrationId);
+        assertTrue(result.getStatusCode().isError());
+    }
+
+    @Test
     public void testUpdatePersonalDetailSuccess() throws Exception {
         PersonalDetailRequest request = new PersonalDetailRequest();
         request.setCaId(2021071404188196L);
@@ -310,6 +321,30 @@ class LoanOnlineSubmissionControllerTest {
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
+    public TmbOneServiceResponse<EAppResponse> mockEAppData() {
+        TmbOneServiceResponse<EAppResponse> oneServiceResponse = new TmbOneServiceResponse<EAppResponse>();
+
+        EAppResponse response = new EAppResponse();
+
+        response.setAppNo("xx");
+        response.setEmail("kk@gmail.com");
+        response.setNameEn("Test");
+        response.setNameTh("Ja");
+        response.setExpiryDate(Calendar.getInstance());
+        response.setIncomeBankAccountNo("111");
+        response.setMobileNo("0987654321");
+        response.setNationality("TH");
+        response.setIncomeBank("ทีทีบี");
+        response.setDisburstAccountNo("112");
+        response.setDelivery("Y");
+        response.setWorkName("odds");
+        response.setAcceptBy("xx");
+
+        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), "success", "lending-service"));
+        oneServiceResponse.setData(response);
+
+        return oneServiceResponse;
+    }
 
     public TmbOneServiceResponse<PersonalDetailResponse> mockPersonalDetailResponseData() {
         TmbOneServiceResponse<PersonalDetailResponse> oneServiceResponse = new TmbOneServiceResponse<PersonalDetailResponse>();

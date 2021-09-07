@@ -75,7 +75,7 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
     private Individual prepareIndividual(Individual individual, UpdateWorkingDetailRequest request) {
 
         individual.setEmploymentStatus(request.getEmploymentStatus());
-        individual.setEmploymentOccupation(request.getOccupation());
+        individual.setEmploymentOccupation(request.getEmploymentOccupation());
         individual.setRmOccupation(request.getRmOccupation());
         individual.setProfessionalCode(request.getProfessionalCode());
         individual.setEmploymentBizNature(request.getEmploymentBizNature());

@@ -57,6 +57,7 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
     private final LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
     private final LoanOnlineSubmissionGetCustomerAgeService loanOnlineSubmissionGetCustomerAgeService;
+    private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     private TmbStatus getStatus(String responseCode, String responseService, String responseMessage, String error) {
@@ -156,79 +157,79 @@ public class LoanOnlineSubmissionController {
     @LogAround
     @GetMapping("/personalDetail")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> getPersonalDetail(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
                                                                                            @Valid PersonalDetailRequest request) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            PersonalDetailResponse personalDetailResponse = loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail(crmId,request.getCaId());
+            PersonalDetailResponse personalDetailResponse = loanOnlineSubmissionGetPersonalDetailService.getPersonalDetail(crmId, request.getCaId());
             oneTmbOneServiceResponse.setData(personalDetailResponse);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get personal detail: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
 
     }
 
-	@ApiOperation("Loan Submission Get Customer Information")
-	@PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
-	@LogAround
-	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionGetCustomerInformation(
-			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+    @ApiOperation("Loan Submission Get Customer Information")
+    @PostMapping(value = "/get-customer-information", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionGetCustomerInformation(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
-		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
-		try {
-			CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
-					.getCustomerInformation(request);
-			response.setData(customerInfoRes);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+        try {
+            CustomerInformationResponse customerInfoRes = loanSubmissionGetCustInfoAppInfoService
+                    .getCustomerInformation(request);
+            response.setData(customerInfoRes);
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+                    ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
-		} catch (Exception e) {
-			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-		}
-	}
-	
-	@ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
-	@PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
-	@LogAround
-	public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionUpdateNCBConsentFlagAndStoreFile(
-			@ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @ApiOperation("Loan Submission Update NCB consent flag and store file to sFTP")
+    @PostMapping(value = "/update-flag-and-store-ncb-consent", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> loanSubmissionUpdateNCBConsentFlagAndStoreFile(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
-		TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
-		try {
-			request.setCrmId(crmId);
-			CustomerInformationResponse customerInfoRes = updateNCBConsentFlagAndStoreFileService
-					.updateNCBConsentFlagAndStoreFile(request);
-			response.setData(customerInfoRes);
-			response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-					ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-			return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
+        TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
+        try {
+            request.setCrmId(crmId);
+            CustomerInformationResponse customerInfoRes = updateNCBConsentFlagAndStoreFileService
+                    .updateNCBConsentFlagAndStoreFile(request);
+            response.setData(customerInfoRes);
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
+                    ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(response);
 
-		} catch (Exception e) {
-			throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
-					ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-		}
-	}
-	
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
     @ApiOperation(value = "update personal detail info")
     @LogAround
     @PostMapping(value = "/savePersonalDetail", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<PersonalDetailResponse>> updatePersonalDetail(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
                                                                                               @RequestBody PersonalDetailSaveInfoRequest personalDetailReg) throws TMBCommonException, JsonProcessingException {
         logger.info(TMBUtils.convertJavaObjectToString(personalDetailReg));
@@ -236,9 +237,9 @@ public class LoanOnlineSubmissionController {
         TmbOneServiceResponse<PersonalDetailResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
 
         try {
-            PersonalDetailResponse personalDetailResponse = loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo(crmId,personalDetailReg);
+            PersonalDetailResponse personalDetailResponse = loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo(crmId, personalDetailReg);
             oneTmbOneServiceResponse.setData(personalDetailResponse);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (TMBCommonException e) {
@@ -252,7 +253,7 @@ public class LoanOnlineSubmissionController {
     @LogAround
     @GetMapping("/documents")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getDocuments(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
                                                                                        @Valid ChecklistRequest request) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
@@ -260,12 +261,12 @@ public class LoanOnlineSubmissionController {
         try {
             List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getDocuments(request.getCaId());
             oneTmbOneServiceResponse.setData(responseChecklist);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get checklist document upload: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
     }
@@ -273,20 +274,45 @@ public class LoanOnlineSubmissionController {
     @ApiOperation(value = "get customer age")
     @LogAround
     @GetMapping("/customerAge")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header") })
-    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(@RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {
+    public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             LoanSubmissionGetCustomerAgeResponse response = loanOnlineSubmissionGetCustomerAgeService.getAge(crmId);
             oneTmbOneServiceResponse.setData(response);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(),ResponseCode.SUCCESS.getService(),ResponseCode.SUCCESS.getMessage(),""));
-            setHeader();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get customer age: {}", e);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(),ResponseCode.FAILED.getService(),ResponseCode.FAILED.getMessage(),e.getMessage()));
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
+
+    @ApiOperation(value = "get e-app")
+    @LogAround
+    @GetMapping("/e-app")
+    public ResponseEntity<TmbOneServiceResponse<EAppResponse>> getEApp(
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid EAppRequest request,
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId
+    ) {
+        responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        TmbOneServiceResponse<EAppResponse> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            EAppResponse response = loanOnlineSubmissionEAppService.getEApp(request.getCaId(), crmId, correlationId);
+            oneTmbOneServiceResponse.setData(response);
+            setHeader();
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
+            logger.error("error while get e-app: {}", e);
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
     }

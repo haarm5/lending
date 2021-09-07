@@ -360,16 +360,22 @@ public class LoanService {
 	 * @return
 	 * @throws TMBCommonException
 	 */
-	private boolean containInAccountCreditCardsAndActive(String productCode, String crmId) throws TMBCommonException {
-		CreditCardResponse creditCardResponse = Fetch
-				.fetch(() -> customerExpServiceClient.getCreditCards(UUID.randomUUID().toString(), crmId));
+	private boolean containInAccountCreditCardsAndActive(String productCode, String crmId) {
+		try {
+			CreditCardResponse creditCardResponse = Fetch
+					.fetch(() -> customerExpServiceClient.getCreditCards(UUID.randomUUID().toString(), crmId));
 
-		List<CreditCard> alreadyHaveProduct = Stream
-				.concat(creditCardResponse.getCreditCards().stream(), creditCardResponse.getFlashCards().stream())
-				.filter(creditCard -> productCode.equalsIgnoreCase(creditCard.getRslProductCode())
-						&& "active".equalsIgnoreCase(creditCard.getAccountStatus()))
-				.collect(Collectors.toList());
-		return !alreadyHaveProduct.isEmpty();
+			List<CreditCard> alreadyHaveProduct = Stream
+					.concat(creditCardResponse.getCreditCards().stream(), creditCardResponse.getFlashCards().stream())
+					.filter(creditCard -> productCode.equalsIgnoreCase(creditCard.getRslProductCode())
+							&& "active".equalsIgnoreCase(creditCard.getAccountStatus()))
+					.collect(Collectors.toList());
+			return !alreadyHaveProduct.isEmpty();
+			
+		} catch (Exception e) {
+			logger.error("Error from customerExpServiceClient.getCreditCards :{}", e);
+			return false;
+		}
 	}
 
 	private boolean containInCreditCardEligibleProduct(String crmId, String productCode) throws TMBCommonException {

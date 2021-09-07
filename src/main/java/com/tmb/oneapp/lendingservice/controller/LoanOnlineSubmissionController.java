@@ -308,12 +308,12 @@ public class LoanOnlineSubmissionController {
         try {
             EAppResponse response = loanOnlineSubmissionEAppService.getEApp(request.getCaId(), crmId, correlationId);
             oneTmbOneServiceResponse.setData(response);
-            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
-            logger.error("error while get e-app: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
+            logger.error("error while get e-app: {}", e);
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
     }

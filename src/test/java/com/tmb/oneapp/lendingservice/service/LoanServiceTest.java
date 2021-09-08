@@ -1751,7 +1751,7 @@ public class LoanServiceTest {
     }
 
     @Test
-    void fetchProductOrientation_ShouldHandleErrorFromOneAppService() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
+    void fetchProductOrientation_ShouldIgnoreErrorFromOneAppService() throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         when(commonServiceFeignClient.getCommonConfig(any(), any()))
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
@@ -1817,11 +1817,11 @@ public class LoanServiceTest {
 
         ProductDetailRequest request = new ProductDetailRequest();
         request.setProductCode(requestProductCode);
-        try {
-            loanService.fetchProductOrientation(crmId, request);
-            Assertions.fail("Should throw TMBCommonException");
-        } catch (TMBCommonException e) {
+        ProductDetailResponse productDetailResponse = loanService.fetchProductOrientation(crmId, request);
 
-        }
+        Assertions.assertFalse(productDetailResponse.isAlreadyHasProduct());
+        Assertions.assertFalse(productDetailResponse.isFlexiOnly());
+        Assertions.assertEquals(LoanType.CREDIT_CARD, productDetailResponse.getLoanType());
+        Assertions.assertEquals(ProductStatus.CONTINUE_APPLY, productDetailResponse.getStatus());
     }
 }

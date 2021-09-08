@@ -41,7 +41,7 @@ public class LoanCalculatorService {
         LoanCustomerDisburstAccount paymentAccount = new LoanCustomerDisburstAccount();
         LoanCustomerDisburstAccount receiveAccount = new LoanCustomerDisburstAccount();
         Facility facility = Objects.requireNonNull(getFacility(caId))[0];
-        CreditCard creditCard = Objects.requireNonNull(getCreditCard(caId))[0];
+        CreditCard[] creditCard = getCreditCard(caId);
         Individual individual = Objects.requireNonNull(getCustomer(caId))[0];
         String natureOfReq = Objects.requireNonNull(getApplicationInfo(caId)).getBody().getNatureOfRequest();
 
@@ -68,8 +68,8 @@ public class LoanCalculatorService {
             } else if (natureOfReq.equals("03")) {
                 calculatorResponse.setIsWaiveDoc(false);
             }
-            receiveAccount.setAccountNo(creditCard.getDebitAccountNo());
-            receiveAccount.setAccountName(creditCard.getDebitAccountName());
+            receiveAccount.setAccountNo(creditCard[0].getDebitAccountNo());
+            receiveAccount.setAccountName(creditCard[0].getDebitAccountName());
 
             calculatorResponse.setReceiveAccount(receiveAccount);
             calculatorResponse.setPaymentAccount(paymentAccount);
@@ -103,19 +103,8 @@ public class LoanCalculatorService {
     }
 
     private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        try {
-            ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-            }
-        } catch (Exception e) {
-            logger.error("preload loan calculator => get credit card soap error", e);
-            throw e;
-        }
+        ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caId);
+        return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
     }
 
     private Individual[] getCustomer(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {

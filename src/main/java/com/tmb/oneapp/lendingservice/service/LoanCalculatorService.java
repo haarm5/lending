@@ -44,7 +44,7 @@ public class LoanCalculatorService {
         Facility facility = Objects.requireNonNull(getFacility(caId))[0];
         CreditCard[] creditCard = getCreditCard(caId);
         Individual individual = Objects.requireNonNull(getCustomer(caId))[0];
-        Body application = getApplicationInfo(caId).getBody();
+        Body application = Objects.requireNonNull(getApplicationInfo(caId)).getBody();
 
         if (!product.equals(CREDIT_CARD) && facility != null) {
             if (application.getNatureOfRequest().equals("12")) {

@@ -1,23 +1,17 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
-import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
-import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
-import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
-import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
-import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.rsl.*;
-import com.tmb.oneapp.lendingservice.service.RslService;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+
+import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.util.Objects;
+
+import javax.xml.rpc.ServiceException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,16 +23,31 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.xml.rpc.ServiceException;
-
-import java.rmi.RemoteException;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
+import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
+import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
+import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
+import com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetChecklistInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCreditcardInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetDropdownListRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetFacilityInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanCalUWRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanSubmitApplicationRequest;
+import com.tmb.oneapp.lendingservice.service.RslService;
 
 @RunWith(JUnit4.class)
 public class RslControllerTest {
@@ -636,6 +645,43 @@ public class RslControllerTest {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new ServiceException("error")).when(rslService).getDocumentList(any());
             rslController.getDocumentList(correlationId, crmId, request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+
+    }
+    
+  //Loan Submission Instant Loan Transfer Application  
+    @Test
+    public void transferApplication_Success() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+
+		com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
+		doReturn(response).when(rslService).transferApplication(any());
+
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request = new Body();
+        request.setCaId(new BigDecimal("2021080504188297"));
+
+        ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> responseEntity = rslController.transferApplication(correlationId, crmId, request);
+
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getCode(), Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+    }
+
+    @Test
+    public void transferApplication_Fail() {
+        String correlationId = "correlationId";
+        String crmId = "001100000000000000000018593707";
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request = new Body();
+        request.setCaId(new BigDecimal("2021080504188297"));
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new ServiceException("error")).when(rslService).transferApplication(any());
+            rslController.transferApplication(correlationId, crmId, request);
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

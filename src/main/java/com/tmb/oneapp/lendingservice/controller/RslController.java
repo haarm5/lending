@@ -360,5 +360,34 @@ public class RslController {
             throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
+    
+    @ApiOperation("Loan Submission Instant Loan Transfer Application")
+    @PostMapping(value = "/LoanSubmissionInstantLoanTransferApplication", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer>> transferApplication(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody com.tmb.common.model.legacy.rsl.ws.instant.transfer.request.Body request
+    ) throws TMBCommonException, JsonProcessingException {
+        logger.info(TMBUtils.convertJavaObjectToString(request));
+        TmbOneServiceResponse<com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer> response = new TmbOneServiceResponse<>();
+
+        try {
+            rslService.transferApplication(request.getCaId().toString());
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
+                    ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
 
 }

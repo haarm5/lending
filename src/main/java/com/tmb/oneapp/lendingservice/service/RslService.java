@@ -41,6 +41,7 @@ public class RslService {
     private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
     private final LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
+    private final LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -120,6 +121,15 @@ public class RslService {
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }
+    
+	public com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer transferApplication(
+			String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+		com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = loanSubmissionInstantLoanTransferApplicationClient
+				.transferApplication(caId);
+		RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(),
+				response.getHeader().getResponseDescriptionEN());
+		return response;
+	}
 
 
 }

@@ -45,6 +45,7 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanSubmitApplicationClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanTransferApplicationClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateNCBConsentFlagClient;
@@ -90,6 +91,8 @@ public class RslServiceTest {
     LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
     @Mock
     LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
+    @Mock
+    LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
 
     @BeforeEach
     void setUp() {
@@ -658,6 +661,39 @@ public class RslServiceTest {
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
     
+  //Loan Submission Instant Loan Transfer Application  
+    @Test
+    public void transferApplication_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        mockTransferApplicationSuccess();
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = rslService.transferApplication("2021080504188297");
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void transferApplication_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionInstantLoanTransferApplicationClient).transferApplication(any());
+            rslService.transferApplication("2021080504188297");
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void transferApplication_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockTransferApplicationFail();
+            rslService.transferApplication("2021080504188297");
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+    }
+    
     //Mock Data
     private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseApplication response = new ResponseApplication();
@@ -983,5 +1019,33 @@ public class RslServiceTest {
 
         doReturn(response).when(loanSubmissionUpdateNCBConsentFlagClient).updateNCBConsentFlag(any());
     }
+    
+    private void mockTransferApplicationSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
+
+    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionInstantLoanTransferApplicationClient).transferApplication(any());
+    }
+
+    private void mockTransferApplicationFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
+
+    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Body body = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionInstantLoanTransferApplicationClient).transferApplication(any());
+    }
+
 
 }

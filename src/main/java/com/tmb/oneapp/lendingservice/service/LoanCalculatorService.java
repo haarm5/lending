@@ -41,7 +41,7 @@ public class LoanCalculatorService {
         LoanCalculatorResponse calculatorResponse = new LoanCalculatorResponse();
         LoanCustomerDisburstAccount paymentAccount = new LoanCustomerDisburstAccount();
         LoanCustomerDisburstAccount receiveAccount = new LoanCustomerDisburstAccount();
-        Facility facility = Objects.requireNonNull(getFacility(caId))[0];
+        Facility[] facility = getFacility(caId);
         CreditCard[] creditCard = getCreditCard(caId);
         Individual individual = Objects.requireNonNull(getCustomer(caId))[0];
         Body application = Objects.requireNonNull(getApplicationInfo(caId)).getBody();
@@ -53,11 +53,11 @@ public class LoanCalculatorService {
                 calculatorResponse.setIsWaiveDoc(false);
             }
 
-            receiveAccount.setAccountNo(facility.getDisburstAccountNo());
-            receiveAccount.setAccountName(facility.getDisburstAccountName());
+            receiveAccount.setAccountNo(facility[0].getDisburstAccountNo());
+            receiveAccount.setAccountName(facility[0].getDisburstAccountName());
 
-            paymentAccount.setAccountName(facility.getPaymentAccountName());
-            paymentAccount.setAccountNo(facility.getPaymentAccountNo());
+            paymentAccount.setAccountName(facility[0].getPaymentAccountName());
+            paymentAccount.setAccountNo(facility[0].getPaymentAccountNo());
 
             calculatorResponse.setReceiveAccount(receiveAccount);
             calculatorResponse.setPaymentAccount(paymentAccount);
@@ -87,20 +87,8 @@ public class LoanCalculatorService {
     }
 
     private Facility[] getFacility(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-
-        try {
-            ResponseFacility response = getFacilityInfoClient.searchFacilityInfoByCaID(caId);
-            if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities();
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
-            }
-        } catch (Exception e) {
-            logger.error("preload loan calculator => get facility soap error", e);
-            throw e;
-        }
+        ResponseFacility response = getFacilityInfoClient.searchFacilityInfoByCaID(caId);
+        return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities();
     }
 
     private CreditCard[] getCreditCard(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {

@@ -6,6 +6,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
@@ -43,12 +44,12 @@ public class LoanCalculatorService {
         Facility facility = Objects.requireNonNull(getFacility(caId))[0];
         CreditCard[] creditCard = getCreditCard(caId);
         Individual individual = Objects.requireNonNull(getCustomer(caId))[0];
-        String natureOfReq = Objects.requireNonNull(getApplicationInfo(caId)).getBody().getNatureOfRequest();
+        Body application = getApplicationInfo(caId).getBody();
 
         if (!product.equals(CREDIT_CARD) && facility != null) {
-            if (natureOfReq.equals("12")) {
+            if (application.getNatureOfRequest().equals("12")) {
                 calculatorResponse.setIsWaiveDoc(true);
-            } else if (natureOfReq.equals("11")) {
+            } else if (application.getNatureOfRequest().equals("11")) {
                 calculatorResponse.setIsWaiveDoc(false);
             }
 
@@ -63,9 +64,9 @@ public class LoanCalculatorService {
         }
 
         if (product.equals(CREDIT_CARD) && creditCard != null) {
-            if (natureOfReq.equals("04")) {
+            if (application.getNatureOfRequest().equals("04")) {
                 calculatorResponse.setIsWaiveDoc(true);
-            } else if (natureOfReq.equals("03")) {
+            } else if (application.getNatureOfRequest().equals("03")) {
                 calculatorResponse.setIsWaiveDoc(false);
             }
             receiveAccount.setAccountNo(creditCard[0].getDebitAccountNo());

@@ -88,28 +88,39 @@ class LoanCalculatorServiceTest {
     }
 
     @Test
-    public void testGetPreloadLoanCalFail() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public void testGetPreloadLoanCalCustomer_Fail() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         LoanCalculatorRequest request = new LoanCalculatorRequest();
         request.setCaId(2021071404188196L);
         request.setProduct("CC");
 
-        TmbOneServiceResponse<ResponseFacility> oneServiceResponse = new TmbOneServiceResponse<ResponseFacility>();
-        oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
-        TmbOneServiceResponse<ResponseCreditcard> oneServiceResponse1 = new TmbOneServiceResponse<ResponseCreditcard>();
-        oneServiceResponse1.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
         TmbOneServiceResponse<ResponseIndividual> oneServiceResponse2 = new TmbOneServiceResponse<ResponseIndividual>();
         oneServiceResponse2.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
+
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacilityData().getData());
+        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(anyLong())).thenReturn(mockCreditCardData().getData());
+        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(oneServiceResponse2.getData());
+        when(getApplicationInfoClient.searchApplicationInfoByCaID(anyLong())).thenReturn(mockApplicationData().getData());
+
+        assertThrows(Exception.class, () ->
+                loanCalculatorService.getPreloadLoanCalculator(request.getCaId(),request.getProduct()));
+    }
+
+    @Test
+    public void testGetPreloadLoanCalApplication_Fail() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+        LoanCalculatorRequest request = new LoanCalculatorRequest();
+        request.setCaId(2021071404188196L);
+        request.setProduct("CC");
+
         TmbOneServiceResponse<ResponseApplication> oneServiceResponse3 = new TmbOneServiceResponse<ResponseApplication>();
         oneServiceResponse3.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), "failed", "lending-service"));
 
-        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(oneServiceResponse.getData());
-        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(anyLong())).thenReturn(oneServiceResponse1.getData());
-        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(oneServiceResponse2.getData());
+        when(getFacilityInfoClient.searchFacilityInfoByCaID(anyLong())).thenReturn(mockFacilityData().getData());
+        when(getCreditCardInfoClient.searchCreditcardInfoByCaID(anyLong())).thenReturn(mockCreditCardData().getData());
+        when(getCustomerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerData().getData());
         when(getApplicationInfoClient.searchApplicationInfoByCaID(anyLong())).thenReturn(oneServiceResponse3.getData());
 
         assertThrows(Exception.class, () ->
                 loanCalculatorService.getPreloadLoanCalculator(request.getCaId(),request.getProduct()));
-
     }
 
     private TmbOneServiceResponse<ResponseFacility> mockFacilityData() {

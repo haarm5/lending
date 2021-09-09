@@ -228,11 +228,28 @@ public class LoanOnlineSubmissionEAppService {
         Optional<Address> filter = Arrays.stream(addresses).filter(x -> x.getAddrTypCode().equals(type)).findFirst();
         if (filter.isPresent()) {
             Address address = filter.get();
-            String result = String.format("%s %s %s %s %s %s %s %s",
-                    address.getAddress(), address.getBuildingName(),
-                    address.getStreetName(), address.getRoad(),
-                    address.getTumbol(), address.getAmphur(),
-                    address.getProvince(), address.getPostalCode());
+            String subdis = "ตำบล";
+            String dis = "อำเภอ";
+            if (address.getProvince().equals("กรุงเทพมหานคร")) {
+                subdis = "แขวง";
+                dis = "เขต";
+            }
+            String result = address.getAddress();
+            if (!address.getBuildingName().isEmpty()) {
+                result = result + " " + address.getBuildingName();
+            }
+            if (!address.getStreetName().isEmpty()) {
+                result = result + " " + address.getBuildingName();
+            }
+            if (!address.getRoad().isEmpty()) {
+                result = result + " " + address.getRoad();
+            }
+            if (!address.getMoo().isEmpty()) {
+                result = result + " " + address.getMoo();
+            }
+            result = result + " " + subdis + address.getTumbol() +
+                    " " + dis + address.getAmphur() + " " + address.getProvince() + " " +
+                    address.getPostalCode();
             return result;
         }
         return null;

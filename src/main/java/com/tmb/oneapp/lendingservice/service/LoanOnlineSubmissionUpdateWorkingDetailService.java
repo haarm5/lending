@@ -115,16 +115,29 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
         return null;
     }
 
+    private String checkEmptyString(String string) {
+        if (Objects.nonNull(string) && !string.isEmpty()) {
+            return string;
+        }
+        return "";
+    }
+
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();
         if (Objects.nonNull(individualAddresses)) {
             Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("O")).findFirst();
-
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+
+            String room = checkEmptyString(address.getRoomNo());
+            String buildingName = checkEmptyString(address.getBuildingName());
+            if (!room.isEmpty()) {
+                room = "ห้อง" + room;
+            }
+
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("O");
             newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(address.getBuildingName());
+            newAddress.setBuildingName(buildingName + " " + room);
             newAddress.setFloor(address.getFloor());
             newAddress.setStreetName(address.getStreetName());
             newAddress.setRoad(address.getRoad());

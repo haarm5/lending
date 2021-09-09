@@ -130,8 +130,18 @@ class LoanOnlineSubmissionEAppServiceTest {
         Address[] addresses = new Address[2];
         addresses[0] = new Address();
         addresses[0].setAddrTypCode("H");
+        addresses[0].setProvince("กทม");
+        addresses[0].setBuildingName("กทม");
+        addresses[0].setStreetName("กทม");
+        addresses[0].setRoad("กทม");
+        addresses[0].setMoo("กทม");
         addresses[1] = new Address();
         addresses[1].setAddrTypCode("O");
+        addresses[1].setProvince("กทม");
+        addresses[1].setBuildingName("กทม");
+        addresses[1].setStreetName("กทม");
+        addresses[1].setRoad("กทม");
+        addresses[1].setMoo("กทม");
 
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();

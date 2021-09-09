@@ -22,8 +22,6 @@ import javax.xml.rpc.ServiceException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,7 +53,7 @@ public class UploadDocumentService {
 
         String srcFile = generateFileFromBase64(request.getFileName(), request.getFile());
         String dir = String.format("%s/%s/TempAttachments/%s/", rmId, appRefNo, request.getDocCode());
-//        sftpStoreDocuments(srcFile, dir);
+        sftpStoreDocuments(srcFile, dir);
 
         response.setDocCode(request.getDocCode());
         response.setFileName(request.getFileName());
@@ -118,7 +116,6 @@ public class UploadDocumentService {
             sftpStoreFiles.add(sftpStoreFile);
 
             sftpClientImp.storeFile(sftpStoreFiles);
-            Files.delete(Paths.get(srcFile));
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }

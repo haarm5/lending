@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +94,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.RM_OCCUPATION.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (occcupationCode.equals(entry.getEntryCode())) {
+			if (StringUtils.isNotEmpty(occcupationCode) && occcupationCode.equals(entry.getEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}
@@ -111,7 +112,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (bustypeEntryCode.equals(entry.getEntryCode())) {
+			if (StringUtils.isNotEmpty(bustypeEntryCode) && bustypeEntryCode.equals(entry.getEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}
@@ -200,7 +201,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.INCOME_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if ("MIB".equals(entry.getExtValue1()) && reference.equals(entry.getRefEntryCode())) {
+			if ("MIB".equals(entry.getExtValue1()) && StringUtils.isNotEmpty(reference) && reference.equals(entry.getRefEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}
@@ -217,7 +218,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_SUB_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (reference.equals(entry.getRefEntryCode())) {
+			if (StringUtils.isNotEmpty(reference)&& StringUtils.isNotEmpty(reference) && reference.equals(entry.getRefEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}
@@ -234,7 +235,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.SCI_COUNTRY.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (countryOfIncome.equals(entry.getEntryCode())) {
+			if (StringUtils.isNotEmpty(countryOfIncome) && countryOfIncome.equals(entry.getEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}
@@ -246,7 +247,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (code.equals(entry.getEntryCode())) {
+			if (StringUtils.isNotEmpty(code) && code.equals(entry.getEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}

@@ -82,6 +82,15 @@ public class WorkInfoProfileService {
 					.getOccupationByEmploymentStatus(response.getWorkstatus().getValue());
 			selectOccupationCodeEntry.setRelateCodeEntry(relateOccupationCodeEntry);
 			
+			List<CriteriaCodeEntry> relateSourceOfIncomeCodeEntry = lendingCriteriaInfoService
+					.getSourceOfIncome(response.getWorkstatus().getValue());
+			sourceOfIncomeEntry.setRelateCodeEntry(relateSourceOfIncomeCodeEntry);
+			if (CollectionUtils.isNotEmpty(relateSourceOfIncomeCodeEntry)) {
+				CriteriaCodeEntry defaultEntry = relateSourceOfIncomeCodeEntry.get(0);
+				sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
+				sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
+			}
+			
 			List<CriteriaCodeEntry> busTypeCodes = lendingCriteriaInfoService.getBusinessTypeCode(businessTypeCode);
 			if (CollectionUtils.isNotEmpty(busTypeCodes)) {
 				CriteriaCodeEntry defaultEntry = busTypeCodes.get(0);
@@ -99,17 +108,7 @@ public class WorkInfoProfileService {
 			List<CriteriaCodeEntry> relateBusSubCodeEntry = lendingCriteriaInfoService
 					.getSubBusinessType(selectBusTypeCodeEntry.getValue());
 			selectBusSubTypeCodeEntry.setRelateCodeEntry(relateBusSubCodeEntry);
-			
-			
-
-			List<CriteriaCodeEntry> relateSourceOfIncomeCodeEntry = lendingCriteriaInfoService
-					.getSourceOfIncome(response.getWorkstatus().getValue());
-			sourceOfIncomeEntry.setRelateCodeEntry(relateSourceOfIncomeCodeEntry);
-			if (CollectionUtils.isNotEmpty(relateSourceOfIncomeCodeEntry)) {
-				CriteriaCodeEntry defaultEntry = relateSourceOfIncomeCodeEntry.get(0);
-				sourceOfIncomeEntry.setName(defaultEntry.getExtValue2());
-				sourceOfIncomeEntry.setValue(defaultEntry.getEntryCode());
-			}
+						
 			
 		} catch (Exception e) {
 			logger.error(e.toString(), e);

@@ -10,8 +10,7 @@ import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
-import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentRequest;
-import com.tmb.oneapp.lendingservice.model.documnet.UploadDocumentResponse;
+import com.tmb.oneapp.lendingservice.model.documnet.*;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import lombok.RequiredArgsConstructor;
@@ -46,10 +45,29 @@ public class UploadDocumentService {
     @Value("${sftp.locations.loan.documents}")
     private String sftpLocations;
 
-    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException {
+    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException {
         UploadDocumentResponse response = new UploadDocumentResponse();
-        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
+
         String rmId = CommonServiceUtils.getRmId(crmId);
+
+        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
+        String appRefNo = applicationInfo.getAppRefNo();
+
+        String srcFile = generateFileFromBase64(request.getFileName(), request.getFile());
+        String dir = String.format("%s/%s/TempAttachments/%s/", rmId, appRefNo, request.getDocCode());
+        sftpStoreDocuments(srcFile, dir);
+
+        response.setDocCode(request.getDocCode());
+        response.setFileName(request.getFileName());
+        return response;
+    }
+
+    public SubmitDocumentResponse submit(String crmId, SubmitDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException {
+        SubmitDocumentResponse response = new SubmitDocumentResponse();
+
+        String rmId = CommonServiceUtils.getRmId(crmId);
+
+        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
         String appRefNo = applicationInfo.getAppRefNo();
         String appDate = applicationInfo.getApplicationDate();
 
@@ -58,12 +76,28 @@ public class UploadDocumentService {
         response.setProductDescTh(applicationInfo.getProductDescTH());
         response.setNcbConsentFlag(applicationInfo.getNcbConsentFlag());
 
-        String fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
-        response.setPdfFileName(fileName);
+        //Loop merge pdf file in sftp
+        String dir = String.format("%s/%s/", rmId, appRefNo);
+        logger.info("Dir: {}", dir);
+        String fileName = parsePdfFileName("ID01", appRefNo, convertAppDate(appDate));
+        logger.info("FileName: {}", fileName);
 
-        String srcFile = generatePDFFromBase64(fileName, request.getFile());
-        sftpStoreDocuments(rmId, appRefNo, srcFile);
+        return response;
+    }
 
+    public DeleteDocumentResponse delete(String crmId, String caId, String docCode, String fileName) throws ServiceException, TMBCommonException, JsonProcessingException {
+        DeleteDocumentResponse response = new DeleteDocumentResponse();
+
+        String rmId = CommonServiceUtils.getRmId(crmId);
+
+        Body applicationInfo = getApplicationInfo(Long.parseLong(caId));
+        String appRefNo = applicationInfo.getAppRefNo();
+
+        String filePath = String.format("%s/%s/TempAttachments/%s", rmId, appRefNo, fileName);
+        sftpRemoveDocuments(filePath);
+
+        response.setDocCode(docCode);
+        response.setFileName(fileName);
         return response;
     }
 
@@ -73,10 +107,9 @@ public class UploadDocumentService {
         return response.getBody();
     }
 
-    private void sftpStoreDocuments(String rmId, String appRefNo, String srcFile) throws TMBCommonException {
+    private void sftpStoreDocuments(String srcFile, String dir) throws TMBCommonException {
         try {
             List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-            String dir = String.format("%s/%s", rmId, appRefNo);
 
             SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
             sftpStoreFile.setRootPath(sftpLocations);
@@ -91,6 +124,21 @@ public class UploadDocumentService {
         }
     }
 
+    private void sftpRemoveDocuments(String filePath) throws TMBCommonException {
+        try {
+            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
+
+            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
+            sftpStoreFile.setRootPath(sftpLocations);
+            sftpStoreFile.setDstDir(filePath);
+            sftpStoreFiles.add(sftpStoreFile);
+
+            sftpClientImp.removeFile(sftpStoreFiles);
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP remove file : " + filePath + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
     private String parsePdfFileName(String docCode, String appRefNo, String appDate) throws TMBCommonException {
         List<CriteriaCodeEntry> docTypeList = lendingCriteriaInfoService.getBrmsEcmDocTypeByCode(docCode);
         if (docTypeList.isEmpty()) {
@@ -102,8 +150,8 @@ public class UploadDocumentService {
         return fileName;
     }
 
-    private String generatePDFFromBase64(String fileName, String base64) throws IOException {
-        String base64String = base64.replace("data:application/pdf;base64,", "");
+    private String generateFileFromBase64(String fileName, String base64) throws IOException {
+        String base64String = base64.split(",")[1];
         byte[] decoder = Base64.getDecoder().decode(base64String);
         String baseDir = System.getProperty("user.dir");
         File outputDir = new File(baseDir + File.separator + "documents");

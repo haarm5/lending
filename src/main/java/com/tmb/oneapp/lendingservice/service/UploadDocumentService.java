@@ -55,7 +55,7 @@ public class UploadDocumentService {
 
         String srcFile = generateFileFromBase64(request.getFileName(), request.getFile());
         String dir = String.format("%s/%s/TempAttachments/%s/", rmId, appRefNo, request.getDocCode());
-        sftpStoreDocuments(srcFile, dir);
+//        sftpStoreDocuments(srcFile, dir);
 
         response.setDocCode(request.getDocCode());
         response.setFileName(request.getFileName());

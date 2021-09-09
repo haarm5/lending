@@ -219,10 +219,20 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
             Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
 
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+            String room = "";
+            String buildingName = "";
+            if (address.getRoomNo() != null) {
+                room = "ห้อง" + address.getRoomNo();
+            }
+
+            if (address.getBuildingName() != null) {
+                buildingName = address.getBuildingName();
+            }
+
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("H");
             newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName("ห้อง" + address.getRoomNo() + " " + address.getBuildingName());
+            newAddress.setBuildingName(room + " " + buildingName);
             newAddress.setFloor(address.getFloor());
             newAddress.setStreetName(address.getStreetName());
             newAddress.setRoad(address.getRoad());

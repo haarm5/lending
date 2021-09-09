@@ -173,10 +173,11 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
                     address.setFloor(personalAddress.getFloor());
                     address.setCountry(personalAddress.getCountry());
                     if (!personalAddress.getBuildingName().isBlank() || !personalAddress.getBuildingName().isEmpty()) {
-                        String[] roomNo = personalAddress.getBuildingName().split(" ");
-                        address.setRoomNo(roomNo[0]);
+                        String[] roomNo = personalAddress.getBuildingName().split("ห้อง");
+                        address.setBuildingName(roomNo[0]);
                         if (roomNo.length > 1) {
-                            address.setBuildingName(roomNo[1]);
+                            address.setBuildingName(roomNo[0]);
+                            address.setRoomNo("ห้อง" + roomNo[1]);
                         }
                     }
                 }
@@ -221,18 +222,18 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
             String room = "";
             String buildingName = "";
-            if (address.getRoomNo() != null) {
+            if (Objects.nonNull(address.getRoomNo()) && !address.getRoomNo().isEmpty()) {
                 room = "ห้อง" + address.getRoomNo();
             }
 
-            if (address.getBuildingName() != null) {
+            if (Objects.nonNull(address.getBuildingName()) && !address.getBuildingName().isEmpty()) {
                 buildingName = address.getBuildingName();
             }
 
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("H");
             newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(room + " " + buildingName);
+            newAddress.setBuildingName(buildingName + " " + room);
             newAddress.setFloor(address.getFloor());
             newAddress.setStreetName(address.getStreetName());
             newAddress.setRoad(address.getRoad());

@@ -121,10 +121,19 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("O")).findFirst();
 
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+            String room = "";
+            String buildingName = "";
+            if (Objects.nonNull(address.getRoomNo()) && !address.getRoomNo().isEmpty()) {
+                room = "ห้อง" + address.getRoomNo();
+            }
+
+            if (Objects.nonNull(address.getBuildingName()) && !address.getBuildingName().isEmpty()) {
+                buildingName = address.getBuildingName();
+            }
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("O");
             newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(address.getBuildingName());
+            newAddress.setBuildingName(buildingName + " " + room);
             newAddress.setFloor(address.getFloor());
             newAddress.setStreetName(address.getStreetName());
             newAddress.setRoad(address.getRoad());

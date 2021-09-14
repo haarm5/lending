@@ -218,7 +218,7 @@ public class LendingCriteriaInfoService {
 		List<CommonCodeEntry> commonCodeEntrys = lendingModuleCache
 				.getListByCategoryCode(LoanCategory.BUSINESS_SUB_TYPE.getCode());
 		for (CommonCodeEntry entry : commonCodeEntrys) {
-			if (StringUtils.isNotEmpty(reference)&& StringUtils.isNotEmpty(reference) && reference.equals(entry.getRefEntryCode())) {
+			if (StringUtils.isNotEmpty(reference) && reference.equals(entry.getRefEntryCode())) {
 				responseCriterias.add(setModelResponseInfo(entry));
 			}
 		}

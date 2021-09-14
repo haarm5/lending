@@ -11,6 +11,8 @@ import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
+import com.tmb.oneapp.lendingservice.client.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,19 +38,6 @@ import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetChecklistInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanGetCustomerInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanSubmitApplicationClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanTransferApplicationClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateFacilityInfoClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateNCBConsentFlagClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
@@ -93,6 +82,8 @@ public class RslServiceTest {
     LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
     @Mock
     LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
+    @Mock
+    LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
 
     @BeforeEach
     void setUp() {
@@ -624,7 +615,7 @@ public class RslServiceTest {
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
-  //Loan Submission Update NCB Consent Flag
+    //Loan Submission Update NCB Consent Flag
     @Test
     public void updateNCBConsentFlag_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         mockUpdateNCBConsentFlagSuccess();
@@ -660,8 +651,8 @@ public class RslServiceTest {
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
-    
-  //Loan Submission Instant Loan Transfer Application  
+
+    //Loan Submission Instant Loan Transfer Application
     @Test
     public void transferApplication_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
         mockTransferApplicationSuccess();
@@ -693,7 +684,7 @@ public class RslServiceTest {
         Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
         Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
-    
+
     //Mock Data
     private void mockGetLoanSubmissionApplicationInfoSuccess() throws ServiceException, JsonProcessingException, TMBCommonException {
         ResponseApplication response = new ResponseApplication();
@@ -940,7 +931,7 @@ public class RslServiceTest {
     }
 
     private void mockUpdateCustomerInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
-       com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
+        com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = new com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual();
 
         Header header = new Header();
         header.setResponseCode(RslResponseCode.SUCCESS.getCode());
@@ -992,9 +983,9 @@ public class RslServiceTest {
 
         doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
     }
-    
+
     private void mockUpdateNCBConsentFlagSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
-    	com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
 
         com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header();
         header.setResponseCode(RslResponseCode.SUCCESS.getCode());
@@ -1007,7 +998,7 @@ public class RslServiceTest {
     }
 
     private void mockUpdateNCBConsentFlagFail() throws ServiceException, TMBCommonException, JsonProcessingException {
-    	com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
+        com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag response = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag();
 
         com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Header();
         header.setResponseCode(RslResponseCode.FAIL.getCode());
@@ -1019,11 +1010,11 @@ public class RslServiceTest {
 
         doReturn(response).when(loanSubmissionUpdateNCBConsentFlagClient).updateNCBConsentFlag(any());
     }
-    
-    private void mockTransferApplicationSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
-    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
 
-    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
+    private void mockTransferApplicationSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
+
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
         header.setResponseCode(RslResponseCode.SUCCESS.getCode());
         response.setHeader(header);
 
@@ -1034,9 +1025,9 @@ public class RslServiceTest {
     }
 
     private void mockTransferApplicationFail() throws ServiceException, TMBCommonException, JsonProcessingException {
-    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer response = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.ResponseTransfer();
 
-    	com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
+        com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header header = new com.tmb.common.model.legacy.rsl.ws.instant.transfer.response.Header();
         header.setResponseCode(RslResponseCode.FAIL.getCode());
         header.setResponseDescriptionEN("rsl failed");
         response.setHeader(header);
@@ -1045,6 +1036,72 @@ public class RslServiceTest {
         response.setBody(body);
 
         doReturn(response).when(loanSubmissionInstantLoanTransferApplicationClient).transferApplication(any());
+    }
+
+
+    //Loan Submission Update Credit Card
+    @Test
+    public void updateUpdateCreditCardInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+        mockUpdateCreditCardInfoSuccess();
+        CreditCard request = new CreditCard();
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = rslService.updateCreditCardInfo(request);
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void updateCreditCardInfo_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionUpdateCreditCardClient).updateCreditCard(any());
+
+            CreditCard request = new CreditCard();
+            rslService.updateCreditCardInfo(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void updateCreditCardInfo_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockUpdateCreditCardInfoFail();
+            CreditCard request = new CreditCard();
+            rslService.updateCreditCardInfo(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
+    }
+
+
+    private void mockUpdateCreditCardInfoSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard();
+
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateCreditCardClient).updateCreditCard(any());
+    }
+
+    private void mockUpdateCreditCardInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard();
+
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header header = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Header();
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateCreditCardClient).updateCreditCard(any());
     }
 
 

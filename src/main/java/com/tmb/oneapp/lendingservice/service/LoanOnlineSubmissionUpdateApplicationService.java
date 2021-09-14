@@ -12,8 +12,11 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCreditcardInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetFacilityInfoRequest;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,13 +28,9 @@ import java.rmi.RemoteException;
 @AllArgsConstructor
 public class LoanOnlineSubmissionUpdateApplicationService {
     private static final TMBLogger<LoanOnlineSubmissionUpdateApplicationService> logger = new TMBLogger<>(LoanOnlineSubmissionUpdateApplicationService.class);
-    private final LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
-    private final LoanSubmissionGetCustomerInfoClient loanSubmissionGetCustomerInfoClient;
-    private final LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
-    private final LoanSubmissionGetFacilityInfoClient loanSubmissionGetFacilityInfoClient;
-    private final LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
-    private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
-    private final LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
+
+    private final RslService rslService;
+
 
     public Object updateApplication(LoanSubmissionCreateApplicationReq request) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
 
@@ -89,33 +88,37 @@ public class LoanOnlineSubmissionUpdateApplicationService {
 
 
     private Body getApplicationInfo(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseApplication response = loanSubmissionGetApplicationInfoClient.searchApplicationInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        LoanSubmissionGetApplicationInfoRequest req = new LoanSubmissionGetApplicationInfoRequest();
+        req.setCaId(String.valueOf(caId));
+        ResponseApplication response = rslService.getLoanSubmissionApplicationInfo(req);
         return response.getBody();
     }
 
     private Individual getCustomerInfo(long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
-        ResponseIndividual response = loanSubmissionGetCustomerInfoClient.searchCustomerInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        LoanSubmissionGetCustomerInfoRequest req = new LoanSubmissionGetCustomerInfoRequest();
+        req.setCaId(String.valueOf(caId));
+        ResponseIndividual response = rslService.getLoanSubmissionCustomerInfo(req);
         return response.getBody().getIndividuals()[0];
     }
 
     private Facility getFacility(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        LoanSubmissionGetFacilityInfoRequest req = new LoanSubmissionGetFacilityInfoRequest();
+        req.setCaId(String.valueOf(caId));
+        ResponseFacility response = rslService.getLoanSubmissionFacilityInfo(req);
         return response.getBody().getFacilities()[0];
     }
 
     private CreditCard getCreditCard(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
+        LoanSubmissionGetCreditcardInfoRequest req = new LoanSubmissionGetCreditcardInfoRequest();
+        req.setCaId(String.valueOf(caId));
+        ResponseCreditcard response = rslService.getLoanSubmissionCreditCardInfo(req);
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response.getBody().getCreditCards()[0];
     }
 
     private void updateFacility(Facility facility) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
-            com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = loanSubmissionUpdateFacilityInfoClient.updateFacilityInfo(facility);
-            RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+            rslService.updateFacilityInfo(facility);
         } catch (Exception e) {
             logger.error("update application service => update facility soap error", e);
             throw e;
@@ -124,8 +127,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
 
     private void updateCreditCard(CreditCard creditCard) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
-            com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = loanSubmissionUpdateCreditCardClient.updateCreditCard(creditCard);
-            RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+            rslService.updateCreditCardInfo(creditCard);
         } catch (Exception e) {
             logger.error("update application service => update credit card soap error", e);
             throw e;
@@ -134,8 +136,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
 
     private com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateIndividual(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
-            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = loanSubmissionUpdateCustomerClient.updateCustomerInfo(individual);
-            RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = rslService.updateCustomerInfo(individual);
             return response;
         } catch (Exception e) {
             logger.error("update application service => update customer soap error", e);

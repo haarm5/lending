@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
@@ -42,6 +43,7 @@ public class RslService {
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
     private final LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
     private final LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
+    private final LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -131,5 +133,10 @@ public class RslService {
 		return response;
 	}
 
+    public com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard updateCreditCardInfo(CreditCard creditCard) throws ServiceException, TMBCommonException, JsonProcessingException {
+        com.tmb.common.model.legacy.rsl.ws.creditcard.update.response.ResponseCreditcard response = loanSubmissionUpdateCreditCardClient.updateCreditCard(creditCard);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
 
 }

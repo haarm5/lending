@@ -13,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,6 @@ import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 
@@ -37,20 +35,7 @@ import static org.mockito.Mockito.*;
 class LoanOnlineSubmissionUpdateApplicationServiceTest {
 
     @Mock
-    private LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
-    @Mock
-    private LoanSubmissionGetCustomerInfoClient loanSubmissionGetCustomerInfoClient;
-    @Mock
-    private LoanSubmissionGetFacilityInfoClient loanSubmissionGetFacilityInfoClient;
-    @Mock
-    private LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
-
-    @Mock
-    private LoanSubmissionUpdateCustomerClient loanSubmissionUpdateCustomerClient;
-    @Mock
-    private LoanSubmissionUpdateFacilityInfoClient loanSubmissionUpdateFacilityInfoClient;
-    @Mock
-    private LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
+    private RslService rslService;
 
     @InjectMocks
     LoanOnlineSubmissionUpdateApplicationService loanOnlineSubmissionUpdateApplicationService;
@@ -63,40 +48,40 @@ class LoanOnlineSubmissionUpdateApplicationServiceTest {
 
     @Test
     public void testUpdateApplicationTypeCC() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
-        doReturn(getApplicationResponse("CC")).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
-        doReturn(getIndividualResponse()).when(loanSubmissionGetCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
-        doReturn(getCreditCardResponse()).when(loanSubmissionGetCreditcardInfoClient).searchCreditcardInfoByCaID(anyLong());
-        doReturn(updateIndividualResponse()).when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
-        doReturn(updateCreditCardResponse()).when(loanSubmissionUpdateCreditCardClient).updateCreditCard(any());
+        doReturn(getApplicationResponse("CC")).when(rslService).getLoanSubmissionApplicationInfo(any());
+        doReturn(getIndividualResponse()).when(rslService).getLoanSubmissionCustomerInfo(any());
+        doReturn(getCreditCardResponse()).when(rslService).getLoanSubmissionCreditCardInfo(any());
+        doReturn(updateIndividualResponse()).when(rslService).updateCustomerInfo(any());
+        doReturn(updateCreditCardResponse()).when(rslService).updateCreditCardInfo(any());
 
         var req = new LoanSubmissionCreateApplicationReq();
         req.setCaId(12l);
         loanOnlineSubmissionUpdateApplicationService.updateApplication(req);
 
-        verify(loanSubmissionGetApplicationInfoClient, times(1)).searchApplicationInfoByCaID(anyLong());
-        verify(loanSubmissionGetCustomerInfoClient, times(1)).searchCustomerInfoByCaID(anyLong());
-        verify(loanSubmissionGetCreditcardInfoClient, times(1)).searchCreditcardInfoByCaID(anyLong());
-        verify(loanSubmissionUpdateCreditCardClient, times(1)).updateCreditCard(any());
-        verify(loanSubmissionUpdateCustomerClient, times(1)).updateCustomerInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionApplicationInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionCustomerInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionCreditCardInfo(any());
+        verify(rslService, times(1)).updateCreditCardInfo(any());
+        verify(rslService, times(1)).updateCustomerInfo(any());
     }
 
     @Test
     public void testUpdateApplicationTypePL() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
-        doReturn(getApplicationResponse("PL")).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
-        doReturn(getIndividualResponse()).when(loanSubmissionGetCustomerInfoClient).searchCustomerInfoByCaID(anyLong());
-        doReturn(getFacilityResponse()).when(loanSubmissionGetFacilityInfoClient).searchFacilityInfoByCaID(anyLong());
-        doReturn(updateIndividualResponse()).when(loanSubmissionUpdateCustomerClient).updateCustomerInfo(any());
-        doReturn(updateFacilityResponse()).when(loanSubmissionUpdateFacilityInfoClient).updateFacilityInfo(any());
+        doReturn(getApplicationResponse("PL")).when(rslService).getLoanSubmissionApplicationInfo(any());
+        doReturn(getIndividualResponse()).when(rslService).getLoanSubmissionCustomerInfo(any());
+        doReturn(getFacilityResponse()).when(rslService).getLoanSubmissionFacilityInfo(any());
+        doReturn(updateIndividualResponse()).when(rslService).updateCustomerInfo(any());
+        doReturn(updateFacilityResponse()).when(rslService).updateFacilityInfo(any());
 
         var req = new LoanSubmissionCreateApplicationReq();
         req.setCaId(12l);
         loanOnlineSubmissionUpdateApplicationService.updateApplication(req);
 
-        verify(loanSubmissionGetApplicationInfoClient, times(1)).searchApplicationInfoByCaID(anyLong());
-        verify(loanSubmissionGetCustomerInfoClient, times(1)).searchCustomerInfoByCaID(anyLong());
-        verify(loanSubmissionGetFacilityInfoClient, times(1)).searchFacilityInfoByCaID(anyLong());
-        verify(loanSubmissionUpdateFacilityInfoClient, times(1)).updateFacilityInfo(any());
-        verify(loanSubmissionUpdateCustomerClient, times(1)).updateCustomerInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionApplicationInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionCustomerInfo(any());
+        verify(rslService, times(1)).getLoanSubmissionFacilityInfo(any());
+        verify(rslService, times(1)).updateFacilityInfo(any());
+        verify(rslService, times(1)).updateCustomerInfo(any());
     }
 
     private ResponseApplication getApplicationResponse(String type) {

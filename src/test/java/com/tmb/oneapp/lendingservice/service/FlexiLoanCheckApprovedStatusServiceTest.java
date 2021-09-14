@@ -12,6 +12,7 @@ import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.lendingservice.model.flexiloan.InstantLoanCalUWRequest;
@@ -43,13 +44,15 @@ public class FlexiLoanCheckApprovedStatusServiceTest {
     private LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
     @Mock
     private LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
+    @Mock
+    private LoanSubmissionGetCreditcardInfoClient getCreditcardInfoClient;
 
     FlexiLoanCheckApprovedStatusService flexiLoanCheckApprovedStatusService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        flexiLoanCheckApprovedStatusService = new FlexiLoanCheckApprovedStatusService(loanCalUWClient, getFacilityInfoClient);
+        flexiLoanCheckApprovedStatusService = new FlexiLoanCheckApprovedStatusService(loanCalUWClient, getFacilityInfoClient, getCreditcardInfoClient);
     }
 
     @Test

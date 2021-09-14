@@ -1,12 +1,18 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.common.ob.apprmemo.facility.ApprovalMemoFacility;
+import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.pricing.Pricing;
+import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.request.RequestInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCreditcardInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetFacilityInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionInstantLoanCalUWClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
@@ -17,6 +23,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +31,14 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class FlexiLoanCheckApprovedStatusService {
+    private static final TMBLogger<FlexiLoanCheckApprovedStatusService> logger = new TMBLogger<>(FlexiLoanCheckApprovedStatusService.class);
     private final LoanSubmissionInstantLoanCalUWClient loanCalUWClient;
     private final LoanSubmissionGetFacilityInfoClient getFacilityInfoClient;
+    private final LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
     static final String APPROVE = "APPROVE";
     static final String FLASH = "RC01";
     static final String C2G02 = "C2G02";
+    private static final List<String> CREDIT_CARD_CODE_LIST = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
     static final String YES = "Y";
     static final String MSG_000 = "MSG_000";
 
@@ -48,13 +58,16 @@ public class FlexiLoanCheckApprovedStatusService {
         try {
 
             ResponseInstantLoanCalUW responseInstantLoanCalUW = loanCalUWClient.calculateUnderwriting(request.getBody().getTriggerFlag(), request.getBody().getCaId());
-            ResponseFacility facilityInfo = new ResponseFacility();
+            Facility facilityInfo = new Facility();
+            CreditCard creditCardInfo = new CreditCard();
 
             if (responseInstantLoanCalUW.getHeader().getResponseCode().equals(MSG_000)) {
-                if (instantLoanCalUWRequest.getProduct().equals(FLASH)) {
-                    facilityInfo = getFacilityInfoClient.searchFacilityInfoByCaID(request.getBody().getCaId().longValue());
+                if (CREDIT_CARD_CODE_LIST.contains(instantLoanCalUWRequest.getProduct())) {
+                    creditCardInfo = getCreditCard(instantLoanCalUWRequest.getCaId().longValue());
+                } else {
+                    facilityInfo = getFacility(instantLoanCalUWRequest.getCaId().longValue());
                 }
-                return parseResponse(facilityInfo, responseInstantLoanCalUW, instantLoanCalUWRequest);
+                return parseResponse(facilityInfo, creditCardInfo, responseInstantLoanCalUW, instantLoanCalUWRequest);
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getMessage(),
@@ -68,7 +81,8 @@ public class FlexiLoanCheckApprovedStatusService {
         }
     }
 
-    private InstantLoanCalUWResponse parseResponse(ResponseFacility facilityInfo,
+    private InstantLoanCalUWResponse parseResponse(Facility facilityInfo,
+                                                   CreditCard creditCard,
                                                    ResponseInstantLoanCalUW loanCalUWResponse,
                                                    InstantLoanCalUWRequest request
     ) {
@@ -77,13 +91,13 @@ public class FlexiLoanCheckApprovedStatusService {
 
         response.setStatus(underWriting);
         response.setProduct(request.getProduct());
+        response.setLimitApplied(facilityInfo.getLimitApplied());
 
         setAmount(response, request.getLoanDay1Set(), request.getProduct(), facilityInfo, loanCalUWResponse);
 
-
         if (underWriting.equals(APPROVE)) {
-            if (request.getProduct().equals(FLASH) && facilityInfo.getBody().getFacilities() != null) {
-                Pricing[] pricings = facilityInfo.getBody().getFacilities()[0].getPricings();
+            if (request.getProduct().equals(FLASH) && facilityInfo.getPricings() != null) {
+                Pricing[] pricings = facilityInfo.getPricings();
                 List<LoanCustomerPricing> pricingList = new ArrayList<>();
 
                 for (Pricing p : pricings) {
@@ -98,8 +112,6 @@ public class FlexiLoanCheckApprovedStatusService {
                     }
                 }
                 response.setPricings(pricingList);
-
-
             }
 
 
@@ -116,19 +128,27 @@ public class FlexiLoanCheckApprovedStatusService {
                 response.setInstallmentAmount(approvalMemoFacility.getInstallmentAmount());
                 response.setRateType(approvalMemoFacility.getRateType());
                 response.setRateTypePercent(approvalMemoFacility.getRateTypePercent());
+                response.setOutStandingBalance(approvalMemoFacility.getOutstandingBalance());
+            }
+
+            if (creditCard != null) {
+                response.setDisburstAccountNo(creditCard.getDebitAccountNo());
+                response.setRequestApplied(creditCard.getRequestCreditLimit());
+                // set credit limit
             }
         }
 
         return response;
     }
 
-    private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response ,String loanDay1Set, String product, ResponseFacility responseFacility, ResponseInstantLoanCalUW loanCalUWResponse) {
+
+    private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response, String loanDay1Set, String product, Facility facility, ResponseInstantLoanCalUW loanCalUWResponse) {
         if (loanDay1Set.equals(YES)) {
             if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
                 response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
             }
-            if (product.equals(FLASH) && responseFacility.getBody().getFacilities()[0] != null) {
-                response.setRequestAmount(responseFacility.getBody().getFacilities()[0].getFeature().getRequestAmount());
+            if (product.equals(FLASH) && facility != null) {
+                response.setRequestAmount(facility.getFeature().getRequestAmount());
             } else if (product.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
                 response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
             }
@@ -142,6 +162,16 @@ public class FlexiLoanCheckApprovedStatusService {
             }
         }
         return response;
+    }
+
+    private Facility getFacility(Long caID) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseFacility response = getFacilityInfoClient.searchFacilityInfoByCaID(caID);
+        return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
+    }
+
+    private CreditCard getCreditCard(Long caID) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseCreditcard response = getCreditCardInfoClient.searchCreditcardInfoByCaID(caID);
+        return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards()[0];
     }
 
 }

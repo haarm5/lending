@@ -34,6 +34,7 @@ public class LoanCalculatorService {
     private final LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     private final LoanSubmissionGetApplicationInfoClient getApplicationInfoClient;
+
     private static final String CREDIT_CARD = "CC";
     static final String MSG_000 = "MSG_000";
 
@@ -61,6 +62,11 @@ public class LoanCalculatorService {
 
             calculatorResponse.setReceiveAccount(receiveAccount);
             calculatorResponse.setPaymentAccount(paymentAccount);
+            calculatorResponse.setTenure(facility[0].getTenure());
+            calculatorResponse.setLimitApplied(facility[0].getLimitApplied());
+            calculatorResponse.setLoanWithOtherBank(facility[0].getLoanWithOtherBank());
+            calculatorResponse.setConsiderLoanWithOtherBank(facility[0].getConsiderLoanWithOtherBank());
+            calculatorResponse.setPayMethodCriteria(facility[0].getPayMethodCriteria());
         }
 
         if (product.equals(CREDIT_CARD) && creditCard != null) {
@@ -69,6 +75,7 @@ public class LoanCalculatorService {
             } else if (application.getNatureOfRequest().equals("03")) {
                 calculatorResponse.setIsWaiveDoc(false);
             }
+            calculatorResponse.setPaymentCriteria(creditCard[0].getPaymentCriteria());
             receiveAccount.setAccountNo(creditCard[0].getDebitAccountNo());
             receiveAccount.setAccountName(creditCard[0].getDebitAccountName());
 

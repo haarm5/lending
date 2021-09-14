@@ -31,6 +31,8 @@ public class LoanOnlineSubmissionGetCustomerAgeService {
             LoanSubmissionGetCustomerAgeResponse response = new LoanSubmissionGetCustomerAgeResponse();
             response.setAge(birtDate.until(currentDate, ChronoUnit.YEARS));
             response.setBirthDate(customer.getIdBirthDate());
+            response.setExpireDate(customer.getIdExpireDate());
+            response.setIdType(customer.getIdType());
             return response;
         }
         return null;

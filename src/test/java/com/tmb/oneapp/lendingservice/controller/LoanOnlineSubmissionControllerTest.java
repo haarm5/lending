@@ -62,9 +62,9 @@ class LoanOnlineSubmissionControllerTest {
 
     @Mock
     LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInfoAppInfoService;
-    
+
     @Mock
-    LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;;
+    LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService updateNCBConsentFlagAndStoreFileService;
 
     @Mock
     LoanOnlineSubmissionUpdateWorkingDetailService loanOnlineSubmissionUpdateWorkingDetailService;
@@ -80,6 +80,9 @@ class LoanOnlineSubmissionControllerTest {
 
     @Mock
     LoanOnlineSubmissionGetCustomerAgeService loanOnlineSubmissionGetCustomerAgeService;
+
+    @Mock
+    LoanOnlineSubmissionUpdateApplicationService loanOnlineSubmissionUpdateApplicationService;
 
     @Mock
     LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
@@ -162,33 +165,33 @@ class LoanOnlineSubmissionControllerTest {
         Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
     }
 
-	@Test
-	public void oanSubmissionUpdateNCBConsentFlagAndStoreFileSuccess() throws Exception {
-		CustomerInformationResponse res = new CustomerInformationResponse();
-		when(updateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any())).thenReturn(res);
-		ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanOnlineSubmissionController
-				.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId", new UpdateNCBConsentFlagRequest());
+    @Test
+    public void oanSubmissionUpdateNCBConsentFlagAndStoreFileSuccess() throws Exception {
+        CustomerInformationResponse res = new CustomerInformationResponse();
+        when(updateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any())).thenReturn(res);
+        ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanOnlineSubmissionController
+                .loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId", new UpdateNCBConsentFlagRequest());
 
-		Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
-				Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
-		Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
-	}
+        Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getCode(),
+                Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
+        Assertions.assertEquals(ResponseCode.SUCCESS.getMessage(), responseEntity.getBody().getStatus().getMessage());
+    }
 
-	@Test
-	public void loanSubmissionUpdateNCBConsentFlagAndStoreFileThrowException() {
-		TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-			doThrow(new IllegalArgumentException()).when(updateNCBConsentFlagAndStoreFileService)
-					.updateNCBConsentFlagAndStoreFile(any());
+    @Test
+    public void loanSubmissionUpdateNCBConsentFlagAndStoreFileThrowException() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new IllegalArgumentException()).when(updateNCBConsentFlagAndStoreFileService)
+                    .updateNCBConsentFlagAndStoreFile(any());
 
-			loanOnlineSubmissionController.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId",
-					new UpdateNCBConsentFlagRequest());
-		});
+            loanOnlineSubmissionController.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId",
+                    new UpdateNCBConsentFlagRequest());
+        });
 
-		Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
-		Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
-		Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
-	}
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.FAILED.getMessage(), exception.getErrorMessage());
+    }
 
     @Test
     public void loanSubmissionGetCustomerInfoAndApplicationInfoSuccess() throws Exception {
@@ -259,8 +262,8 @@ class LoanOnlineSubmissionControllerTest {
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
         String corrationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-        when(loanOnlineSubmissionEAppService.getEApp(anyLong(),anyString(),anyString())).thenReturn(mockEAppData().getData());
-        ResponseEntity<TmbOneServiceResponse<EAppResponse>> result = loanOnlineSubmissionController.getEApp(crmid, request,corrationId);
+        when(loanOnlineSubmissionEAppService.getEApp(anyLong(), anyString(), anyString())).thenReturn(mockEAppData().getData());
+        ResponseEntity<TmbOneServiceResponse<EAppResponse>> result = loanOnlineSubmissionController.getEApp(crmid, request, corrationId);
         assertEquals(HttpStatus.OK.value(), result.getStatusCode().value());
     }
 
@@ -270,7 +273,7 @@ class LoanOnlineSubmissionControllerTest {
         request.setCaId(2021071404188196L);
         String crmid = "001100000000000000000018593707";
         String corrationId = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da";
-        when(loanOnlineSubmissionEAppService.getEApp(anyLong(), any(),any())).thenThrow(new NullPointerException());
+        when(loanOnlineSubmissionEAppService.getEApp(anyLong(), any(), any())).thenThrow(new NullPointerException());
         ResponseEntity<TmbOneServiceResponse<EAppResponse>> result = loanOnlineSubmissionController.getEApp(crmid, request, corrationId);
         assertTrue(result.getStatusCode().isError());
     }
@@ -477,6 +480,20 @@ class LoanOnlineSubmissionControllerTest {
         when(loanOnlineSubmissionGetCustomerAgeService.getAge(any())).thenThrow(new NullPointerException());
         ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> result = loanOnlineSubmissionController.getCustomerAge("123");
         assertTrue(result.getStatusCode().isError());
+    }
+
+    @Test
+    public void testUpdateApplicationSuccess() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any())).thenReturn(new Object());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanOnlineSubmissionController.updateApplication(new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testUpdateApplicationFail() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanOnlineSubmissionController.updateApplication(new LoanSubmissionCreateApplicationReq());
+        assertTrue(responseEntity.getStatusCode().isError());
     }
 
 }

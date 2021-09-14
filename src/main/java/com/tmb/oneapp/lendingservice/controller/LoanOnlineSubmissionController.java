@@ -58,6 +58,7 @@ public class LoanOnlineSubmissionController {
     private final LoanOnlineSubmissionGetDocumentListService loanOnlineSubmissionGetDocumentListService;
     private final LoanOnlineSubmissionGetCustomerAgeService loanOnlineSubmissionGetCustomerAgeService;
     private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
+    private final LoanOnlineSubmissionUpdateApplicationService loanOnlineSubmissionUpdateApplicationService;
     private static final HttpHeaders responseHeaders = new HttpHeaders();
 
     private TmbStatus getStatus(String responseCode, String responseService, String responseMessage, String error) {
@@ -313,6 +314,24 @@ public class LoanOnlineSubmissionController {
         } catch (Exception e) {
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
             logger.error("error while get e-app: {}", e);
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
+    @ApiOperation(value = "update application")
+    @LogAround
+    @PutMapping(value = "/updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TmbOneServiceResponse> updateApplication(@Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
+
+        TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            loanOnlineSubmissionUpdateApplicationService.updateApplication(request);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
+            setHeader();
+            return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("error while update application: {}", e);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
     }

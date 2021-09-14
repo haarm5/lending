@@ -42,12 +42,14 @@ class LoanOnlineSubmissionGetCustomerAgeServiceTest {
 
 
     @Test
-    public void testGetAgeReturnObject() throws TMBCommonException, ParseException {
+    public void testGetAgeReturnObject() throws TMBCommonException {
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
         CustGeneralProfileResponse custGeneralProfileResponse = new CustGeneralProfileResponse();
         custGeneralProfileResponse.setIdBirthDate("1960-12-24");
+        custGeneralProfileResponse.setIdExpireDate("1960-12-24");
+        custGeneralProfileResponse.setIdType("PP");
         oneServiceResponse.setData(custGeneralProfileResponse);
         oneServiceResponse.setStatus(tmbStatus);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
@@ -57,7 +59,7 @@ class LoanOnlineSubmissionGetCustomerAgeServiceTest {
     }
 
     @Test
-    public void testGetAgeReturnNull() throws TMBCommonException, ParseException {
+    public void testGetAgeReturnNull() throws TMBCommonException {
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();
         tmbStatus.setCode(ResponseCode.SUCCESS.getCode());

@@ -136,8 +136,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
 
     private com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateIndividual(Individual individual) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
-            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual response = rslService.updateCustomerInfo(individual);
-            return response;
+            return rslService.updateCustomerInfo(individual);
         } catch (Exception e) {
             logger.error("update application service => update customer soap error", e);
             throw e;

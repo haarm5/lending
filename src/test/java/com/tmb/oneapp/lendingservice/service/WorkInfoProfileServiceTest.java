@@ -8,6 +8,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.tmb.common.model.LovMaster;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.WorkInfoEntryResp;
@@ -21,6 +23,7 @@ import java.util.List;
 public class WorkInfoProfileServiceTest {
 
 	private WorkInfoProfileService workInfoProfileService;
+	@Mock
 	private CommonServiceFeignClient commonServiceClient;
 	@Mock
 	private LendingCriteriaInfoService lendingCriteriaInfoService;
@@ -46,7 +49,9 @@ public class WorkInfoProfileServiceTest {
 		when(lendingCriteriaInfoService.getSourceOfIncome(any())).thenReturn(mockResult);
 		when(lendingCriteriaInfoService.getSubBusinessType(any())).thenReturn(mockResult);
 		when(lendingCriteriaInfoService.getWorkStatusByOccupationCode(any())).thenReturn(mockResult);
-
+		TmbOneServiceResponse<List<LovMaster>> response = new TmbOneServiceResponse<List<LovMaster>>();
+		response.setData(new ArrayList<LovMaster>());
+		when(commonServiceClient.getLovmasterConfig(any(), any(), any(), any())).thenReturn(response);
 		WorkInfoEntryResp workInfo = workInfoProfileService.createWorkInformationModel("304", "A", "TH");
 		Assertions.assertNotNull(workInfo);
 	}
@@ -67,6 +72,9 @@ public class WorkInfoProfileServiceTest {
 		when(lendingCriteriaInfoService.getSourceOfIncome(any())).thenReturn(mockResult);
 		when(lendingCriteriaInfoService.getSubBusinessType(any())).thenReturn(mockResult);
 		when(lendingCriteriaInfoService.getWorkStatusByOccupationCode(any())).thenReturn(mockResult);
+		TmbOneServiceResponse<List<LovMaster>> response = new TmbOneServiceResponse<List<LovMaster>>();
+		response.setData(new ArrayList<LovMaster>());
+		when(commonServiceClient.getLovmasterConfig(any(), any(), any(), any())).thenReturn(response);
 		WorkInfoEntryResp workInfo = workInfoProfileService.createWorkInformationModel("304", "A", "TH");
 		Assertions.assertNotNull(workInfo);
 	}

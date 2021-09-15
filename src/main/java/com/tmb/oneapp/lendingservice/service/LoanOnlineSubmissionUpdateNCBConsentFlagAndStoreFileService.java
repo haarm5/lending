@@ -3,11 +3,14 @@ package com.tmb.oneapp.lendingservice.service;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.ResponseUpdateNCBConsentFlag;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 
@@ -23,7 +26,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInformationService;
 	private final LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
-	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) {
+	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) throws TMBCommonException {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		try {
 			logger.info("Update NCB Consent flag [RSL]");
@@ -38,7 +41,9 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			loanSubmissionGenNCBFileService.storeNCBfile(customerInfoRes);
 
 		} catch (Exception e) {
-			logger.error("getGetCustomerInformation got ExecutionException:{}", e);
+			logger.error("Update NCB Consent Flag And Store File got ExecutionException: {}", e);
+			 throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
+	                    ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
 		}
 		return customerInfoRes;
 

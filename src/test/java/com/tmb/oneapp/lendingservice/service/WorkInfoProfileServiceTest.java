@@ -8,6 +8,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.response.WorkInfoEntryResp;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,7 +21,7 @@ import java.util.List;
 public class WorkInfoProfileServiceTest {
 
 	private WorkInfoProfileService workInfoProfileService;
-
+	private CommonServiceFeignClient commonServiceClient;
 	@Mock
 	private LendingCriteriaInfoService lendingCriteriaInfoService;
 
@@ -32,7 +33,7 @@ public class WorkInfoProfileServiceTest {
 
 	@Test
 	public void testCode() {
-		workInfoProfileService = new WorkInfoProfileService(lendingCriteriaInfoService);
+		workInfoProfileService = new WorkInfoProfileService(lendingCriteriaInfoService,commonServiceClient);
 		List<CriteriaCodeEntry> mockResult = new ArrayList();
 		CriteriaCodeEntry entryA = new CriteriaCodeEntry();
 		mockResult.add(entryA);
@@ -52,7 +53,7 @@ public class WorkInfoProfileServiceTest {
 	
 	@Test
 	public void testNullCase() {
-		workInfoProfileService = new WorkInfoProfileService(lendingCriteriaInfoService);
+		workInfoProfileService = new WorkInfoProfileService(lendingCriteriaInfoService,commonServiceClient);
 		List<CriteriaCodeEntry> mockResult = new ArrayList();
 		CriteriaCodeEntry entryA = new CriteriaCodeEntry();
 		mockResult.add(entryA);

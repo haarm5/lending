@@ -294,7 +294,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
     }
 
     public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
-        if (individual != null) {
+        if (Objects.nonNull(individual) && !individual.toString().isEmpty()) {
             return individual;
         }
         return custGeneralProfileResponse;

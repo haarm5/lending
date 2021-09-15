@@ -26,7 +26,7 @@ public class WorkInfoProfileService {
 	private LendingCriteriaInfoService lendingCriteriaInfoService;
 	private CommonServiceFeignClient commonServiceFeignClient;
 
-	private HashMap<String, LovMaster> mapLovCash = new HashMap<String, LovMaster>();
+	private HashMap<String, LovMaster> mapLovCash = new HashMap<>();
 
 	@Autowired
 	public WorkInfoProfileService(LendingCriteriaInfoService lendingCriteriaInfoService,

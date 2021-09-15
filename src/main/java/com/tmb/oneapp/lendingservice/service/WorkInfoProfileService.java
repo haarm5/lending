@@ -130,7 +130,10 @@ public class WorkInfoProfileService {
 
 		return response;
 	}
-
+	/**
+	 * Conver mapping reference
+	 * @param countryList
+	 */
 	private void convertWithMappingReference(List<CriteriaCodeEntry> countryList) {
 		countryList.forEach( country->{
 			LovMaster  lovMaster = mapLovCash.get(country.getEntryCode());
@@ -139,7 +142,9 @@ public class WorkInfoProfileService {
 			}
 		});
 	}
-
+	/**
+	 * Do caching LOVMaster
+	 */
 	private void cachingLovMasterMapping() {
 		TmbOneServiceResponse<List<LovMaster>> response = commonServiceFeignClient
 				.getLovmasterConfig(UUID.randomUUID().toString(), UUID.randomUUID().toString(), "COUNTRY", null);

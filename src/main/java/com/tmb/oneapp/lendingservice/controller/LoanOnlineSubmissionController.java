@@ -274,7 +274,7 @@ public class LoanOnlineSubmissionController {
 
     @ApiOperation(value = "get customer age")
     @LogAround
-    @GetMapping("/customerAge")
+    @GetMapping("/verifyCustomer")
     public ResponseEntity<TmbOneServiceResponse<LoanSubmissionGetCustomerAgeResponse>> getCustomerAge(
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId) {

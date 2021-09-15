@@ -23,7 +23,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInformationService;
 	private final LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
-	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) {
+	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) throws Exception {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		try {
 			logger.info("Update NCB Consent flag [RSL]");
@@ -38,7 +38,8 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			loanSubmissionGenNCBFileService.storeNCBfile(customerInfoRes);
 
 		} catch (Exception e) {
-			logger.error("getGetCustomerInformation got ExecutionException:{}", e);
+			logger.error("Update NCB Consent Flag And Store File got ExecutionException: {}", e);
+			throw e;
 		}
 		return customerInfoRes;
 

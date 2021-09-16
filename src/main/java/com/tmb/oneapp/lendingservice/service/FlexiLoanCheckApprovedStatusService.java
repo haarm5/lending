@@ -38,6 +38,7 @@ public class FlexiLoanCheckApprovedStatusService {
     static final String APPROVE = "APPROVE";
     static final String FLASH = "RC01";
     static final String C2G02 = "C2G02";
+    static final String C2G01 = "C2G01";
     private static final List<String> CREDIT_CARD_CODE_LIST = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
     static final String YES = "Y";
     static final String MSG_000 = "MSG_000";
@@ -133,7 +134,7 @@ public class FlexiLoanCheckApprovedStatusService {
 
             if (creditCard != null) {
                 response.setDisburstAccountNo(creditCard.getDebitAccountNo());
-                response.setRequestApplied(creditCard.getRequestCreditLimit());
+                response.setRequestCreditLimit(creditCard.getRequestCreditLimit());
                 // set credit limit
             }
         }
@@ -143,23 +144,15 @@ public class FlexiLoanCheckApprovedStatusService {
 
 
     private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response, String loanDay1Set, String product, Facility facility, ResponseInstantLoanCalUW loanCalUWResponse) {
-        if (loanDay1Set.equals(YES)) {
-            if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
-                response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
-            }
-            if (product.equals(FLASH) && facility != null) {
-                response.setRequestAmount(facility.getFeature().getRequestAmount());
-            } else if (product.equals(C2G02) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
-                response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
-            }
 
-        } else {
-            response.setCreditLimit(BigDecimal.valueOf(500000));
-            if (product.equals(FLASH)) {
-                response.setRequestAmount(BigDecimal.valueOf(5000));
-            } else if (product.equals(C2G02)) {
-                response.setRequestAmount(BigDecimal.valueOf(10000));
-            }
+        logger.info("loanDayOneSet: " , loanDay1Set);
+        if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+            response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
+        }
+        if (product.equals(FLASH) && facility != null) {
+            response.setRequestAmount(facility.getFeature().getRequestAmount());
+        } else if ((product.equals(C2G02) || product.equals(C2G01)) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+            response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
         }
         return response;
     }

@@ -485,14 +485,14 @@ public class LoanService {
 				List<InstantFacility> foundProductsC2G01 = Arrays
 						.stream(eligibleProducts.getBody().getInstantFacility())
 						.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G01")
-								&& instantFacility.getProductCode().equalsIgnoreCase(productCode))
+								&& instantFacility.getFacilityCode().equalsIgnoreCase(productCode))
 						.collect(Collectors.toList());
 
 				if (haveInAccounts(loanSummary)) {
 					List<InstantFacility> foundProductsC2G02 = Arrays
 							.stream(eligibleProducts.getBody().getInstantFacility())
 							.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G02")
-									&& instantFacility.getProductCode().equalsIgnoreCase(productCode))
+									&& instantFacility.getFacilityCode().equalsIgnoreCase(productCode))
 							.collect(Collectors.toList());
 					if (foundProductsC2G02.isEmpty()) {
 						productDetailResponse.setAlreadyHasProduct(true);
@@ -512,7 +512,7 @@ public class LoanService {
 			}
 
 			List<InstantFacility> foundProducts = Arrays.stream(eligibleProducts.getBody().getInstantFacility())
-					.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase(productCode))
+					.filter(instantFacility -> instantFacility.getFacilityCode().equalsIgnoreCase(productCode))
 					.collect(Collectors.toList());
 			if (!foundProducts.isEmpty()) {
 				return handleFlexiLoanFlow(crmId, productCode, loanType);

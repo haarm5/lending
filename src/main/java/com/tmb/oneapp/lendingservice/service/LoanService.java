@@ -421,7 +421,7 @@ public class LoanService {
 				productDetailResponse.setFlexiOnly(true);
 				return productDetailResponse;
 			}
-			return handleFlexiLoanFlow(crmId, productCode, loanType);
+			return handleFlexiLoanFlow(crmId, productCode, loanType, productCode);
 		}
 
 		return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
@@ -498,10 +498,10 @@ public class LoanService {
 						productDetailResponse.setAlreadyHasProduct(true);
 						return productDetailResponse;
 					}
-					return handleFlexiLoanFlow(crmId, productCode, loanType);
+					return handleFlexiLoanFlow(crmId, productCode, loanType,foundProductsC2G02.get(0).getProductCode());
 
 				} else if (!foundProductsC2G01.isEmpty()) {
-					return handleFlexiLoanFlow(crmId, productCode, loanType);
+					return handleFlexiLoanFlow(crmId, productCode, loanType, foundProductsC2G01.get(0).getProductCode());
 				}
 				return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
 			}
@@ -515,7 +515,7 @@ public class LoanService {
 					.filter(instantFacility -> instantFacility.getFacilityCode().equalsIgnoreCase(productCode))
 					.collect(Collectors.toList());
 			if (!foundProducts.isEmpty()) {
-				return handleFlexiLoanFlow(crmId, productCode, loanType);
+				return handleFlexiLoanFlow(crmId, productCode, loanType, foundProducts.get(0).getProductCode());
 			}
 		}
 		return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
@@ -563,6 +563,7 @@ public class LoanService {
 			LendingModuleConfig lendingModuleConfig) throws TMBCommonException {
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse();
 		productDetailResponse.setLoanType(loanType);
+		productDetailResponse.setProductCode(productCode);
 		productDetailResponse.setFlowType(FlowType.LOAN_SUBMISSION);
 		List<Application> foundApplication = findApplication(crmId, productCode);
 		if (foundApplication.isEmpty()) {
@@ -600,11 +601,12 @@ public class LoanService {
 	 * @return
 	 * @throws TMBCommonException
 	 */
-	private ProductDetailResponse handleFlexiLoanFlow(String crmId, String productCode, LoanType loanType)
+	private ProductDetailResponse handleFlexiLoanFlow(String crmId, String productCode, LoanType loanType, String setProductCode)
 			throws TMBCommonException {
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse();
 		productDetailResponse.setLoanType(loanType);
 		productDetailResponse.setFlowType(FlowType.FLEXI);
+		productDetailResponse.setProductCode(setProductCode);
 		List<Application> foundApplication = findApplication(crmId, productCode);
 		if (foundApplication.isEmpty()) {
 			productDetailResponse.setStatus(ProductStatus.APPLY_WITH_PRODUCT_NAME);
@@ -689,7 +691,6 @@ public class LoanService {
 			productDetailResponse.setProductNameTh(productConfig.getProductNameEn());
 			productDetailResponse.setContentLink(productConfig.getContentLink());
 		}
-		productDetailResponse.setProductCode(productCode);
 		productDetailResponse.setLoanType(loanType);
 		processGetProducts(productDetailResponse, crmId);
 

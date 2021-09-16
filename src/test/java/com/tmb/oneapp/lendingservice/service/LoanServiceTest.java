@@ -801,7 +801,7 @@ public class LoanServiceTest {
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
         String crmId = "123";
-        String requestProductCode = "c2g02";
+        String requestProductCode = "c2g";
         LoanAccount loanAccountSaving = new LoanAccount();
         loanAccountSaving.setAccountNumber("123");
         loanAccountSaving.setProductCode("0225");
@@ -818,6 +818,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("c2g02");
+        f.setFacilityCode("c2g");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 
@@ -832,7 +833,7 @@ public class LoanServiceTest {
         Application application1 = new Application();
         Applicant applicant1 = new Applicant();
         Product product1 = new Product();
-        product1.setProductCode("c2g02");
+        product1.setProductCode("c2g");
         applicant1.setProducts(new Product[] { product1 });
         application1.setApplicants(new Applicant[] { applicant1 });
         application1.setInstantFlag("Y");
@@ -862,7 +863,7 @@ public class LoanServiceTest {
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
         String crmId = "123";
-        String requestProductCode = "c2g02";
+        String requestProductCode = "c2g";
         LoanAccount loanAccountSaving = new LoanAccount();
         loanAccountSaving.setAccountNumber("123");
         loanAccountSaving.setProductCode("0225");
@@ -879,6 +880,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("c2g02");
+        f.setFacilityCode("c2g");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 
@@ -893,7 +895,7 @@ public class LoanServiceTest {
         Application application1 = new Application();
         Applicant applicant1 = new Applicant();
         Product product1 = new Product();
-        product1.setProductCode("c2g02");
+        product1.setProductCode("c2g");
         applicant1.setProducts(new Product[] { product1 });
         application1.setApplicants(new Applicant[] { applicant1 });
         application1.setInstantFlag("Y");
@@ -922,7 +924,7 @@ public class LoanServiceTest {
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
         String crmId = "123";
-        String requestProductCode = "c2g02";
+        String requestProductCode = "c2g";
         LoanAccount loanAccountSaving = new LoanAccount();
         loanAccountSaving.setAccountNumber("123");
         loanAccountSaving.setProductCode("0225");
@@ -939,6 +941,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("c2g02");
+        f.setFacilityCode("c2g");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 
@@ -953,7 +956,7 @@ public class LoanServiceTest {
         Application application1 = new Application();
         Applicant applicant1 = new Applicant();
         Product product1 = new Product();
-        product1.setProductCode("rc01");
+        product1.setProductCode("rc");
         applicant1.setProducts(new Product[] { product1 });
         application1.setApplicants(new Applicant[] { applicant1 });
         application1.setInstantFlag("Y");
@@ -999,6 +1002,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("c2g01");
+        f.setFacilityCode("c2g");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 
@@ -1138,6 +1142,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("rc01");
+        f.setFacilityCode("rc");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 
@@ -1191,6 +1196,7 @@ public class LoanServiceTest {
 
         InstantFacility f = new InstantFacility();
         f.setProductCode("cg201");
+        f.setFacilityCode("c2g");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantFacility(f));
 

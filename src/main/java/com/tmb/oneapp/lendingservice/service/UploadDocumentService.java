@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class UploadDocumentService {
         return response;
     }
 
-    public DeleteDocumentResponse delete(String crmId, String caId, String docCode, String fileType, String fileName) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public DeleteDocumentResponse delete(String crmId, String caId, String docCode, String fileType, String fileName) throws ServiceException, TMBCommonException, IOException {
         DeleteDocumentResponse response = new DeleteDocumentResponse();
 
         String rmId = CommonServiceUtils.getRmId(crmId);
@@ -228,13 +229,8 @@ public class UploadDocumentService {
 
     }
 
-    public void removeFile(String filePath) {
-        File outputDir = new File(filePath);
-        if (outputDir.exists()) {
-            if (!outputDir.delete()) {
-                logger.error("Remove file fail: {}", filePath);
-            }
-        }
+    public void removeFile(String filePath) throws IOException {
+        Files.delete(Paths.get(filePath));
         logger.info("Remove file successes: {}", filePath);
     }
 
@@ -254,9 +250,9 @@ public class UploadDocumentService {
 
     }
 
-    public void mkdirs(File outputDir) {
+    public void mkdirs(File outputDir) throws IOException {
         if (Files.notExists(outputDir.toPath())) {
-            outputDir.mkdirs();
+            FileUtils.forceMkdir(outputDir);
         }
     }
 

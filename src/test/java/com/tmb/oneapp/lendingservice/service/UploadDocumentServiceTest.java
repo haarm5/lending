@@ -196,6 +196,7 @@ public class UploadDocumentServiceTest {
     @Test
     public void delete_Image_Success() throws TMBCommonException, ServiceException, IOException {
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doNothing().when(uploadDocumentService).removeFile(anyString());
         doReturn(true).when(sftpClientImp).removeFile(anyList());
 
         DeleteDocumentResponse response = uploadDocumentService.delete("001100000000000000000018593707", "1", "ID01", "png", "test");
@@ -205,6 +206,7 @@ public class UploadDocumentServiceTest {
     @Test
     public void delete_Pdf_Success() throws TMBCommonException, ServiceException, IOException {
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doNothing().when(uploadDocumentService).removeFile(anyString());
         doReturn(true).when(sftpClientImp).removeFile(anyList());
 
         DeleteDocumentResponse response = uploadDocumentService.delete("001100000000000000000018593707", "1", "ID01", "pdf", "test");

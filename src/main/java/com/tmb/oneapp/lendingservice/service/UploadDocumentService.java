@@ -64,7 +64,7 @@ public class UploadDocumentService {
         Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
         String appRefNo = applicationInfo.getAppRefNo();
         String dir = String.format("%s/%s/%s", rmId, appRefNo, request.getDocCode());
-        String srcDir = String.format("%s/documents/%s", baseDir, dir);
+        String srcDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, request.getDocCode());
         String fileName = request.getFileName();
 
         String fileType = request.getFile().split(";")[0];
@@ -95,8 +95,8 @@ public class UploadDocumentService {
 
         for (String docCode : request.getDocCodes()) {
             String dir = String.format("%s/%s/%s", rmId, appRefNo, docCode);
-            String srcDir = String.format("%s/documents/%s/TempAttachments", baseDir, dir);
-            String outDir = String.format("%s/documents/%s", baseDir, dir);
+            String srcDir = String.format("%s/documents/%s/%s/%s/TempAttachments", baseDir, rmId, appRefNo, docCode);
+            String outDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, docCode);
             String fileName = parsePdfFileName(docCode, appRefNo, convertAppDate(appDate));
             mergeImagesToPdf(srcDir, outDir, fileName);
             removeDirectory(srcDir);

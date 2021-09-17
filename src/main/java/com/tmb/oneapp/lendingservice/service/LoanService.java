@@ -716,13 +716,11 @@ public class LoanService {
 			CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(accountListFuture, eligibleProductsFuture);
 			try {
 				combinedFuture.get();
-				ProductResponse productResponse = new ProductResponse();
 				List<DepositAccount> accountList = (List<DepositAccount>) accountListFuture.get().getData();
 				EligibleProductResponse eligibleProductResponse = (EligibleProductResponse) eligibleProductsFuture.get()
 						.getData();
-				productResponse.setEligibleProducts(eligibleProductResponse.getEligibleProducts());
-				productResponse.setDepositAccountLists(accountList);
-				productDetailResponse.setProductData(productResponse);
+				productDetailResponse.setEligibleProducts(eligibleProductResponse.getEligibleProducts());
+				productDetailResponse.setDepositAccountLists(accountList);
 			} catch (InterruptedException e) {
 				logger.error("fetchProducts got InterruptedException:{}", e);
 				Thread.currentThread().interrupt();

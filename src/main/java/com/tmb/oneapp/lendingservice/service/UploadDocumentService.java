@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -79,7 +78,7 @@ public class UploadDocumentService {
         return response;
     }
 
-    public SubmitDocumentResponse submit(String crmId, SubmitDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException, DocumentException {
+    public SubmitDocumentResponse submit(String crmId, SubmitDocumentRequest request) throws TMBCommonException, IOException, ServiceException, DocumentException {
         SubmitDocumentResponse response = new SubmitDocumentResponse();
         String rmId = CommonServiceUtils.getRmId(crmId);
 

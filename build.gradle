@@ -94,6 +94,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
     implementation 'com.jcraft:jsch:0.1.55'
     implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.0')
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.2'
     compile('org.apache.xmlgraphics:fop:2.6'){
     	exclude group: 'xml-apis'
     }

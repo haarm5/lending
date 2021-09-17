@@ -86,7 +86,7 @@ public class UploadDocumentController {
     }
 
     @ApiOperation("Delete documents")
-    @DeleteMapping(value = "/{caId}/{docCode}/{fileName}")
+    @DeleteMapping(value = "/{caId}/{docCode}/{fileType}/{fileName}")
     @LogAround
     public ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> deleteDocument(
             @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
@@ -97,13 +97,15 @@ public class UploadDocumentController {
             @Valid @PathVariable("caId") String caId,
             @ApiParam(value = "docCode", required = true)
             @Valid @PathVariable("docCode") String docCode,
+            @ApiParam(value = "fileType", required = true)
+            @Valid @PathVariable("fileType") String fileType,
             @ApiParam(value = "fileName", required = true)
             @Valid @PathVariable("fileName") String fileName
     ) throws TMBCommonException {
         TmbOneServiceResponse<DeleteDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            DeleteDocumentResponse deleteDocumentResponse = uploadDocumentService.delete(crmId, caId, docCode, fileName);
+            DeleteDocumentResponse deleteDocumentResponse = uploadDocumentService.delete(crmId, caId, docCode, fileType, fileName);
             response.setData(deleteDocumentResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

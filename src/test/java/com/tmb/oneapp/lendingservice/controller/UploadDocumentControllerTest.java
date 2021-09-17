@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.itextpdf.text.DocumentException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.documnet.*;
@@ -37,7 +38,7 @@ public class UploadDocumentControllerTest {
     }
 
     @Test
-    public void uploadDocument_Success() throws TMBCommonException, IOException, ServiceException {
+    public void uploadDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException {
         UploadDocumentRequest request = new UploadDocumentRequest();
         request.setCaId("1");
         request.setDocCode("ID01");
@@ -52,7 +53,7 @@ public class UploadDocumentControllerTest {
     }
 
     @Test
-    public void submitDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException {
+    public void submitDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException, DocumentException {
         SubmitDocumentRequest request = new SubmitDocumentRequest();
         request.setCaId("1");
 
@@ -66,9 +67,9 @@ public class UploadDocumentControllerTest {
     @Test
     public void deleteDocument_Success() throws TMBCommonException, IOException, ServiceException {
         DeleteDocumentResponse response = new DeleteDocumentResponse();
-        doReturn(response).when(uploadDocumentService).delete(anyString(), anyString(), anyString(), anyString());
+        doReturn(response).when(uploadDocumentService).delete(anyString(), anyString(), anyString(), anyString(), anyString());
 
-        ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> responseEntity = uploadDocumentController.deleteDocument("correlationId", "crmId", "1", "ID01", "test.png");
+        ResponseEntity<TmbOneServiceResponse<DeleteDocumentResponse>> responseEntity = uploadDocumentController.deleteDocument("correlationId", "crmId", "1", "ID01", "png", "test");
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 }

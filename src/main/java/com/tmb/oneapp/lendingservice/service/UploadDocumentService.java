@@ -228,12 +228,10 @@ public class UploadDocumentService {
 
     }
 
-    public void removeFile(String filePath) throws TMBCommonException {
+    public void removeFile(String filePath) {
         File outputDir = new File(filePath);
         if (outputDir.exists()) {
-            if (outputDir.delete()) {
-                throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), "Remove file fail: " + filePath, ResponseCode.GENERAL_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-            }
+            outputDir.delete();
         }
         logger.info("Remove file successes: {}", filePath);
     }
@@ -256,8 +254,6 @@ public class UploadDocumentService {
 
     public void mkdirs(File outputDir) {
         if (Files.notExists(outputDir.toPath())) {
-            outputDir.setReadable(true, false);
-            outputDir.setWritable(true, false);
             outputDir.mkdirs();
         }
     }

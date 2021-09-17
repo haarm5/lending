@@ -116,7 +116,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void submit_sftpStoreDocuments_Fail() throws TMBCommonException, ServiceException, IOException, ParseException, DocumentException {
+    public void submit_sftpStoreDocuments_Fail() throws TMBCommonException, ServiceException, IOException, DocumentException {
         SubmitDocumentRequest request = new SubmitDocumentRequest();
         request.setCaId("1");
         List<String> docCodes = new ArrayList<>();
@@ -144,7 +144,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void submit_sftpRemoveDocuments_Fail() throws TMBCommonException, ServiceException, IOException, ParseException, DocumentException {
+    public void submit_sftpRemoveDocuments_Fail() throws TMBCommonException, ServiceException, IOException, DocumentException {
         SubmitDocumentRequest request = new SubmitDocumentRequest();
         request.setCaId("1");
         List<String> docCodes = new ArrayList<>();

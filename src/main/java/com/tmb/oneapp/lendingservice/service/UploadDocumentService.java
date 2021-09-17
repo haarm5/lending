@@ -37,6 +37,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
@@ -52,7 +53,7 @@ public class UploadDocumentService {
     @Value("${sftp.locations.loan.documents}")
     private String sftpLocations;
 
-    private String baseDir = System.getProperty("user.dir");
+    private final String baseDir = System.getProperty("user.dir");
 
     public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException {
         UploadDocumentResponse response = new UploadDocumentResponse();
@@ -193,11 +194,8 @@ public class UploadDocumentService {
         String base64String = base64.split(",")[1];
         byte[] decoder = Base64.getDecoder().decode(base64String);
         File outputDir = new File(dir);
-        if (Files.notExists(outputDir.toPath())) {
-            outputDir.mkdirs();
-            outputDir.setReadable(true, false);
-            outputDir.setWritable(true, false);
-        }
+        mkdirs(outputDir);
+
         String filePath = outputDir + SEPARATOR + fileName;
 
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
@@ -208,19 +206,12 @@ public class UploadDocumentService {
 
     public void mergeImagesToPdf(String srcDir, String outDir, String fileName) throws IOException, DocumentException {
         File root = new File(srcDir);
-
-        List<Path> files = Files.walk(root.toPath())
-                .filter(Files::isRegularFile)
-                .collect(Collectors.toList());
+        List<Path> files = listFiles(root.toPath());
 
         Document document = new Document();
         File outputDir = new File(outDir);
+        mkdirs(outputDir);
 
-        if (Files.notExists(outputDir.toPath())) {
-            outputDir.mkdirs();
-            outputDir.setReadable(true, false);
-            outputDir.setWritable(true, false);
-        }
         String filePath = outDir + SEPARATOR + fileName;
         File out = new File(filePath);
         PdfWriter.getInstance(document, new FileOutputStream(out));
@@ -237,10 +228,12 @@ public class UploadDocumentService {
 
     }
 
-    public void removeFile(String filePath) {
+    public void removeFile(String filePath) throws TMBCommonException {
         File outputDir = new File(filePath);
         if (outputDir.exists()) {
-            outputDir.delete();
+            if (outputDir.delete()) {
+                throw new TMBCommonException(ResponseCode.GENERAL_ERROR.getCode(), "Remove file fail: " + filePath, ResponseCode.GENERAL_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+            }
         }
         logger.info("Remove file successes: {}", filePath);
     }
@@ -249,6 +242,24 @@ public class UploadDocumentService {
         File dir = new File(dirPath);
         FileUtils.deleteDirectory(dir);
         logger.info("Remove directory successes: {}", dirPath);
+    }
+
+    public List<Path> listFiles(Path path) throws IOException {
+        List<Path> result;
+        try (Stream<Path> walk = Files.walk(path)) {
+            result = walk.filter(Files::isRegularFile)
+                    .collect(Collectors.toList());
+        }
+        return result;
+
+    }
+
+    public void mkdirs(File outputDir) {
+        if (Files.notExists(outputDir.toPath())) {
+            outputDir.setReadable(true, false);
+            outputDir.setWritable(true, false);
+            outputDir.mkdirs();
+        }
     }
 
 }

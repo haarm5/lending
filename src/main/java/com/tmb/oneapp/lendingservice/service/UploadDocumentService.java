@@ -231,7 +231,9 @@ public class UploadDocumentService {
     public void removeFile(String filePath) {
         File outputDir = new File(filePath);
         if (outputDir.exists()) {
-            outputDir.delete();
+            if (!outputDir.delete()) {
+                logger.error("Remove file fail: {}", filePath);
+            }
         }
         logger.info("Remove file successes: {}", filePath);
     }

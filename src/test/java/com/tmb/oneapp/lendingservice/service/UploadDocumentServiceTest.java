@@ -25,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void upload_Image_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
+    public void upload_Image_Success() throws TMBCommonException, ServiceException, IOException {
         UploadDocumentRequest request = new UploadDocumentRequest();
         request.setCaId("1");
         request.setDocCode("ID01");
@@ -68,7 +70,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void upload_Pdf_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
+    public void upload_Pdf_Success() throws TMBCommonException, ServiceException, IOException {
         UploadDocumentRequest request = new UploadDocumentRequest();
         request.setCaId("1");
         request.setDocCode("ID01");
@@ -77,7 +79,6 @@ public class UploadDocumentServiceTest {
 
         doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
-
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
         entry.setRefEntryCode("test");
@@ -106,8 +107,8 @@ public class UploadDocumentServiceTest {
         doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
 
         doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
+        doReturn(new ArrayList<>()).when(uploadDocumentService).listFiles(any());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
-        doReturn(true).when(sftpClientImp).removeFile(anyList());
 
         SubmitDocumentResponse response = uploadDocumentService.submit("001100000000000000000018593707", request);
         Assertions.assertEquals("026PL64000674", response.getAppRefNo());
@@ -132,38 +133,12 @@ public class UploadDocumentServiceTest {
         doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
 
         doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
+        List<Path> filePaths = new ArrayList<>();
+        filePaths.add(Paths.get("path"));
+        doReturn(filePaths).when(uploadDocumentService).listFiles(any());
 
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new IllegalArgumentException("error")).when(sftpClientImp).storeFile(anyList());
-
-            uploadDocumentService.submit("001100000000000000000018593707", request);
-        });
-
-        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
-        Assertions.assertEquals(ResponseCode.SFTP_FAILED.getCode(), exception.getErrorCode());
-    }
-
-    @Test
-    public void submit_sftpRemoveDocuments_Fail() throws TMBCommonException, ServiceException, IOException, DocumentException {
-        SubmitDocumentRequest request = new SubmitDocumentRequest();
-        request.setCaId("1");
-        List<String> docCodes = new ArrayList<>();
-        docCodes.add("ID01");
-        request.setDocCodes(docCodes);
-
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
-
-        CriteriaCodeEntry entry = new CriteriaCodeEntry();
-        entry.setRefEntryCode("test");
-        List<CriteriaCodeEntry> docTypeList = new ArrayList<>();
-        docTypeList.add(entry);
-        doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
-
-        doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
-        doReturn(true).when(sftpClientImp).storeFile(anyList());
-        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new IllegalArgumentException("error")).when(sftpClientImp).removeFile(anyList());
-
             uploadDocumentService.submit("001100000000000000000018593707", request);
         });
 

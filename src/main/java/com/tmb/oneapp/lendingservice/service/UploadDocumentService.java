@@ -32,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -56,32 +55,27 @@ public class UploadDocumentService {
 
     private final String baseDir = System.getProperty("user.dir");
 
-    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException, ParseException {
+    public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException {
         UploadDocumentResponse response = new UploadDocumentResponse();
 
         String rmId = CommonServiceUtils.getRmId(crmId);
 
         Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
         String appRefNo = applicationInfo.getAppRefNo();
-        String dir = String.format("%s/%s/%s", rmId, appRefNo, request.getDocCode());
         String srcDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, request.getDocCode());
         String fileName = request.getFileName();
 
         String fileType = request.getFile().split(";")[0];
         if (fileType.equals("data:application/pdf")) {
-            String appDate = applicationInfo.getApplicationDate();
-            fileName = parsePdfFileName(request.getDocCode(), appRefNo, convertAppDate(appDate));
+            fileName = parsePdfFileName(request.getDocCode(), appRefNo, CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(new Date()));
         } else {
-            dir = String.format("%s/TempAttachments", dir);
             srcDir = String.format("%s/TempAttachments", srcDir);
         }
 
         generateFileFromBase64(srcDir, fileName, request.getFile());
-        String srcFile = String.format("%s/%s", srcDir, fileName);
-        sftpStoreDocuments(srcFile, dir);
 
         response.setDocCode(request.getDocCode());
-        response.setFileName(request.getFileName());
+        response.setFileName(fileName);
         return response;
     }
 
@@ -91,21 +85,19 @@ public class UploadDocumentService {
 
         Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
         String appRefNo = applicationInfo.getAppRefNo();
-        String appDate = applicationInfo.getApplicationDate();
 
         for (String docCode : request.getDocCodes()) {
-            String dir = String.format("%s/%s/%s", rmId, appRefNo, docCode);
+            String sftpDir = String.format("%s/%s/%s", rmId, appRefNo, docCode);
             String srcDir = String.format("%s/documents/%s/%s/%s/TempAttachments", baseDir, rmId, appRefNo, docCode);
             String outDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, docCode);
-            String fileName = parsePdfFileName(docCode, appRefNo, convertAppDate(appDate));
+            String fileName = parsePdfFileName(docCode, appRefNo, CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(new Date()));
             mergeImagesToPdf(srcDir, outDir, fileName);
-            removeDirectory(srcDir);
-            String srcFile = String.format("%s/%s", srcDir, fileName);
-            sftpStoreDocuments(srcFile, dir);
-            sftpRemoveDocuments(srcFile);
+            for(Path path: listFiles(Paths.get(outDir))) {
+                sftpStoreDocuments(path.toFile().getAbsolutePath(), sftpDir);
+            }
         }
 
-        String tempDoc = String.format("%s/documents/%s", baseDir, rmId);
+        String tempDoc = String.format("%s/documents/%s/%s", baseDir, rmId, appRefNo);
         removeDirectory(tempDoc);
 
         response.setAppRefNo(appRefNo);
@@ -124,14 +116,13 @@ public class UploadDocumentService {
         Body applicationInfo = getApplicationInfo(Long.parseLong(caId));
         String appRefNo = applicationInfo.getAppRefNo();
 
-        String filePath = String.format("%s/documents/%s/%s/%s/TempAttachments/%s.%s", baseDir, rmId, appRefNo, docCode, fileName, fileType);
+        String filePath = String.format("%s/%s/%s/TempAttachments/%s.%s", rmId, appRefNo, docCode, fileName, fileType);
         if ("pdf".equals(fileType)) {
-            filePath = String.format("%s/documents/%s/%s/%s/%s.%s", baseDir, rmId, appRefNo, docCode, fileName, fileType);
+            filePath = String.format("%s/%s/%s/%s.%s", rmId, appRefNo, docCode, fileName, fileType);
         }
 
-        removeFile(filePath);
-        logger.info("Remove file : {}", filePath);
-        sftpRemoveDocuments(filePath);
+        String srcPath = String.format("%s/documents/%s", baseDir, filePath);
+        removeFile(srcPath);
 
         response.setDocCode(docCode);
         response.setFileName(fileName);
@@ -155,40 +146,21 @@ public class UploadDocumentService {
             sftpStoreFiles.add(sftpStoreFile);
 
             sftpClientImp.storeFile(sftpStoreFiles);
+            logger.info("Sftp store file successes: {}", dir);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
-    private void sftpRemoveDocuments(String filePath) throws TMBCommonException {
-        try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-            sftpStoreFile.setRootPath(sftpLocations);
-            sftpStoreFile.setDstDir(filePath);
-            sftpStoreFiles.add(sftpStoreFile);
-
-            sftpClientImp.removeFile(sftpStoreFiles);
-        } catch (Exception e) {
-            throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP remove file : " + filePath + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-        }
-    }
-
-    private String parsePdfFileName(String docCode, String appRefNo, String appDate) throws TMBCommonException {
+    private String parsePdfFileName(String docCode, String appRefNo, String date) throws TMBCommonException {
         List<CriteriaCodeEntry> docTypeList = lendingCriteriaInfoService.getBrmsEcmDocTypeByCode(docCode);
         if (docTypeList.isEmpty()) {
             throw new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), "Doc code " + docCode + " is not found.", ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
         String docName = docTypeList.get(0).getRefEntryCode();
-        String fileName = String.format("01_%s_%s_%s.pdf", appDate, appRefNo, docName);
+        String fileName = String.format("01_%s_%s_%s.pdf", date, appRefNo, docName);
         logger.info("Document name : {}", fileName);
         return fileName;
-    }
-
-    private String convertAppDate(String appDate) throws ParseException {
-        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(appDate);
-        return CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(date);
     }
 
     public void generateFileFromBase64(String dir, String fileName, String base64) throws IOException {
@@ -207,26 +179,28 @@ public class UploadDocumentService {
 
     public void mergeImagesToPdf(String srcDir, String outDir, String fileName) throws IOException, DocumentException {
         File root = new File(srcDir);
-        List<Path> files = listFiles(root.toPath());
+        if (root.exists()) {
+            List<Path> files = listFiles(root.toPath());
 
-        Document document = new Document();
-        File outputDir = new File(outDir);
-        mkdirs(outputDir);
+            Document document = new Document();
+            File outputDir = new File(outDir);
+            mkdirs(outputDir);
 
-        String filePath = outDir + SEPARATOR + fileName;
-        File out = new File(filePath);
-        PdfWriter.getInstance(document, new FileOutputStream(out));
-        document.open();
-        for (Path f : files) {
-            document.newPage();
-            Image image = Image.getInstance(f.toAbsolutePath().toString());
-            image.setAbsolutePosition(0, 0);
-            image.scaleAbsolute(PageSize.A4);
-            document.add(image);
+            String filePath = outDir + SEPARATOR + fileName;
+            File out = new File(filePath);
+            PdfWriter.getInstance(document, new FileOutputStream(out));
+            document.open();
+            for (Path f : files) {
+                document.newPage();
+                Image image = Image.getInstance(f.toAbsolutePath().toString());
+                image.setAbsolutePosition(0, 0);
+                image.scaleAbsolute(PageSize.A4);
+                document.add(image);
+            }
+            document.close();
+            logger.info("Merge images to pdf successes: {}", filePath);
         }
-        document.close();
-        logger.info("Merge images to pdf successes: {}", filePath);
-
+        removeDirectory(srcDir);
     }
 
     public void removeFile(String filePath) throws IOException {

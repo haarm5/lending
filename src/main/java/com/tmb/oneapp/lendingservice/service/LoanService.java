@@ -471,17 +471,23 @@ public class LoanService {
 				&& SUCCESS_DESC.equalsIgnoreCase(eligibleProducts.getHeader().getResponseDescriptionEN())) {
 
 			if (lowerCaseProductCode.contains("c2g")) {
-				AccountSaving accountSaving = Fetch
-						.fetch(() -> customerExpServiceClient.getAccountList(UUID.randomUUID().toString(), crmId));
-				Map<String, LoanAccount> loanAccountHashMap = new HashMap<>();
-				accountSaving.getLoanAccounts()
-						.forEach(loanAccount -> loanAccountHashMap.put(loanAccount.getAccountNumber(), loanAccount));
-				LoanAccountSummaryRequest loanAccountSummaryRequest = new LoanAccountSummaryRequest();
-				loanAccountSummaryRequest.setLoanAccounts(toLoanAccounts(accountSaving.getLoanAccounts()));
-				loanAccountSummaryRequest.setHpAccounts(new ArrayList<>());
-				LoanSummary loanSummary = Fetch.fetch(() -> customerExpServiceClient
-						.getAccountLoan(UUID.randomUUID().toString(), crmId, loanAccountSummaryRequest));
-
+				LoanSummary loanSummary = new LoanSummary();
+				try {
+					AccountSaving accountSaving = Fetch
+							.fetch(() -> customerExpServiceClient.getAccountList(UUID.randomUUID().toString(), crmId));
+					Map<String, LoanAccount> loanAccountHashMap = new HashMap<>();
+					accountSaving.getLoanAccounts().forEach(
+							loanAccount -> loanAccountHashMap.put(loanAccount.getAccountNumber(), loanAccount));
+					LoanAccountSummaryRequest loanAccountSummaryRequest = new LoanAccountSummaryRequest();
+					loanAccountSummaryRequest.setLoanAccounts(toLoanAccounts(accountSaving.getLoanAccounts()));
+					loanAccountSummaryRequest.setHpAccounts(new ArrayList<>());
+					loanSummary = Fetch.fetch(() -> customerExpServiceClient
+							.getAccountLoan(UUID.randomUUID().toString(), crmId, loanAccountSummaryRequest));
+				} catch (Exception e) {
+					logger.error("handlePersonalLoan : Error when find account", e.getMessage());
+					List<LoanAccount> loanAccounts = new ArrayList<>();
+					loanSummary.setLoanAccounts(loanAccounts);
+				}
 				List<InstantFacility> foundProductsC2G01 = Arrays
 						.stream(eligibleProducts.getBody().getInstantFacility())
 						.filter(instantFacility -> instantFacility.getProductCode().equalsIgnoreCase("C2G01")
@@ -716,13 +722,11 @@ public class LoanService {
 			CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(accountListFuture, eligibleProductsFuture);
 			try {
 				combinedFuture.get();
-				ProductResponse productResponse = new ProductResponse();
 				List<DepositAccount> accountList = (List<DepositAccount>) accountListFuture.get().getData();
 				EligibleProductResponse eligibleProductResponse = (EligibleProductResponse) eligibleProductsFuture.get()
 						.getData();
-				productResponse.setEligibleProducts(eligibleProductResponse.getEligibleProducts());
-				productResponse.setDepositAccountLists(accountList);
-				productDetailResponse.setProductData(productResponse);
+				productDetailResponse.setEligibleProducts(eligibleProductResponse.getEligibleProducts());
+				productDetailResponse.setDepositAccountLists(accountList);
 			} catch (InterruptedException e) {
 				logger.error("fetchProducts got InterruptedException:{}", e);
 				Thread.currentThread().interrupt();

@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.tmb.common.model.RslCode;
+import com.tmb.oneapp.lendingservice.model.account.DepositAccount;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,7 @@ public class ProductDetailResponse {
     private FlowType flowType;
     private ContinueApplyNextScreen continueApplyNextStep;
     private ContinueApplyParams continueApplyParams;
-    private Object productData;
+    private List<DepositAccount> depositAccountLists;
+    private OneAppEligibleProduct[] eligibleProducts;
     private List<RslCode> defaultRslCode;
 }

@@ -24,8 +24,9 @@ public class LoanOnlineSubmissionGetDocumentListService {
 
     public List<ChecklistResponse> getDocuments(Long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseChecklist responseChecklist = checklistDocument(caId);
-
         List<ChecklistResponse> checklistResponses = new ArrayList<>();
+
+
         for (Checklist document : responseChecklist.getBody().getCustomerChecklists()) {
             ChecklistResponse response = new ChecklistResponse();
             response.setChecklistType(document.getChecklistType());
@@ -41,7 +42,6 @@ public class LoanOnlineSubmissionGetDocumentListService {
             response.setLosCifId(document.getLosCifId());
             checklistResponses.add(response);
         }
-
 
         return checklistResponses;
     }

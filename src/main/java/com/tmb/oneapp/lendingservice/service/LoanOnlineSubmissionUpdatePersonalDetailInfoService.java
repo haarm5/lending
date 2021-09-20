@@ -4,21 +4,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.Body;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.request.RequestIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -38,6 +43,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
     private final LoanSubmissionUpdateCustomerClient updateCustomerClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+    private final CommonServiceFeignClient commonServiceFeignClient;
     static final String DROPDOWN_RESIDENT_TYPE = "RESIDENT_TYP";
     static final String DROPDOWN_SALUTATION_TYPE = "SALUTATION";
     static final String IDEN_PRESENT_BANK_03 = "03";
@@ -49,15 +55,22 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
     static final String NO = "N";
 
     public PersonalDetailResponse updateCustomerInfo(String crmId, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
+
+        Body body = new Body();
+        body.setIndividual(prepareIndividual(crmId, request));
         RequestIndividual responseIndividual = new RequestIndividual();
+        responseIndividual.setBody(body);
+        return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual(), request);
+    }
+
+    private Individual prepareIndividual(String crmId, PersonalDetailSaveInfoRequest request) throws ParseException, ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         //rsl
         Individual individual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(request.getCaId());
         // ec
         CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
 
-        Body body = new Body();
-
-        individual.setAddresses(prepareAddress(individual, request.getAddress()).getAddresses());
+        prepareAddressTypeH(individual, request.getAddress());
+        prepareAddressTypeR(individual, ecResponse);
         individual.setPersonalInfoSavedFlag(YES);
         individual.setNationality(request.getNationality());
         individual.setMobileNo(request.getMobileNo());
@@ -73,135 +86,82 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());
         individual.setWorkingAddrCopyFrom(RESIDENCE);
-
-        String educationLevel = prepareData(individual.getEducationLevel(), ecResponse.getEducationCode()).toString();
-        String maritalStatus = prepareData(individual.getMaritalStatus(), ecResponse.getMaritalStatus()).toString();
-        String gender = prepareData(individual.getGender(), ecResponse.getGender()).toString();
-        String cusType = prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString();
-        String sourceFromCountry = prepareData(individual.getSourceFromCountry(), ecResponse.getCountryOfIncome()).toString();
-        String customerLevel = prepareData(individual.getCustomerLevel(), ecResponse.getCustomerLevel()).toString();
-
-
-        String idenPresentToBank;
-        String lifeTimeFlag;
-        int customerType;
-        if (!cusType.equals("")) {
-            customerType = Integer.parseInt(cusType); // customerType
-        } else {
-            customerType = 0;
-        }
-
-        if (customerType == 920) {
-            idenPresentToBank = IDEN_PRESENT_BANK_03;
-        } else if (customerType <= 109 && customerType >= 101) {
-            idenPresentToBank = IDEN_PRESENT_BANK_02;
-        } else {
-            idenPresentToBank = IDEN_PRESENT_BANK_01;
-        }
-
-        Calendar cal = Calendar.getInstance();
-        DateFormat sdf = new SimpleDateFormat(PATTERN_DATE);
-        if (sdf.format(cal.getTime()).equals(EXPIRE_DATE_DEFAULT)) {
-            lifeTimeFlag = YES;
-        } else {
-            lifeTimeFlag = NO;
-        }
-
-        individual.setIdenPresentToBank(idenPresentToBank);
-        individual.setLifeTimeFlag(lifeTimeFlag);
+        individual.setIdenPresentToBank(prepareIdenPresentToBank(prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString()));
+        individual.setLifeTimeFlag(prepareLifeTimeFlag());
         individual.setCompanyType("4");
-
-        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
-        Calendar currentYear = Calendar.getInstance();
-
-        int year1 = year.get(Calendar.YEAR);
-        int year2 = currentYear.get(Calendar.YEAR);
-        int month1 = year.get(Calendar.MONTH);
-        int month2 = currentYear.get(Calendar.MONTH);
-        int ageYear = year2 - year1;
-        int ageMonth = month2 - month1;
-
         individual.setIssuedDate(individual.getIssuedDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
-        individual.setAge(BigDecimal.valueOf(ageYear));
-        individual.setAgeMonth(BigDecimal.valueOf(ageMonth));
-        individual.setSourceFromCountry(sourceFromCountry); //country_of_income
-        individual.setEducationLevel(educationLevel); // education_code
-        individual.setMaritalStatus(maritalStatus); // marital_status
-        individual.setGender(gender); // gender
-        individual.setCustomerType(cusType); //customer_type
-        Character secondDigit;
-        if (customerLevel.length() < 2) {
-            secondDigit = customerLevel.charAt(0);
-        } else {
-            secondDigit = customerLevel.charAt(1);
-        }
 
-        int cusLevel = Integer.parseInt(String.valueOf(secondDigit));
-        individual.setCustomerLevel(BigDecimal.valueOf(cusLevel)); // customer_level
+        List<BigDecimal> age = calculateAge(individual, ecResponse);
+        individual.setAge(age.get(0));
+        individual.setAgeMonth(age.get(1));
 
+        individual.setSourceFromCountry(prepareData(individual.getSourceFromCountry(), ecResponse.getCountryOfIncome()).toString()); //country_of_income
+        individual.setEducationLevel(prepareData(individual.getEducationLevel(), ecResponse.getEducationCode()).toString()); // education_code
+        individual.setMaritalStatus(prepareData(individual.getMaritalStatus(), ecResponse.getMaritalStatus()).toString()); // marital_status
+        individual.setGender(prepareData(individual.getGender(), ecResponse.getGender()).toString()); // gender
+        individual.setCustomerType(prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString()); //customer_type
+        individual.setCustomerLevel(prepareCustomerLevel(prepareData(individual.getCustomerLevel(), ecResponse.getCustomerLevel()).toString())); // customer_level
         individual.setEmploymentYear("0");
         individual.setEmploymentMonth("0");
         individual.setIncomeType("2");
         individual.setIncomeBankName("011");
 
-        body.setIndividual(individual);
-        responseIndividual.setBody(body);
-        return saveCustomer(request.getCaId(), responseIndividual.getBody().getIndividual(), request);
+        return individual;
     }
+
+
+    //response position0 = year ,position1 = month
+    private List<BigDecimal> calculateAge(Individual individual, CustGeneralProfileResponse ecResponse) throws ParseException {
+        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar currentYear = Calendar.getInstance();
+        int year1 = year.get(Calendar.YEAR);
+        int year2 = currentYear.get(Calendar.YEAR);
+        int ageYear = year2 - year1;
+        int month1 = year.get(Calendar.MONTH);
+        int month2 = currentYear.get(Calendar.MONTH);
+        int ageMonth = month2 - month1;
+
+        List<BigDecimal> age = new ArrayList<>();
+        age.add(BigDecimal.valueOf(ageYear));
+        age.add(BigDecimal.valueOf(ageMonth));
+        return age;
+    }
+
+
+    private String prepareIdenPresentToBank(String code) {
+        if (Objects.nonNull(code) && !code.isEmpty()) {
+            if (Integer.parseInt(code) == 920) {
+                return IDEN_PRESENT_BANK_03;
+            } else if (Integer.parseInt(code) <= 109 && Integer.parseInt(code) >= 101) {
+                return IDEN_PRESENT_BANK_02;
+            }
+        }
+        return IDEN_PRESENT_BANK_01;
+    }
+
+    private String prepareLifeTimeFlag() {
+        Calendar cal = Calendar.getInstance();
+        DateFormat sdf = new SimpleDateFormat(PATTERN_DATE);
+        if (sdf.format(cal.getTime()).equals(EXPIRE_DATE_DEFAULT)) {
+            return YES;
+        }
+        return NO;
+    }
+
+    private BigDecimal prepareCustomerLevel(String customerLevel) {
+        if (customerLevel.length() < 2) {
+            return BigDecimal.valueOf(Integer.parseInt(String.valueOf(customerLevel.charAt(0))));
+        }
+        return BigDecimal.valueOf(Integer.parseInt(String.valueOf(customerLevel.charAt(1))));
+    }
+
 
     private PersonalDetailResponse saveCustomer(Long caId, Individual individual, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
-            PersonalDetailResponse detailResponse = new PersonalDetailResponse();
-            Address address = new Address();
 
             if (response != null) {
-                Individual responseIndividual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
-
-                Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(responseIndividual.getAddresses()).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
-                if (responseAddress.isPresent()) {
-                    com.tmb.common.model.legacy.rsl.common.ob.address.Address personalAddress = responseAddress.get();
-                    address.setId(personalAddress.getId());
-                    address.setNo(personalAddress.getAddress());
-                    address.setAmphur(personalAddress.getAmphur());
-                    address.setTumbol(personalAddress.getTumbol());
-                    address.setProvince(personalAddress.getProvince());
-                    address.setRoad(personalAddress.getRoad());
-                    address.setStreetName(personalAddress.getStreetName());
-                    address.setPostalCode(personalAddress.getPostalCode());
-                    address.setMoo(personalAddress.getMoo());
-                    address.setFloor(personalAddress.getFloor());
-                    address.setCountry(personalAddress.getCountry());
-                    if (!personalAddress.getBuildingName().isBlank() || !personalAddress.getBuildingName().isEmpty()) {
-                        String[] roomNo = personalAddress.getBuildingName().split("ห้อง");
-                        address.setBuildingName(roomNo[0]);
-                        if (roomNo.length > 1) {
-                            address.setBuildingName(roomNo[0]);
-                            address.setRoomNo("ห้อง" + roomNo[1]);
-                        }
-                    }
-                }
-
-                detailResponse.setAddress(address);
-                detailResponse.setCitizenId(responseIndividual.getIdNo1());
-                detailResponse.setThaiName(responseIndividual.getThaiName());
-                detailResponse.setThaiSurname(responseIndividual.getThaiSurName());
-                detailResponse.setNationality(responseIndividual.getNationality());
-                detailResponse.setMobileNo(responseIndividual.getMobileNo());
-                detailResponse.setEmail(responseIndividual.getEmail());
-                detailResponse.setBirthDate(responseIndividual.getBirthDate());
-                detailResponse.setEngName(responseIndividual.getNameLine2());
-                detailResponse.setEngSurname(responseIndividual.getNameLine1());
-                detailResponse.setExpiryDate(responseIndividual.getExpiryDate());
-                detailResponse.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
-                detailResponse.setPrefix(responseIndividual.getThaiSalutationCode());
-                detailResponse.setResidentStatus(responseIndividual.getResidentFlag());
-                if (request.getThaiSalutationCode() != null) {
-                    detailResponse.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
-                }
-
-                detailResponse.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
-                return detailResponse;
+                return prepareResponse(caId, request);
             } else {
                 throw new TMBCommonException(ResponseCode.FAILED.getCode(),
                         ResponseCode.FAILED.getDesc(),
@@ -214,44 +174,127 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         }
     }
 
-    private Individual prepareAddress(Individual individual, Address address) {
+    private PersonalDetailResponse prepareResponse(Long caId, PersonalDetailSaveInfoRequest request) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        Individual responseIndividual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
+        PersonalDetailResponse response = new PersonalDetailResponse();
+        response.setAddress(prepareResponseAddress(responseIndividual));
+        response.setCitizenId(responseIndividual.getIdNo1());
+        response.setThaiName(responseIndividual.getThaiName());
+        response.setThaiSurname(responseIndividual.getThaiSurName());
+        response.setNationality(responseIndividual.getNationality());
+        response.setMobileNo(responseIndividual.getMobileNo());
+        response.setEmail(responseIndividual.getEmail());
+        response.setBirthDate(responseIndividual.getBirthDate());
+        response.setEngName(responseIndividual.getNameLine2());
+        response.setEngSurname(responseIndividual.getNameLine1());
+        response.setExpiryDate(responseIndividual.getExpiryDate());
+        response.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
+        response.setPrefix(responseIndividual.getThaiSalutationCode());
+        response.setResidentStatus(responseIndividual.getResidentFlag());
+        if (request.getThaiSalutationCode() != null) {
+            response.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
+        }
+        response.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));
+        return response;
+    }
+
+    private Address prepareResponseAddress(Individual individual) {
+        Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
+        if (responseAddress.isPresent()) {
+            com.tmb.common.model.legacy.rsl.common.ob.address.Address address = responseAddress.get();
+            Address result = new Address();
+            result.setId(address.getId());
+            result.setNo(address.getAddress());
+            result.setAmphur(address.getAmphur());
+            result.setTumbol(address.getTumbol());
+            result.setProvince(address.getProvince());
+            result.setRoad(address.getRoad());
+            result.setStreetName(address.getStreetName());
+            result.setPostalCode(address.getPostalCode());
+            result.setMoo(address.getMoo());
+            result.setFloor(address.getFloor());
+            result.setCountry(address.getCountry());
+            if (!address.getBuildingName().isBlank() || !address.getBuildingName().isEmpty()) {
+                String[] roomNo = address.getBuildingName().split("ห้อง");
+                result.setBuildingName(roomNo[0]);
+                if (roomNo.length > 1) {
+                    result.setBuildingName(roomNo[0]);
+                    result.setRoomNo("ห้อง" + roomNo[1]);
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+
+
+    private Individual prepareAddressTypeH(Individual individual, Address address) {
+        var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+        newAddress.setCifId(individual.getCifId());
+        newAddress.setAddrTypCode("H");
+        newAddress.setAddress(address.getNo());
+        newAddress.setBuildingName(prepareBuildingName(address.getBuildingName(), address.getRoomNo()));
+        newAddress.setFloor(address.getFloor());
+        newAddress.setStreetName(address.getStreetName());
+        newAddress.setRoad(address.getRoad());
+        newAddress.setMoo(address.getMoo());
+        newAddress.setTumbol(address.getTumbol());
+        newAddress.setAmphur(address.getAmphur());
+        newAddress.setProvince(address.getProvince());
+        newAddress.setPostalCode(address.getPostalCode());
+        newAddress.setCountry(address.getCountry());
+        if (individual.getCountryOfRegAddr().equals(YES)) {
+            individual.setCountryOfRegAddr(newAddress.getCountry());
+        }
+
+        setAddressByType(individual, newAddress);
+        return individual;
+    }
+
+
+    private Individual prepareAddressTypeR(Individual individual, CustGeneralProfileResponse ec) {
+        var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+        newAddress.setCifId(individual.getCifId());
+        newAddress.setAddrTypCode("R");
+        newAddress.setAddress(ec.getCurrentAddrHouseNo());
+        newAddress.setBuildingName(prepareBuildingName(ec.getCurrentAddrVillageOrbuilding(), ec.getCurrentAddrRoomNo()));
+        newAddress.setFloor(ec.getCurrentAddrFloorNo());
+        newAddress.setStreetName(ec.getCurrentAddrSoi());
+        newAddress.setRoad(ec.getCurrentAddrStreet());
+        newAddress.setMoo(ec.getCurrentAddrMoo());
+        newAddress.setTumbol(ec.getCurrentAddrSubDistrictNameTh());
+        newAddress.setAmphur(ec.getCurrentAddrdistrictNameTh());
+        newAddress.setProvince(getProvince(ec.getCurrentAddrZipcode()));
+        newAddress.setPostalCode(ec.getCurrentAddrZipcode());
+        if (individual.getCountryOfRegAddr().equals(YES)) {
+            individual.setCountryOfRegAddr(newAddress.getCountry());
+        }
+
+        setAddressByType(individual, newAddress);
+        return individual;
+    }
+
+
+    private String prepareBuildingName(String buildingName, String roomNo) {
+        if (Objects.nonNull(roomNo) && !roomNo.isEmpty()) {
+            return prepareData(buildingName, "") + " "
+                    + "ห้อง" + prepareData(roomNo, "");
+        }
+        return buildingName;
+    }
+
+
+    private Individual setAddressByType(Individual individual,
+                                        com.tmb.common.model.legacy.rsl.common.ob.address.Address newAddress) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();
         if (Objects.nonNull(individualAddresses)) {
-            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("H")).findFirst();
-
-            var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
-            String room = "";
-            String buildingName = "";
-            if (Objects.nonNull(address.getRoomNo()) && !address.getRoomNo().isEmpty()) {
-                room = "ห้อง" + address.getRoomNo();
-            }
-
-            if (Objects.nonNull(address.getBuildingName()) && !address.getBuildingName().isEmpty()) {
-                buildingName = address.getBuildingName();
-            }
-
-            newAddress.setCifId(individual.getCifId());
-            newAddress.setAddrTypCode("H");
-            newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(buildingName + " " + room);
-            newAddress.setFloor(address.getFloor());
-            newAddress.setStreetName(address.getStreetName());
-            newAddress.setRoad(address.getRoad());
-            newAddress.setMoo(address.getMoo());
-            newAddress.setTumbol(address.getTumbol());
-            newAddress.setAmphur(address.getAmphur());
-            newAddress.setProvince(address.getProvince());
-            newAddress.setPostalCode(address.getPostalCode());
-            newAddress.setCountry(address.getCountry());
-            if (individual.getCountryOfRegAddr().equals(YES)) {
-                individual.setCountryOfRegAddr(newAddress.getCountry());
-            }
-
+            Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress =
+                    Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals(newAddress.getAddrTypCode())).findFirst();
             if (oldAddress.isPresent()) {
-                com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();
-                newAddress.setId(workingAddress.getId());
+                com.tmb.common.model.legacy.rsl.common.ob.address.Address address = oldAddress.get();
+                newAddress.setId(address.getId());
                 for (int i = 0; i < individual.getAddresses().length; i++) {
-                    if (individual.getAddresses()[i].getAddrTypCode().equals("H")) {
+                    if (individual.getAddresses()[i].getAddrTypCode().equals(newAddress.getAddrTypCode())) {
                         individual.getAddresses()[i] = newAddress;
                         break;
                     }
@@ -260,6 +303,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         }
         return individual;
     }
+
 
     private CommonCodeEntry[] getDropdownList(String categoryCode) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown getDropdownListResp = dropdownListClient.getDropDownListByCode(categoryCode);
@@ -300,5 +344,16 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         return custGeneralProfileResponse;
     }
 
+
+    private String getProvince(String postCode) {
+        var req = new CommonProvinceRequest();
+        req.setField("postcode");
+        req.setSearch(postCode);
+        ResponseEntity<TmbOneServiceResponse<List<Province>>> response = commonServiceFeignClient.getProvince(req);
+        if (!response.getBody().getStatus().getCode().equals("0000")) {
+            return null;
+        }
+        return response.getBody().getData().get(0).getProvinceNameTh();
+    }
 
 }

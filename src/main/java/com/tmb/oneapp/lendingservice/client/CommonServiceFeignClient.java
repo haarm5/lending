@@ -2,11 +2,11 @@ package com.tmb.oneapp.lendingservice.client;
 
 import java.util.List;
 
+import com.tmb.common.model.address.Province;
+import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -36,5 +36,8 @@ public interface CommonServiceFeignClient {
             @RequestHeader(value = LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @RequestParam(value = "type") String searchType,
             @RequestParam(value = "lang") String defaultLang);
-    
+
+    @PostMapping(value = "/apis/common/internal/address")
+    ResponseEntity<TmbOneServiceResponse<List<Province>>> getProvince(@RequestBody CommonProvinceRequest request);
+
 }

@@ -1,7 +1,9 @@
 package com.tmb.oneapp.lendingservice.service;
 
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
@@ -9,6 +11,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateCustomerClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
@@ -22,11 +25,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -42,7 +50,7 @@ LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
     @Mock
     private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     @Mock
-    private LoanOnlineSubmissionGetPersonalDetailServiceTest personalDetailServiceTest;
+    private CommonServiceFeignClient commonServiceFeignClient;
 
     LoanOnlineSubmissionUpdatePersonalDetailInfoService loanOnlineSubmissionUpdatePersonalDetailInfoService;
 
@@ -50,7 +58,7 @@ LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        loanOnlineSubmissionUpdatePersonalDetailInfoService = new LoanOnlineSubmissionUpdatePersonalDetailInfoService(updateCustomerClient, dropdownListClient, loanOnlineSubmissionGetPersonalDetailService);
+        loanOnlineSubmissionUpdatePersonalDetailInfoService = new LoanOnlineSubmissionUpdatePersonalDetailInfoService(updateCustomerClient, dropdownListClient, loanOnlineSubmissionGetPersonalDetailService, commonServiceFeignClient);
     }
 
     @Test
@@ -191,6 +199,16 @@ LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
 
+        TmbOneServiceResponse<List<Province>> mockProvince = new TmbOneServiceResponse<>();
+        var status = new TmbStatus();
+        status.setCode("0000");
+        mockProvince.setStatus(status);
+        var mockList = new ArrayList<Province>();
+        mockList.add(new Province());
+        mockProvince.setData(mockList);
+
+        doReturn(new ResponseEntity<>(mockProvince, HttpStatus.OK)).when(commonServiceFeignClient).getProvince(any());
+
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");
         request.setNationality("TH");
@@ -233,6 +251,8 @@ LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
         response.setIdIssueCtry1("111");
         response.setAddress(address1);
         response.setResidentFlag(Collections.singletonList(resident));
+
+
 
         response = loanOnlineSubmissionUpdatePersonalDetailInfoService.updateCustomerInfo("001100000000000000000018593707", request);
         Assert.assertNotNull(response);
@@ -371,6 +391,16 @@ LoanOnlineSubmissionUpdatePersonalDetailInfoServiceTest {
         dropdownsBody.setCommonCodeEntries(commonCodeEntries);
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
+
+        TmbOneServiceResponse<List<Province>> mockProvince = new TmbOneServiceResponse<>();
+        var status = new TmbStatus();
+        status.setCode("0000");
+        mockProvince.setStatus(status);
+        var mockList = new ArrayList<Province>();
+        mockList.add(new Province());
+        mockProvince.setData(mockList);
+        doReturn(new ResponseEntity<>(mockProvince, HttpStatus.OK)).when(commonServiceFeignClient).getProvince(any());
+
 
         PersonalDetailSaveInfoRequest request = new PersonalDetailSaveInfoRequest();
         request.setMobileNo("0626027648");

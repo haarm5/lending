@@ -107,7 +107,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
 
     //response position0 = year ,position1 = month
     private List<BigDecimal> getAge(Individual individual, CustGeneralProfileResponse ecResponse) throws ParseException {
-        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar year = Objects.isNull(individual.getBirthDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
         int ageYear = Calendar.getInstance().get(Calendar.YEAR) - year.get(Calendar.YEAR);
         int ageMonth = Calendar.getInstance().get(Calendar.MONTH) - year.get(Calendar.MONTH);
         List<BigDecimal> age = new ArrayList<>();

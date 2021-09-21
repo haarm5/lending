@@ -188,7 +188,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
     private CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
-            if (response != null) {
+            if (Objects.nonNull(response)) {
                 return response.getData();
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),

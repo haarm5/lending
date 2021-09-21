@@ -189,7 +189,7 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
         try {
             ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
+                return Objects.isNull(response.getBody().getFacilities()) ? null : response.getBody().getFacilities()[0];
             }
             throw new TMBCommonException(response.getHeader().getResponseCode(),
                     response.getHeader().getResponseDescriptionEN(),
@@ -205,7 +205,7 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
         try {
             ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
-                return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
+                return Objects.isNull(response.getBody().getCreditCards()) ? null : response.getBody().getCreditCards();
             }
             throw new TMBCommonException(response.getHeader().getResponseCode(),
                     response.getHeader().getResponseDescriptionEN(),

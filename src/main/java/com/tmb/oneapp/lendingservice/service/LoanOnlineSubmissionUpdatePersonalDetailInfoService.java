@@ -89,7 +89,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         individual.setIdenPresentToBank(prepareIdenPresentToBank(prepareData(individual.getCustomerType(), ecResponse.getCustomerType()).toString()));
         individual.setLifeTimeFlag(prepareLifeTimeFlag());
         individual.setCompanyType("4");
-        individual.setIssuedDate(individual.getIssuedDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
+        individual.setIssuedDate(Objects.isNull(individual.getIssuedDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdReleasedDate()) : individual.getIssuedDate()); // issuedDate
 
         List<BigDecimal> age = calculateAge(individual, ecResponse);
         individual.setAge(age.get(0));
@@ -112,7 +112,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
 
     //response position0 = year ,position1 = month
     private List<BigDecimal> calculateAge(Individual individual, CustGeneralProfileResponse ecResponse) throws ParseException {
-        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar year =  Objects.isNull(individual.getBirthDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
         Calendar currentYear = Calendar.getInstance();
         int year1 = year.get(Calendar.YEAR);
         int year2 = currentYear.get(Calendar.YEAR);
@@ -160,7 +160,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         try {
             ResponseIndividual response = updateCustomerClient.updateCustomerInfo(individual);
 
-            if (response != null) {
+            if (Objects.nonNull(response)) {
                 return prepareResponse(caId, request);
             }
             throw new TMBCommonException(ResponseCode.FAILED.getCode(),
@@ -190,7 +190,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         response.setIdIssueCtry1(responseIndividual.getIdIssueCtry1());
         response.setPrefix(responseIndividual.getThaiSalutationCode());
         response.setResidentStatus(responseIndividual.getResidentFlag());
-        if (request.getThaiSalutationCode() != null) {
+        if (Objects.nonNull(request.getThaiSalutationCode())) {
             response.setThaiSalutationCode(prepareDropDown(DROPDOWN_SALUTATION_TYPE, request.getThaiSalutationCode()));
         }
         response.setResidentFlag(prepareDropDown(DROPDOWN_RESIDENT_TYPE, request.getResidentFlag()));

@@ -4,6 +4,7 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
@@ -22,7 +23,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -30,25 +37,30 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     private static final TMBLogger<LoanOnlineSubmissionUpdateApplicationService> logger = new TMBLogger<>(LoanOnlineSubmissionUpdateApplicationService.class);
 
     private final RslService rslService;
+    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
+    static String CRM_ID;
 
-    public Object updateApplication(LoanSubmissionCreateApplicationReq request) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+    public Object updateApplication(LoanSubmissionCreateApplicationReq request, String crmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
 
         try {
+            CRM_ID = crmId;
+            var result = updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request));
             Body applicationInfo = getApplicationInfo(request.getCaId());
             if (applicationInfo.getAppType().equals("CC")) {
                 updateCreditCard(mapCreditCard(getCreditCard(request.getCaId()), request));
             } else {
                 updateFacility(mapFacility(getFacility(request.getCaId()), request));
             }
-            return updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request));
+            return result;
         } catch (Exception e) {
             logger.error("update application service error", e);
             throw e;
         }
     }
 
-    private Individual mapIndividual(Individual individual, LoanSubmissionCreateApplicationReq req) {
+    private Individual mapIndividual(Individual individual, LoanSubmissionCreateApplicationReq req) throws TMBCommonException, ParseException {
+        mapHiddenField(individual);
         individual.setEmploymentStatus(req.getEmploymentStatus());
         individual.setIncomeBasicSalary(req.getIncomeBasicSalary());
         individual.setInTotalIncome(req.getInTotalIncome());
@@ -56,6 +68,63 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         individual.setIncomeDeclared(req.getIncomeDeclared());
         individual.setEmploymentFinalTotalIncome(req.getIncomeBasicSalary());
         return individual;
+    }
+
+    private Individual mapHiddenField(Individual individual) throws TMBCommonException, ParseException {
+        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(CRM_ID);
+
+        individual.setIdenPresentToBank(getPresentToBank(prepareField(individual.getCustomerType(), ecResponse.getCustomerType())));
+        individual.setCustomerLevel(getCustomerLevel(prepareField(individual.getCustomerLevel(),ecResponse.getCustomerLevel())));
+        List<BigDecimal> age = getAge(individual, ecResponse);
+        individual.setAge(age.get(0));
+        individual.setAgeMonth(age.get(1));
+        individual.setNationality(ecResponse.getNationality());
+        individual.setCompanyType("4");
+        individual.setEmploymentYear("0");
+        individual.setEmploymentMonth("0");
+        individual.setIncomeType("2");
+        individual.setIncomeBankName("011");
+
+        return individual;
+    }
+
+    private String getPresentToBank(String code) {
+        if (Objects.nonNull(code) && !code.isEmpty()) {
+            if (Integer.parseInt(code) == 920) {
+                return "03";
+            } else if (Integer.parseInt(code) <= 109 && Integer.parseInt(code) >= 101) {
+                return "02";
+            }
+        }
+        return "01";
+    }
+
+    private BigDecimal getCustomerLevel(String code) {
+        if (code.length() < 2) {
+            return BigDecimal.valueOf(Integer.parseInt(String.valueOf(code.charAt(0))));
+        }
+        return BigDecimal.valueOf(Integer.parseInt(String.valueOf(code.charAt(1))));
+    }
+
+
+    //response position0 = year ,position1 = month
+    private List<BigDecimal> getAge(Individual individual, CustGeneralProfileResponse ecResponse) throws ParseException {
+        Calendar year = individual.getBirthDate() == null ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        int ageYear = Calendar.getInstance().get(Calendar.YEAR) - year.get(Calendar.YEAR);
+        int ageMonth = Calendar.getInstance().get(Calendar.MONTH) - year.get(Calendar.MONTH);
+        List<BigDecimal> age = new ArrayList<>();
+        age.add(BigDecimal.valueOf(ageYear));
+        age.add(BigDecimal.valueOf(ageMonth));
+        return age;
+    }
+
+
+
+    private String prepareField(Object fromIndividual, Object fromEC) {
+        if (Objects.nonNull(fromIndividual) && !fromIndividual.toString().isEmpty()) {
+            return fromIndividual.toString();
+        }
+        return fromEC.toString();
     }
 
     private Facility mapFacility(Facility facility, LoanSubmissionCreateApplicationReq req) {

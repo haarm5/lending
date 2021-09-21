@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.feature.Feature;
@@ -25,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.GregorianCalendar;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +39,9 @@ class LoanOnlineSubmissionUpdateApplicationServiceTest {
     @Mock
     private RslService rslService;
 
+    @Mock
+    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+
     @InjectMocks
     LoanOnlineSubmissionUpdateApplicationService loanOnlineSubmissionUpdateApplicationService;
 
@@ -47,16 +52,18 @@ class LoanOnlineSubmissionUpdateApplicationServiceTest {
     }
 
     @Test
-    public void testUpdateApplicationTypeCC() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public void testUpdateApplicationTypeCC() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
         doReturn(getApplicationResponse("CC")).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(getIndividualResponse()).when(rslService).getLoanSubmissionCustomerInfo(any());
         doReturn(getCreditCardResponse()).when(rslService).getLoanSubmissionCreditCardInfo(any());
         doReturn(updateIndividualResponse()).when(rslService).updateCustomerInfo(any());
         doReturn(updateCreditCardResponse()).when(rslService).updateCreditCardInfo(any());
+        doReturn(ecResponse()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
 
         var req = new LoanSubmissionCreateApplicationReq();
         req.setCaId(12l);
-        loanOnlineSubmissionUpdateApplicationService.updateApplication(req);
+        loanOnlineSubmissionUpdateApplicationService.updateApplication(req, "rm");
+
 
         verify(rslService, times(1)).getLoanSubmissionApplicationInfo(any());
         verify(rslService, times(1)).getLoanSubmissionCustomerInfo(any());
@@ -66,16 +73,18 @@ class LoanOnlineSubmissionUpdateApplicationServiceTest {
     }
 
     @Test
-    public void testUpdateApplicationTypePL() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+    public void testUpdateApplicationTypePL() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
         doReturn(getApplicationResponse("PL")).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(getIndividualResponse()).when(rslService).getLoanSubmissionCustomerInfo(any());
         doReturn(getFacilityResponse()).when(rslService).getLoanSubmissionFacilityInfo(any());
         doReturn(updateIndividualResponse()).when(rslService).updateCustomerInfo(any());
         doReturn(updateFacilityResponse()).when(rslService).updateFacilityInfo(any());
+        doReturn(ecResponse()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
+
 
         var req = new LoanSubmissionCreateApplicationReq();
         req.setCaId(12l);
-        loanOnlineSubmissionUpdateApplicationService.updateApplication(req);
+        loanOnlineSubmissionUpdateApplicationService.updateApplication(req, "rm");
 
         verify(rslService, times(1)).getLoanSubmissionApplicationInfo(any());
         verify(rslService, times(1)).getLoanSubmissionCustomerInfo(any());
@@ -195,5 +204,14 @@ class LoanOnlineSubmissionUpdateApplicationServiceTest {
         header.setResponseCode("MSG_000");
         updateIndividualResponse.setHeader(header);
         return updateIndividualResponse;
+    }
+
+    private CustGeneralProfileResponse ecResponse() {
+        CustGeneralProfileResponse custGeneralProfileResponse = new CustGeneralProfileResponse();
+        custGeneralProfileResponse.setNationality("ทีทีบี");
+        custGeneralProfileResponse.setCustomerLevel("02");
+        custGeneralProfileResponse.setCustomerType("902");
+        custGeneralProfileResponse.setIdBirthDate("2019-11-03");
+        return custGeneralProfileResponse;
     }
 }

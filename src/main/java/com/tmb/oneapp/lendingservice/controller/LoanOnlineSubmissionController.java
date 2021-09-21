@@ -321,11 +321,14 @@ public class LoanOnlineSubmissionController {
     @ApiOperation(value = "update application")
     @LogAround
     @PutMapping(value = "/updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse> updateApplication(@Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
+    public ResponseEntity<TmbOneServiceResponse> updateApplication(
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
         TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            loanOnlineSubmissionUpdateApplicationService.updateApplication(request);
+            loanOnlineSubmissionUpdateApplicationService.updateApplication(request,crmId);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);

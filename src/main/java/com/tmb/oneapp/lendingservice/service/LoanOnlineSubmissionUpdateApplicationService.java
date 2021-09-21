@@ -39,11 +39,12 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     private final RslService rslService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
-    private static String CRM_ID;
+    private static String rmId;
 
     public Object updateApplication(LoanSubmissionCreateApplicationReq request, String crmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
-        CRM_ID = crmId;
+
         try {
+            rmId = crmId;
             var result = updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request));
             Body applicationInfo = getApplicationInfo(request.getCaId());
             if (applicationInfo.getAppType().equals("CC")) {
@@ -70,7 +71,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     }
 
     private Individual mapHiddenField(Individual individual) throws TMBCommonException, ParseException {
-        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(CRM_ID);
+        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(rmId);
 
         individual.setIdenPresentToBank(getPresentToBank(prepareField(individual.getCustomerType(), ecResponse.getCustomerType())));
         individual.setCustomerLevel(getCustomerLevel(prepareField(individual.getCustomerLevel(), ecResponse.getCustomerLevel())));

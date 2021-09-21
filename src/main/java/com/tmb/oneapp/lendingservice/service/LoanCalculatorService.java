@@ -76,8 +76,8 @@ public class LoanCalculatorService {
                 calculatorResponse.setIsWaiveDoc(false);
             }
             calculatorResponse.setPaymentCriteria(creditCard[0].getPaymentCriteria());
-            receiveAccount.setAccountNo(creditCard[0].getDebitAccountNo());
-            receiveAccount.setAccountName(creditCard[0].getDebitAccountName());
+            paymentAccount.setAccountNo(creditCard[0].getDebitAccountNo());
+            paymentAccount.setAccountName(creditCard[0].getDebitAccountName());
 
             calculatorResponse.setReceiveAccount(receiveAccount);
             calculatorResponse.setPaymentAccount(paymentAccount);

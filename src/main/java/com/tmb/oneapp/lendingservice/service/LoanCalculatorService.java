@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -34,8 +35,7 @@ public class LoanCalculatorService {
     private final LoanSubmissionGetCreditcardInfoClient getCreditCardInfoClient;
     private final LoanSubmissionGetCustomerInfoClient getCustomerInfoClient;
     private final LoanSubmissionGetApplicationInfoClient getApplicationInfoClient;
-
-    private static final String CREDIT_CARD = "CC";
+    private static final List<String> CREDIT_CARD = List.of("VJ", "VP", "VM", "VH", "VI", "VB");
     static final String MSG_000 = "MSG_000";
 
     public LoanCalculatorResponse getPreloadLoanCalculator(Long caId, String product) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
@@ -47,7 +47,7 @@ public class LoanCalculatorService {
         Individual individual = Objects.requireNonNull(getCustomer(caId))[0];
         Body application = Objects.requireNonNull(getApplicationInfo(caId)).getBody();
 
-        if (!product.equals(CREDIT_CARD) && facility != null) {
+        if (!CREDIT_CARD.contains(product) && facility != null) {
             if (application.getNatureOfRequest().equals("12")) {
                 calculatorResponse.setIsWaiveDoc(true);
             } else if (application.getNatureOfRequest().equals("11")) {
@@ -69,7 +69,7 @@ public class LoanCalculatorService {
             calculatorResponse.setPayMethodCriteria(facility[0].getPayMethodCriteria());
         }
 
-        if (product.equals(CREDIT_CARD) && creditCard != null) {
+        if (CREDIT_CARD.contains(product) && creditCard != null) {
             if (application.getNatureOfRequest().equals("04")) {
                 calculatorResponse.setIsWaiveDoc(true);
             } else if (application.getNatureOfRequest().equals("03")) {

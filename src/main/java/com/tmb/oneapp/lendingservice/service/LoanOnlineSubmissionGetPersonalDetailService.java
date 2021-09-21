@@ -47,8 +47,8 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmId);
 
         PersonalDetailResponse response = new PersonalDetailResponse();
-        response.setExpiryDate(individual.getExpiryDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()) : individual.getExpiryDate());
-        response.setBirthDate(individual.getBirthDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
+        response.setExpiryDate(Objects.isNull(individual.getExpiryDate()) ? convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()) : individual.getExpiryDate());
+        response.setBirthDate(Objects.isNull(individual.getBirthDate()) ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
         response.setEmail(prepareData(individual.getEmail(), custGeneralProfileResponse.getEmailAddress()).toString());
         response.setNationality(prepareData(individual.getNationality(), custGeneralProfileResponse.getNationality()).toString());
         response.setThaiName(prepareData(individual.getThaiName(), custGeneralProfileResponse.getThaFname()).toString());
@@ -60,7 +60,7 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
         response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
         response.setResidentStatus(" ");
-        if (individual.getResidentFlag() != null && !individual.getResidentFlag().isEmpty()) {
+        if (Objects.nonNull(individual.getResidentFlag()) && !individual.getResidentFlag().isEmpty()) {
             response.setResidentStatus(individual.getResidentFlag());
         }
         response.setAddress(mapAddress(individual, custGeneralProfileResponse));

@@ -39,12 +39,11 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     private final RslService rslService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
-    static String CRM_ID;
+    private static String CRM_ID;
 
     public Object updateApplication(LoanSubmissionCreateApplicationReq request, String crmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
-
+        CRM_ID = crmId;
         try {
-            CRM_ID = crmId;
             var result = updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request));
             Body applicationInfo = getApplicationInfo(request.getCaId());
             if (applicationInfo.getAppType().equals("CC")) {
@@ -74,7 +73,7 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(CRM_ID);
 
         individual.setIdenPresentToBank(getPresentToBank(prepareField(individual.getCustomerType(), ecResponse.getCustomerType())));
-        individual.setCustomerLevel(getCustomerLevel(prepareField(individual.getCustomerLevel(),ecResponse.getCustomerLevel())));
+        individual.setCustomerLevel(getCustomerLevel(prepareField(individual.getCustomerLevel(), ecResponse.getCustomerLevel())));
         List<BigDecimal> age = getAge(individual, ecResponse);
         individual.setAge(age.get(0));
         individual.setAgeMonth(age.get(1));
@@ -117,7 +116,6 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         age.add(BigDecimal.valueOf(ageMonth));
         return age;
     }
-
 
 
     private String prepareField(Object fromIndividual, Object fromEC) {

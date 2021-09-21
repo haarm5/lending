@@ -59,20 +59,6 @@ class LoanOnlineSubmissionGetCustomerAgeServiceTest {
     }
 
     @Test
-    public void testGetAgeReturnNull() throws TMBCommonException {
-        TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
-        TmbStatus tmbStatus = new TmbStatus();
-        tmbStatus.setCode(ResponseCode.SUCCESS.getCode());
-        CustGeneralProfileResponse custGeneralProfileResponse = new CustGeneralProfileResponse();
-        oneServiceResponse.setData(custGeneralProfileResponse);
-        oneServiceResponse.setStatus(tmbStatus);
-        when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
-
-        LoanSubmissionGetCustomerAgeResponse result = loanOnlineSubmissionGetCustomerAgeService.getAge("123");
-        Assert.assertNull(result);
-    }
-
-    @Test
     public void testGetAgeReturnFail() {
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();

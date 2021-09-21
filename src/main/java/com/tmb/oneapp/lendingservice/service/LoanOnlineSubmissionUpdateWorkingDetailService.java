@@ -60,11 +60,10 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
                     updateCreditCard(prepareCreditCard(request.getCaId(), request.getMailingPreference()));
                 }
                 return res;
-            } else {
-                throw new TMBCommonException(res.getHeader().getResponseCode(),
-                        res.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(res.getHeader().getResponseCode(),
+                    res.getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("working detail service => update customer soap error", e);
             throw e;
@@ -191,11 +190,10 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             ResponseFacility response = loanSubmissionGetFacilityInfoClient.searchFacilityInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getFacilities() == null ? null : response.getBody().getFacilities()[0];
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(response.getHeader().getResponseCode(),
+                    response.getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("working detail service => get facility soap error", e);
             throw e;
@@ -208,11 +206,10 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             ResponseCreditcard response = loanSubmissionGetCreditcardInfoClient.searchCreditcardInfoByCaID(caId);
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 return response.getBody().getCreditCards() == null ? null : response.getBody().getCreditCards();
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(response.getHeader().getResponseCode(),
+                    response.getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("working detail service => get credit card soap error", e);
             throw e;
@@ -240,14 +237,12 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             if (response.getHeader().getResponseCode().equals(MSG_000)) {
                 if (Objects.isNull(response.getBody().getIndividuals())) {
                     return null;
-                } else {
-                    return response.getBody().getIndividuals()[0];
                 }
-            } else {
-                throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        response.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                return response.getBody().getIndividuals()[0];
             }
+            throw new TMBCommonException(response.getHeader().getResponseCode(),
+                    response.getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("working detail service => get customer soap error", e);
             throw e;

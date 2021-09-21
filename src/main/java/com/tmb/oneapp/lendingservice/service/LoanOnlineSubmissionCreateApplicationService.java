@@ -52,11 +52,10 @@ public class LoanOnlineSubmissionCreateApplicationService {
             ResponseApplication res = loanSubmissionCreateApplicationClient.createApplication(application);
             if (res.getHeader().getResponseCode().equals("MSG_000")) {
                 return res;
-            } else {
-                throw new TMBCommonException(res.getHeader().getResponseCode(),
-                        res.getHeader().getResponseDescriptionEN(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(res.getHeader().getResponseCode(),
+                    res.getHeader().getResponseDescriptionEN(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             loging("create app soap error", e);
             throw e;
@@ -103,13 +102,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
             individuals[0].setThaiSurName(customer.getMiddleName() + " " + customer.getThaLname());
         }
         individuals[0].setMobileNo(customer.getPhoneNoFull());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = sdf.parse(customer.getIdBirthDate());
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        individuals[0].setBirthDate(cal);
-
+        individuals[0].setBirthDate(prepareDate(customer.getIdBirthDate()));
         individuals[0].setEmploymentStatus(req.getEmploymentStatus());
         individuals[0].setIncomeBasicSalary(req.getIncomeBasicSalary());
         individuals[0].setInTotalIncome(req.getInTotalIncome());
@@ -120,15 +113,21 @@ public class LoanOnlineSubmissionCreateApplicationService {
         return application;
     }
 
+    private Calendar prepareDate(String dateTime) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(dateTime);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return  cal;
+    }
+
     private Application mapDataTypeCC(Application application, LoanSubmissionCreateApplicationReq req) {
         CreditCard[] creditCards = new CreditCard[1];
         creditCards[0] = new CreditCard();
         creditCards[0].setCardInd(req.getCardInd());
         creditCards[0].setProductType(req.getProductType());
         creditCards[0].setCardBrand(req.getCardBrand());
-
         creditCards[0].setCampaignCode(req.getCampaignCode());
-
         creditCards[0].setPaymentMethod(req.getPaymentMethod());
         creditCards[0].setDebitAccountNo(req.getDebitAccountNo());
         creditCards[0].setDebitAccountName(req.getDebitAccountName());
@@ -146,9 +145,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
             facilities[0].setFacilityCode("C2G");
             facilities[0].setProductCode("C2G01");
         }
-
         facilities[0].setCaCampaignCode(req.getCampaignCode());
-
         facilities[0].setLimitApplied(req.getLimitApplied());
         facilities[0].setTenure(req.getTenure());
         facilities[0].setDisburstBankName(req.getDisburstBankName());
@@ -170,9 +167,8 @@ public class LoanOnlineSubmissionCreateApplicationService {
             ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
             if (responseIncomeModel.getHeader().getResponseCode().equals("MSG_000")) {
                 return Objects.nonNull(responseIncomeModel.getBody()) && Objects.nonNull(responseIncomeModel.getBody().getIncomeModelAmt());
-            } else {
-                return false;
             }
+            return false;
         } catch (Exception e) {
             loging("create app  check waive doc soap error", e);
             throw e;
@@ -194,11 +190,10 @@ public class LoanOnlineSubmissionCreateApplicationService {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
             if (response != null) {
                 return response.getData();
-            } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             loging("create app get CustomerEC soap error", e);
             throw e;

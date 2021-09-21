@@ -39,13 +39,11 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     private final RslService rslService;
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
 
-    private static String rmId;
 
-    public Object updateApplication(LoanSubmissionCreateApplicationReq request, String crmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
+    public com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual updateApplication(LoanSubmissionCreateApplicationReq request, String crmId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
 
         try {
-            rmId = crmId;
-            var result = updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request));
+            com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual result = updateIndividual(mapIndividual(getCustomerInfo(request.getCaId()), request, crmId));
             Body applicationInfo = getApplicationInfo(request.getCaId());
             if (applicationInfo.getAppType().equals("CC")) {
                 updateCreditCard(mapCreditCard(getCreditCard(request.getCaId()), request));
@@ -59,8 +57,8 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         }
     }
 
-    private Individual mapIndividual(Individual individual, LoanSubmissionCreateApplicationReq req) throws TMBCommonException, ParseException {
-        mapHiddenField(individual);
+    private Individual mapIndividual(Individual individual, LoanSubmissionCreateApplicationReq req, String crmId) throws TMBCommonException, ParseException {
+        mapHiddenField(individual, crmId);
         individual.setEmploymentStatus(req.getEmploymentStatus());
         individual.setIncomeBasicSalary(req.getIncomeBasicSalary());
         individual.setInTotalIncome(req.getInTotalIncome());
@@ -70,8 +68,8 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         return individual;
     }
 
-    private Individual mapHiddenField(Individual individual) throws TMBCommonException, ParseException {
-        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(rmId);
+    private Individual mapHiddenField(Individual individual, String crmId) throws TMBCommonException, ParseException {
+        CustGeneralProfileResponse ecResponse = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
 
         individual.setIdenPresentToBank(getPresentToBank(prepareField(individual.getCustomerType(), ecResponse.getCustomerType())));
         individual.setCustomerLevel(getCustomerLevel(prepareField(individual.getCustomerLevel(), ecResponse.getCustomerLevel())));

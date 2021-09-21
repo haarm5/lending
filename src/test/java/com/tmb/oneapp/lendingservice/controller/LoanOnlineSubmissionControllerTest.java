@@ -484,7 +484,7 @@ class LoanOnlineSubmissionControllerTest {
 
     @Test
     public void testUpdateApplicationSuccess() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
-        when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any(), anyString())).thenReturn(new Object());
+        when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any(), anyString())).thenReturn(new ResponseIndividual());
         ResponseEntity<TmbOneServiceResponse> responseEntity = loanOnlineSubmissionController.updateApplication("rm", new LoanSubmissionCreateApplicationReq());
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }

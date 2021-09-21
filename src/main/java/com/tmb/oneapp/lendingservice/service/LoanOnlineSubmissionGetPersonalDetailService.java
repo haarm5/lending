@@ -41,12 +41,12 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     static final String PATTERN_DATE = "yyyy-MM-dd";
 
     public PersonalDetailResponse getPersonalDetail(String crmId, Long caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
-        PersonalDetailResponse response = new PersonalDetailResponse();
-        Address address = new Address();
         // rsl
         Individual individual = getCustomer(caId);
         // ec
         CustGeneralProfileResponse custGeneralProfileResponse = getCustomerEC(crmId);
+
+        PersonalDetailResponse response = new PersonalDetailResponse();
         response.setExpiryDate(individual.getExpiryDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdExpireDate()) : individual.getExpiryDate());
         response.setBirthDate(individual.getBirthDate() == null ? convertStringToCalender(custGeneralProfileResponse.getIdBirthDate()) : individual.getBirthDate());
         response.setEmail(prepareData(individual.getEmail(), custGeneralProfileResponse.getEmailAddress()).toString());
@@ -59,13 +59,19 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         response.setCitizenId(prepareData(individual.getIdNo1(), custGeneralProfileResponse.getCitizenId()).toString());
         response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
         response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
-        if(individual.getResidentFlag() != null && !individual.getResidentFlag().isEmpty()) {
+        response.setResidentStatus(" ");
+        if (individual.getResidentFlag() != null && !individual.getResidentFlag().isEmpty()) {
             response.setResidentStatus(individual.getResidentFlag());
-        } else {
-            response.setResidentStatus(" ");
         }
+        response.setAddress(mapAddress(individual, custGeneralProfileResponse));
+        response.setResidentFlag(getResidents());
+        response.setThaiSalutationCode(getThaiSalutationCodes());
 
+        return response;
+    }
 
+    private Address mapAddress(Individual individual, CustGeneralProfileResponse custGeneralProfileResponse) {
+        Address address = new Address();
         Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
         if (responseAddress.isPresent()) {
             address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
@@ -89,29 +95,19 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
                 }
             }
         }
-
-        response.setAddress(address);
-        response.setResidentFlag(getResidents());
-        response.setThaiSalutationCode(getThaiSalutationCodes());
-
-        return response;
+        return address;
     }
 
 
     public Individual getCustomer(Long caID) throws ServiceException, RemoteException, TMBCommonException, JsonProcessingException {
         try {
             ResponseIndividual response = customerInfoClient.searchCustomerInfoByCaID(caID);
-            if (response.getHeader().getResponseCode().equals(RslResponseCode.SUCCESS.getCode())) {
-                if (response.getBody().getIndividuals()[0] == null) {
-                    throw new TMBCommonException(response.getHeader().getResponseCode(),
-                            ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-                }
-                return response.getBody().getIndividuals()[0];
-            } else {
-                String errorMessage = String.format("[%s] %s", response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+            if (!response.getHeader().getResponseCode().equals(RslResponseCode.SUCCESS.getCode())
+                    || Objects.isNull(response.getBody().getIndividuals()[0])) {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),
-                        errorMessage, ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+                        ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
             }
+            return response.getBody().getIndividuals()[0];
         } catch (Exception e) {
             logger.error("get customer soap error", e);
             throw e;
@@ -121,13 +117,12 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     public CustGeneralProfileResponse getCustomerEC(String crmid) throws TMBCommonException {
         try {
             TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmid).getBody();
-            if (response != null) {
+            if (Objects.nonNull(response)) {
                 return response.getData();
-            } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getMessage(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("get CustomerEC  error", e);
             throw e;
@@ -155,7 +150,6 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     }
 
     public List<DropDown> getThaiSalutationCodes() throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<DropDown> thaiSalutationCodes = new ArrayList<>();
         CommonCodeEntry[] entries = getDropdownList(DROPDOWN_SALUTATION_TYPE);
         List<CommonCodeEntry> sortedList = Arrays.stream(entries)
                 .sorted((entryId, entryCode) -> {
@@ -166,7 +160,7 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
                 })
                 .collect(Collectors.toList());
 
-
+        List<DropDown> thaiSalutationCodes = new ArrayList<>();
         for (CommonCodeEntry e : sortedList) {
             DropDown thaiSalutationCode = new DropDown();
             thaiSalutationCode.setEntryId(e.getEntryID());
@@ -176,13 +170,12 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
             thaiSalutationCode.setEntrySource(e.getEntrySource());
             thaiSalutationCodes.add(thaiSalutationCode);
         }
-
         return thaiSalutationCodes;
     }
 
     public Calendar convertStringToCalender(String dateStr) throws ParseException {
         Calendar calendar = Calendar.getInstance();
-        if (dateStr != null && !dateStr.equals("")) {
+        if (Objects.nonNull(dateStr) && !dateStr.isEmpty()) {
             Date expireDate = new SimpleDateFormat(PATTERN_DATE, Locale.ENGLISH).parse(dateStr);
             calendar.setTime(expireDate);
         }
@@ -190,7 +183,7 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     }
 
     public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
-        if (individual != null) {
+        if (Objects.nonNull(individual)) {
             return individual;
         }
         return custGeneralProfileResponse;

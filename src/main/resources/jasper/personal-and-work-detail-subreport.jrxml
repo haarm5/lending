@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="personal-and-work-detail-subreport" pageWidth="480" pageHeight="842" whenNoDataType="NoPages" columnWidth="440" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="effd4905-7c7e-4645-95f6-288a41b92656">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Style1" isDefault="true" fontName="DB Ozone X" fontSize="13"/>
+	<parameter name="id_type" class="java.lang.String"/>
+	<parameter name="id_no" class="java.lang.String"/>
+	<parameter name="issue_country" class="java.lang.String"/>
+	<parameter name="issue_date" class="java.lang.String"/>
+	<parameter name="expiray_date" class="java.lang.String"/>
+	<parameter name="name_th" class="java.lang.String"/>
+	<parameter name="name_en" class="java.lang.String"/>
+	<parameter name="birth_day" class="java.lang.String"/>
+	<parameter name="mobile_no" class="java.lang.String"/>
+	<parameter name="education_level" class="java.lang.String"/>
+	<parameter name="source_from_country" class="java.lang.String"/>
+	<parameter name="nationality" class="java.lang.String"/>
+	<parameter name="marital_status" class="java.lang.String"/>
+	<parameter name="place_of_birth" class="java.lang.String"/>
+	<parameter name="email" class="java.lang.String"/>
+	<parameter name="contact_address" class="java.lang.String"/>
+	<parameter name="resident_status" class="java.lang.String"/>
+	<parameter name="rm_occupation" class="java.lang.String"/>
+	<parameter name="occupation" class="java.lang.String"/>
+	<parameter name="contract_type" class="java.lang.String"/>
+	<parameter name="work_period" class="java.lang.String"/>
+	<parameter name="work_name" class="java.lang.String"/>
+	<parameter name="work_address" class="java.lang.String"/>
+	<parameter name="work_tel" class="java.lang.String"/>
+	<parameter name="work_tel_ex" class="java.lang.String"/>
+	<parameter name="income_bank" class="java.lang.String"/>
+	<parameter name="income_bank_account_no" class="java.lang.String"/>
+	<parameter name="cash_flow" class="java.lang.String"/>
+	<parameter name="share_percent" class="java.lang.String"/>
+	<parameter name="company_source_of_income" class="java.lang.String"/>
+	<parameter name="estatement" class="java.lang.String"/>
+	<parameter name="delivery" class="java.lang.String"/>
+	<parameter name="ncb_model_accept" class="java.lang.String"/>
+	<parameter name="accept_by" class="java.lang.String"/>
+	<parameter name="consent_date" class="java.lang.String"/>
+	<parameter name="consent_time" class="java.lang.String"/>
+	<parameter name="payment_account_no" class="java.lang.String"/>
+	<parameter name="is_direct_debit" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<detail>
+		<band height="490" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<frame>
+				<reportElement stretchType="RelativeToBandHeight" x="-20" y="-20" width="480" height="168" isPrintInFirstWholeBand="true" uuid="21d35b7e-fe17-4e8e-a95a-65e411b2352c">
+					<property name="ShowOutOfBoundContent" value="true"/>
+				</reportElement>
+				<frame>
+					<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="480" height="20" uuid="1386093e-7c11-4e5d-8919-1b855afc5586">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box padding="0"/>
+					<staticText>
+						<reportElement style="Style1" mode="Opaque" x="0" y="4" width="480" height="16" forecolor="#030303" backcolor="#CCCCCC" uuid="f956ca9f-d559-4a46-90a4-06c965e2f6f5">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<box topPadding="2" leftPadding="10" bottomPadding="2" rightPadding="0">
+							<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+							<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+							<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+						</box>
+						<textElement verticalAlignment="Middle">
+							<font size="11" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ข้อมูลส่วนตัว]]></text>
+					</staticText>
+					<frame>
+						<reportElement style="Style1" x="0" y="20" width="240" height="148" uuid="03859a40-9fb0-42d9-839c-9a50b0473340">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="0" width="240" height="20" uuid="80af3ea1-e3e3-451e-89a4-d4fba8e6039e">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ประเภทบัตรประจำตัว]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="8" width="240" height="20" uuid="bf5a4dbf-2a96-4bde-bb63-fb5197e0088d"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[เลขที่บัตรประชาชน]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="16" width="240" height="20" uuid="f69fc34d-aa47-4a93-8124-88e05096a3d4"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ประเทศที่ออกบัตร]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="24" width="240" height="20" uuid="83e56777-9f68-4c72-bcb8-131c0282fe6a"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ออกให้เมื่อวันที่]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="32" width="240" height="20" uuid="5522ad1b-5b1b-48b4-937f-b0c90812856e"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[วันหมดอายุ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="40" width="240" height="20" uuid="c19baa32-308f-45f3-92a5-5a52e8f84b24"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ชื่อ - นามสกุล (ไทย)]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="48" width="240" height="20" uuid="f13c79f4-9895-4674-9f19-235808be7f1f"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ชื่อ - นามสกุล (อังกฤษ)]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="56" width="240" height="20" uuid="ebd862c5-02a8-437e-abe4-965b94db0b92"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[วัน / เดือน / ปีเกิด]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="64" width="240" height="20" uuid="85fcc762-2107-468e-856c-5a2b76209070"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[หมายเลขโทรศัพท์มือถือ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="72" width="240" height="20" uuid="be701eeb-45bc-48ce-9931-ae7483d14edd"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ระดับการศึกษาสูงสุด]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="80" width="240" height="20" uuid="6f88c396-9bd8-4f5c-8de5-ded6c297502b"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[แหล่งที่มาของรายได้]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="88" width="240" height="20" uuid="59c5a001-f852-4f56-9b0e-f44a0e9810e3"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[สัญชาติ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="96" width="240" height="20" uuid="cd51af29-66b0-4fbc-b902-96361e516fb7"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[สถานภาพสมรส]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="104" width="240" height="20" uuid="0576112c-689b-40e6-b59f-e402301dafb2"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[สถานที่เกิด]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="112" width="240" height="20" uuid="ba29543b-4783-4cca-97d2-26e0d3eb28ca"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[อีเมล]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="120" width="240" height="20" uuid="3a6ee9e4-1655-421e-969f-ebf08fd2aeb0"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[ที่อยู่ที่ติดต่อได้]]></text>
+						</staticText>
+						<staticText>
+							<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="128" width="240" height="20" uuid="85621c41-d927-4448-ae61-2b6b95ec6f21"/>
+							<box padding="3"/>
+							<textElement verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<text><![CDATA[สถานภาพที่อยู่อาศัย]]></text>
+						</staticText>
+					</frame>
+					<frame>
+						<reportElement x="240" y="20" width="240" height="148" uuid="31a6303f-72a9-4dac-939d-efe70f3b8518">
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+						<textField>
+							<reportElement x="0" y="0" width="238" height="20" isRemoveLineWhenBlank="true" uuid="4207fc31-f81f-452e-bc04-22b7cf94c6fa">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<printWhenExpression><![CDATA[$P{accept_by}.equals( "test" )]]></printWhenExpression>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{id_type}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement positionType="Float" x="0" y="8" width="238" height="20" uuid="2715561f-568e-4fd9-824d-ffdd127c7dea">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{id_no}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="16" width="238" height="20" uuid="30a0ae62-879e-4dde-b0a0-18887c28c94e">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{issue_country}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="24" width="238" height="20" uuid="585cb05b-a301-4576-88f3-cd0bc4f768de">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{issue_date}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="32" width="238" height="20" uuid="a8c3442e-9796-4a7e-93bb-46b52c2b953a">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{expiray_date}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="40" width="238" height="20" uuid="08ce3b1d-dd53-44e4-b683-e4ebff8af06d">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{name_th}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="48" width="238" height="20" uuid="25115884-2575-45ee-ab57-e0a7b9108fd9">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{name_en}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="56" width="238" height="20" uuid="9e22b4c6-8d27-4fd4-87b0-e46baa18cf99">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{birth_day}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="64" width="238" height="20" uuid="86e23db8-f565-4d42-8e7a-ae278b3d5ede">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{mobile_no}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="72" width="238" height="20" uuid="b14da24b-a5c4-41ca-b315-b610d0ce6d25">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{education_level}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="80" width="238" height="20" uuid="ca8c81f7-af4f-41b2-8cb0-268639276e92">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{source_from_country}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="88" width="238" height="20" uuid="ff17e6ad-b6ef-4e00-917e-a8d14b7f3622">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{nationality}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="96" width="238" height="20" uuid="b97a6cf0-553b-4d70-bc06-6bb3519fa8c6">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{marital_status}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="104" width="238" height="20" uuid="962d2c92-ccbf-434a-b5e1-7e080c19fd21">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{place_of_birth}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="112" width="238" height="20" uuid="b123f4ee-20ec-4be6-bee1-24183235231e">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="120" width="238" height="20" uuid="6b086016-f7c8-454d-99b1-b8b1c1e80b6d">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{contact_address}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement x="0" y="128" width="238" height="20" uuid="5eb45b7b-0a46-4eef-99b2-39c952b6aece">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{resident_status}]]></textFieldExpression>
+						</textField>
+					</frame>
+				</frame>
+				<frame>
+					<reportElement stretchType="ElementGroupHeight" x="0" y="168" width="480" height="168" uuid="58c9af19-833d-4b50-9e23-331dd416ab16"/>
+					<frame>
+						<reportElement style="Style1" x="0" y="0" width="480" height="20" uuid="ef47c546-bc89-43ce-83b6-012256cbf240">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</reportElement>
+						<box padding="0"/>
+						<staticText>
+							<reportElement style="Style1" mode="Opaque" x="0" y="4" width="480" height="16" forecolor="#030303" backcolor="#CCCCCC" uuid="ab40df95-78e1-442e-b736-8a4a02c2a0ec">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
+							<box topPadding="2" leftPadding="10" bottomPadding="2" rightPadding="0">
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#030303"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font size="11" isBold="true"/>
+							</textElement>
+							<text><![CDATA[ข้อมูลการทำงาน]]></text>
+						</staticText>
+						<frame>
+							<reportElement style="Style1" x="0" y="20" width="240" height="148" uuid="a9286f45-b449-47c4-bb5f-2b37434a2503">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							</reportElement>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="0" width="240" height="20" uuid="bddbc423-3a8e-47a2-8af3-a67e48b01320">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[อาชีพ]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="8" width="240" height="20" uuid="f58828d1-6d5f-4b69-80d1-b55c19317c27"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[สาขาอาชีพ]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="16" width="240" height="20" uuid="16c03444-81e4-4e50-b0e8-7d1502c73860"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[ประเภทสัญญาจ้าง]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="24" width="240" height="20" uuid="99c4a097-3245-481e-8da0-bc9a7a3108cf"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[อายุงานปัจจุบัน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="32" width="240" height="20" uuid="0b74c2b3-6ddd-41a6-9445-bfc6cff8c668"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[ชื่อที่ทำงาน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="40" width="240" height="20" uuid="8e40671b-d427-46fb-b6eb-32242120f15f"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[ที่อยู่ที่ทำงาน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="48" width="240" height="20" uuid="ac4f79ff-6cb2-462b-8f17-0ea1253f868e"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[เบอร์โทรที่ทำงาน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="56" width="240" height="20" uuid="b368106b-8bdf-4fad-a693-a6ec4414951c"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[หมายเลขต่อภายใน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="64" width="240" height="20" uuid="695d0eeb-6dfc-4a2f-a609-ab0695c35753"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[รับรายได้ผ่านทางธนาคาร]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="72" width="240" height="20" uuid="f3192a68-0366-4ba5-9ee6-3f7e89b85eb0"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[เลขบัญชีที่รับรายได้]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="80" width="240" height="20" uuid="58b5940d-2921-41cc-b8c4-3add99967b73"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[กระแสเงินสดในรอบ 6 เดือน]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="88" width="240" height="20" uuid="1cb3efda-8700-4d2e-bc62-9a9fa9cfff5f"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[สัดส่วนผู้ถือหุ้น (%)]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="96" width="240" height="20" uuid="d9ad98ba-c547-415a-8505-e609622a455f"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[ประเทศที่มาของได้]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="104" width="240" height="20" uuid="56807b4b-94b7-4255-9a55-d74faed3716a"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[รับใบแจ้งยอดทางอีเมล]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="112" width="240" height="20" uuid="9ecf245a-4703-4a58-907f-07eadb064073"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[จัดส่งไปที่]]></text>
+							</staticText>
+							<staticText>
+								<reportElement positionType="FixRelativeToBottom" stretchType="RelativeToTallestObject" x="0" y="120" width="240" height="20" uuid="9b0086c0-575d-4709-b901-fd1752055014"/>
+								<box padding="3"/>
+								<textElement verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<text><![CDATA[การให้ความยินยอมจากเจ้าของข้อมูลเพื่อใช้จัดทำแบบจำลองด้านเครดิต]]></text>
+							</staticText>
+						</frame>
+						<frame>
+							<reportElement x="240" y="20" width="240" height="148" uuid="22348652-c578-4f41-9ff0-cdcc32c2c315">
+								<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							</reportElement>
+							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="238" height="20" uuid="1863dc5c-d503-479b-bd77-819023bf02c8"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{rm_occupation}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="8" width="238" height="20" uuid="7f48e1d4-1d50-45ad-8336-c07685982d12"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{occupation}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="16" width="238" height="20" uuid="ba181ba3-b4d9-410a-95fd-ff1735c75d23"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{contract_type}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="24" width="238" height="20" uuid="6c3ea811-ebff-4aee-80d6-6bcdb9859f4c"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{work_period}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="32" width="238" height="20" uuid="7e653802-6d0f-4147-9342-f0342f520503"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{work_name}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="40" width="238" height="20" uuid="cbbd4ac2-cbbe-4aeb-bf2f-88ada7ce67e3"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{work_address}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="48" width="238" height="20" uuid="eb353146-0f29-442e-b3ad-fee484560bf5"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{work_tel}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="56" width="238" height="20" uuid="ab4855ec-b373-4033-9819-5973aaa72f45"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{work_tel_ex}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="64" width="238" height="20" uuid="3893641f-2b6e-4b29-abe4-3a180f63a062"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{income_bank}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="72" width="238" height="20" uuid="6b671880-4a77-4946-ad9f-981baf4abb57"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{income_bank_account_no}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="80" width="238" height="20" uuid="2096764c-ebb0-4ea3-976e-f5780a880440"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{cash_flow}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="88" width="238" height="20" uuid="93fd6fcc-eb71-4ce6-9daa-9bbb15984a48"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{share_percent}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="96" width="238" height="20" uuid="f23ab167-9623-4bb2-852b-e36c680dc834"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{company_source_of_income}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="104" width="238" height="20" uuid="32c02f7e-df82-403f-89dd-7a7da737e844"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{estatement}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="112" width="238" height="20" uuid="4d753ffe-0e04-483e-b346-25e5f2ae7e84"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{delivery}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="120" width="238" height="20" uuid="535d4313-04ab-4088-807d-6b84e6a3a088"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="9"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{ncb_model_accept}]]></textFieldExpression>
+							</textField>
+						</frame>
+					</frame>
+				</frame>
+				<frame>
+					<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="0" y="336" width="480" height="199" uuid="17984cd5-340d-448b-85c3-dd8838f0aeb6">
+						<property name="ShowOutOfBoundContent" value="true"/>
+					</reportElement>
+					<frame>
+						<reportElement x="0" y="0" width="480" height="50" uuid="ed4abc80-5d73-4979-8864-eaf1b77659af">
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+						</reportElement>
+						<staticText>
+							<reportElement x="0" y="0" width="480" height="10" uuid="7a794ca5-1db0-4b18-be7b-ab6e505da8da">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="25">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[ข้าพเจ้าขอยืนยันต่อธนาคารว่าข้อมูลที่ข้าพเจ้าให้ไว้ต่อธนาคารเป็นความจริงทุกประการและข้าพเจ้าอนุญาตให้ธนาคารเรียกหลักฐานการเงินเพิ่มเติมเพื่อวัตถุประสงค์ในการประเมินวงเงิน]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="8" width="480" height="10" uuid="220b30d6-399d-4f61-b15b-624f6abb8a6d">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[สินเชื่อ ข้าพเจ้ารับทราบว่าการสมัครของข้าพเจ้าจะเป็นที่ยอมรับได้ต่อเมื่อได้รับการอนุมัติเป็นลายลักษณ์อักษรจากกธนาคารแล้ว โดยข้าพเจ้ายินยอมผูกพันและตกลงปฏิบัติตามข้อกำหนดและ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="16" width="480" height="10" uuid="1e2ed7a3-f918-4995-b2a6-91c45cde2b33">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[เงื่อนไขของสินเชื่อบุคคลแคชทูโกที่ระบุไว้ทุกประการ รวมตลอดถึงข้อกำหนดและเงื่อนไขเพิ่มเติมที่ธนาคารจะได้แจ้งให้ทราบเป็นครั้งคราว ในกรณีที่ธนาคารไม่สามารถอนุมัติจำนวนเงินกู้และระยะเวลา]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="24" width="480" height="10" uuid="7919e30e-7b37-4727-8e16-5e7e139b5f3b">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[การผ่อนชำระคืนได้ตามความประสงค์ของข้าพเจ้าที่ระบุในคำขอนี้ ข้าพเจ้ายังประสงค์และตกลงผูกพันตามจำนวนเงินกู้และระยะเวลาการผ่อนชำระคืน ตลอดจนข้อกำหนดและเงื่อนไขที่ธนาคารได้]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="32" width="480" height="10" uuid="7c9ee9bb-15a4-413c-b1a9-34cbba597e7e">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[อนุมัติให้ข้าพเจ้าทุกประการ  ข้าพเจ้าได้อ่านและเข้าใจข้อกำหนดและเงื่อนไขที่เกี่ยวข้องอย่างถี่ถ้วนแล้ว จึงลงลายมือชื่ออิเล็กทรอนิกส์ไว้เป็นหลักฐานแห่งการกู้ยืม และข้าพเจ้ารับทราบว่าธนาคารจะ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="40" width="480" height="10" uuid="c4e42da6-25ef-4873-bd00-f8da872caac4">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[จัดส่งสำเนาสัญญาสินเชื่อให้แก่ข้าพเจ้าผ่านทางจดหมายอิเล็กทรอนิกส์]]></text>
+						</staticText>
+					</frame>
+					<frame>
+						<reportElement x="0" y="49" width="480" height="50" uuid="d263f2ee-86b6-4655-939f-ca73e7f9f5b4">
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+						</reportElement>
+						<staticText>
+							<reportElement x="0" y="0" width="480" height="10" uuid="adddbce5-3e5a-4d5b-bd58-0ee2b66a241a">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="25">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้ไว้ในการสมัครสินเชื่อนี้เป็นความจริงทุกประการ และตกลงให้บริษัทข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ธนาคาร]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="8" width="480" height="10" uuid="1d0f9131-ead7-4040-af3f-cd0b3eca1ee0">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[ทหารไทยธนชาต จำกัด (มหาชน) ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัทเพื่อประโยชน์ในการวิเคราะห์สินเชื่อ การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้า รวมทั้งเพื่อ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="16" width="480" height="10" uuid="52d1ed74-0520-4a2e-a3e6-6fe72c222b96">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[ประโยชน์ในการทบทวนสินเชื่อต่ออายุสัญญาสินเชื่อ/บัตรเครดิต การบริหารและป้องกันความเสี่ยง ตามข้อกำหนดของธนาคารแห่งประเทศไทย และให้ถือว่าคู่ฉบับ และบรรดาสำเนาภาพถ่าย]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="24" width="480" height="10" uuid="90036fc4-d3ee-4539-b73d-721fd1f30a60">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[ข้อมูลอิเล็กทรอนิกส์หรือโทรสารที่ทำสำเนาขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนา ถ่ายภาพ หรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ เป็นหลักฐานในการให้ความยินยอมของข้าพเจ้า]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="32" width="480" height="10" uuid="d822887a-37b8-4280-8bf9-7fdeb3112df2">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[เช่นเดียวกัน จนกว่าข้าพเจ้าจะแจ้งยกเลิก หรือเพิกถอนความยินยอมนี้เป็นลายลักษณ์อักษรต่อธนาคาร รวมถึงยอมรับผูกพันปฏิบัติตามข้อกำหนดและเงื่อนไขการใช้บัตรเครดิตของธนาคาร หรือ ]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="0" y="40" width="480" height="10" uuid="79c566b0-3c42-4b8b-92c6-93c79e8c1b01">
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Left">
+								<font size="9"/>
+								<paragraph firstLineIndent="0">
+									<tabStop position="0" alignment="Left"/>
+								</paragraph>
+							</textElement>
+							<text><![CDATA[กฏระเบียบข้อบังคับ การเป็นสมาชิกบัตรเครดิตของธนาคารที่ได้รับ พร้อมบัตรเครดิตของธนาคารรวมทั้งที่แก้ไขเพิ่มเติมต่อไปด้วย]]></text>
+						</staticText>
+					</frame>
+					<frame>
+						<reportElement x="0" y="99" width="480" height="100" uuid="17c8db92-ee91-49a3-8030-20cc60a53990">
+							<property name="ShowOutOfBoundContent" value="false"/>
+						</reportElement>
+						<frame>
+							<reportElement positionType="Float" x="0" y="0" width="480" height="34" isRemoveLineWhenBlank="true" uuid="87980df0-21ac-4431-bb74-b490697305b8">
+								<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+								<printWhenExpression><![CDATA[$P{is_direct_debit}.equals( "Y" )]]></printWhenExpression>
+							</reportElement>
+							<textField>
+								<reportElement x="0" y="0" width="480" height="10" uuid="48290042-75a7-403a-876b-c55b4f268220">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="25"/>
+								</textElement>
+								<textFieldExpression><![CDATA["กรณีที่ข้าพเจ้าเลือก ชำระด้วยการหักบัญชีเงินฝาก ttb บนใบสมัครนี้ หมายถึง ยินยอมให้ธนาคารหักเงินฝากจากบัญชีเงินฝากออมทรัพย์ เลขที่ " + $P{payment_account_no} + " ดังกล่าวเพื่อชำระหนี้"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="8" width="480" height="10" uuid="97b2d41a-41f4-4421-b963-df36f433cbfc">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["หรือค่าธรรมเนียมหรือค่าใช้จ่ายอื่นใดที่เกิดจากการใช้บริการสินเชื่อ โดยไม่ต้องขอความยินยอมจากข้าพเจ้า และธนาคารไม่จำเป็นต้องแจ้งการหักบัญชีแก่ข้าพเจ้าแต่อย่างใด"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="16" width="480" height="10" uuid="c7e4d7d2-1610-4f2b-a2ac-cf2bff3ce739">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["ผู้สมัครให้ความยินยอมโดย : " + $P{accept_by}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="24" width="480" height="10" uuid="8708ad68-3e40-4205-a495-5194fca09ad9">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["วันเวลาที่ให้ความยินยอม : " + $P{consent_date} + " / " + $P{consent_time}]]></textFieldExpression>
+							</textField>
+						</frame>
+						<frame>
+							<reportElement positionType="Float" x="0" y="34" width="480" height="66" uuid="a6fdccc1-5bdc-479b-b8ff-850e324e33e3">
+								<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+							</reportElement>
+							<textField>
+								<reportElement x="0" y="8" width="480" height="10" uuid="af30c887-26ef-4d56-b335-2ecdea7c84fb">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="25"/>
+								</textElement>
+								<textFieldExpression><![CDATA["การให้ความยินยอมจากเจ้าของข้อมูลเพื่อใช้จัดทำแบบจำลองด้านเครดิต " + $P{ncb_model_accept} + " ให้ ธนาคารทหารไทยธนชาต จำกัด (มหาชน) ซึ่งเป็นสมาชิกของบริษัทข้อมูลเครดิต นำข้อมูลของ"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="16" width="480" height="10" uuid="c44ea7b7-5006-4ff5-a19a-e53db48e94f5">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["ข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถระบุตัวตน เช่น ชื่อ นามสกุล เลขประจำตัวประชาชน รวมถึงข้อมูลอื่นใดที่สามารถระบุว่าเป็นข้าพเจ้าได้ ไปใช้เป็นปัจจัยหนึ่งในการจัดทำ"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="24" width="480" height="10" uuid="51635da2-a06a-42bb-ac1e-32e8ee23d6ec">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["แบบจำลองด้านเครดิตกำหนดเท่านั้น และให้คู่ฉบับและบรรดาสำเนาภาพถ่าย ข้อมูลอิเล็กทรอนิกส์ หรือ โทรสาร ที่ได้ทำซ้ำขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนาภาพถ่าย หรือ"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="32" width="480" height="10" uuid="e291111d-5f0a-47d7-a7e8-99c2e712d8f0">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["บันทึกไว้ไม่ว่าในรูปแบบใดๆ ให้ถือเป็นหลักฐานในการให้ความยินยอมของข้าพเจ้าเช่นเดียวกัน ทั้งนี้ ข้าพเจ้าทราบว่าเจ้าของข้อมูลมีสิทธิที่จะให้ความยินยอมหรือไม่ก็ได้ และเมื่อให้ความยินยอมแล้ว"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="40" width="480" height="10" uuid="721c918e-e010-4a6e-8cc9-2c8d76429bd7">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["เจ้าของข้อมูลจะแจ้งความประสงค์ไม่ให้ความยินยอมอีกต่อไปได้"]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="48" width="480" height="10" uuid="92634c74-68fa-4d20-90ff-db3487c58733">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["ผู้สมัครให้ความยินยอมโดย : " + $P{accept_by}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="56" width="480" height="10" uuid="eb356a10-b838-406d-b333-5f4b66e33a0e">
+									<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								</reportElement>
+								<textElement>
+									<font size="9"/>
+									<paragraph firstLineIndent="0"/>
+								</textElement>
+								<textFieldExpression><![CDATA["วันเวลาที่ให้ความยินยอม : " + $P{consent_date} + " / " + $P{consent_time}]]></textFieldExpression>
+							</textField>
+						</frame>
+					</frame>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

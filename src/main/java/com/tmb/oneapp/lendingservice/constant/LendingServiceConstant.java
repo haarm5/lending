@@ -29,6 +29,7 @@ public class LendingServiceConstant {
 
     public static final String HEADER_SOAP_ACTION = "SOAPAction";
     public static final String HEADER_CORRELATION_ID = "x-correlation-id";
+    public static final String HEADER_ACCOUNT_ID = "account-id";
 
     /**
      * ACTIVITY IDS

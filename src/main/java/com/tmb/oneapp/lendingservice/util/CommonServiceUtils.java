@@ -7,6 +7,8 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,8 +37,21 @@ public class CommonServiceUtils {
         return getDateAndTimeInYYYYMMDDHHMMSS(new Date());
     }
 
-    public static String formatPhoneNumber(String mobNo) {
+    public static String getDateInYYYYMMDD(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        return formatter.format(date);
+    }
 
+    public static String getTimeInHHMMSS(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm:ss");
+        return formatter.format(date);
+    }
+
+    public static String formatWorkPeriod(String year, String month) {
+        return String.join(" ", year + " ปี", month + " เดือน");
+    }
+
+    public static String formatPhoneNumber(String mobNo) {
         if (StringUtils.isNotBlank(mobNo) && mobNo.length() == 10) {
             StringBuilder formattedMobNo = new StringBuilder(mobNo);
             formattedMobNo.insert(3, "-");
@@ -44,6 +59,14 @@ public class CommonServiceUtils {
 
             return formattedMobNo.toString();
 
+        } else {
+            if (StringUtils.isNotBlank(mobNo) && mobNo.length() == 9) {
+                StringBuilder formattedMobNo = new StringBuilder(mobNo);
+                formattedMobNo.insert(2, "-");
+                formattedMobNo.insert(6, "-");
+
+                return formattedMobNo.toString();
+            }
         }
         return "";
     }
@@ -60,6 +83,23 @@ public class CommonServiceUtils {
 
         }
         return "";
+    }
+
+    public static String formatBankAccountNo(String bankAccountNo) {
+        if (StringUtils.isNotBlank(bankAccountNo)) {
+            StringBuilder formatBankAccountNo = new StringBuilder(bankAccountNo);
+            formatBankAccountNo.insert(3, "-");
+            formatBankAccountNo.insert(5, "-");
+            formatBankAccountNo.insert(11, "-");
+            return formatBankAccountNo.toString();
+
+        }
+        return "";
+    }
+
+    public static String format2DigitDecimalPoint(BigDecimal number) {
+        DecimalFormat formatter = new DecimalFormat("#,###.00");
+        return formatter.format(number);
     }
 
     public static String getThaiYear(String year) {
@@ -117,4 +157,7 @@ public class CommonServiceUtils {
         return thaiDate.toString();
     }
 
+    public static String maskPhoneNumber(String phoneNumber) {
+        return phoneNumber.replaceAll(".(?=.{4})", "X");
+    }
 }

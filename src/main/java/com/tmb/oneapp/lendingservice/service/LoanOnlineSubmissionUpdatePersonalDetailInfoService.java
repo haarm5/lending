@@ -162,11 +162,10 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
 
             if (response != null) {
                 return prepareResponse(caId, request);
-            } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getDesc(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getDesc(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
 
         } catch (Exception e) {
             logger.error("update customer soap error", e);

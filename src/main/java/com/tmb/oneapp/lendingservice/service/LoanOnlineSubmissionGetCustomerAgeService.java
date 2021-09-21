@@ -25,17 +25,21 @@ public class LoanOnlineSubmissionGetCustomerAgeService {
 
     public LoanSubmissionGetCustomerAgeResponse getAge(String crmId) throws TMBCommonException {
         CustGeneralProfileResponse customer = getCustomerEC(crmId);
+        LoanSubmissionGetCustomerAgeResponse response = new LoanSubmissionGetCustomerAgeResponse();
+        setBirthDate(response, customer);
+        response.setExpireDate(customer.getIdExpireDate());
+        response.setIdType(customer.getIdType());
+        return response;
+    }
+
+    public LoanSubmissionGetCustomerAgeResponse setBirthDate(LoanSubmissionGetCustomerAgeResponse response, CustGeneralProfileResponse customer) {
         if (Objects.nonNull(customer.getIdBirthDate())) {
             LocalDate birtDate = LocalDate.parse(customer.getIdBirthDate());
             LocalDate currentDate = LocalDate.now();
-            LoanSubmissionGetCustomerAgeResponse response = new LoanSubmissionGetCustomerAgeResponse();
             response.setAge(birtDate.until(currentDate, ChronoUnit.YEARS));
             response.setBirthDate(customer.getIdBirthDate());
-            response.setExpireDate(customer.getIdExpireDate());
-            response.setIdType(customer.getIdType());
-            return response;
         }
-        return null;
+        return response;
     }
 
     private CustGeneralProfileResponse getCustomerEC(String crmId) throws TMBCommonException {

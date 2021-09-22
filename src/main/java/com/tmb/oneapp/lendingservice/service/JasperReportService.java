@@ -5,7 +5,6 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;

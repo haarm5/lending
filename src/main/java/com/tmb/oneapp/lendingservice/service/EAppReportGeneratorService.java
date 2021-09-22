@@ -203,8 +203,8 @@ public class EAppReportGeneratorService {
         parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(response.getRequestAmount()));
         parameters.put("tenure", response.getTenure() != null ? response.getTenure().toString() : "-");
         parameters.put("payment_plan", response.getPaymentPlan());
-        parameters.put("payment_criteria", response.getPaymentCriteria());
-        parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
+	parameters.put("payment_criteria", response.getPaymentCriteria());
+	parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
         parameters.put("consider_loan_with_other_bank", response.getConsiderLoanWithOtherBank());
         parameters.put("is_loan_day_one", StringUtils.isBlank(response.getDisburstAccountNo()) ? "N" : "Y");
 

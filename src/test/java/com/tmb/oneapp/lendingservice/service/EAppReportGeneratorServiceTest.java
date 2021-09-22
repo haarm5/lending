@@ -92,7 +92,6 @@ public class EAppReportGeneratorServiceTest {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("RC01");
-        request.setIsLoanDayOne(true);
 
         GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");

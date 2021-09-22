@@ -13,7 +13,5 @@ public class GenerateEAppReportRequest {
     private String caId;
     @NotEmpty
     private String productCode;
-    @NotEmpty
-    private Boolean isLoanDayOne;
 
 }

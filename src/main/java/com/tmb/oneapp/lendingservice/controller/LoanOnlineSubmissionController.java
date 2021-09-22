@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.model.loanonline.*;
 import com.tmb.oneapp.lendingservice.model.personal.*;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
@@ -250,7 +251,7 @@ public class LoanOnlineSubmissionController {
         }
     }
 
-    @ApiOperation(value = "get personal detail")
+    @ApiOperation(value = "get document")
     @LogAround
     @GetMapping("/documents")
     @ApiImplicitParams({
@@ -260,13 +261,35 @@ public class LoanOnlineSubmissionController {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<List<ChecklistResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getDocuments(request.getCaId());
+            List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getDocuments(crmId, request.getCaId());
             oneTmbOneServiceResponse.setData(responseChecklist);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get checklist document upload: {}", e);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
+            return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
+        }
+    }
+
+    @ApiOperation(value = "get more document")
+    @LogAround
+    @GetMapping("/documents/more")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
+    public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getMoreDocuments(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
+                                                                                       @Valid ChecklistRequest request) {
+        responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
+        TmbOneServiceResponse<List<ChecklistResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        try {
+            List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getMoreDocuments(crmId, request.getCaId());
+            oneTmbOneServiceResponse.setData(responseChecklist);
+            oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
+            setHeader();
+            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+        } catch (Exception e) {
+            logger.error("error while get checklist more document upload: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
             return ResponseEntity.badRequest().headers(responseHeaders).body(oneTmbOneServiceResponse);
         }
@@ -321,12 +344,12 @@ public class LoanOnlineSubmissionController {
     @ApiOperation(value = "update application")
     @LogAround
     @PutMapping(value = "/updateApplication", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TmbOneServiceResponse> updateApplication(
+    public ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> updateApplication(
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
             @Valid @RequestBody LoanSubmissionCreateApplicationReq request) {
 
-        TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
+        TmbOneServiceResponse<ResponseIndividual> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
             loanOnlineSubmissionUpdateApplicationService.updateApplication(request,crmId);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));

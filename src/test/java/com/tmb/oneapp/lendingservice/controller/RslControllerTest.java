@@ -37,8 +37,7 @@ import java.rmi.RemoteException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -614,12 +613,13 @@ public class RslControllerTest {
     public void loanSubmissionGetChecklistInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
 
         ResponseChecklist response = new ResponseChecklist();
-        doReturn(response).when(rslService).getDocumentList(any());
+        doReturn(response).when(rslService).getDocumentList(anyLong(), anyString());
 
         String correlationId = "correlationId";
         String crmId = "001100000000000000000018593707";
         LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
         request.setCaId(2021071404188194L);
+        request.setIncompleteDocFlag("N");
 
         ResponseEntity<TmbOneServiceResponse<ResponseChecklist>> responseEntity = rslController.getDocumentList(correlationId, crmId, request);
 
@@ -634,9 +634,10 @@ public class RslControllerTest {
         String crmId = "001100000000000000000018593707";
         LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
         request.setCaId(2021071404188194L);
+        request.setIncompleteDocFlag("N");
 
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
-            doThrow(new ServiceException("error")).when(rslService).getDocumentList(any());
+            doThrow(new ServiceException("error")).when(rslService).getDocumentList(anyLong(), anyString());
             rslController.getDocumentList(correlationId, crmId, request);
         });
 

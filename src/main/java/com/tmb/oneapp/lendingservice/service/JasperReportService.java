@@ -3,7 +3,6 @@ package com.tmb.oneapp.lendingservice.service;
 import com.tmb.common.logger.TMBLogger;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;

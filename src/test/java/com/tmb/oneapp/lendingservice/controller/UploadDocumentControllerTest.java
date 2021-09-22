@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
-import java.text.ParseException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,7 +37,7 @@ public class UploadDocumentControllerTest {
     }
 
     @Test
-    public void uploadDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException {
+    public void uploadDocument_Success() throws TMBCommonException, IOException, ServiceException {
         UploadDocumentRequest request = new UploadDocumentRequest();
         request.setCaId("1");
         request.setDocCode("ID01");
@@ -53,12 +52,24 @@ public class UploadDocumentControllerTest {
     }
 
     @Test
-    public void submitDocument_Success() throws TMBCommonException, IOException, ServiceException, ParseException, DocumentException {
+    public void submitDocument_Success() throws TMBCommonException, IOException, ServiceException, DocumentException {
         SubmitDocumentRequest request = new SubmitDocumentRequest();
         request.setCaId("1");
 
         SubmitDocumentResponse response = new SubmitDocumentResponse();
         doReturn(response).when(uploadDocumentService).submit(anyString(), any());
+
+        ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> responseEntity = uploadDocumentController.submitDocument("correlationId", "crmId", request);
+        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void submitMoreDocument_Success() throws TMBCommonException, IOException, ServiceException, DocumentException {
+        SubmitDocumentRequest request = new SubmitDocumentRequest();
+        request.setCaId("1");
+
+        SubmitDocumentResponse response = new SubmitDocumentResponse();
+        doReturn(response).when(uploadDocumentService).submitMore(anyString(), any());
 
         ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> responseEntity = uploadDocumentController.submitDocument("correlationId", "crmId", request);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());

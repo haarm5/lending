@@ -102,6 +102,7 @@ dependencies {
     implementation 'net.sf.jasperreports:jasperreports-fonts:6.17.0'
     implementation 'com.lowagie:itext:2.1.7'
     compile files('src/main/resources/jasper/font/fonts-extention.jar')
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
 }
 
 

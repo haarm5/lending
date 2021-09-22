@@ -1,6 +1,6 @@
 package com.tmb.oneapp.lendingservice.config;
 
-import com.tmb.oneapp.lendingservice.service.JasperReportFillerService;
+import com.tmb.oneapp.lendingservice.service.JasperReportService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 public class JasperReportConfig {
 
     @Bean
-    public JasperReportFillerService reportFiller() {
-        return new JasperReportFillerService();
+    public JasperReportService reportFiller() {
+        return new JasperReportService();
     }
 
 }

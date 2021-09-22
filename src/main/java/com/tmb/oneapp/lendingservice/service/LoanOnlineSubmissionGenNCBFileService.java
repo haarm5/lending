@@ -3,18 +3,14 @@ package com.tmb.oneapp.lendingservice.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
@@ -50,7 +46,7 @@ public class LoanOnlineSubmissionGenNCBFileService {
 	 * @param crmID
 	 * @param caID
 	 */
-	public void storeNCBfile(CustomerInformationResponse custInfo) throws JsonProcessingException, ParseException {
+	public void storeNCBfile(CustomerInformationResponse custInfo) {
 		try {
 			LOCRequest locRequest = new LOCRequest();
 			locRequest.setNCBMobileNo(custInfo.getMobileNo());

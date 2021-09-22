@@ -1,18 +1,28 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-
-import java.rmi.RemoteException;
-
-import javax.xml.rpc.ServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.doc.application.DocApplication;
+import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
+import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
+import com.tmb.common.model.legacy.rsl.ws.doc.application.response.ResponseDocApplication;
+import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
+import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
+import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
+import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
+import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,32 +33,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
-import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
-import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
-import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
-import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
-import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
-import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Body;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.Header;
-import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
-import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
-import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
-import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetChecklistInfoRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCreditcardInfoRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetDropdownListRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetFacilityInfoRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanCalUWRequest;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanSubmitApplicationRequest;
+import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(JUnit4.class)
 public class RslServiceTest {
@@ -84,6 +75,8 @@ public class RslServiceTest {
     LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
     @Mock
     LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
+    @Mock
+    LoanSubmissionUpdateIncompleteDocApplicationClient loanSubmissionUpdateIncompleteDocApplicationClient;
 
     @BeforeEach
     void setUp() {
@@ -1038,7 +1031,6 @@ public class RslServiceTest {
         doReturn(response).when(loanSubmissionInstantLoanTransferApplicationClient).transferApplication(any());
     }
 
-
     //Loan Submission Update Credit Card
     @Test
     public void updateUpdateCreditCardInfo_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
@@ -1102,6 +1094,78 @@ public class RslServiceTest {
         response.setBody(body);
 
         doReturn(response).when(loanSubmissionUpdateCreditCardClient).updateCreditCard(any());
+    }
+
+    private void mockUpdateIncompleteDocApplicationSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDocApplication response = new ResponseDocApplication();
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateIncompleteDocApplicationClient).updateIncompleteDocApplication(any());
+    }
+
+    private void mockUpdateIncompleteDocApplicationFail() throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDocApplication response = new ResponseDocApplication();
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header();
+        header.setResponseCode(RslResponseCode.FAIL.getCode());
+        header.setResponseDescriptionEN("rsl failed");
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(loanSubmissionUpdateIncompleteDocApplicationClient).updateIncompleteDocApplication(any());
+    }
+
+    //Loan Submission Update Incomplete Doc Application
+    @Test
+    public void updateIncompleteDocApplication_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+        mockUpdateIncompleteDocApplicationSuccess();
+        DocApplication request = new DocApplication();
+        request.setCaId(1L);
+        request.setUpdateFlag("Y");
+
+        ResponseDocApplication response = rslService.updateIncompleteDocApplication(request);
+        Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
+    }
+
+    @Test
+    public void updateIncompleteDocApplication_RslConnectionError() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
+                    .when(loanSubmissionUpdateIncompleteDocApplicationClient).updateIncompleteDocApplication(any());
+
+            DocApplication request = new DocApplication();
+            request.setCaId(1L);
+            request.setUpdateFlag("Y");
+            rslService.updateIncompleteDocApplication(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(ResponseCode.RSL_CONNECTION_ERROR.getMessage(), exception.getErrorMessage());
+    }
+
+    @Test
+    public void updateIncompleteDocApplication_RslFail() {
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            mockUpdateIncompleteDocApplicationFail();
+            DocApplication request = new DocApplication();
+            request.setCaId(1L);
+            request.setUpdateFlag("Y");
+            rslService.updateIncompleteDocApplication(request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.RSL_FAILED.getCode(), exception.getErrorCode());
+        Assertions.assertEquals(String.format("[%s] %s", RslResponseCode.FAIL.getCode(), ResponseCode.RSL_FAILED.getMessage()), exception.getErrorMessage());
     }
 
 

@@ -19,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 
+import java.rmi.RemoteException;
+import java.text.ParseException;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -38,7 +41,7 @@ public class EAppReportGeneratorControllerTest {
     }
 
     @Test
-    public void generateReport_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void generateReport_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("VJ");
@@ -51,7 +54,7 @@ public class EAppReportGeneratorControllerTest {
     }
 
     @Test
-    public void generateReport_Failed() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void generateReport_Failed() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("VJ");

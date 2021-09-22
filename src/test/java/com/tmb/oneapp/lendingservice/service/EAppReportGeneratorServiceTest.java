@@ -9,7 +9,6 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
-import com.tmb.oneapp.lendingservice.client.ProductExpServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
@@ -30,6 +29,8 @@ import org.springframework.http.HttpHeaders;
 
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -49,22 +50,22 @@ public class EAppReportGeneratorServiceTest {
     @Mock
     private JasperReportService jasperReportService;
     @Mock
-    private ProductExpServiceClient productExpServiceClient;
+    private LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     @Mock
     private NotificationService notificationService;
     @Mock
     private SFTPClientImp sftpClientImp;
 
     @BeforeEach
-    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException {
+    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
         MockitoAnnotations.initMocks(this);
         eAppReportGeneratorService = new EAppReportGeneratorService(loanSubmissionGetApplicationInfoClient,
-                commonServiceFeignClient, jasperReportService, productExpServiceClient, notificationService, sftpClientImp);
+                commonServiceFeignClient, jasperReportService, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
         mockSuccess();
     }
 
-    private void mockSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, JRException {
-        doReturn(mockResponseLoanOnlineSubmissionEApp()).when(productExpServiceClient).getLoanOnlineSubmissionEApp(any(), any());
+    private void mockSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
+        doReturn(mockResponseLoanOnlineSubmissionEApp()).when(loanOnlineSubmissionEAppService).getEApp(anyLong(), any(),any());
         doReturn(mockApplicationInfoByCaID()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
         doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
         doNothing().when(jasperReportService).setReportFileName(anyString());
@@ -77,7 +78,7 @@ public class EAppReportGeneratorServiceTest {
     }
 
     @Test
-    public void generateEAppReport_CreditCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void generateEAppReport_CreditCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("VJ");
@@ -88,7 +89,7 @@ public class EAppReportGeneratorServiceTest {
     }
 
     @Test
-    public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("RC01");
@@ -99,7 +100,7 @@ public class EAppReportGeneratorServiceTest {
     }
 
     @Test
-    public void generateEAppReport_C2GCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException {
+    public void generateEAppReport_C2GCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
         GenerateEAppReportRequest request = new GenerateEAppReportRequest();
         request.setCaId("1");
         request.setProductCode("C2G");
@@ -119,9 +120,8 @@ public class EAppReportGeneratorServiceTest {
                 request, "correlationId", "crmId"));
     }
 
-    private TmbOneServiceResponse<EAppResponse> mockResponseLoanOnlineSubmissionEApp() {
+    private EAppResponse mockResponseLoanOnlineSubmissionEApp() {
         Calendar c = Calendar.getInstance();
-        TmbOneServiceResponse<EAppResponse> response = new TmbOneServiceResponse<>();
         EAppResponse eAppResponse = new EAppResponse();
         eAppResponse.setProductNameTh("สินเชื่อบุคคล ทีทีบี แคชทูโก");
         eAppResponse.setProductType("สินเชื่อส่วนบุคคล");
@@ -143,10 +143,7 @@ public class EAppReportGeneratorServiceTest {
         eAppResponse.setExpiryDate(c);
         eAppResponse.setBirthDay(c);
         eAppResponse.setIdNo("1234567890123");
-        response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
-                ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
-        response.setData(eAppResponse);
-        return response;
+        return eAppResponse;
     }
 
     private ResponseApplication mockApplicationInfoByCaID() {

@@ -22,6 +22,7 @@ import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -99,7 +100,7 @@ public class EAppReportGeneratorService {
             }
             case "RC01": {
                 template = EAppCardCategory.FLASH_CARD.getTemplate();
-                parameters.putAll(buildFlashCardParameters(response, request.getIsLoanDayOne() ? "Y" : "N"));
+                parameters.putAll(buildFlashCardParameters(response));
                 break;
             }
             case "C2G": {
@@ -208,7 +209,7 @@ public class EAppReportGeneratorService {
         return parameters;
     }
 
-    private Map<String, Object> buildFlashCardParameters(EAppResponse eAppResponse, String isLoanDayOne) {
+    private Map<String, Object> buildFlashCardParameters(EAppResponse eAppResponse) {
         Map<String, Object> parameters = buildCommonParameters(eAppResponse);
         parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(eAppResponse.getRequestAmount()));
         parameters.put("tenure", eAppResponse.getTenure());
@@ -216,7 +217,7 @@ public class EAppReportGeneratorService {
         parameters.put("payment_criteria", eAppResponse.getPaymentCriteria());
         parameters.put("loan_with_other_bank", eAppResponse.getLoanWithOtherBank());
         parameters.put("consider_loan_with_other_bank", eAppResponse.getConsiderLoanWithOtherBank());
-        parameters.put("is_loan_day_one", isLoanDayOne);
+        parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
 
         return parameters;
     }

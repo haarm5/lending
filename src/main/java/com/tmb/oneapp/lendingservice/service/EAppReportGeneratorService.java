@@ -234,7 +234,7 @@ public class EAppReportGeneratorService {
     }
 
     private String checkForDirectDebit(String paymentMethod) {
-        return "direct debit".equalsIgnoreCase(paymentMethod) ? "Y" : "N";
+        return "ตัดบัญชีธนาคาร".equalsIgnoreCase(paymentMethod) ? "Y" : "N";
     }
 
     private Map<String, Object> buildCommonParameters(EAppResponse eAppResponse) {

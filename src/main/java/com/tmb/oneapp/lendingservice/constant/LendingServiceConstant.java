@@ -51,4 +51,6 @@ public class LendingServiceConstant {
     public static final String UNDER_SCORE = "_";
     public static final String SPACE = " ";
     public static final String SEPARATOR = "/";
+
+    public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
 }

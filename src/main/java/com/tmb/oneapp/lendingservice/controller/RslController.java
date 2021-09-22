@@ -6,11 +6,13 @@ import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.doc.application.DocApplication;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
+import com.tmb.common.model.legacy.rsl.ws.doc.application.response.ResponseDocApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
@@ -376,6 +378,36 @@ public class RslController {
 
         try {
             rslService.transferApplication(request.getCaId().toString());
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
+                    ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @ApiOperation("Loan Submission Update Incomplete Doc Application")
+    @PostMapping(value = "/LoanSubmissionUpdateIncompleteDocApplication", produces = MediaType.APPLICATION_JSON_VALUE)
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<ResponseDocApplication>> updateIncompleteDocApplication(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody DocApplication request
+    ) throws TMBCommonException, JsonProcessingException {
+        logger.info(TMBUtils.convertJavaObjectToString(request));
+        TmbOneServiceResponse<ResponseDocApplication> response = new TmbOneServiceResponse<>();
+
+        try {
+            ResponseDocApplication responseDocApp = rslService.updateIncompleteDocApplication(request);
+            response.setData(responseDocApp);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 

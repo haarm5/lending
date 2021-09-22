@@ -3,11 +3,13 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
+import com.tmb.common.model.legacy.rsl.common.ob.doc.application.DocApplication;
 import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.common.model.legacy.rsl.ws.creditcard.response.ResponseCreditcard;
+import com.tmb.common.model.legacy.rsl.ws.doc.application.response.ResponseDocApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.facility.response.ResponseFacility;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
@@ -44,6 +46,7 @@ public class RslService {
     private final LoanSubmissionUpdateNCBConsentFlagClient loanSubmissionUpdateNCBConsentFlagClient;
     private final LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
     private final LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
+    private final LoanSubmissionUpdateIncompleteDocApplicationClient loanSubmissionUpdateIncompleteDocApplicationClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -138,5 +141,12 @@ public class RslService {
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }
+
+    public ResponseDocApplication updateIncompleteDocApplication(DocApplication request) throws TMBCommonException, ServiceException, JsonProcessingException {
+        ResponseDocApplication response = loanSubmissionUpdateIncompleteDocApplicationClient.updateIncompleteDocApplication(request);
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
+
 
 }

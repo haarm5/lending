@@ -32,7 +32,13 @@ public enum ResponseCode implements Serializable {
 
 	//RSL
 	RSL_CONNECTION_ERROR("RSL0001", "rsl connection error", Constants.SERVICE_NAME, "rsl connection error"),
-	RSL_FAILED("RSL0002", "rsl failed", Constants.RSL_SERVICE_NAME, "rsl failed");
+	RSL_FAILED("RSL0002", "rsl failed", Constants.RSL_SERVICE_NAME, "rsl failed"),
+
+	//EAPP
+	EAPP_INVALID_PRODUCT_CODE("EAPP0001", "Invalid product code", Constants.SERVICE_NAME, "the entered product code is not valid for eapp"),
+	JASPER_REPORT_ERROR("EAPP0002", "Error during export jasper report to pdf stream", Constants.SERVICE_NAME, "problem in JasperExportManager that export the pdf report to ByteArrayOutputStream"),
+	JASPER_IO_ERROR("EAPP0003", "Error during generate file to output stream", Constants.SERVICE_NAME, "problem during generate pdf into output stream to store into sftp");
+
 
 	private final String code;
 	private final String message;

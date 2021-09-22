@@ -143,4 +143,8 @@ public class SFTPClientImp implements FTPClient {
         }
         return false;
     }
+
+    public String getRemoteHost() {
+        return remoteHost;
+    }
 }

@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -69,6 +68,6 @@ public class EAppResponse {
     String eStatement;
     String delivery;
     String ncbModelAccept;
-    String AcceptBy;
-    Calendar AcceptDate;
+    String acceptBy;
+    Calendar acceptDate;
 }

@@ -8,16 +8,16 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.legacy.rsl.common.ob.doc.application.DocApplication;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import com.tmb.oneapp.lendingservice.model.documnet.*;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
-import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +45,7 @@ import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPA
 public class UploadDocumentService {
     private static final TMBLogger<UploadDocumentService> logger = new TMBLogger<>(UploadDocumentService.class);
 
-    private final LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
+    private final RslService rslService;
     private final SFTPClientImp sftpClientImp;
     private final LendingCriteriaInfoService lendingCriteriaInfoService;
 
@@ -59,7 +59,7 @@ public class UploadDocumentService {
 
         String rmId = CommonServiceUtils.getRmId(crmId);
 
-        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
+        Body applicationInfo = getApplicationInfo(request.getCaId());
         String appRefNo = applicationInfo.getAppRefNo();
         String srcDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, request.getDocCode());
         String fileName = request.getFileName();
@@ -82,7 +82,7 @@ public class UploadDocumentService {
         SubmitDocumentResponse response = new SubmitDocumentResponse();
         String rmId = CommonServiceUtils.getRmId(crmId);
 
-        Body applicationInfo = getApplicationInfo(Long.parseLong(request.getCaId()));
+        Body applicationInfo = getApplicationInfo(request.getCaId());
         String appRefNo = applicationInfo.getAppRefNo();
 
         for (String docCode : request.getDocCodes()) {
@@ -99,6 +99,8 @@ public class UploadDocumentService {
         String tempDoc = String.format("%s/documents/%s/%s", baseDir, rmId, appRefNo);
         removeDirectory(tempDoc);
 
+        updateDocApplication(Long.parseLong(request.getCaId()));
+
         response.setAppRefNo(appRefNo);
         response.setAppType(applicationInfo.getAppType());
         response.setProductDescTh(applicationInfo.getProductDescTH());
@@ -107,12 +109,18 @@ public class UploadDocumentService {
         return response;
     }
 
+    public SubmitDocumentResponse submitMore(String crmId, SubmitDocumentRequest request) throws TMBCommonException, IOException, ServiceException, DocumentException {
+        SubmitDocumentResponse response = submit(crmId, request);
+        updateDocApplication(Long.parseLong(request.getCaId()));
+        return response;
+    }
+
     public DeleteDocumentResponse delete(String crmId, String caId, String docCode, String fileType, String fileName) throws ServiceException, TMBCommonException, IOException {
         DeleteDocumentResponse response = new DeleteDocumentResponse();
 
         String rmId = CommonServiceUtils.getRmId(crmId);
 
-        Body applicationInfo = getApplicationInfo(Long.parseLong(caId));
+        Body applicationInfo = getApplicationInfo(caId);
         String appRefNo = applicationInfo.getAppRefNo();
 
         String filePath = String.format("%s/%s/%s/TempAttachments/%s.%s", rmId, appRefNo, docCode, fileName, fileType);
@@ -128,9 +136,10 @@ public class UploadDocumentService {
         return response;
     }
 
-    private Body getApplicationInfo(long caId) throws ServiceException, TMBCommonException, JsonProcessingException {
-        ResponseApplication response = loanSubmissionGetApplicationInfoClient.searchApplicationInfoByCaID(caId);
-        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+    private Body getApplicationInfo(String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
+        request.setCaId(caId);
+        ResponseApplication response = rslService.getLoanSubmissionApplicationInfo(request);
         return response.getBody();
     }
 
@@ -227,6 +236,13 @@ public class UploadDocumentService {
         if (Files.notExists(outputDir.toPath())) {
             FileUtils.forceMkdir(outputDir);
         }
+    }
+
+    private void updateDocApplication(long caId) throws TMBCommonException, ServiceException, JsonProcessingException {
+        DocApplication request = new DocApplication();
+        request.setCaId(caId);
+        request.setUpdateFlag("Y");
+        rslService.updateIncompleteDocApplication(request);
     }
 
 }

@@ -1,11 +1,12 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
+import com.tmb.common.model.legacy.rsl.ws.doc.application.response.ResponseDocApplication;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class UploadDocumentServiceTest {
     private UploadDocumentService uploadDocumentService;
 
     @Mock
-    private LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
+    private RslService rslService;
     @Mock
     private SFTPClientImp sftpClientImp;
     @Mock
@@ -62,7 +62,7 @@ public class UploadDocumentServiceTest {
         request.setFile("data:image/jpeg;base64,base64");
         request.setFileName("test.png");
 
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
 
         UploadDocumentResponse response = uploadDocumentService.upload("001100000000000000000018593707", request);
@@ -77,7 +77,7 @@ public class UploadDocumentServiceTest {
         request.setFile("data:application/pdf;base64,base64");
         request.setFileName("test.pdf");
 
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
@@ -91,14 +91,14 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void submit_Success() throws TMBCommonException, ServiceException, IOException, ParseException, DocumentException {
+    public void submit_Success() throws TMBCommonException, ServiceException, IOException, DocumentException {
         SubmitDocumentRequest request = new SubmitDocumentRequest();
         request.setCaId("1");
         List<String> docCodes = new ArrayList<>();
         docCodes.add("ID01");
         request.setDocCodes(docCodes);
 
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
         entry.setRefEntryCode("test");
@@ -124,7 +124,7 @@ public class UploadDocumentServiceTest {
         docCodes.add("ID01");
         request.setDocCodes(docCodes);
 
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
 
         CriteriaCodeEntry entry = new CriteriaCodeEntry();
         entry.setRefEntryCode("test");
@@ -154,7 +154,7 @@ public class UploadDocumentServiceTest {
         docCodes.add("ID01");
         request.setDocCodes(docCodes);
 
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
 
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
@@ -169,8 +169,88 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
+    public void submitMore_Success() throws TMBCommonException, ServiceException, IOException, DocumentException {
+        SubmitDocumentRequest request = new SubmitDocumentRequest();
+        request.setCaId("1");
+        List<String> docCodes = new ArrayList<>();
+        docCodes.add("ID01");
+        request.setDocCodes(docCodes);
+
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
+
+        CriteriaCodeEntry entry = new CriteriaCodeEntry();
+        entry.setRefEntryCode("test");
+        List<CriteriaCodeEntry> docTypeList = new ArrayList<>();
+        docTypeList.add(entry);
+        doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
+
+        doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
+        doReturn(new ArrayList<>()).when(uploadDocumentService).listFiles(any());
+        doReturn(true).when(sftpClientImp).storeFile(anyList());
+
+        mockResponseDocApplicationSuccess();
+
+        SubmitDocumentResponse response = uploadDocumentService.submitMore("001100000000000000000018593707", request);
+        Assertions.assertEquals("026PL64000674", response.getAppRefNo());
+        Assertions.assertEquals("PL", response.getAppType());
+        Assertions.assertEquals("Y", response.getNcbConsentFlag());
+    }
+
+    @Test
+    public void submitMore_sftpStoreDocuments_Fail() throws TMBCommonException, ServiceException, IOException, DocumentException {
+        SubmitDocumentRequest request = new SubmitDocumentRequest();
+        request.setCaId("1");
+        List<String> docCodes = new ArrayList<>();
+        docCodes.add("ID01");
+        request.setDocCodes(docCodes);
+
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
+
+        CriteriaCodeEntry entry = new CriteriaCodeEntry();
+        entry.setRefEntryCode("test");
+        List<CriteriaCodeEntry> docTypeList = new ArrayList<>();
+        docTypeList.add(entry);
+        doReturn(docTypeList).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
+
+        doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
+        List<Path> filePaths = new ArrayList<>();
+        filePaths.add(Paths.get("path"));
+        doReturn(filePaths).when(uploadDocumentService).listFiles(any());
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doThrow(new IllegalArgumentException("error")).when(sftpClientImp).storeFile(anyList());
+            uploadDocumentService.submitMore("001100000000000000000018593707", request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.SFTP_FAILED.getCode(), exception.getErrorCode());
+    }
+
+    @Test
+    public void submitMore_DocCodeNotFound() throws TMBCommonException, ServiceException, IOException, DocumentException {
+        SubmitDocumentRequest request = new SubmitDocumentRequest();
+        request.setCaId("1");
+        List<String> docCodes = new ArrayList<>();
+        docCodes.add("ID01");
+        request.setDocCodes(docCodes);
+
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
+        doNothing().when(uploadDocumentService).mergeImagesToPdf(anyString(), anyString(), anyString());
+
+        TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
+            doReturn(new ArrayList<>()).when(lendingCriteriaInfoService).getBrmsEcmDocTypeByCode(anyString());
+
+            uploadDocumentService.submitMore("001100000000000000000018593707", request);
+        });
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        Assertions.assertEquals(ResponseCode.DATA_NOT_FOUND.getCode(), exception.getErrorCode());
+        Assertions.assertEquals("Doc code ID01 is not found.", exception.getErrorMessage());
+    }
+
+    @Test
     public void delete_Image_Success() throws TMBCommonException, ServiceException, IOException {
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doNothing().when(uploadDocumentService).removeFile(anyString());
         doReturn(true).when(sftpClientImp).removeFile(anyList());
 
@@ -180,7 +260,7 @@ public class UploadDocumentServiceTest {
 
     @Test
     public void delete_Pdf_Success() throws TMBCommonException, ServiceException, IOException {
-        doReturn(mockResponseApplication()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockResponseApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doNothing().when(uploadDocumentService).removeFile(anyString());
         doReturn(true).when(sftpClientImp).removeFile(anyList());
 
@@ -213,5 +293,19 @@ public class UploadDocumentServiceTest {
         response.setHeader(header);
         response.setBody(body);
         return response;
+    }
+
+    private void mockResponseDocApplicationSuccess() throws TMBCommonException, ServiceException, JsonProcessingException {
+        ResponseDocApplication response = new ResponseDocApplication();
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header header = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Header();
+        header.setResponseCode(RslResponseCode.SUCCESS.getCode());
+        header.setResponseDescriptionEN(RslResponseCode.SUCCESS.getMessage());
+        response.setHeader(header);
+
+        com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body body = new com.tmb.common.model.legacy.rsl.ws.doc.application.response.Body();
+        response.setBody(body);
+
+        doReturn(response).when(rslService).updateIncompleteDocApplication(any());
     }
 }

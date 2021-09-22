@@ -85,6 +85,35 @@ public class UploadDocumentController {
         }
     }
 
+    @ApiOperation("Submit documents")
+    @PostMapping(value = "/submit/more")
+    @LogAround
+    public ResponseEntity<TmbOneServiceResponse<SubmitDocumentResponse>> submitMoreDocument(
+            @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
+            @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestBody SubmitDocumentRequest request
+    ) throws TMBCommonException {
+        TmbOneServiceResponse<SubmitDocumentResponse> response = new TmbOneServiceResponse<>();
+
+        try {
+            SubmitDocumentResponse submitDocumentResponse = uploadDocumentService.submitMore(crmId, request);
+            response.setData(submitDocumentResponse);
+            response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
+                    ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
+
+            return ResponseEntity.ok()
+                    .headers(TMBUtils.getResponseHeaders())
+                    .body(response);
+
+        } catch (TMBCommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
     @ApiOperation("Delete documents")
     @DeleteMapping(value = "/{caId}/{docCode}/{fileType}/{fileName}")
     @LogAround

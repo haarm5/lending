@@ -3,6 +3,7 @@ package com.tmb.oneapp.lendingservice.model.creditcard;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.tmb.common.model.creditcard.CreditCardDetail;
+import com.tmb.common.model.creditcard.SilverlakeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -87,7 +87,7 @@ public class EAppReportGeneratorService {
         ResponseApplication applicationInfo = getApplicationInfo(caId);
         String appRefNo = applicationInfo.getBody().getAppRefNo();
 
-        String template = "";
+        String template;
         Map<String, Object> parameters = new HashMap<>();
         switch (productCode) {
             case "VJ":
@@ -95,21 +95,17 @@ public class EAppReportGeneratorService {
             case "VM":
             case "VH":
             case "VI":
-            case "VB": {
-                template = EAppCardCategory.CREDIT_CARD.getTemplate();
-                parameters.putAll(buildCreditCardParameters(response));
+            case "VB":
+                template = prepareCreditCardParameters(parameters, response);
                 break;
-            }
-            case "RC01": {
-                template = EAppCardCategory.FLASH_CARD.getTemplate();
-                parameters.putAll(buildFlashCardParameters(response));
+            case "RC01":
+                template = prepareFlashCardParameters(parameters, response);
                 break;
-            }
-            case "C2G": {
-                template = EAppCardCategory.C2G_CARD.getTemplate();
-                parameters.putAll(buildC2GCardParameters(response));
+            case "C2G":
+                template = prepareC2GCardParameters(parameters, response);
                 break;
-            }
+            default:
+                template = "";
         }
 
         if (template.isBlank()) {
@@ -204,36 +200,36 @@ public class EAppReportGeneratorService {
         }
     }
 
-    private Map<String, Object> buildCreditCardParameters(EAppResponse eAppResponse) {
-        Map<String, Object> parameters = buildCommonParameters(eAppResponse);
-        parameters.put("payment_criteria", eAppResponse.getPaymentCriteria());
+    private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse response) {
+        parameters.putAll(buildCommonParameters(response));
+        parameters.put("payment_criteria", response.getPaymentCriteria());
 
-        return parameters;
+        return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
 
-    private Map<String, Object> buildFlashCardParameters(EAppResponse eAppResponse) {
-        Map<String, Object> parameters = buildCommonParameters(eAppResponse);
-        parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(eAppResponse.getRequestAmount()));
-        parameters.put("tenure", eAppResponse.getTenure());
-        parameters.put("payment_plan", eAppResponse.getPaymentPlan());
-        parameters.put("payment_criteria", eAppResponse.getPaymentCriteria());
-        parameters.put("loan_with_other_bank", eAppResponse.getLoanWithOtherBank());
-        parameters.put("consider_loan_with_other_bank", eAppResponse.getConsiderLoanWithOtherBank());
-        parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
+    private String prepareFlashCardParameters(Map<String, Object> parameters, EAppResponse response) {
+        parameters.putAll(buildCommonParameters(response));
+        parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(response.getRequestAmount()));
+        parameters.put("tenure", response.getTenure());
+        parameters.put("payment_plan", response.getPaymentPlan());
+        parameters.put("payment_criteria", response.getPaymentCriteria());
+        parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
+        parameters.put("consider_loan_with_other_bank", response.getConsiderLoanWithOtherBank());
+        parameters.put("is_loan_day_one", StringUtils.isBlank(response.getDisburstAccountNo()) ? "N" : "Y");
 
-        return parameters;
+        return EAppCardCategory.FLASH_CARD.getTemplate();
     }
 
-    private Map<String, Object> buildC2GCardParameters(EAppResponse eAppResponse) {
-        Map<String, Object> parameters = buildCommonParameters(eAppResponse);
-        parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(eAppResponse.getRequestAmount()));
-        parameters.put("monthly_installment", CommonServiceUtils.format2DigitDecimalPoint(eAppResponse.getMonthlyInstallment()));
-        parameters.put("tenure", eAppResponse.getTenure());
-        parameters.put("interest", String.format("%s%%", eAppResponse.getInterest()));
-        parameters.put("loan_with_other_bank", eAppResponse.getLoanWithOtherBank());
-        parameters.put("consider_loan_with_other_bank", eAppResponse.getConsiderLoanWithOtherBank());
+    private String prepareC2GCardParameters(Map<String, Object> parameters, EAppResponse response) {
+        parameters.putAll(buildCommonParameters(response));
+        parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(response.getRequestAmount()));
+        parameters.put("monthly_installment", CommonServiceUtils.format2DigitDecimalPoint(response.getMonthlyInstallment()));
+        parameters.put("tenure", response.getTenure());
+        parameters.put("interest", String.format("%s%%", response.getInterest()));
+        parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
+        parameters.put("consider_loan_with_other_bank", response.getConsiderLoanWithOtherBank());
 
-        return parameters;
+        return EAppCardCategory.C2G_CARD.getTemplate();
     }
 
     private String checkForDirectDebit(String paymentMethod) {

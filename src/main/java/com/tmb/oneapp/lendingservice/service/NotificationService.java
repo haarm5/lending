@@ -85,7 +85,7 @@ public class NotificationService {
 
             record.setAttachments(wrapper.getAttachments());
 
-            setRequestForEmailAndSms(wrapper.getEmail(), null, record);
+            setRequestForEmail(wrapper.getEmail(), record);
 
             notificationRecords.add(record);
             notificationRequest.setRecords(notificationRecords);
@@ -98,11 +98,11 @@ public class NotificationService {
     }
 
     /**
-     * set param for email and sms
+     * set param for email
      *
      * @param record
      */
-    private void setRequestForEmailAndSms(String email, String smsNo, NotificationRecord record) {
+    private void setRequestForEmail(String email, NotificationRecord record) {
         // case email
         if (StringUtils.isNotBlank(email)) {
             EmailChannel emailChannel = new EmailChannel();
@@ -110,15 +110,6 @@ public class NotificationService {
             emailChannel.setEmailSearch(false);
 
             record.setEmail(emailChannel);
-
-        }
-        // case sms
-        if (StringUtils.isNotBlank(smsNo)) {
-            SmsChannel smsChannel = new SmsChannel();
-            smsChannel.setSmsEdpoint(smsNo);
-            smsChannel.setSmsSearch(false);
-            smsChannel.setSmsForce(false);
-            record.setSms(smsChannel);
         }
     }
 

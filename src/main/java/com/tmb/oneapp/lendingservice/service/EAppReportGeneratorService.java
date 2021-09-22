@@ -7,7 +7,6 @@ import com.tmb.common.model.RslCode;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
-import com.tmb.oneapp.lendingservice.client.ProductExpServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
@@ -33,6 +32,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,7 +47,7 @@ public class EAppReportGeneratorService {
     private final LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
     private final CommonServiceFeignClient commonServiceFeignClient;
     private final JasperReportService jasperReportService;
-    private final ProductExpServiceClient productExpServiceClient;
+    private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private final NotificationService notificationService;
     private final SFTPClientImp sftpClientImp;
 
@@ -61,28 +62,29 @@ public class EAppReportGeneratorService {
 
     @Value("${sftp.locations.loan.dir}")
     private String sftpLocationENotiDir;
+
     public EAppReportGeneratorService(LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient,
                                       CommonServiceFeignClient commonServiceFeignClient,
                                       JasperReportService jasperReportService,
-                                      ProductExpServiceClient productExpServiceClient,
+                                      LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService,
                                       NotificationService notificationService,
                                       SFTPClientImp sftpClientImp) {
         this.loanSubmissionGetApplicationInfoClient = loanSubmissionGetApplicationInfoClient;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.jasperReportService = jasperReportService;
-        this.productExpServiceClient = productExpServiceClient;
+        this.loanOnlineSubmissionEAppService = loanOnlineSubmissionEAppService;
         this.notificationService = notificationService;
         this.sftpClientImp = sftpClientImp;
     }
 
-    public GenerateEAppReportResponse generateEAppReport(HttpHeaders headers, GenerateEAppReportRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
-        String caId = request.getCaId();
+    public GenerateEAppReportResponse generateEAppReport(HttpHeaders headers, GenerateEAppReportRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
+        long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
-        EAppResponse response = Fetch.fetch(() -> productExpServiceClient.getLoanOnlineSubmissionEApp(crmId, caId));
+        EAppResponse response = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
         //For testing purpose
         response.setEmail("jirat.cho@odds.team");
 
-        ResponseApplication applicationInfo = getApplicationInfo(Long.parseLong(caId));
+        ResponseApplication applicationInfo = getApplicationInfo(caId);
         String appRefNo = applicationInfo.getBody().getAppRefNo();
 
         String template = "";

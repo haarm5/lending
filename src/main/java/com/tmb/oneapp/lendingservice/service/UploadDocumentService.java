@@ -136,7 +136,7 @@ public class UploadDocumentService {
         return response;
     }
 
-    private Body getApplicationInfo(String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public Body getApplicationInfo(String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
         request.setCaId(caId);
         ResponseApplication response = rslService.getLoanSubmissionApplicationInfo(request);

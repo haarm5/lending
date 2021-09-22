@@ -347,7 +347,7 @@ public class RslController {
         TmbOneServiceResponse<ResponseChecklist> response = new TmbOneServiceResponse<>();
 
         try {
-            ResponseChecklist responseChecklist = rslService.getDocumentList(request.getCaId());
+            ResponseChecklist responseChecklist = rslService.getDocumentList(request.getCaId(), request.getIncompleteDocFlag());
             response.setData(responseChecklist);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

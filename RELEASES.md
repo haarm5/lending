@@ -15,3 +15,4 @@
 * [ONEAPP-21056](https://jira.tau2904.com/browse/ONEAPP-21056) [Working information] For dropdown Country of income does not display Thai language
 * [ONEAPP-21084](https://jira.tau2904.com/browse/ONEAPP-21084) Upload more document
 * [ONEAPP-21149](https://jira.tau2904.com/browse/ONEAPP-21149) (BE-UI) Check expiry date ID card
+

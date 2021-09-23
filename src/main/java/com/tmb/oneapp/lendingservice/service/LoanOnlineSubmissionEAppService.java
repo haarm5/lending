@@ -90,7 +90,7 @@ public class LoanOnlineSubmissionEAppService {
     private EAppResponse mapDataFromCustomer(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
 
         //application
-        response.setEmploymentStatus("พนักงานบริษัท");
+        response.setEmploymentStatus("พนักงานประจำ");
         if (customer.getEmploymentStatus().equals("02")) {
             response.setEmploymentStatus("เจ้าของกิจการ");
         }
@@ -123,6 +123,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setIdNo(customer.getIdNo1());
         response.setIssueCountry(mapCountryName(customer.getIdIssueCtry1()));
         response.setIssueDate(customer.getIssuedDate());
+        // expire date ผิดอยู่
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
         response.setBirthDay(customer.getBirthDate());
@@ -138,6 +139,7 @@ public class LoanOnlineSubmissionEAppService {
     }
 
     private EAppResponse mapWorkingInformation(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
+        // อาชีพอาจจะ map ไม่เจอ
         response.setRmOccupation(mapRmOccupationName(customer.getEmploymentOccupation(), customer.getRmOccupation()));
         response.setOccupation(mapProfessional(customer.getProfessionalCode(), customer.getEmploymentStatus()));
         response.setContractType("พนักงานประจำ");
@@ -192,9 +194,9 @@ public class LoanOnlineSubmissionEAppService {
 
     private String mapPaymentMethodCriteria(String code, String type) {
         if (code.equals("0") && type.equals("CC")) {
-            return "หักบัญชีขั้นต่ำ 3%";
-        } else if (code.equals("0") && type.equals("PL")) {
             return "หักบัญชีขั้นต่ำ 5%";
+        } else if (code.equals("0") && type.equals("PL")) {
+            return "หักบัญชีขั้นต่ำ 3%";
         }
         return "หักบัญชีเต็มจำนวน";
     }
@@ -263,9 +265,16 @@ public class LoanOnlineSubmissionEAppService {
     }
 
     private String mapRmOccupationName(String occupation, String rmOccupation) throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<Dropdowns.RmOccupation> rmOccupations = dropdownService.getDropdownRmOccupation(rmOccupation);
+        logger.info("mapRmOccupationName: " + "occupation:: " + occupation + "rmOccupation:: " + rmOccupation);
+        List<Dropdowns.RmOccupation> rmOccupations = dropdownService.getDropdownRmOccupationName(occupation);
         Optional<Dropdowns.RmOccupation> filter = rmOccupations.stream().filter(x -> x.getCode().equals(occupation)).findFirst();
         return filter.map(Dropdowns.RmOccupation::getName).orElse(null);
+    }
+
+    private String mapProfessional(String code, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+        List<Dropdowns.Occupation> professionals = dropdownService.getDropdownOccupation(employmentStatus);
+        Optional<Dropdowns.Occupation> filter = professionals.stream().filter(x -> x.getCode().equals(code)).findFirst();
+        return filter.map(Dropdowns.Occupation::getName).orElse(null);
     }
 
     private String mapMaritalStatus(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
@@ -278,12 +287,6 @@ public class LoanOnlineSubmissionEAppService {
         List<Dropdowns.ResidentType> residentTypes = dropdownService.getDropdownResidentType(code);
         Optional<Dropdowns.ResidentType> filter = residentTypes.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.ResidentType::getName2).orElse(null);
-    }
-
-    private String mapProfessional(String code, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
-        List<Dropdowns.Occupation> professionals = dropdownService.getDropdownOccupation(employmentStatus);
-        Optional<Dropdowns.Occupation> filter = professionals.stream().filter(x -> x.getCode().equals(code)).findFirst();
-        return filter.map(Dropdowns.Occupation::getName).orElse(null);
     }
 
     private String mapIncomeBank(String code) throws ServiceException, TMBCommonException, JsonProcessingException {

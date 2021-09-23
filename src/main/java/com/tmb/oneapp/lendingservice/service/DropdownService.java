@@ -135,6 +135,32 @@ public class DropdownService {
         return occupationList;
     }
 
+    public List<Dropdowns.RmOccupation> getDropdownRmOccupationName(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseDropdown dropdownRmOccupation = getDropdown(DROPDOWN_RM_OCCUPATION);
+        List<Dropdowns.RmOccupation> rmOccupationList = Arrays.stream(dropdownRmOccupation.getBody().getCommonCodeEntries())
+                .filter(dropdown -> ACTIVE_STATUS.equals(dropdown.getActiveStatus())
+                        && occupationCode.equals(dropdown.getEntryCode()))
+                .map(rmOccupation -> {
+                    try {
+                        return Dropdowns.RmOccupation.builder()
+                                .code(rmOccupation.getEntryCode())
+                                .name(rmOccupation.getEntryName())
+                                .name2(rmOccupation.getEntryName2())
+                                .refEntryCode(rmOccupation.getRefEntryCode())
+                                .groupId(rmOccupation.getGroupId())
+                                .occupation(getDropdownOccupation(rmOccupation.getExtValue2()))
+                                .build();
+                    } catch (Exception e) {
+                        logger.error("Get dropdown rmOccupation fail: {}", e);
+                        return null;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        logger.info("Dropdown RmOccupation: {}", TMBUtils.convertJavaObjectToString(rmOccupationList));
+        return rmOccupationList;
+    }
+
     public List<Dropdowns.BusinessType> getDropdownBusinessType() throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownBusinessType = getDropdown(DROPDOWN_BUSINESS_TYPE);
         List<Dropdowns.BusinessType> businessTypeList = Arrays.stream(dropdownBusinessType.getBody().getCommonCodeEntries())

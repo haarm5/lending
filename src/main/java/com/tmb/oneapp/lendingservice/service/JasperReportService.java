@@ -1,12 +1,15 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +22,6 @@ public class JasperReportService {
     private JasperReport jasperReport;
     private JasperPrint jasperPrint;
     private Map<String, Object> parameters;
-
-    private JasperExportManager jasperExportManager;
 
     public JasperReportService() {
         parameters = new HashMap<>();
@@ -43,8 +44,17 @@ public class JasperReportService {
         }
     }
 
-    public void exportToPdf(JasperPrint jasperPrint, OutputStream outputStream) throws JRException {
-        jasperExportManager.exportToPdfStream(jasperPrint, outputStream);
+    public ByteArrayOutputStream convertReportToOutputStream() throws TMBCommonException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            JasperExportManager.exportReportToPdfStream(jasperPrint, os);
+        } catch (JRException e) {
+            throw new TMBCommonException(ResponseCode.JASPER_REPORT_ERROR.getCode(),
+                    ResponseCode.JASPER_REPORT_ERROR.getMessage(),
+                    ResponseCode.JASPER_REPORT_ERROR.getService(),
+                    HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+        return os;
     }
 
     public Map<String, Object> getParameters() {

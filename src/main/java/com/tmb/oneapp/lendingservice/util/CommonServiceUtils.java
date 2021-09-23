@@ -98,8 +98,11 @@ public class CommonServiceUtils {
     }
 
     public static String format2DigitDecimalPoint(BigDecimal number) {
-        DecimalFormat formatter = new DecimalFormat("#,###.00");
-        return formatter.format(number);
+        if (number != null) {
+            DecimalFormat formatter = new DecimalFormat("#,###.00");
+            return formatter.format(number);
+        }
+        return "";
     }
 
     public static String getThaiYear(String year) {

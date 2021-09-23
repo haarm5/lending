@@ -52,7 +52,6 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
     public void testGetChecklistSuccess() throws ServiceException, TMBCommonException, IOException {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021081104188603L);
-        request.setIncompleteDocFlag("N");
         TmbOneServiceResponse<ResponseChecklist> oneServiceResponse = new TmbOneServiceResponse<>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), "success", "lending-service"));
@@ -70,7 +69,6 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
     public void testGetChecklistFail() throws ServiceException, TMBCommonException, JsonProcessingException {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021071404188196L);
-        request.setIncompleteDocFlag("N");
 
         TmbOneServiceResponse<ResponseChecklist> oneServiceResponse = new TmbOneServiceResponse<>();
 
@@ -87,7 +85,6 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
     public void testGetMoreChecklistSuccess() throws ServiceException, TMBCommonException, IOException {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021081104188603L);
-        request.setIncompleteDocFlag("Y");
         TmbOneServiceResponse<ResponseChecklist> oneServiceResponse = new TmbOneServiceResponse<>();
 
         oneServiceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), "success", "lending-service"));
@@ -105,7 +102,6 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
     public void testGetMoreChecklistFail() throws ServiceException, TMBCommonException, JsonProcessingException {
         ChecklistRequest request = new ChecklistRequest();
         request.setCaId(2021071404188196L);
-        request.setIncompleteDocFlag("Y");
 
         TmbOneServiceResponse<ResponseChecklist> oneServiceResponse = new TmbOneServiceResponse<>();
 

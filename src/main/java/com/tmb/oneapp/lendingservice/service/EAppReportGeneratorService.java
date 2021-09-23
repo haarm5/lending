@@ -20,7 +20,6 @@ import com.tmb.oneapp.lendingservice.model.notification.EAppReportGeneratorWrapp
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
-import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -57,10 +56,10 @@ public class EAppReportGeneratorService {
     @Value("${sftp.locations.loan.dir}")
     private String sftpLocationLoanDir;
 
-    @Value("${sftp.locations.loan.root}")
+    @Value("${sftp.locations.e-noti.root}")
     private String sftpLocationENotiRoot;
 
-    @Value("${sftp.locations.loan.dir}")
+    @Value("${sftp.locations.e-noti.dir}")
     private String sftpLocationENotiDir;
 
     public EAppReportGeneratorService(LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient,
@@ -142,7 +141,8 @@ public class EAppReportGeneratorService {
 
     private List<String> prepareAttachments(ResponseApplication application, String appRefNo, String correlationId, String fileName) throws TMBCommonException {
         List<String> notificationAttachments = new ArrayList<>();
-        notificationAttachments.add(getLetterOfConsentFilePath(appRefNo, application));
+        String letterOfConsent = getLetterOfConsentFilePath(appRefNo, application);
+        notificationAttachments.add(letterOfConsent);
 
         List<RslCode> rslConfigs = getRslConfig(correlationId);
         if(!rslConfigs.isEmpty()) {
@@ -177,16 +177,7 @@ public class EAppReportGeneratorService {
     }
 
     private void exportAndStore(String crmId, String appRefNo, String fileName) throws TMBCommonException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            jasperReportService.exportToPdf(jasperReportService.getJasperPrint(), os);
-        } catch (JRException e) {
-            throw new TMBCommonException(ResponseCode.JASPER_REPORT_ERROR.getCode(),
-                    ResponseCode.JASPER_REPORT_ERROR.getMessage(),
-                    ResponseCode.JASPER_REPORT_ERROR.getService(),
-                    HttpStatus.INTERNAL_SERVER_ERROR, e);
-        }
-
+        ByteArrayOutputStream os = jasperReportService.convertReportToOutputStream();
         try {
             String srcFile = generateFileFromOutputStream(fileName, os);
             storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + "/ApplyLoan/" + crmId + "/" + appRefNo, srcFile);
@@ -210,7 +201,7 @@ public class EAppReportGeneratorService {
     private String prepareFlashCardParameters(Map<String, Object> parameters, EAppResponse response) {
         parameters.putAll(buildCommonParameters(response));
         parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(response.getRequestAmount()));
-        parameters.put("tenure", response.getTenure());
+        parameters.put("tenure", response.getTenure() != null ? response.getTenure().toString() : "-");
         parameters.put("payment_plan", response.getPaymentPlan());
         parameters.put("payment_criteria", response.getPaymentCriteria());
         parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
@@ -224,7 +215,7 @@ public class EAppReportGeneratorService {
         parameters.putAll(buildCommonParameters(response));
         parameters.put("request_amount", CommonServiceUtils.format2DigitDecimalPoint(response.getRequestAmount()));
         parameters.put("monthly_installment", CommonServiceUtils.format2DigitDecimalPoint(response.getMonthlyInstallment()));
-        parameters.put("tenure", response.getTenure());
+        parameters.put("tenure", response.getTenure() != null ? response.getTenure().toString() : "-");
         parameters.put("interest", String.format("%s%%", response.getInterest()));
         parameters.put("loan_with_other_bank", response.getLoanWithOtherBank());
         parameters.put("consider_loan_with_other_bank", response.getConsiderLoanWithOtherBank());
@@ -249,7 +240,7 @@ public class EAppReportGeneratorService {
         //Loan Payment Detail Section
         parameters.put("payment_method", eAppResponse.getPaymentMethod());
         parameters.put("payment_account_name", eAppResponse.getPaymentAccountName());
-        parameters.put("payment_account_no", CommonServiceUtils.formatBankAccountNo(eAppResponse.getPaymentAccountNo()));
+        parameters.put("payment_account_no", eAppResponse.getPaymentAccountNo());
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
         //Personal Detail Section
         parameters.put("id_type", eAppResponse.getIdType());
@@ -343,7 +334,7 @@ public class EAppReportGeneratorService {
         dateStr = dateStr.replaceAll("[/: ]", "");
         dateStr = dateStr.substring(2);
         String docType = "00111";
-        return String.format("01_%s_%s_%s", dateStr, appRefNo, docType);
+        return String.format("01_%s_%s_%s.pdf", dateStr, appRefNo, docType);
     }
 
     private String getLetterOfConsentFilePath(String appRefNo, ResponseApplication application) {
@@ -359,14 +350,16 @@ public class EAppReportGeneratorService {
 
     private String getSaleSheetFilePath(List<RslCode> rslConfigs) {
         String saleSheetFile = rslConfigs.get(0).getSalesheetName();
-        String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationLoanRoot, saleSheetFile);
+        logger.info("saleSheetFile: {}", saleSheetFile);
+        String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
     private String getTermAndConditionFilePath(List<RslCode> rslConfigs) {
         String tncFile = rslConfigs.get(0).getTncName();
-        String tncFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationLoanRoot, tncFile);
+        logger.info("tncFile: {}", tncFile);
+        String tncFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
     }

@@ -2,15 +2,12 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
-import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
-import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportResponse;
@@ -28,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
 
 import javax.xml.rpc.ServiceException;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -72,7 +70,7 @@ public class EAppReportGeneratorServiceTest {
         doNothing().when(jasperReportService).compileReport();
         doNothing().when(jasperReportService).setParameters(any());
         doNothing().when(jasperReportService).fillReport();
-        doNothing().when(jasperReportService).exportToPdf(any(), any());
+        doReturn(new ByteArrayOutputStream()).when(jasperReportService).convertReportToOutputStream();
         doReturn(true).when(sftpClientImp).storeFile(anyList());
         doNothing().when(notificationService).sendNotifyEAppReportGenerator(anyString(), anyString(), anyString(), any());
     }

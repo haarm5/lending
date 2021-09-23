@@ -76,7 +76,7 @@
 				</reportElement>
 				<image>
 					<reportElement x="0" y="0" width="144" height="50" uuid="1128ba05-cb97-4640-906b-a279459ce424"/>
-					<imageExpression><![CDATA["image/tmblogo.png"]]></imageExpression>
+					<imageExpression><![CDATA["jasper/image/tmblogo.png"]]></imageExpression>
 				</image>
 				<image vAlign="Middle">
 					<reportElement x="469" y="0" width="86" height="50" uuid="a8caa5ab-4046-4977-a89f-f8d0a85e1a62">
@@ -88,7 +88,7 @@
 						<property name="com.jaspersoft.layout.grid.colspan" value="1"/>
 						<property name="com.jaspersoft.layout.grid.weight.fixed" value="false"/>
 					</reportElement>
-					<imageExpression><![CDATA["image/makerealchange.png"]]></imageExpression>
+					<imageExpression><![CDATA["jasper/image/makerealchange.png"]]></imageExpression>
 				</image>
 			</frame>
 		</band>
@@ -434,7 +434,7 @@
 							<subreportParameterExpression><![CDATA[$P{is_direct_debit}]]></subreportParameterExpression>
 						</subreportParameter>
 						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.JREmptyDataSource()]]></dataSourceExpression>
-						<subreportExpression><![CDATA["personal-and-work-detail-subreport.jasper"]]></subreportExpression>
+						<subreportExpression><![CDATA["jasper/personal-and-work-detail-subreport.jasper"]]></subreportExpression>
 					</subreport>
 				</frame>
 			</frame>
@@ -449,7 +449,7 @@
 				</reportElement>
 				<image>
 					<reportElement x="-10" y="0" width="555" height="80" uuid="2e101ea0-c16b-4534-9c86-2029e46ebbb7"/>
-					<imageExpression><![CDATA["image/tmbaddress.png"]]></imageExpression>
+					<imageExpression><![CDATA["jasper/image/tmbaddress.png"]]></imageExpression>
 				</image>
 			</frame>
 		</band>

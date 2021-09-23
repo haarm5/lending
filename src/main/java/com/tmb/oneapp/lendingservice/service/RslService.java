@@ -115,8 +115,8 @@ public class RslService {
         return response;
     }
 
-    public ResponseChecklist getDocumentList(Long caId) throws ServiceException, JsonProcessingException, TMBCommonException {
-        ResponseChecklist response = loanSubmissionGetChecklistInfoClient.getChecklistInfo(caId);
+    public ResponseChecklist getDocumentList(Long caId, String incompleteDocFlag) throws ServiceException, JsonProcessingException, TMBCommonException {
+        ResponseChecklist response = loanSubmissionGetChecklistInfoClient.getChecklistInfo(caId, incompleteDocFlag);
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }

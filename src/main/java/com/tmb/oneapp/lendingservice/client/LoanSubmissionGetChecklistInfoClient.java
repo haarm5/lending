@@ -31,7 +31,6 @@ public class LoanSubmissionGetChecklistInfoClient {
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
     private static final String CHECKLIST_TYPE = "CC";
-    private static final String INCOMPLETE_DOC_FLAG = "N";
 
     public LoanSubmissionGetChecklistInfoClient(ObjectMapper mapper) {
         this.mapper = mapper;
@@ -42,7 +41,7 @@ public class LoanSubmissionGetChecklistInfoClient {
         this.locator = locator;
     }
 
-    public ResponseChecklist getChecklistInfo(Long caId) throws TMBCommonException, ServiceException, JsonProcessingException {
+    public ResponseChecklist getChecklistInfo(Long caId, String incompleteDocFlag) throws TMBCommonException, ServiceException, JsonProcessingException {
 
         locator.setLoanSubmissionGetChecklistInfoEndpointAddress(url);
 
@@ -55,7 +54,7 @@ public class LoanSubmissionGetChecklistInfoClient {
         com.tmb.common.model.legacy.rsl.ws.checklist.request.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.request.Body();
         body.setCaID(caId);
         body.setChecklistType(CHECKLIST_TYPE);
-        body.setIncompleteDocFlag(INCOMPLETE_DOC_FLAG);
+        body.setIncompleteDocFlag(incompleteDocFlag);
         request.setBody(body);
 
         com.tmb.common.model.legacy.rsl.ws.checklist.request.Header header = new com.tmb.common.model.legacy.rsl.ws.checklist.request.Header();

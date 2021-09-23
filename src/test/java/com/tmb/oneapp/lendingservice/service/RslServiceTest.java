@@ -573,7 +573,8 @@ public class RslServiceTest {
         mockGetLoanSubmissionChecklistInfoSuccess();
         LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
         request.setCaId(1L);
-        ResponseChecklist response = rslService.getDocumentList(request.getCaId());
+        request.setIncompleteDocFlag("N");
+        ResponseChecklist response = rslService.getDocumentList(request.getCaId(), request.getIncompleteDocFlag());
         Assertions.assertEquals(RslResponseCode.SUCCESS.getCode(), response.getHeader().getResponseCode());
     }
 
@@ -582,11 +583,12 @@ public class RslServiceTest {
     public void getLoanSubmissionChecklistInfo_RslConnectionError() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
+                    .when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong(), anyString());
 
             LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
             request.setCaId(1L);
-            rslService.getDocumentList(request.getCaId());
+            request.setIncompleteDocFlag("N");
+            rslService.getDocumentList(request.getCaId(), request.getIncompleteDocFlag());
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
@@ -600,7 +602,8 @@ public class RslServiceTest {
             mockGetLoanSubmissionChecklistInfoFail();
             LoanSubmissionGetChecklistInfoRequest request = new LoanSubmissionGetChecklistInfoRequest();
             request.setCaId(1L);
-            rslService.getDocumentList(request.getCaId());
+            request.setIncompleteDocFlag("N");
+            rslService.getDocumentList(request.getCaId(), request.getIncompleteDocFlag());
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
@@ -960,7 +963,7 @@ public class RslServiceTest {
         com.tmb.common.model.legacy.rsl.ws.checklist.response.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Body();
         response.setBody(body);
 
-        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
+        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong(), anyString());
     }
 
     private void mockGetLoanSubmissionChecklistInfoFail() throws ServiceException, TMBCommonException, JsonProcessingException {
@@ -974,7 +977,7 @@ public class RslServiceTest {
         com.tmb.common.model.legacy.rsl.ws.checklist.response.Body body = new com.tmb.common.model.legacy.rsl.ws.checklist.response.Body();
         response.setBody(body);
 
-        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong());
+        doReturn(response).when(loanSubmissionGetChecklistInfoClient).getChecklistInfo(anyLong(), anyString());
     }
 
     private void mockUpdateNCBConsentFlagSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {

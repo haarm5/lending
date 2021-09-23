@@ -69,8 +69,8 @@ public class UploadDocumentController {
         TmbOneServiceResponse<SubmitDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            SubmitDocumentResponse submitDocumentResponse = uploadDocumentService.submit(crmId, request);
-            response.setData(submitDocumentResponse);
+            SubmitDocumentResponse submitDocResp = uploadDocumentService.submit(crmId, request);
+            response.setData(submitDocResp);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 
@@ -98,8 +98,8 @@ public class UploadDocumentController {
         TmbOneServiceResponse<SubmitDocumentResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            SubmitDocumentResponse submitDocumentResponse = uploadDocumentService.submitMore(crmId, request);
-            response.setData(submitDocumentResponse);
+            SubmitDocumentResponse submitMoreDocResp = uploadDocumentService.submitMore(crmId, request);
+            response.setData(submitMoreDocResp);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
 

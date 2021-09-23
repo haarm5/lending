@@ -489,14 +489,14 @@ class LoanOnlineSubmissionControllerTest {
     @Test
     public void testUpdateApplicationSuccess() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any(), anyString())).thenReturn(new ResponseIndividual());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> responseEntity = loanOnlineSubmissionController.updateApplication("rm", new LoanSubmissionCreateApplicationReq());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanOnlineSubmissionController.updateApplication("rm", new LoanSubmissionCreateApplicationReq());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void testUpdateApplicationFail() throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException, ParseException {
         when(loanOnlineSubmissionUpdateApplicationService.updateApplication(any(), anyString())).thenThrow(new IllegalArgumentException());
-        ResponseEntity<TmbOneServiceResponse<ResponseIndividual>> responseEntity = loanOnlineSubmissionController.updateApplication("rm", new LoanSubmissionCreateApplicationReq());
+        ResponseEntity<TmbOneServiceResponse> responseEntity = loanOnlineSubmissionController.updateApplication("rm", new LoanSubmissionCreateApplicationReq());
         Assertions.assertTrue(responseEntity.getStatusCode().isError());
     }
 

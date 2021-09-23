@@ -89,7 +89,7 @@ public class InstantLoanAppController {
 		ServiceResponse response = instantLoanCreateApplicationService.createInstantLoanApplication(crmId, request);
 
 		if (response.getError() != null) {
-			oneServiceResponse.setData(null);
+			oneServiceResponse.setData(response.getError());
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
 			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);

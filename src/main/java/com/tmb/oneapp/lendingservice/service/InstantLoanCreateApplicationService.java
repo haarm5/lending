@@ -80,10 +80,10 @@ public class InstantLoanCreateApplicationService {
 	 * @param request InstantLoanCreationRequest
 	 * @return InstantLoanCreationResponse
 	 */
-	public ServiceResponse createInstantLoanApplication(String crmId, InstantLoanCreationRequest request) {
+	public ServiceResponseImp createInstantLoanApplication(String crmId, InstantLoanCreationRequest request) {
 
 		RequestInstantLoanCreateApplication soapRequest = new RequestInstantLoanCreateApplication();
-
+		ServiceResponseImp response = new ServiceResponseImp();
 		try {
 
 			logger.info(" Request from Client to InstantLoanCreateApplication is {} : "
@@ -155,7 +155,7 @@ public class InstantLoanCreateApplicationService {
 			ResponseInstantLoanCreateApplication soapResponse = soapClient
 					.callLoanSubmissionInstantLoanCreateApplication(soapRequest);
 
-			ServiceResponse response = constructCreateLoanApplicationResponse(appType, soapResponse);
+			response = (ServiceResponseImp) constructCreateLoanApplicationResponse(appType, soapResponse);
 			if (response.getError() != null) {
 				return response;
 			}
@@ -170,9 +170,8 @@ public class InstantLoanCreateApplicationService {
 			return response;
 		} catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
 			logger.error("Exception {} : ", e);
+			response.setError(new ServiceError());
 		}
-		ServiceResponseImp response = new ServiceResponseImp();
-		response.setError(new ServiceError());
 		return response;
 	}
 
@@ -206,7 +205,10 @@ public class InstantLoanCreateApplicationService {
 			response.setProductName(productName);
 			serviceResponseImp.setData(response);
 		} else {
-			serviceResponseImp.setError(new ServiceError());
+			ServiceError error = new ServiceError();
+			error.setErrorMessage(soapResponse.getHeader().getResponseDescriptionEN());
+			error.setResponseCode(soapResponse.getHeader().getResponseCode());
+			serviceResponseImp.setError(error);
 		}
 		return serviceResponseImp;
 	}

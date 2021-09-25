@@ -325,7 +325,7 @@ public class LoanServiceTest {
                 .thenReturn(LoanServiceUtils.moduleLendingModuleConfig());
 
         CreditCard c1 = new CreditCard();
-        c1.setRslProductCode("vj");
+        c1.setRslProductCode("vb");
         c1.setAccountStatus("active");
         when(customerExpServiceClient.getCreditCards(any(), any()))
                 .thenReturn(LoanServiceUtils.mockOneAppCreditCardResponse(c1));
@@ -335,6 +335,32 @@ public class LoanServiceTest {
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantCreditCard(ic1));
 
+        TmbOneServiceResponse<Customer> mockCustomerResponse = new TmbOneServiceResponse<>();
+        Customer customer = new Customer();
+        customer.setCitizenId("abcxyz");
+        mockCustomerResponse.setData(customer);
+        when(customerServiceClient.getCustomerDetails(any())).thenReturn(mockCustomerResponse);
+        
+        ResponseTracking mockResponseTracking = new ResponseTracking();
+        Body mockResponseTrackingBody = new Body();
+        Application application1 = new Application();
+        Applicant applicant1 = new Applicant();
+        Product product1 = new Product();
+        product1.setProductCode("vi");
+        applicant1.setProducts(new Product[] { product1 });
+        application1.setApplicants(new Applicant[] { applicant1 });
+        application1.setInstantFlag("Y");
+        application1.setIsSubmitted("N");
+        mockResponseTrackingBody.setApplication(new Application[] { application1 });
+        mockResponseTracking.setBody(mockResponseTrackingBody);
+        Header header = new Header();
+        header.setResponseCode("MSG_000");
+        header.setResponseDescriptionEN("Success");
+
+        mockResponseTracking.setHeader(header);
+
+        when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockResponseTracking);
+        
         ProductDetailRequest request = new ProductDetailRequest();
         request.setProductCode(requestProductCode);
         ProductDetailResponse productDetailResponse = loanService.fetchProductOrientation(crmId, request);

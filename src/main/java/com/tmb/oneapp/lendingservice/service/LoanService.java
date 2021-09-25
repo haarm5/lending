@@ -407,25 +407,27 @@ public class LoanService {
 			LendingModuleConfig lendingModuleConfig) throws TMBCommonException {
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse();
 		productDetailResponse.setLoanType(loanType);
-
+		productDetailResponse.setProductCode(productCode);
 		if (containInAccountCreditCardsAndActive(productCode, crmId)) {
 			productDetailResponse.setAlreadyHasProduct(true);
 			return productDetailResponse;
 		}
 
-		if (containInCreditCardEligibleProduct(crmId, productCode)) {
-			List<String> hasFlexiOnlyProducts = lendingModuleConfig.getFlexiOnly().stream()
-					.filter(s -> s.equalsIgnoreCase(productCode)).collect(Collectors.toList());
-			if (!hasFlexiOnlyProducts.isEmpty()) {
-				// Hide button
-				productDetailResponse.setFlexiOnly(true);
-				return productDetailResponse;
+		List<String> hasFlexiOnlyProducts = lendingModuleConfig.getFlexiOnly().stream()
+				.filter(s -> s.equalsIgnoreCase(productCode)).collect(Collectors.toList());
+		if (!hasFlexiOnlyProducts.isEmpty()) {
+			productDetailResponse.setFlexiOnly(true);
+			if (containInCreditCardEligibleProduct(crmId, productCode)) {
+				return handleFlexiLoanFlow(crmId, productCode, loanType, productCode, true);
 			}
-			return handleFlexiLoanFlow(crmId, productCode, loanType, productCode);
+			// Hide button
+			return productDetailResponse;
+			
+		} else if (containInCreditCardEligibleProduct(crmId, productCode)) {
+			return handleFlexiLoanFlow(crmId, productCode, loanType, productCode, false);
 		}
-
+		
 		return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
-
 	}
 
 	/**
@@ -504,10 +506,10 @@ public class LoanService {
 						productDetailResponse.setAlreadyHasProduct(true);
 						return productDetailResponse;
 					}
-					return handleFlexiLoanFlow(crmId, productCode, loanType,foundProductsC2G02.get(0).getProductCode());
+					return handleFlexiLoanFlow(crmId, productCode, loanType,foundProductsC2G02.get(0).getProductCode(), false);
 
 				} else if (!foundProductsC2G01.isEmpty()) {
-					return handleFlexiLoanFlow(crmId, productCode, loanType, foundProductsC2G01.get(0).getProductCode());
+					return handleFlexiLoanFlow(crmId, productCode, loanType, foundProductsC2G01.get(0).getProductCode(), false);
 				}
 				return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
 			}
@@ -521,7 +523,7 @@ public class LoanService {
 					.filter(instantFacility -> instantFacility.getFacilityCode().equalsIgnoreCase(productCode))
 					.collect(Collectors.toList());
 			if (!foundProducts.isEmpty()) {
-				return handleFlexiLoanFlow(crmId, productCode, loanType, foundProducts.get(0).getProductCode());
+				return handleFlexiLoanFlow(crmId, productCode, loanType, foundProducts.get(0).getProductCode(), false);
 			}
 		}
 		return handleLoanSubmissionFlow(crmId, productCode, loanType, lendingModuleConfig);
@@ -607,12 +609,13 @@ public class LoanService {
 	 * @return
 	 * @throws TMBCommonException
 	 */
-	private ProductDetailResponse handleFlexiLoanFlow(String crmId, String productCode, LoanType loanType, String setProductCode)
-			throws TMBCommonException {
+	private ProductDetailResponse handleFlexiLoanFlow(String crmId, String productCode, LoanType loanType,
+			String setProductCode, boolean isFlexiOnly) throws TMBCommonException {
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse();
 		productDetailResponse.setLoanType(loanType);
 		productDetailResponse.setFlowType(FlowType.FLEXI);
 		productDetailResponse.setProductCode(setProductCode);
+		productDetailResponse.setFlexiOnly(isFlexiOnly);
 		List<Application> foundApplication = findApplication(crmId, productCode);
 		if (foundApplication.isEmpty()) {
 			productDetailResponse.setStatus(ProductStatus.APPLY_WITH_PRODUCT_NAME);

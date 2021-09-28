@@ -76,7 +76,10 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         if (responseAddress.isPresent()) {
             address.setAmphur(prepareData(responseAddress.get().getAmphur().trim(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
             address.setCountry(prepareData(responseAddress.get().getCountry().trim(), custGeneralProfileResponse.getNationality()).toString());
-            address.setFloor(prepareData(responseAddress.get().getFloor().trim(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
+            String floor = prepareData(responseAddress.get().getFloor().trim(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString();
+            if (floor != null) {
+                address.setFloor(floor);
+            }
             address.setMoo(prepareData(responseAddress.get().getMoo().trim(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
             address.setNo(prepareData(responseAddress.get().getAddress().trim(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
             address.setProvince(prepareData(responseAddress.get().getProvince().trim(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());

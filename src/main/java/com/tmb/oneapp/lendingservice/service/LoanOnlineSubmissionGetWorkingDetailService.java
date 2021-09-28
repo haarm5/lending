@@ -43,6 +43,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     private WorkingDetail parseLoanSubmissionWorkingDetail(Individual individual) {
         WorkingDetail workingDetail = new WorkingDetail();
         workingDetail.setEmploymentStatus(individual.getEmploymentStatus());
+        workingDetail.setEmploymentYear(individual.getEmploymentYear());
+        workingDetail.setEmploymentMonth(individual.getEmploymentMonth());
         workingDetail.setRmOccupation(individual.getRmOccupation());
         workingDetail.setOccupation(individual.getEmploymentOccupation());
         workingDetail.setContractEmployedFlag(individual.getContractEmployedFlag());
@@ -69,6 +71,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         String employmentStatus = dropdownService.getEmploymentStatus(customer.getOccupationCode());
         WorkingDetail workingDetail = new WorkingDetail();
         workingDetail.setEmploymentStatus(employmentStatus);
+        workingDetail.setEmploymentYear(null);
+        workingDetail.setEmploymentMonth(null);
         workingDetail.setRmOccupation(customer.getOccupationCode());
         workingDetail.setOccupation(null);
         workingDetail.setContractEmployedFlag(null);

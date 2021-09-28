@@ -74,16 +74,16 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         Address address = new Address();
         Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
         if (responseAddress.isPresent()) {
-            address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
-            address.setCountry(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString());
-            address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
-            address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
-            address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
-            address.setProvince(prepareData(responseAddress.get().getProvince(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());
-            address.setRoad(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
-            address.setPostalCode(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
-            address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
-            address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
+            address.setAmphur(prepareData(responseAddress.get().getAmphur().trim(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
+            address.setCountry(prepareData(responseAddress.get().getCountry().trim(), custGeneralProfileResponse.getNationality()).toString());
+            address.setFloor(prepareData(responseAddress.get().getFloor().trim(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
+            address.setMoo(prepareData(responseAddress.get().getMoo().trim(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
+            address.setNo(prepareData(responseAddress.get().getAddress().trim(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
+            address.setProvince(prepareData(responseAddress.get().getProvince().trim(), custGeneralProfileResponse.getCurrentAddrProvinceNameTh()).toString());
+            address.setRoad(prepareData(responseAddress.get().getRoad().trim(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setPostalCode(prepareData(responseAddress.get().getPostalCode().trim(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
+            address.setStreetName(prepareData(responseAddress.get().getStreetName().trim(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
+            address.setTumbol(prepareData(responseAddress.get().getTumbol().trim(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
 
             String buildingName = prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString();
@@ -183,10 +183,13 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     }
 
     public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
-        if (Objects.nonNull(individual)) {
+        if (Objects.nonNull(individual) && !individual.equals("")) {
             return individual;
         }
-        return custGeneralProfileResponse;
+        if (custGeneralProfileResponse != null) {
+            return custGeneralProfileResponse;
+        }
+        return "";
     }
 
     public boolean personalInfoSaved(Individual individual) {

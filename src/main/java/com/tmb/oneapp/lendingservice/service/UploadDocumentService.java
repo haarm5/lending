@@ -86,7 +86,7 @@ public class UploadDocumentService {
         String appRefNo = applicationInfo.getAppRefNo();
 
         for (String docCode : request.getDocCodes()) {
-            String sftpDir = String.format("%s/%s/%s", rmId, appRefNo, docCode);
+            String sftpDir = String.format("%s/%s", rmId, appRefNo);
             String srcDir = String.format("%s/documents/%s/%s/%s/TempAttachments", baseDir, rmId, appRefNo, docCode);
             String outDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, docCode);
             String fileName = parsePdfFileName(docCode, appRefNo, CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(new Date()));

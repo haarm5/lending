@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GenerateEAppReportResponse {
+public class ReportGeneratorResponse {
 
     private String productCode;
     private String fileName;

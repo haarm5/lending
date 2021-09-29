@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-public class GenerateEAppReportRequest {
+public class ReportGeneratorRequest {
 
     @NotEmpty
     private String caId;

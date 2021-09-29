@@ -9,8 +9,8 @@ import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
-import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportRequest;
-import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportResponse;
+import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
+import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.junit.Assert;
@@ -36,10 +36,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
-public class EAppReportGeneratorServiceTest {
+public class ReportGeneratorServiceTest {
 
     @InjectMocks
-    private EAppReportGeneratorService eAppReportGeneratorService;
+    private ReportGeneratorService ReportGeneratorService;
 
     @Mock
     private LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
@@ -57,7 +57,7 @@ public class EAppReportGeneratorServiceTest {
     @BeforeEach
     void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
         MockitoAnnotations.initMocks(this);
-        eAppReportGeneratorService = new EAppReportGeneratorService(loanSubmissionGetApplicationInfoClient,
+        ReportGeneratorService = new ReportGeneratorService(loanSubmissionGetApplicationInfoClient,
                 commonServiceFeignClient, jasperReportService, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
         mockSuccess();
     }
@@ -77,44 +77,44 @@ public class EAppReportGeneratorServiceTest {
 
     @Test
     public void generateEAppReport_CreditCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("VJ");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = ReportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
     public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("RC01");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = ReportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
     public void generateEAppReport_C2GCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("C2G");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = ReportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
     public void generateEAppReport_invalidProductCode_Failed() {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("XXX");
 
-        Assertions.assertThrows(TMBCommonException.class, () -> eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        Assertions.assertThrows(TMBCommonException.class, () -> ReportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId"));
     }
 

@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.Vector;   //NOSONAR 
 
 /**
  * Provides method to store file to sftp server.
@@ -157,11 +157,11 @@ public class SFTPClientImp implements FTPClient {
 		try {
 			channelSftp = (ChannelSftp) setupJsch();
 			channelSftp.connect();
-			List<String> list = new ArrayList<String>();
+			List<String> list = new ArrayList<>();
 			listDirectory(channelSftp, dst, list);
 			
 			for (String entry : list) {
-				purgeDataOlderThanNDay(channelSftp, entry.toString(), day);
+				purgeDataOlderThanNDay(channelSftp, entry, day);
 			}
 			channelSftp.exit();
 			return true;
@@ -170,7 +170,7 @@ public class SFTPClientImp implements FTPClient {
 			logger.error("error jsch connection:{}", e);
 			return false;
         } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+            logger.error("error sftp exception:{}", e);
             return false;
 		} catch (Exception e) {
 			logger.error("error other exception:{}", e);
@@ -180,30 +180,26 @@ public class SFTPClientImp implements FTPClient {
 
 	@SuppressWarnings("unchecked")
 	private void listDirectory(ChannelSftp channelSftp, String path, List<String> list) throws SftpException {
-		Vector<LsEntry> files = channelSftp.ls(path);
+		Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR 
 		for (LsEntry entry : files) {
-			if (entry.getAttrs().isDir()) {
-				if (!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-					list.add(path + "/" + entry.getFilename() + "");
-				}
+			if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+				list.add(path + "/" + entry.getFilename() + "");
 			}
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void purgeDataOlderThanNDay(ChannelSftp channelSftp, String path, long day) throws SftpException {
-		Vector<LsEntry> files = channelSftp.ls(path);
+		Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR 
 		long cutOff = System.currentTimeMillis() - (day * 24 * 60 * 60 * 1000);
+		long modifyDate;
 		for (LsEntry entry : files) {
-			if (entry.getAttrs().isDir()) {
-				long modifyDate;
-				if (!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-					modifyDate = entry.getAttrs().getMTime() * 1000L;
-					if (modifyDate < cutOff) {
-						logger.info("Purge data older than {} Day Success, Last modify time:{} Path:{}", day,
-								entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
-//			            channelSftp.rmdir(path + "/" + entry.getFilename());
-					}
+			if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+				modifyDate = entry.getAttrs().getMTime() * 1000L;
+				if (modifyDate < cutOff) {
+					logger.info("Purge data older than {} Day Success, Last modify time:{} Path:{}", day,
+							entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
+					channelSftp.rmdir(path + "/" + entry.getFilename());
 				}
 			}
 		}

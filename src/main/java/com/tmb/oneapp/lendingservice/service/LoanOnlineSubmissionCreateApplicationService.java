@@ -68,8 +68,8 @@ public class LoanOnlineSubmissionCreateApplicationService {
         String productCode = req.getProductCode();
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
                 || productCode.equals("VG") || productCode.equals("VP")
-                || productCode.equals("VT") || productCode.equals("MT")
-                || productCode.equals("MS");
+                || productCode.equals("VT") || productCode.equals("VJ")
+                || productCode.equals("MT") || productCode.equals("MS");
         if (isTypeCC) {
             application.setAppType("CC");
             application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "04" : "03");
@@ -98,7 +98,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
         individuals[0].setThaiSalutationCode(getThaiSalutationCode(customer.getThaTname()));
         individuals[0].setThaiName(customer.getThaFname());
         individuals[0].setThaiSurName(customer.getThaLname());
-        if (customer.getMiddleName() != null) {
+        if (Objects.nonNull(customer.getMiddleName())) {
             individuals[0].setThaiSurName(customer.getMiddleName() + " " + customer.getThaLname());
         }
         individuals[0].setMobileNo(customer.getPhoneNoFull());
@@ -118,7 +118,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
         Date date = sdf.parse(dateTime);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        return  cal;
+        return cal;
     }
 
     private Application mapDataTypeCC(Application application, LoanSubmissionCreateApplicationReq req) {

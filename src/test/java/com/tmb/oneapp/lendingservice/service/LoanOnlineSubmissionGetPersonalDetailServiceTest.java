@@ -5,6 +5,7 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.address.Address;
 import com.tmb.common.model.legacy.rsl.common.ob.dropdown.CommonCodeEntry;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
@@ -12,6 +13,7 @@ import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
@@ -27,13 +29,16 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
@@ -48,6 +53,8 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
     private LoanSubmissionGetCustomerInfoClient customerInfoClient;
     @Mock
     private LoanSubmissionGetDropdownListClient dropdownListClient;
+    @Mock
+    private CommonServiceFeignClient commonServiceFeignClient;
 
     @InjectMocks
     LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
@@ -151,9 +158,18 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         oneServiceResponse.setData(custGeneralProfileResponse);
         oneServiceResponse.setStatus(tmbStatus);
 
+        TmbOneServiceResponse<List<Province>> mockProvince = new TmbOneServiceResponse<>();
+        var status = new TmbStatus();
+        status.setCode("0000");
+        mockProvince.setStatus(status);
+        var mockList = new ArrayList<Province>();
+        mockList.add(new Province());
+        mockProvince.setData(mockList);
+
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        doReturn(new ResponseEntity<>(mockProvince, HttpStatus.OK)).when(commonServiceFeignClient).getProvince(any());
         ResponseDropdown responseDropdown = new ResponseDropdown();
         Body dropdownsBody = new Body();
         CommonCodeEntry commonCodeEntry = new CommonCodeEntry();
@@ -258,9 +274,18 @@ public class LoanOnlineSubmissionGetPersonalDetailServiceTest {
         oneServiceResponse.setData(custGeneralProfileResponse);
         oneServiceResponse.setStatus(tmbStatus);
 
+        TmbOneServiceResponse<List<Province>> mockProvince = new TmbOneServiceResponse<>();
+        var status = new TmbStatus();
+        status.setCode("0000");
+        mockProvince.setStatus(status);
+        var mockList = new ArrayList<Province>();
+        mockList.add(new Province());
+        mockProvince.setData(mockList);
+
 
         when(customerInfoClient.searchCustomerInfoByCaID(anyLong())).thenReturn(mockCustomerInfoResponse);
         when(customerServiceClient.getCustomers(any())).thenReturn(ResponseEntity.ok(oneServiceResponse));
+        doReturn(new ResponseEntity<>(mockProvince, HttpStatus.OK)).when(commonServiceFeignClient).getProvince(any());
         ResponseDropdown responseDropdown = new ResponseDropdown();
         Body dropdownsBody = new Body();
         CommonCodeEntry commonCodeEntry = new CommonCodeEntry();

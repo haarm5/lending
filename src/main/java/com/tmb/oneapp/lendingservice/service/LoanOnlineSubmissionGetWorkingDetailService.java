@@ -30,10 +30,10 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         Individual individual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
 
         if (loanOnlineSubmissionGetPersonalDetailService.personalInfoSaved(individual)) {
-            logger.info("Get personal info from [EC]");
+            logger.info("Get personal info from [RSL]");
             return parseLoanSubmissionWorkingDetail(individual);
         } else {
-            logger.info("Get personal info from [RSL]");
+            logger.info("Get personal info from [EC]");
             CustGeneralProfileResponse customerEc = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
             return parseLoanSubmissionWorkingDetailEc(customerEc);
         }

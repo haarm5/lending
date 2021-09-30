@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
+import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -25,6 +30,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final DropdownService dropdownService;
+    private final CommonServiceFeignClient commonServiceFeignClient;
+
 
     public WorkingDetail getWorkingDetail(String crmId, Long caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual individual = loanOnlineSubmissionGetPersonalDetailService.getCustomer(caId);
@@ -104,7 +111,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         address.setMoo(customer.getWorkAddrMoo());
         address.setStreetName(customer.getWorkAddrStreet());
         address.setPostalCode(customer.getWorkAddrZipcode());
-        address.setProvince(customer.getWorkAddrProvinceNameTh());
+        address.setProvince(getProvinceName(customer.getWorkAddrZipcode()));
         address.setCountry(customer.getNationality());
         address.setTumbol(customer.getWorkAddrSubDistrictNameTh());
         address.setRoad(customer.getWorkAddrStreet());
@@ -124,7 +131,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
             address.setMoo(workingAddress.getMoo());
             address.setStreetName(workingAddress.getStreetName());
             address.setPostalCode(workingAddress.getPostalCode());
-            address.setProvince(workingAddress.getProvince());
+            address.setProvince(getProvinceName(workingAddress.getPostalCode()));
             address.setCountry(workingAddress.getCountry());
             address.setTumbol(workingAddress.getTumbol());
             address.setRoad(workingAddress.getRoad());
@@ -136,6 +143,17 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     private String getDefaultIncomeType(String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
         List<Dropdowns.IncomeType> dropdownsIncomeType = dropdownService.getDropdownIncomeType(employmentStatus);
         return dropdownsIncomeType.get(0).getCode();
+    }
+
+    private String getProvinceName(String postCode) {
+        var req = new CommonProvinceRequest();
+        req.setField("postcode");
+        req.setSearch(postCode);
+        ResponseEntity<TmbOneServiceResponse<List<Province>>> response = commonServiceFeignClient.getProvince(req);
+        if (!response.getBody().getStatus().getCode().equals("0000")) {
+            return null;
+        }
+        return response.getBody().getData().get(0).getProvinceNameTh();
     }
 
 }

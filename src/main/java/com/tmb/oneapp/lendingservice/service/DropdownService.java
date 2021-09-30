@@ -99,6 +99,7 @@ public class DropdownService {
                                 .name2(rmOccupation.getEntryName2())
                                 .refEntryCode(rmOccupation.getRefEntryCode())
                                 .groupId(rmOccupation.getGroupId())
+                                .extValue2(rmOccupation.getExtValue2())
                                 .occupation(getDropdownOccupation(rmOccupation.getExtValue2()))
                                 .build();
                     } catch (Exception e) {

@@ -69,6 +69,8 @@ public class LoanOnlineSubmissionCreateApplicationService {
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
                 || productCode.equals("VG") || productCode.equals("VP")
                 || productCode.equals("VT") || productCode.equals("VJ")
+                || productCode.equals("VH") || productCode.equals("VI")
+                || productCode.equals("VB")
                 || productCode.equals("MT") || productCode.equals("MS");
         if (isTypeCC) {
             application.setAppType("CC");

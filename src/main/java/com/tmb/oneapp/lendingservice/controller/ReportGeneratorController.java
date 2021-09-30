@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -9,7 +11,10 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
+import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientRequest;
+import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.service.ReportGeneratorService;
+import com.tmb.oneapp.lendingservice.util.Fetch;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,7 +32,7 @@ import javax.validation.Valid;
 @RestController
 public class ReportGeneratorController {
 
-    private final ReportGeneratorService ReportGeneratorService;
+    private final ReportGeneratorService reportGeneratorService;
 
     @ApiOperation("Generate E-App Reports")
     @PostMapping(value = "/generate")
@@ -42,7 +47,7 @@ public class ReportGeneratorController {
         TmbOneServiceResponse<ReportGeneratorResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            ReportGeneratorResponse reportGeneratorResponse = ReportGeneratorService.generateEAppReport(headers, request, correlationId, crmId);
+            ReportGeneratorResponse reportGeneratorResponse = reportGeneratorService.generateEAppReport(headers, request, correlationId, crmId);
             response.setData(reportGeneratorResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

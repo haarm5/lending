@@ -1,15 +1,12 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.RslCode;
-import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
@@ -26,8 +23,7 @@ import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
-import com.tmb.oneapp.lendingservice.util.FileUtils;
-import com.tmb.oneapp.lendingservice.util.RslServiceUtils;
+import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -35,16 +31,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
 @Service
@@ -85,7 +77,7 @@ public class ReportGeneratorService {
         this.sftpClientImp = sftpClientImp;
     }
 
-    public ReportGeneratorResponse generateEAppReport(HttpHeaders headers, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
+    public ReportGeneratorResponse generateEAppReport(HttpHeaders headers, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
@@ -124,31 +116,35 @@ public class ReportGeneratorService {
                     ResponseCode.EAPP_INVALID_PRODUCT_CODE.getService(),
                     HttpStatus.BAD_REQUEST, null);
         } else {
-            ReportGenerateClientRequest reportReq = new ReportGenerateClientRequest();
-            reportReq.setTemplateId(template);
-            reportReq.setType("PDF");
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNodeMap = mapper.valueToTree(parameters);
-            reportReq.setData(jsonNodeMap);
+            ReportGenerateClientResponse reportClientResponse = generateReportByReportService(parameters, template, correlationId);
+            String baseDir = System.getProperty("user.dir");
+            String srcDir = String.format("%s/documents/loan/%s/%s", baseDir, crmId, appRefNo);
+            String fileName = generateFilename(applicationInfo);
 
-            ReportGenerateClientResponse reportServiceResponse = Fetch
-                    .fetch(() -> reportServiceClient.generateReport(crmId, reportReq));
+            String filePath = FileConvertorUtils.generateFileFromBase64(srcDir, fileName, reportClientResponse.getBase64());
 
-            String fileName = parseCompletePDFFileName(appRefNo);
+            stores(crmId, appRefNo, filePath);
 
-//            FileUtils.generateFileFromBase64(srcDir, fileName, reportServiceResponse.getBase64());
-            exportAndStore(crmId, appRefNo, fileName);
-
-            ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, applicationInfo, correlationId, fileName);
+            ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, productCode, applicationInfo, correlationId, fileName);
             sendNotification(headers, crmId, correlationId, notificationWrapper);
 
             return new ReportGeneratorResponse(productCode, fileName);
         }
     }
 
-    private ReportGeneratorNotificationWrapper prepareNotificationWrapper(EAppResponse response, ResponseApplication applicationInfo, String correlationId, String fileName) throws TMBCommonException {
+    private ReportGenerateClientResponse generateReportByReportService(Map<String, Object> parameters, String template, String correlationId) throws TMBCommonException {
+        ReportGenerateClientRequest reportReq = new ReportGenerateClientRequest();
+        reportReq.setTemplateId(template);
+        reportReq.setType(REPORT_TYPE_PDF);
+
+        JsonNode jsonNodeMap = new ObjectMapper().valueToTree(parameters);
+        reportReq.setData(jsonNodeMap);
+        return Fetch.fetch(() -> reportServiceClient.generateReport(correlationId, reportReq));
+    }
+
+    private ReportGeneratorNotificationWrapper prepareNotificationWrapper(EAppResponse response, String productCode, ResponseApplication applicationInfo, String correlationId, String fileName) throws TMBCommonException {
         String appRefNo = applicationInfo.getBody().getAppRefNo();
-        List<String> attachments = prepareAttachments(applicationInfo, correlationId, fileName);
+        List<String> attachments = prepareAttachments(applicationInfo, correlationId, fileName, productCode);
         return buildNotificationWrapper(response, appRefNo, attachments);
     }
 
@@ -166,22 +162,23 @@ public class ReportGeneratorService {
         return wrapper;
     }
 
-    private List<String> prepareAttachments(ResponseApplication application, String correlationId, String fileName) throws TMBCommonException {
+    private List<String> prepareAttachments(ResponseApplication application, String correlationId, String fileName, String productCode) throws TMBCommonException {
         List<String> notificationAttachments = new ArrayList<>();
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
 
-        List<RslCode> rslConfigs = getRslConfig(correlationId);
-        if(!rslConfigs.isEmpty()) {
-            String saleSheetAttachments = getSaleSheetFilePath(rslConfigs);
-            String termAndConditionAttachments = getTermAndConditionFilePath(rslConfigs);
+        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);
+        if (rslConfig != null) {
+            String saleSheetAttachments = getSaleSheetFilePath(rslConfig);
+            String termAndConditionAttachments = getTermAndConditionFilePath(rslConfig);
 
             notificationAttachments.add(saleSheetAttachments);
             notificationAttachments.add(termAndConditionAttachments);
         }
 
-        String eAppAttachment = String.format("sftp://%s%s%s/%s.pdf", sftpClientImp.getRemoteHost(),
+        String eAppAttachment = String.format("sftp://%s%s%s/%s", sftpClientImp.getRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, fileName);
+        logger.info("eApp: {}", eAppAttachment);
         notificationAttachments.add(eAppAttachment);
         return notificationAttachments;
     }
@@ -196,21 +193,10 @@ public class ReportGeneratorService {
         }
     }
 
-    private void exportAndStore(String crmId, String appRefNo, String fileName) throws TMBCommonException {
-
-//        ByteArrayOutputStream os = jasperReportService.convertReportToOutputStream();
-//        try {
-////            String srcFile = ""; //Need convert from base64
-//            String srcFile = generateFileFromOutputStream(fileName, os);
-//            storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + "/ApplyLoan/" + crmId + "/" + appRefNo, srcFile);
-//            storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
-//            storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
-//        }  catch (IOException e) {
-//            throw new TMBCommonException(ResponseCode.JASPER_IO_ERROR.getCode(),
-//                    ResponseCode.JASPER_IO_ERROR.getMessage(),
-//                    ResponseCode.JASPER_IO_ERROR.getService(),
-//                    HttpStatus.INTERNAL_SERVER_ERROR, e);
-//        }
+    private void stores(String crmId, String appRefNo, String srcFile) throws TMBCommonException {
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" +SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
+        storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
@@ -327,25 +313,11 @@ public class ReportGeneratorService {
         }
     }
 
-    private String generateFileFromOutputStream(String fileName, ByteArrayOutputStream outputStream) throws IOException {
-        String baseDir = System.getProperty("user.dir");
-        File outputDir = new File(baseDir + File.separator + "epp");
-        outputDir.mkdir();
-        String filePath = outputDir + SEPARATOR + fileName;
-
-        try (FileOutputStream fos = new FileOutputStream(filePath)) {
-            outputStream.writeTo(fos);
-        }
-
-        return filePath;
-    }
-
-    private String parseCompletePDFFileName(String appRefNo) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-        String dateStr = formatter.format(date);
-        dateStr = dateStr.replaceAll("[/: ]", "");
-        dateStr = dateStr.substring(2);
+    private String generateFilename(ResponseApplication application) {
+        String appRefNo = application.getBody().getAppRefNo();
+        String dateStr = application.getBody().getApplicationDate();
+        dateStr = dateStr.replaceAll("[-:T ]", "");
+        dateStr = dateStr.substring(2, 14);
         String docType = "00111";
         return String.format("01_%s_%s_%s.pdf", dateStr, appRefNo, docType);
     }
@@ -355,24 +327,22 @@ public class ReportGeneratorService {
         String dateStr = application.getBody().getApplicationDate();
         dateStr = dateStr.replaceAll("[-:T ]", "");
         dateStr = dateStr.substring(2, 14);
-        String docType = "00111";
+        String docType = "00110";
         String letterOfConsentFilePath = String.format("sftp://%s%s%s/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, dateStr, appRefNo, docType);
         logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
         return letterOfConsentFilePath;
     }
 
-    private String getSaleSheetFilePath(List<RslCode> rslConfigs) {
-        String saleSheetFile = rslConfigs.get(0).getSalesheetName();
-        logger.info("saleSheetFile: {}", saleSheetFile);
+    private String getSaleSheetFilePath(RslCode rslConfig) {
+        String saleSheetFile = rslConfig.getSalesheetName();
         String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
-    private String getTermAndConditionFilePath(List<RslCode> rslConfigs) {
-        String tncFile = rslConfigs.get(0).getTncName();
-        logger.info("tncFile: {}", tncFile);
+    private String getTermAndConditionFilePath(RslCode rslConfig) {
+        String tncFile = rslConfig.getTncName();
         String tncFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
@@ -401,5 +371,4 @@ public class ReportGeneratorService {
     private String beautifyBigDecimal(BigDecimal value) {
         return CommonServiceUtils.format2DigitDecimalPoint(value);
     }
-
 }

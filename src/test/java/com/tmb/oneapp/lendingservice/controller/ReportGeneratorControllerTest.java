@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
@@ -19,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 import java.text.ParseException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +40,7 @@ public class ReportGeneratorControllerTest {
     }
 
     @Test
-    public void generateReport_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
+    public void generateReport_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
         ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("VJ");
@@ -54,7 +53,7 @@ public class ReportGeneratorControllerTest {
     }
 
     @Test
-    public void generateReport_Failed() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
+    public void generateReport_Failed() throws TMBCommonException, ServiceException, IOException, ParseException {
         ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("VJ");

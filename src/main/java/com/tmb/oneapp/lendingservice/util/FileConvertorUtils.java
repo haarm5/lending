@@ -10,14 +10,13 @@ import java.util.Base64;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
-public class FileUtils {
-    private static final TMBLogger<FileUtils> logger = new TMBLogger<>(FileUtils.class);
+public class FileConvertorUtils {
+    private static final TMBLogger<FileConvertorUtils> logger = new TMBLogger<>(FileConvertorUtils.class);
 
-    private FileUtils() { }
+    private FileConvertorUtils() { }
 
-    public static void generateFileFromBase64(String dir, String fileName, String base64) throws IOException {
-        String base64String = base64.split(",")[1];
-        byte[] decoder = Base64.getDecoder().decode(base64String);
+    public static String generateFileFromBase64(String dir, String fileName, String base64) throws IOException {
+        byte[] decoder = Base64.getDecoder().decode(base64);
         File outputDir = new File(dir);
         //Make directory
         if (Files.notExists(outputDir.toPath())) {
@@ -30,5 +29,7 @@ public class FileUtils {
             fos.write(decoder);
         }
         logger.info("Generate file from base64 successes: {}", filePath);
+
+        return filePath;
     }
 }

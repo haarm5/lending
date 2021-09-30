@@ -84,18 +84,19 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
             address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
             address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
             address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
-            String pasCode = "";
-            if (responseAddress.get().getProvince().isEmpty() || responseAddress.get().getProvince() == null) {
-                pasCode = custGeneralProfileResponse.getCurrentAddrZipcode();
-            } else {
-                pasCode = responseAddress.get().getPostalCode();
-            }
-            address.setProvince(getProvinceName(pasCode));
             address.setRoad(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
             address.setPostalCode(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
             address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
             address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
+
+            String pasCode;
+            if (responseAddress.get().getPostalCode().isEmpty() || responseAddress.get().getPostalCode() == null) {
+                pasCode = custGeneralProfileResponse.getCurrentAddrZipcode();
+            } else {
+                pasCode = responseAddress.get().getPostalCode();
+            }
+            address.setProvince(getProvinceName(pasCode));
 
             String buildingName = prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString();
             if (!buildingName.isEmpty() || !buildingName.isBlank()) {

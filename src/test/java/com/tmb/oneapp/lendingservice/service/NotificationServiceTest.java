@@ -12,7 +12,7 @@ import com.tmb.oneapp.lendingservice.client.NotificationServiceClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.creditcard.FetchCardResponse;
 import com.tmb.oneapp.lendingservice.model.creditcard.ProductCodeData;
-import com.tmb.oneapp.lendingservice.model.notification.EAppReportGeneratorWrapper;
+import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificationWrapper;
 import net.sf.jasperreports.engine.JRException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class NotificationServiceTest {
         Mockito.when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(mockFetchCardResponse()));
         Mockito.when(notificationServiceClient.sendMessage(any(), any())).thenReturn(mockEmailResponse());
 
-        EAppReportGeneratorWrapper wrapper = new EAppReportGeneratorWrapper();
+        ReportGeneratorNotificationWrapper wrapper = new ReportGeneratorNotificationWrapper();
         wrapper.setEmail("test@gmail.com");
         notificationService.sendNotifyEAppReportGenerator("crmId", "accountId", "correlationId", wrapper);
 

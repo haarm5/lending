@@ -53,4 +53,9 @@ public class LendingServiceConstant {
     public static final String SEPARATOR = "/";
 
     public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
+
+    /**
+     * Report Generate
+     */
+    public static final String REPORT_TYPE_PDF = "PDF";
 }

@@ -11,7 +11,7 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.NotificationConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.creditcard.FetchCardResponse;
-import com.tmb.oneapp.lendingservice.model.notification.EAppReportGeneratorWrapper;
+import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificationWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +44,7 @@ public class NotificationService {
         this.creditCardClient = creditCardClient;
     }
 
-    public void sendNotifyEAppReportGenerator(String crmId, String accountId, String correlationId, EAppReportGeneratorWrapper wrapper) {
+    public void sendNotifyEAppReportGenerator(String crmId, String accountId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
                 defaultChannelTh, wrapper.getProductNameEn(), wrapper.getProductNameTh(), wrapper.getCustomerNameEn(), wrapper.getCustomerNameTh());
         notifyCommon.setAccountId(accountId);

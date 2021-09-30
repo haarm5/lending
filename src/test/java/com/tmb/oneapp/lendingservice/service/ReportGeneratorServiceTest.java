@@ -2,16 +2,20 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
+import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetApplicationInfoClient;
+import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
-import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportRequest;
-import com.tmb.oneapp.lendingservice.model.eapp.GenerateEAppReportResponse;
+import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
+import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
+import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +29,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpHeaders;
 
 import javax.xml.rpc.ServiceException;
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -36,17 +40,17 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
-public class EAppReportGeneratorServiceTest {
+public class ReportGeneratorServiceTest {
 
     @InjectMocks
-    private EAppReportGeneratorService eAppReportGeneratorService;
+    private ReportGeneratorService reportGeneratorService;
 
     @Mock
-    private LoanSubmissionGetApplicationInfoClient loanSubmissionGetApplicationInfoClient;
+    private RslService rslService;
     @Mock
     private CommonServiceFeignClient commonServiceFeignClient;
     @Mock
-    private JasperReportService jasperReportService;
+    private ReportServiceClient reportServiceClient;
     @Mock
     private LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     @Mock
@@ -57,64 +61,60 @@ public class EAppReportGeneratorServiceTest {
     @BeforeEach
     void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
         MockitoAnnotations.initMocks(this);
-        eAppReportGeneratorService = new EAppReportGeneratorService(loanSubmissionGetApplicationInfoClient,
-                commonServiceFeignClient, jasperReportService, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
+        reportGeneratorService = new ReportGeneratorService(rslService,
+                commonServiceFeignClient, reportServiceClient, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
         mockSuccess();
     }
 
-    private void mockSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
+    private void mockSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, ParseException, RemoteException {
         doReturn(mockResponseLoanOnlineSubmissionEApp()).when(loanOnlineSubmissionEAppService).getEApp(anyLong(), any(),any());
-        doReturn(mockApplicationInfoByCaID()).when(loanSubmissionGetApplicationInfoClient).searchApplicationInfoByCaID(anyLong());
+        doReturn(mockApplicationInfoByCaID()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
-        doNothing().when(jasperReportService).setReportFileName(anyString());
-        doNothing().when(jasperReportService).compileReport();
-        doNothing().when(jasperReportService).setParameters(any());
-        doNothing().when(jasperReportService).fillReport();
-        doReturn(new ByteArrayOutputStream()).when(jasperReportService).convertReportToOutputStream();
+        doReturn(mockReportServiceResponse()).when(reportServiceClient).generateReport(anyString(), any());
         doReturn(true).when(sftpClientImp).storeFile(anyList());
         doNothing().when(notificationService).sendNotifyEAppReportGenerator(anyString(), anyString(), anyString(), any());
     }
 
     @Test
-    public void generateEAppReport_CreditCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+    public void generateEAppReport_CreditCard_Success() throws TMBCommonException, ServiceException, ParseException, IOException {
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("VJ");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+    public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("RC01");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void generateEAppReport_C2GCard_Success() throws TMBCommonException, ServiceException, JsonProcessingException, ParseException, RemoteException {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+    public void generateEAppReport_C2GCard_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("C2G");
 
-        GenerateEAppReportResponse response = eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
 
     @Test
     public void generateEAppReport_invalidProductCode_Failed() {
-        GenerateEAppReportRequest request = new GenerateEAppReportRequest();
+        ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
         request.setProductCode("XXX");
 
-        Assertions.assertThrows(TMBCommonException.class, () -> eAppReportGeneratorService.generateEAppReport(new HttpHeaders(),
+        Assertions.assertThrows(TMBCommonException.class, () -> reportGeneratorService.generateEAppReport(new HttpHeaders(),
                 request, "correlationId", "crmId"));
     }
 
@@ -172,5 +172,18 @@ public class EAppReportGeneratorServiceTest {
         response.setHeader(header);
         response.setBody(body);
         return response;
+    }
+
+    private TmbOneServiceResponse<ReportGenerateClientResponse> mockReportServiceResponse() {
+        TmbOneServiceResponse<ReportGenerateClientResponse> serviceResponse = new TmbOneServiceResponse<>();
+        serviceResponse.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(), "report-service"));
+
+        ReportGenerateClientResponse response = new ReportGenerateClientResponse();
+        response.setType("PDF");
+        response.setCode("0000");
+        response.setBase64("base64file");
+
+        serviceResponse.setData(response);
+        return serviceResponse;
     }
 }

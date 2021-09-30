@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class EAppReportGeneratorWrapper {
+public class ReportGeneratorNotificationWrapper {
     private String customerNameTh;
     private String customerNameEn;
     private String productNameTh;

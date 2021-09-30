@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 
+import lombok.Setter;
+
 /**
  * Provides lending information services.
  */
+
 @Service
+@Setter
 public class PurgeDataService {
 
 	private static final TMBLogger<PurgeDataService> logger = new TMBLogger<>(PurgeDataService.class);
@@ -29,18 +33,6 @@ public class PurgeDataService {
 		logger.info("Starting... purge data :{} and :{} ", pathLOC, purgeAfterDay);
 		return ftpClient.purgeFileOlderThanNDays(pathLOC, Long.parseLong(purgeAfterDay))
 				&& ftpClient.purgeFileOlderThanNDays(pathDocuments, Long.parseLong(purgeAfterDay));
-	}
-
-	public void setPurgeAfterDay(String purgeAfterDay) {
-		this.purgeAfterDay = purgeAfterDay;
-	}
-
-	public void setPathLOC(String pathLOC) {
-		this.pathLOC = pathLOC;
-	}
-
-	public void setPathDocuments(String pathDocuments) {
-		this.pathDocuments = pathDocuments;
 	}
 
 }

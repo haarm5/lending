@@ -197,9 +197,9 @@ public class SFTPClientImp implements FTPClient {
 			if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
 				modifyDate = entry.getAttrs().getMTime() * 1000L;
 				if (modifyDate < cutOff) {
-					logger.info("Purge data older than {} Day Success, Last modify time:{} Path:{}", day,
-							entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
 					channelSftp.rmdir(path + "/" + entry.getFilename());
+					logger.info("Purge data older than {} Day Success >>> Last modify time:{} >>> Path:{}", day,
+							entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
 				}
 			}
 		}

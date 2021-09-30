@@ -55,6 +55,6 @@ public class LendingServiceConstant {
     public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
     
     public static final String SUCCESS_DESC_PURGE_DATA = "Purging e-consent e-app and upload document successfully";
-	public static final String FAILED_ESC_PURGE_DATA = "Purging e-consent e-app and upload document failed";
+	public static final String FAILED_DESC_PURGE_DATA = "Purging e-consent e-app and upload document failed";
 	
 }

@@ -26,20 +26,21 @@ public class PurgeDataService {
 	}
 
 	public boolean purgeData() {
-		try {
-			logger.info("Starting... purge data :{}", pathLOC);
-			ftpClient.purgeFileOlderThanNDays(pathLOC, Long.parseLong(purgeAfterDay));
+		logger.info("Starting... purge data :{} and :{} ", pathLOC, purgeAfterDay);
+		return ftpClient.purgeFileOlderThanNDays(pathLOC, Long.parseLong(purgeAfterDay))
+				&& ftpClient.purgeFileOlderThanNDays(pathDocuments, Long.parseLong(purgeAfterDay));
+	}
 
-			logger.info("Starting... purge data :{}", pathDocuments);
-			ftpClient.purgeFileOlderThanNDays(pathDocuments, Long.parseLong(purgeAfterDay));
+	public void setPurgeAfterDay(String purgeAfterDay) {
+		this.purgeAfterDay = purgeAfterDay;
+	}
 
-			logger.info("Purge data success.");
-			return true;
-		} catch (Exception e) {
-			logger.error("Purge data failed.");
-			logger.error("Exception {} : ", e);
-			return false;
-		}
+	public void setPathLOC(String pathLOC) {
+		this.pathLOC = pathLOC;
+	}
+
+	public void setPathDocuments(String pathDocuments) {
+		this.pathDocuments = pathDocuments;
 	}
 
 }

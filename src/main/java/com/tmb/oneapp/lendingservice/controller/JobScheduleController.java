@@ -46,7 +46,7 @@ public class JobScheduleController {
 	@LogAround
 	@PostMapping("/purge-data")
 	@ApiOperation("Service purging e-consent e-app and upload document : this will be called from scheduler-microservice")
-	public ResponseEntity<TmbOneServiceResponse<String>> captureInstallmentPlan(@RequestHeader HttpHeaders headers) {
+	public ResponseEntity<TmbOneServiceResponse<String>> purgeData(@RequestHeader HttpHeaders headers) {
 		logger.info("Purging e-consent e-app and upload document ");
 		TmbOneServiceResponse<String> oneResponse = new TmbOneServiceResponse<>();
 		boolean isSuccess = purgeDataService.purgeData();
@@ -57,7 +57,7 @@ public class JobScheduleController {
 		} else {
 			oneResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService()));
-			oneResponse.setData(LendingServiceConstant.FAILED_ESC_PURGE_DATA);
+			oneResponse.setData(LendingServiceConstant.FAILED_DESC_PURGE_DATA);
 		}
 		return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneResponse);
 	}

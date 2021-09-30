@@ -1,7 +1,5 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.model.TmbOneServiceResponse;
@@ -11,10 +9,7 @@ import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
-import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientRequest;
-import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.service.ReportGeneratorService;
-import com.tmb.oneapp.lendingservice.util.Fetch;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

@@ -3,8 +3,12 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
+import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
+import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +19,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
@@ -30,7 +35,9 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
     private LoanOnlineSubmissionGetWorkingDetailService getWorkingDetailService;
 
     @Mock
-    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+    private RslService rslService;
+    @Mock
+    private CustomerServiceClient customerServiceClient;
     @Mock
     private DropdownService dropdownService;
 
@@ -40,43 +47,44 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
     }
 
     @Test
-    public void getWorkingDetail_PersonalInfoNotSaved_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
-        doReturn(mockIndividual()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomer(anyLong());
-        doReturn(mockCustGeneralProfileResponse()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
-        doReturn(false).when(loanOnlineSubmissionGetPersonalDetailService).personalInfoSaved(any());
+    public void getWorkingDetail_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
+        doReturn(mockIndividual()).when(rslService).getLoanSubmissionCustomerInfo(any());
+        doReturn(mockCustGeneralProfileResponse()).when(customerServiceClient).getCustomers(anyString());
         doReturn("01").when(dropdownService).getEmploymentStatus(anyString());
         List<Dropdowns.IncomeType> dropdownIncomeType = new ArrayList<>();
         Dropdowns.IncomeType incomeType = Dropdowns.IncomeType.builder().code("1").build();
         dropdownIncomeType.add(incomeType);
         doReturn(dropdownIncomeType).when(dropdownService).getDropdownIncomeType(anyString());
 
-        WorkingDetail response = getWorkingDetailService.getWorkingDetail("crmId", 1L);
+        WorkingDetail response = getWorkingDetailService.getWorkingDetail("crmId", "2021093004189311");
         Assertions.assertNotNull(response);
     }
 
-    @Test
-    public void getWorkingDetail_PersonalInfoSaved_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
-        doReturn(mockIndividual()).when(loanOnlineSubmissionGetPersonalDetailService).getCustomer(anyLong());
-        doReturn(true).when(loanOnlineSubmissionGetPersonalDetailService).personalInfoSaved(any());
-
-        WorkingDetail response = getWorkingDetailService.getWorkingDetail("crmId", 1L);
-        Assertions.assertNotNull(response);
-    }
-
-    private CustGeneralProfileResponse mockCustGeneralProfileResponse() {
+    private ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> mockCustGeneralProfileResponse() {
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
         customerInfo.setOccupationCode("01");
         customerInfo.setBusinessTypeCode("123456789");
-        return customerInfo;
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = new TmbOneServiceResponse<>();
+        response.setData(customerInfo);
+        return ResponseEntity.ok().body(response);
     }
 
-    private Individual mockIndividual() {
+    private ResponseIndividual mockIndividual() {
+        ResponseIndividual response = new ResponseIndividual();
+        com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+        header.setResponseCode(ResponseCode.SUCCESS.getCode());
+        response.setHeader(header);
+
         Individual individual = new Individual();
         com.tmb.common.model.legacy.rsl.common.ob.address.Address address = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
         address.setAddrTypCode(AddressTypeCode.WORKING.getCode());
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] addresses = {address};
         individual.setAddresses(addresses);
-        return individual;
+        Individual[] Individuals = {individual};
+        com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
+        body.setIndividuals(Individuals);
+        response.setBody(body);
+        return response;
     }
 
 

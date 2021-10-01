@@ -85,7 +85,7 @@ public class LoanOnlineSubmissionController {
         TmbOneServiceResponse<WorkingDetail> response = new TmbOneServiceResponse<>();
 
         try {
-            WorkingDetail workingDetail = loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(caId.toString());
+            WorkingDetail workingDetail = loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(crmId, caId.toString());
             response.setData(workingDetail);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

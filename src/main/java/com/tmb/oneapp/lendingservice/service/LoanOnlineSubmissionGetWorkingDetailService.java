@@ -41,7 +41,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
-        CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(caId);
+        CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(crmId);
         return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc);
     }
 
@@ -136,7 +136,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     }
 
-    private CustGeneralProfileResponse getCustomerInfoFromRslEc(String caId) throws TMBCommonException {
+    private CustGeneralProfileResponse getCustomerInfoFromRslEc(String crmId) throws TMBCommonException {
         TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(caId).getBody();
         if (ObjectUtils.isEmpty(response.getData())) {
             throw new TMBCommonException(response.getStatus().getCode(),

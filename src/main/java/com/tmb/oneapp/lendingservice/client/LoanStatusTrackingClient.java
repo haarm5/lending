@@ -17,17 +17,18 @@ import java.util.UUID;
 @Service
 public class LoanStatusTrackingClient {
 
-    @Value("${loan-status-tracking.url}")
+    @Value("${rsl.status.tracking.url}")
     private String loanStatusTrackingUrl;
-    private  LoanStatusTrackingServiceLocator locator = new LoanStatusTrackingServiceLocator();
+    private LoanStatusTrackingServiceLocator locator = new LoanStatusTrackingServiceLocator();
 
-    private static final String MOBILE_NUMBER  = "0000000000";
+    private static final String MOBILE_NUMBER = "0000000000";
     private static final String CHANNEL = "MIB";
     private static final String MODULE = "3";
 
-    public void setLocator(LoanStatusTrackingServiceLocator locator){
+    public void setLocator(LoanStatusTrackingServiceLocator locator) {
         this.locator = locator;
     }
+
     public ResponseTracking searchAppStatusByID(String citizenId) throws RemoteException, ServiceException {
 
         locator.setLoanStatusTrackingEndpointAddress(loanStatusTrackingUrl);

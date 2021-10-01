@@ -26,7 +26,7 @@ import java.util.UUID;
 @Service
 public class LoanSubmissionUpdateCreditCardClient {
 
-    @Value("${loan-submission-update-credit-card-info.url}")
+    @Value("${rsl.loan-submission-update-credit-card-info.url}")
     private String updateCreditCard;
     private final ObjectMapper mapper;
     private static final TMBLogger<LoanSubmissionUpdateCreditCardClient> logger = new TMBLogger<>(LoanSubmissionUpdateCreditCardClient.class);

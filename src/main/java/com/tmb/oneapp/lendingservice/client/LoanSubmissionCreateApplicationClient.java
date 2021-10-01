@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionCreateApplicationClient {
-    @Value("${loam-submission-create-application.url}")
+    @Value("${rsl.loan-submission-create-application.url}")
     private String createAppUrlInfo;
     private final ObjectMapper mapper;
     private static final TMBLogger<LoanSubmissionCreateApplicationClient> logger = new TMBLogger<>(LoanSubmissionCreateApplicationClient.class);

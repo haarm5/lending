@@ -26,7 +26,7 @@ public class CodeEntriesService {
 
 	private static final TMBLogger<CodeEntriesService> logger = new TMBLogger<>(CodeEntriesService.class);
 	private LoanSubmissionGetDropdownListServiceLocator locator = new LoanSubmissionGetDropdownListServiceLocator();
-	@Value("${rsl.service.name.loansubmmission.url}")
+	@Value("${rsl.loan-submission-get-dropdown-list.url}")
 	private String loanSubmissionGetDropdownListUrl;
 
 	public void setLocator(LoanSubmissionGetDropdownListServiceLocator locator) {

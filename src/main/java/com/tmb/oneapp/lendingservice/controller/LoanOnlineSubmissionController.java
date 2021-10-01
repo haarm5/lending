@@ -1,23 +1,6 @@
 package com.tmb.oneapp.lendingservice.controller;
 
-import java.time.Instant;
-import java.util.List;
-
-import javax.validation.Valid;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual;
-import com.tmb.oneapp.lendingservice.model.loanonline.*;
-import com.tmb.oneapp.lendingservice.model.personal.*;
-import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
-import com.tmb.oneapp.lendingservice.service.*;
-import io.swagger.annotations.*;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.LogAround;
 import com.tmb.common.logger.TMBLogger;
@@ -27,20 +10,21 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseAppl
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
-import com.tmb.oneapp.lendingservice.model.loanonline.IncomeInfo;
-import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
-import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
-import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionCheckWaiveDocService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionGetCustInformationService;
-import com.tmb.oneapp.lendingservice.service.LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
+import com.tmb.oneapp.lendingservice.model.loanonline.*;
+import com.tmb.oneapp.lendingservice.model.personal.*;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerAgeResponse;
+import com.tmb.oneapp.lendingservice.service.*;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.Instant;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Api(tags = "LoanOnlineSubmission")
@@ -101,7 +85,7 @@ public class LoanOnlineSubmissionController {
         TmbOneServiceResponse<WorkingDetail> response = new TmbOneServiceResponse<>();
 
         try {
-            WorkingDetail workingDetail = loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(crmId, caId);
+            WorkingDetail workingDetail = loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(caId.toString());
             response.setData(workingDetail);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));
@@ -279,7 +263,7 @@ public class LoanOnlineSubmissionController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true, dataType = "string", paramType = "header")})
     public ResponseEntity<TmbOneServiceResponse<List<ChecklistResponse>>> getMoreDocuments(@Valid @RequestHeader(name = LendingServiceConstant.HEADER_X_CRMID) String crmId,
-                                                                                       @Valid ChecklistRequest request) {
+                                                                                           @Valid ChecklistRequest request) {
         responseHeaders.set(LendingServiceConstant.HEADER_TIMESTAMP, String.valueOf(Instant.now().toEpochMilli()));
         TmbOneServiceResponse<List<ChecklistResponse>> oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
@@ -351,7 +335,7 @@ public class LoanOnlineSubmissionController {
 
         TmbOneServiceResponse oneTmbOneServiceResponse = new TmbOneServiceResponse<>();
         try {
-            loanOnlineSubmissionUpdateApplicationService.updateApplication(request,crmId);
+            loanOnlineSubmissionUpdateApplicationService.updateApplication(request, crmId);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
             setHeader();
             return ResponseEntity.ok().headers(responseHeaders).body(oneTmbOneServiceResponse);

@@ -39,7 +39,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     private final DropdownService dropdownService;
     private final CommonServiceFeignClient commonServiceFeignClient;
 
-    public WorkingDetail getWorkingDetail(String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
+    public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
         CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(crmId);
         return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc);
@@ -54,7 +54,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setRmOccupation(prepareData(customerInfoRsl.getRmOccupation(), customerInfoEc.getOccupationCode()));
         workingDetail.setOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
         workingDetail.setContractEmployedFlag(prepareData(customerInfoRsl.getContractEmployedFlag(), null));
-        workingDetail.setBusinessType(prepareData(customerInfoRsl.getBusinessType(), customerInfoEc.getBusinessTypeCode().substring(0, 4)));
+        workingDetail.setBusinessType(prepareBusinessType(customerInfoRsl, customerInfoEc));
         workingDetail.setBusinessSubType(prepareData(customerInfoRsl.getBusinessSubType(), customerInfoEc.getBusinessTypeCode()));
         workingDetail.setEmploymentName(prepareData(customerInfoRsl.getEmploymentName(), customerInfoEc.getWorkEmploymentName()));
         workingDetail.setAddress(prepareWorkingAddress(customerInfoRsl.getAddresses(), customerInfoEc));
@@ -75,6 +75,14 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws ServiceException, TMBCommonException, JsonProcessingException {
         return dropdownService.getEmploymentStatus(customerInfoEc.getOccupationCode());
+    }
+
+    private String prepareBusinessType(Individual customerInfoRsl, CustGeneralProfileResponse customerInfoEc) {
+        String businessTypeCodeEc = "";
+        if(!StringUtils.isEmpty(customerInfoEc.getBusinessTypeCode())) {
+            businessTypeCodeEc = customerInfoEc.getBusinessTypeCode().substring(0, 4);
+        }
+        return prepareData(customerInfoRsl.getBusinessType(), businessTypeCodeEc);
     }
 
     public Address parseWorkingAddressEc(CustGeneralProfileResponse customer) {

@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Service
 public class LoanSubmissionGetIncomeModelInfoClient {
-    @Value("${loan-submission-get-income-model-info.url}")
+    @Value("${rsl.loan-submission-get-income-model-info.url}")
     private String incomeInfoUrl;
 
     private final ObjectMapper mapper;

@@ -172,6 +172,7 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             }
             facility.setMailingPreference(mailingPreference);
             facility.setCardDelivery(mailingPreference);
+            facility.setFacilitySavedFlag("Y");
             com.tmb.common.model.legacy.rsl.ws.facility.update.response.ResponseFacility response = loanSubmissionUpdateFacilityInfoClient.updateFacilityInfo(facility);
             if (!response.getHeader().getResponseCode().equals(MSG_000)) {
                 throw new TMBCommonException(response.getHeader().getResponseCode(),

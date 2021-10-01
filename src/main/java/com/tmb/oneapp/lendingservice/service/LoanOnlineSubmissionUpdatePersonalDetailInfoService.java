@@ -81,7 +81,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         individual.setNameLine2(request.getEngName());
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
-        individual.setResidentFlag(request.getResidentFlag());
+        individual.setResidentType(request.getResidentFlag());
         individual.setExpiryDate(request.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());

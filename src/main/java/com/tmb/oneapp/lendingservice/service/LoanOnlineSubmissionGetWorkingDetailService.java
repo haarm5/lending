@@ -17,6 +17,7 @@ import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
             address.setMoo(prepareData(workingAddress.getMoo(), customerEc.getWorkAddrMoo()));
             address.setStreetName(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrStreet()));
             address.setPostalCode(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode()));
-            address.setProvince(prepareData(workingAddress.getProvince(), customerEc.getWorkAddrProvinceNameTh()));
+            address.setProvince(getProvinceName(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode())));
             address.setCountry(prepareData(workingAddress.getCountry(), customerEc.getNationality()));
             address.setTumbol(prepareData(workingAddress.getTumbol(), customerEc.getWorkAddrSubDistrictNameTh()));
             address.setRoad(prepareData(workingAddress.getRoad(), customerEc.getWorkAddrStreet()));
@@ -152,12 +153,12 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     }
 
     private String getProvinceName(String postCode) {
-        var req = new CommonProvinceRequest();
+        CommonProvinceRequest req = new CommonProvinceRequest();
         req.setField("postcode");
         req.setSearch(postCode);
         ResponseEntity<TmbOneServiceResponse<List<Province>>> response = commonServiceFeignClient.getProvince(req);
-        if (!response.getBody().getStatus().getCode().equals("0000")) {
-            return null;
+        if (!ResponseCode.SUCCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+            return Strings.EMPTY;
         }
         return response.getBody().getData().get(0).getProvinceNameTh();
     }

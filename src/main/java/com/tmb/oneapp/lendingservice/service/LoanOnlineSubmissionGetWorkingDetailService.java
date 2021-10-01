@@ -69,6 +69,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setSciCountry(prepareIncomeType(customerInfoRsl.getIncomeType(), employmentStatus));
         workingDetail.setCardDelivery(prepareData(customerInfoRsl.getMailingPreference(), null));
         workingDetail.setEmailStatementFlag(prepareData(customerInfoRsl.getEmailStatementFlag(), "Y"));
+        workingDetail.setTel(prepareData(customerInfoRsl.getEmploymentTelephoneNo(), customerInfoEc.getWorkPhoneNo()));
+        workingDetail.setExTel(prepareData(customerInfoRsl.getEmploymentTelephoneExtNo(), customerInfoEc.getWorkPhoneNoExt()));
 
         return workingDetail;
     }

@@ -65,7 +65,7 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
         dropdownIncomeType.add(incomeType);
         doReturn(dropdownIncomeType).when(dropdownService).getDropdownIncomeType(anyString());
 
-        WorkingDetail response = getWorkingDetailService.getWorkingDetail("2021093004189311");
+        WorkingDetail response = getWorkingDetailService.getWorkingDetail("2021093004189311", "1");
         Assertions.assertNotNull(response);
     }
 

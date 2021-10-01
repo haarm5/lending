@@ -41,7 +41,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     public WorkingDetail getWorkingDetail(String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
-        CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(caId);
+        CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(crmId);
         return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc);
     }
 
@@ -136,8 +136,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     }
 
-    private CustGeneralProfileResponse getCustomerInfoFromRslEc(String caId) throws TMBCommonException {
-        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(caId).getBody();
+    private CustGeneralProfileResponse getCustomerInfoFromRslEc(String crmId) throws TMBCommonException {
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
         if (ObjectUtils.isEmpty(response.getData())) {
             throw new TMBCommonException(response.getStatus().getCode(),
                     "Customer info on ec are empty.", ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);

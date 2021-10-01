@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "${feign.creditcard.service.name}", url = "${feign.creditcard.service.url}")
 public interface CreditCardClient {
 
-    @GetMapping(value = "/apis/creditcard/creditcard-details/{ACCOUNT_ID}")
+    @GetMapping(value = "${feign.creditcard.service.detail.endpoint}")
     ResponseEntity<FetchCardResponse> getCreditCardDetails(
             @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @PathVariable(value = "ACCOUNT_ID") String accountId);

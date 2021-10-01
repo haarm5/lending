@@ -137,7 +137,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     }
 
     private CustGeneralProfileResponse getCustomerInfoFromRslEc(String crmId) throws TMBCommonException {
-        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(caId).getBody();
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
         if (ObjectUtils.isEmpty(response.getData())) {
             throw new TMBCommonException(response.getStatus().getCode(),
                     "Customer info on ec are empty.", ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);

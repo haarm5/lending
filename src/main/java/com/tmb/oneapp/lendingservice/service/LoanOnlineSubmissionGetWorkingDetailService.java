@@ -4,17 +4,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
+import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
+import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -32,6 +38,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     private final RslService rslService;
     private final CustomerServiceClient customerServiceClient;
     private final DropdownService dropdownService;
+    private final CommonServiceFeignClient commonServiceFeignClient;
 
     public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
@@ -144,6 +151,17 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
             return rslData;
         }
         return ecData;
+    }
+
+    private String getProvinceName(String postCode) {
+        var req = new CommonProvinceRequest();
+        req.setField("postcode");
+        req.setSearch(postCode);
+        ResponseEntity<TmbOneServiceResponse<List<Province>>> response = commonServiceFeignClient.getProvince(req);
+        if (!response.getBody().getStatus().getCode().equals("0000")) {
+            return null;
+        }
+        return response.getBody().getData().get(0).getProvinceNameTh();
     }
 
 }

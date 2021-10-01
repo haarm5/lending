@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
@@ -40,6 +42,8 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
     private CustomerServiceClient customerServiceClient;
     @Mock
     private DropdownService dropdownService;
+    @Mock
+    private CommonServiceFeignClient commonServiceFeignClient;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +55,8 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
         doReturn(mockIndividual()).when(rslService).getLoanSubmissionCustomerInfo(any());
         doReturn(mockCustGeneralProfileResponse()).when(customerServiceClient).getCustomers(anyString());
         doReturn("01").when(dropdownService).getEmploymentStatus(anyString());
+        doReturn(new ResponseEntity<>(mockProvinces(), HttpStatus.OK)).when(commonServiceFeignClient).getProvince(any());
+
         List<Dropdowns.IncomeType> dropdownIncomeType = new ArrayList<>();
         Dropdowns.IncomeType incomeType = Dropdowns.IncomeType.builder().code("1").build();
         dropdownIncomeType.add(incomeType);
@@ -87,5 +93,15 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
         return response;
     }
 
+    private TmbOneServiceResponse<List<Province>> mockProvinces() {
+        TmbOneServiceResponse<List<Province>> mockProvince = new TmbOneServiceResponse<>();
+        var status = new TmbStatus();
+        status.setCode("0000");
+        mockProvince.setStatus(status);
+        var mockList = new ArrayList<Province>();
+        mockList.add(new Province());
+        mockProvince.setData(mockList);
+        return mockProvince;
+    }
 
 }

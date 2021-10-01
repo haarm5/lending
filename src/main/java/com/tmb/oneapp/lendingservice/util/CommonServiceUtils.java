@@ -163,4 +163,8 @@ public class CommonServiceUtils {
     public static String maskPhoneNumber(String phoneNumber) {
         return phoneNumber.replaceAll(".(?=.{4})", "X");
     }
+
+    public static String formatStringForReport(String value) {
+        return (StringUtils.isBlank(value)) ? "-" : value;
+    }
 }

@@ -26,4 +26,13 @@ public interface FTPClient {
      * @throws IOException
      */
     boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList);
+    
+    /**
+     * Delete Files Older Than N Days
+     *
+     * @param dst
+     * @param day
+     * @return
+     */
+	boolean purgeFileOlderThanNDays(String dst, long day);
 }

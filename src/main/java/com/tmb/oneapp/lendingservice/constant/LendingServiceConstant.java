@@ -53,4 +53,14 @@ public class LendingServiceConstant {
     public static final String SEPARATOR = "/";
 
     public static final Integer SILVER_LAKE_SUCCESS_CODE = 0;
+    
+    public static final String SUCCESS_DESC_PURGE_DATA = "Purging e-consent e-app and upload document successfully";
+	public static final String FAILED_DESC_PURGE_DATA = "Purging e-consent e-app and upload document failed";
+	
+
+    /**
+     * Report Generate
+     */
+    public static final String REPORT_TYPE_PDF = "PDF";
+    
 }

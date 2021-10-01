@@ -45,6 +45,7 @@ public class NotificationService {
     }
 
     public void sendNotifyEAppReportGenerator(String crmId, String accountId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+        accountId = (accountId.length() > 20) ? accountId.substring(accountId.length() - 20) : accountId;
         NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
                 defaultChannelTh, wrapper.getProductNameEn(), wrapper.getProductNameTh(), wrapper.getCustomerNameEn(), wrapper.getCustomerNameTh());
         notifyCommon.setAccountId(accountId);

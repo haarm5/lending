@@ -36,7 +36,7 @@ public class ReportGeneratorController {
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @ApiParam(value = LendingServiceConstant.HEADER_ACCOUNT_ID, defaultValue = "0000000050078680019000079", required = true)
+            @ApiParam(value = LendingServiceConstant.HEADER_ACCOUNT_ID, defaultValue = "00050078680019000079", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_ACCOUNT_ID) String accountId,
             @RequestBody ReportGeneratorRequest request) throws TMBCommonException {
         TmbOneServiceResponse<ReportGeneratorResponse> response = new TmbOneServiceResponse<>();

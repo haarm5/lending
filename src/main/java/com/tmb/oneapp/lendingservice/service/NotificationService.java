@@ -45,6 +45,8 @@ public class NotificationService {
     }
 
     public void sendNotifyEAppReportGenerator(String crmId, String accountId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+        ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
+                accountId);
         accountId = (accountId.length() > 20) ? accountId.substring(accountId.length() - 20) : accountId;
         NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
                 defaultChannelTh, wrapper.getProductNameEn(), wrapper.getProductNameTh(), wrapper.getCustomerNameEn(), wrapper.getCustomerNameTh());
@@ -52,8 +54,6 @@ public class NotificationService {
         notifyCommon.setCrmId(crmId);
         String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
         String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
-        ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
-                accountId);
         String productID = "";
         if (Objects.nonNull(cardInfoResponse.getBody())
                 && LendingServiceConstant.SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {

@@ -128,7 +128,7 @@ class LoanOnlineSubmissionControllerTest {
     @Test
     public void loanSubmissionGetWorkingDetailSuccess() throws Exception {
         WorkingDetail res = new WorkingDetail();
-        when(loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(any(), any())).thenReturn(res);
+        when(loanOnlineSubmissionGetWorkingDetailService.getWorkingDetail(any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<WorkingDetail>> responseEntity = loanOnlineSubmissionController.loanSubmissionGetWorkingDetail("correlationId", "crmId", 1L);
 
         Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -140,7 +140,7 @@ class LoanOnlineSubmissionControllerTest {
     public void loanSubmissionGetWorkingDetailThrowTMBCommonException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(loanOnlineSubmissionGetWorkingDetailService).getWorkingDetail(any(), any());
+                    .when(loanOnlineSubmissionGetWorkingDetailService).getWorkingDetail(any());
 
             loanOnlineSubmissionController.loanSubmissionGetWorkingDetail("correlationId", "crmId", 1L);
         });
@@ -154,7 +154,7 @@ class LoanOnlineSubmissionControllerTest {
     public void loanSubmissionGetWorkingDetailThrowException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new IllegalArgumentException())
-                    .when(loanOnlineSubmissionGetWorkingDetailService).getWorkingDetail(any(), any());
+                    .when(loanOnlineSubmissionGetWorkingDetailService).getWorkingDetail(any());
 
             loanOnlineSubmissionController.loanSubmissionGetWorkingDetail("correlationId", "crmId", 1L);
         });

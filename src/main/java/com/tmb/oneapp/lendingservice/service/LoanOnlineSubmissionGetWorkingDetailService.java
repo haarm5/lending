@@ -39,7 +39,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     private final DropdownService dropdownService;
     private final CommonServiceFeignClient commonServiceFeignClient;
 
-    public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
+    public WorkingDetail getWorkingDetail(String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
         CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(caId);
         return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc);

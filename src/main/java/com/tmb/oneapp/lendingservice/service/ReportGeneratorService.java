@@ -10,7 +10,6 @@ import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
-import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
@@ -26,7 +25,6 @@ import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +75,7 @@ public class ReportGeneratorService {
         this.sftpClientImp = sftpClientImp;
     }
 
-    public ReportGeneratorResponse generateEAppReport(HttpHeaders headers, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
+    public ReportGeneratorResponse generateEAppReport(String accountId, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
@@ -126,7 +124,7 @@ public class ReportGeneratorService {
             stores(crmId, appRefNo, filePath);
 
             ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, productCode, applicationInfo, correlationId, fileName);
-            sendNotification(headers, crmId, correlationId, notificationWrapper);
+            sendNotification(accountId, crmId, correlationId, notificationWrapper);
 
             return new ReportGeneratorResponse(productCode, fileName);
         }
@@ -183,10 +181,9 @@ public class ReportGeneratorService {
         return notificationAttachments;
     }
 
-    private void sendNotification(HttpHeaders headers, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+    private void sendNotification(String accountId, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         try {
-            notificationService.sendNotifyEAppReportGenerator(crmId, headers.getFirst(LendingServiceConstant.HEADER_ACCOUNT_ID),
-                    correlationId, wrapper);
+            notificationService.sendNotifyEAppReportGenerator(crmId, accountId, correlationId, wrapper);
         } catch (Exception e) {
             logger.error("sendNotifyEAppReportGenerator error: {}", e);
             throw e;

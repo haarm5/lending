@@ -81,7 +81,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("VJ");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -92,7 +92,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("RC01");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -103,7 +103,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("C2G");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(new HttpHeaders(),
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -114,7 +114,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("XXX");
 
-        Assertions.assertThrows(TMBCommonException.class, () -> reportGeneratorService.generateEAppReport(new HttpHeaders(),
+        Assertions.assertThrows(TMBCommonException.class, () -> reportGeneratorService.generateEAppReport("account-id",
                 request, "correlationId", "crmId"));
     }
 

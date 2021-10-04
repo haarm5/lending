@@ -50,8 +50,11 @@ public class ReportGeneratorController {
             return ResponseEntity.ok()
                     .headers(TMBUtils.getResponseHeaders())
                     .body(response);
+        } catch (TMBCommonException e) {
+            throw e;
         } catch (Exception e) {
-            throw new TMBCommonException(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(), ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+            String errorMsg = String.format("%s with exception - %s", ResponseCode.FAILED.getMessage(), e);
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(), errorMsg, ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 

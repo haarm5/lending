@@ -241,7 +241,8 @@ public class ReportGeneratorService {
         parameters.put("employment_status", eAppResponse.getEmploymentStatus());
         parameters.put("salary", beautifyBigDecimal(eAppResponse.getSalary()));
         parameters.put("other_income", beautifyBigDecimal(eAppResponse.getOtherIncome()));
-        parameters.put("apox_income", beautifyBigDecimal(eAppResponse.getSalary().add(eAppResponse.getOtherIncome())));
+        parameters.put("apox_income", beautifyBigDecimal(
+                calculateApproxIncome(eAppResponse.getSalary(), eAppResponse.getOtherIncome())));
 
         //Loan Payment Detail Section
         parameters.put("payment_method", eAppResponse.getPaymentMethod());
@@ -291,9 +292,15 @@ public class ReportGeneratorService {
         //Consent Section
         parameters.put("accept_by", eAppResponse.getAcceptBy());
         parameters.put("consent_date", convertToThaiDate(eAppResponse.getAcceptDate()));
-        parameters.put("consent_time", CommonServiceUtils.getTimeInHHMMSS(eAppResponse.getAcceptDate().getTime()));
+        parameters.put("consent_time", convertToTime(eAppResponse.getAcceptDate()));
     }
-    
+
+    private String convertToTime(Calendar acceptDate) {
+        return Objects.nonNull(acceptDate) ?
+                CommonServiceUtils.getTimeInHHMMSS(acceptDate.getTime()) :
+                "-";
+    }
+
     private void storeFileOnSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
             List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
@@ -351,10 +358,19 @@ public class ReportGeneratorService {
         return config.get(0).getDefaultRslCode();
     }
 
+    private BigDecimal calculateApproxIncome(BigDecimal salary, BigDecimal otherIncome) {
+        return Objects.requireNonNullElse(salary, BigDecimal.ZERO)
+                .add(Objects.requireNonNullElse(otherIncome, BigDecimal.ZERO));
+    }
+
     private String convertToThaiDate(Calendar calendar) {
-        Date date = calendar.getTime();
-        String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
-        return CommonServiceUtils.getThaiDate(dateEng);
+        if (Objects.nonNull(calendar)) {
+            Date date = calendar.getTime();
+            String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+            return CommonServiceUtils.getThaiDate(dateEng);
+        } else {
+            return "-";
+        }
     }
 
     private String formatBigDecimalToString(BigDecimal value) {
@@ -366,6 +382,6 @@ public class ReportGeneratorService {
     }
 
     private String beautifyBigDecimal(BigDecimal value) {
-        return CommonServiceUtils.format2DigitDecimalPoint(value);
+        return CommonServiceUtils.format2DigitDecimalPoint(Objects.requireNonNullElse(value, BigDecimal.ZERO));
     }
 }

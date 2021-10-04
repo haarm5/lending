@@ -170,7 +170,7 @@ public class LoanOnlineSubmissionEAppService {
     private EAppResponse mapDataFromFacility(Facility facility, EAppResponse response) {
         response.setLimitApplied(facility.getLimitApplied());
         response.setMonthlyInstallment(facility.getMonthlyInstallment());
-        response.setInterest(facility.getPricings()[0].getInterestRate());
+        response.setInterest(facility.getPricings()[0]!=null?facility.getPricings()[0].getInterestRate():null);
         response.setDisburstAccountNo(facility.getDisburstAccountNo());
         response.setPaymentMethod(mapPaymentMethod(facility.getPaymentMethod()));
         response.setPaymentAccountName(facility.getPaymentAccountName());

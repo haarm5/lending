@@ -90,7 +90,7 @@ public class ReportGeneratorServiceTest {
     public void generateEAppReport_FlashCard_Success() throws TMBCommonException, ServiceException, IOException, ParseException {
         ReportGeneratorRequest request = new ReportGeneratorRequest();
         request.setCaId("1");
-        request.setProductCode("RC01");
+        request.setProductCode("RC");
 
         ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
                 request, "correlationId", "crmId");

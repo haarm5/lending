@@ -93,7 +93,7 @@ public class ReportGeneratorService {
             case "VB":
                 template = prepareCreditCardParameters(parameters, eAppResponse);
                 break;
-            case "RC01":
+            case "RC":
                 template = prepareFlashCardParameters(parameters, eAppResponse);
                 break;
             case "C2G":
@@ -165,7 +165,7 @@ public class ReportGeneratorService {
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
 
-        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);
+        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> productCode.equals(rslCode.getRslCode())).findFirst().orElse(null);
         if (rslConfig != null) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfig);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfig);

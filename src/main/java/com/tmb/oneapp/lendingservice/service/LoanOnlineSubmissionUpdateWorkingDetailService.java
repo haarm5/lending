@@ -40,8 +40,10 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
         String productCode = request.getProductCode();
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
                 || productCode.equals("VG") || productCode.equals("VP")
-                || productCode.equals("VT") || productCode.equals("MT")
-                || productCode.equals("MS");
+                || productCode.equals("VT") || productCode.equals("VJ")
+                || productCode.equals("VH") || productCode.equals("VI")
+                || productCode.equals("VB")
+                || productCode.equals("MT") || productCode.equals("MS");
 
         com.tmb.common.model.legacy.rsl.ws.individual.update.response.ResponseIndividual result = updateIndividual(request, isTypeCC);
         if (!isTypeCC) {

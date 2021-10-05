@@ -65,8 +65,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setIncomeDeclared(prepareData(customerInfoRsl.getIncomeDeclared(), null));
         workingDetail.setIncometotalLastMthCreditAcct1(prepareData(customerInfoRsl.getIncometotalLastMthCreditAcct1(), null));
         workingDetail.setIncomeSharedHolderPercent(prepareData(customerInfoRsl.getIncomeSharedHolderPercent(), null));
-        workingDetail.setIncomeType(prepareData(customerInfoRsl.getIncomeType(), null));
-        workingDetail.setSciCountry(prepareIncomeType(customerInfoRsl.getSourceFromCountry(), customerInfoEc.getCountryOfIncome()));
+        workingDetail.setIncomeType(prepareIncomeType(customerInfoRsl.getIncomeType(), employmentStatus));
+        workingDetail.setSciCountry(prepareData(customerInfoRsl.getSourceFromCountry(), customerInfoEc.getCountryOfIncome()));
         workingDetail.setCardDelivery(prepareData(customerInfoRsl.getMailingPreference(), null));
         workingDetail.setEmailStatementFlag(prepareData(customerInfoRsl.getEmailStatementFlag(), "Y"));
         workingDetail.setTel(prepareData(customerInfoRsl.getEmploymentTelephoneNo(), customerInfoEc.getWorkPhoneNo()));

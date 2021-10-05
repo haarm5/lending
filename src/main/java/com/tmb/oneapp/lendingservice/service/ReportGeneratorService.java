@@ -257,11 +257,11 @@ public class ReportGeneratorService {
         parameters.put("issue_date", convertToThaiDate(eAppResponse.getIssueDate()));
         parameters.put("expiry_date", convertToThaiDate(eAppResponse.getExpiryDate()));
         parameters.put("name_th", eAppResponse.getNameTh());
-        parameters.put("name_en", eAppResponse.getNameEn());
+        parameters.put("name_en", convertToString(eAppResponse.getNameEn()));
         parameters.put("birth_day", convertToThaiDate(eAppResponse.getBirthDay()));
         parameters.put("mobile_no", CommonServiceUtils.formatPhoneNumber(
                 CommonServiceUtils.maskPhoneNumber(eAppResponse.getMobileNo())));
-        parameters.put("education_level", eAppResponse.getEducationLevel());
+        parameters.put("education_level", convertToString(eAppResponse.getEducationLevel()));
         parameters.put("source_from_country", eAppResponse.getSourceFromCountry());
         parameters.put("nationality", eAppResponse.getNationality());
         parameters.put("marital_status", eAppResponse.getMaritalStatus());
@@ -298,6 +298,12 @@ public class ReportGeneratorService {
     private String convertToTime(Calendar acceptDate) {
         return Objects.nonNull(acceptDate) ?
                 CommonServiceUtils.getTimeInHHMMSS(acceptDate.getTime()) :
+                "-";
+    }
+
+    private String convertToString(String message) {
+        return Objects.nonNull(message) ?
+                message :
                 "-";
     }
 

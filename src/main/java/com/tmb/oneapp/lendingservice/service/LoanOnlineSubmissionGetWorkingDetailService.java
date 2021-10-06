@@ -52,7 +52,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setEmploymentYear(prepareData(customerInfoRsl.getEmploymentYear(), null));
         workingDetail.setEmploymentMonth(prepareData(customerInfoRsl.getEmploymentMonth(), null));
         workingDetail.setRmOccupation(prepareData(customerInfoRsl.getRmOccupation(), customerInfoEc.getOccupationCode()));
-        workingDetail.setOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
+        workingDetail.setEmploymentOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
+        workingDetail.setProffesional(prepareData(customerInfoRsl.getProfessionalCode(), null));
         workingDetail.setContractEmployedFlag(prepareData(customerInfoRsl.getContractEmployedFlag(), null));
         workingDetail.setBusinessType(prepareBusinessType(customerInfoRsl, customerInfoEc));
         workingDetail.setBusinessSubType(prepareData(customerInfoRsl.getBusinessSubType(), customerInfoEc.getBusinessTypeCode()));

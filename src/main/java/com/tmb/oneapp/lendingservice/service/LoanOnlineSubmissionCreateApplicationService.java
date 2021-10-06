@@ -204,10 +204,16 @@ public class LoanOnlineSubmissionCreateApplicationService {
         List<LendingModuleConfig> config = Fetch
                 .fetch(() -> commonServiceFeignClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module"));
         List<CampaignCode> campaignCodes = config.get(0).getCampaignCode();
+        Optional<CampaignCode> optionalCampaignCode;
         if (productCode.equals("C2G")) {
-            return campaignCodes.stream().filter(x -> x.getEmploymentStatus().equals(employmentStatus)).findFirst().get().getCampaignCode();
+            optionalCampaignCode = campaignCodes.stream().filter(x -> x.getEmploymentStatus().equals(employmentStatus)).findFirst();
+        } else {
+            optionalCampaignCode = campaignCodes.stream().filter(x -> x.getProductCode().equals(productCode)).findFirst();
         }
-        return campaignCodes.stream().filter(x -> x.getProductCode().equals(productCode)).findFirst().get().getCampaignCode();
+        if (optionalCampaignCode.isPresent()) {
+            return optionalCampaignCode.get().getCampaignCode();
+        }
+        return null;
     }
 
     private void loging(String error, Exception e) {

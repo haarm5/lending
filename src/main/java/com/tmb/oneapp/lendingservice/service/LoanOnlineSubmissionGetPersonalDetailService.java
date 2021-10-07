@@ -65,8 +65,8 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         response.setIdIssueCtry1(prepareData(individual.getIdIssueCtry1(), custGeneralProfileResponse.getNationality()).toString());
         response.setPrefix(prepareData(individual.getThaiSalutationCode(), custGeneralProfileResponse.getThaTname()).toString());
         response.setResidentStatus(" ");
-        if (Objects.nonNull(individual.getResidentFlag()) && !individual.getResidentFlag().isEmpty()) {
-            response.setResidentStatus(individual.getResidentFlag());
+        if (Objects.nonNull(individual.getResidentType()) && !individual.getResidentType().isEmpty()) {
+            response.setResidentStatus(individual.getResidentType());
         }
         response.setAddress(mapAddress(individual, custGeneralProfileResponse));
         response.setResidentFlag(getResidents());

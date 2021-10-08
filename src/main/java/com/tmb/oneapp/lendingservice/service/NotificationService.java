@@ -1,6 +1,5 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.request.notification.EmailChannel;
@@ -45,7 +44,7 @@ public class NotificationService {
         this.notificationServiceClient = notificationServiceClient;
     }
 
-    public void sendNotifyEAppReportGenerator(String crmId, String productCode, String correlationId, ReportGeneratorNotificationWrapper wrapper) throws JsonProcessingException {
+    public void sendNotifyEAppReportGenerator(String crmId, String productCode, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
                 defaultChannelTh, wrapper.getProductNameEn(), wrapper.getProductNameTh(), wrapper.getCustomerNameEn(), wrapper.getCustomerNameTh());
         notifyCommon.setCrmId(crmId);

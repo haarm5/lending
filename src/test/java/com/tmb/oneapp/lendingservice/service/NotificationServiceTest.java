@@ -37,7 +37,7 @@ public class NotificationServiceTest {
     }
 
     @Test
-    void sendNotifyEAppReportGenerator_Success() throws JsonProcessingException {
+    void sendNotifyEAppReportGenerator_Success() {
         Mockito.when(notificationServiceClient.sendMessage(any(), any())).thenReturn(mockEmailResponse());
 
         ReportGeneratorNotificationWrapper wrapper = new ReportGeneratorNotificationWrapper();

@@ -4,28 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
-import com.tmb.common.model.creditcard.CreditCardDetail;
-import com.tmb.common.model.creditcard.SilverlakeStatus;
 import com.tmb.common.model.response.notification.NotificationResponse;
-import com.tmb.oneapp.lendingservice.client.CreditCardClient;
 import com.tmb.oneapp.lendingservice.client.NotificationServiceClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.creditcard.FetchCardResponse;
-import com.tmb.oneapp.lendingservice.model.creditcard.ProductCodeData;
 import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificationWrapper;
-import net.sf.jasperreports.engine.JRException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import javax.xml.rpc.ServiceException;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(JUnit4.class)
 public class NotificationServiceTest {
@@ -35,19 +29,15 @@ public class NotificationServiceTest {
 
     @Spy
     private NotificationServiceClient notificationServiceClient;
-    @Mock
-    private CreditCardClient creditCardClient;
 
     @BeforeEach
-    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException {
+    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException {
         MockitoAnnotations.initMocks(this);
-        notificationService = new NotificationService(notificationServiceClient,
-                creditCardClient);
+        notificationService = new NotificationService(notificationServiceClient);
     }
 
     @Test
     void sendNotifyEAppReportGenerator_Success() {
-        Mockito.when(creditCardClient.getCreditCardDetails(any(), any())).thenReturn(ResponseEntity.status(HttpStatus.OK).body(mockFetchCardResponse()));
         Mockito.when(notificationServiceClient.sendMessage(any(), any())).thenReturn(mockEmailResponse());
 
         ReportGeneratorNotificationWrapper wrapper = new ReportGeneratorNotificationWrapper();
@@ -57,21 +47,6 @@ public class NotificationServiceTest {
         Mockito.verify(notificationServiceClient, Mockito.times(1)).sendMessage(any(), any());
     }
 
-    private FetchCardResponse mockFetchCardResponse() {
-        FetchCardResponse cardResponse = new FetchCardResponse();
-        ProductCodeData productData = new ProductCodeData();
-        productData.setProductNameEN("So Fast Credit Card");
-        productData.setProductNameTH("โซฟาสต์");
-        cardResponse.setProductCodeData(productData);
-        SilverlakeStatus silverlake = new SilverlakeStatus();
-        silverlake.setStatusCode(0);
-        cardResponse.setStatus(silverlake);
-        CreditCardDetail cardDetail = new CreditCardDetail();
-        cardDetail.setProductId("VTOPBR");
-        cardResponse.setCreditCard(cardDetail);
-
-        return cardResponse;
-    }
 
     private TmbOneServiceResponse<NotificationResponse> mockEmailResponse() {
         TmbOneServiceResponse<NotificationResponse> sendEmailResponse = new TmbOneServiceResponse<>();

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;

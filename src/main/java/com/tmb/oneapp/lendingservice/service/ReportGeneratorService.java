@@ -182,7 +182,7 @@ public class ReportGeneratorService {
         return notificationAttachments;
     }
 
-    private void sendNotification(String productCode, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) throws JsonProcessingException {
+    private void sendNotification(String productCode, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         try {
             notificationService.sendNotifyEAppReportGenerator(crmId, productCode, correlationId, wrapper);
         } catch (Exception e) {

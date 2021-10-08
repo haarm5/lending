@@ -4,6 +4,7 @@ package com.tmb.oneapp.lendingservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.CampaignCode;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.legacy.rsl.common.ob.application.Application;
@@ -13,13 +14,12 @@ import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
-import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionCreateApplicationClient;
+import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetIncomeModelInfoClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
+import com.tmb.oneapp.lendingservice.util.Fetch;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -29,10 +29,7 @@ import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +39,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
     private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
     private final CustomerServiceClient customerServiceClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
+    private final CommonServiceFeignClient commonServiceFeignClient;
 
 
     public ResponseApplication createApplication(LoanSubmissionCreateApplicationReq request, String rmId) throws TMBCommonException, ServiceException, ParseException, RemoteException, JsonProcessingException {
@@ -123,13 +121,13 @@ public class LoanOnlineSubmissionCreateApplicationService {
         return cal;
     }
 
-    private Application mapDataTypeCC(Application application, LoanSubmissionCreateApplicationReq req) {
+    private Application mapDataTypeCC(Application application, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
         CreditCard[] creditCards = new CreditCard[1];
         creditCards[0] = new CreditCard();
         creditCards[0].setCardInd(req.getCardInd());
         creditCards[0].setProductType(req.getProductType());
         creditCards[0].setCardBrand(req.getCardBrand());
-        creditCards[0].setCampaignCode(req.getCampaignCode());
+        creditCards[0].setCampaignCode(getCampaignCode(req.getProductCode(), req.getEmploymentStatus()));
         creditCards[0].setPaymentMethod(req.getPaymentMethod());
         creditCards[0].setDebitAccountNo(req.getDebitAccountNo());
         creditCards[0].setDebitAccountName(req.getDebitAccountName());
@@ -138,7 +136,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
         return application;
     }
 
-    private Application mapDataTypeNonCC(Application application, LoanSubmissionCreateApplicationReq req) {
+    private Application mapDataTypeNonCC(Application application, LoanSubmissionCreateApplicationReq req) throws TMBCommonException {
         Facility[] facilities = new Facility[1];
         facilities[0] = new Facility();
         facilities[0].setFacilityCode("RC");
@@ -147,7 +145,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
             facilities[0].setFacilityCode("C2G");
             facilities[0].setProductCode("C2G01");
         }
-        facilities[0].setCaCampaignCode(req.getCampaignCode());
+        facilities[0].setCaCampaignCode(getCampaignCode(req.getProductCode(), req.getEmploymentStatus()));
         facilities[0].setLimitApplied(req.getLimitApplied());
         facilities[0].setTenure(req.getTenure());
         facilities[0].setDisburstBankName(req.getDisburstBankName());
@@ -200,6 +198,22 @@ public class LoanOnlineSubmissionCreateApplicationService {
             loging("create app get CustomerEC soap error", e);
             throw e;
         }
+    }
+
+    private String getCampaignCode(String productCode, String employmentStatus) throws TMBCommonException {
+        List<LendingModuleConfig> config = Fetch
+                .fetch(() -> commonServiceFeignClient.getCommonConfig(UUID.randomUUID().toString(), "lending_module"));
+        List<CampaignCode> campaignCodes = config.get(0).getCampaignCode();
+        Optional<CampaignCode> optionalCampaignCode;
+        if (productCode.equals("C2G")) {
+            optionalCampaignCode = campaignCodes.stream().filter(x -> x.getEmploymentStatus().equals(employmentStatus)).findFirst();
+        } else {
+            optionalCampaignCode = campaignCodes.stream().filter(x -> x.getProductCode().equals(productCode)).findFirst();
+        }
+        if (optionalCampaignCode.isPresent()) {
+            return optionalCampaignCode.get().getCampaignCode();
+        }
+        return null;
     }
 
     private void loging(String error, Exception e) {

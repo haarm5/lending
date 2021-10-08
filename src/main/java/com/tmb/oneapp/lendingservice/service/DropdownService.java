@@ -113,13 +113,13 @@ public class DropdownService {
         return rmOccupationList;
     }
 
-    public List<Dropdowns.Occupation> getDropdownOccupation(String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public List<Dropdowns.Occupation> getDropdownOccupation(String rmOccupation) throws ServiceException, TMBCommonException, JsonProcessingException {
         ResponseDropdown dropdownProffesional = getDropdown(DROPDOWN_PROFFESIONAL);
         List<Dropdowns.Occupation> occupationList = Arrays.stream(dropdownProffesional.getBody().getCommonCodeEntries())
                 .filter(occupation -> {
                             try {
                                 return ACTIVE_STATUS.equals(occupation.getActiveStatus())
-                                        && CommonServiceUtils.parseStringToList(occupation.getEntrySource()).contains(employmentStatus);
+                                        && CommonServiceUtils.parseStringToList(occupation.getEntrySource()).contains(rmOccupation);
                             } catch (Exception e) {
                                 logger.error("Get dropdown Occupation fail: {}", e);
                                 return false;

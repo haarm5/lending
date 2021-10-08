@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
@@ -80,7 +81,7 @@ public class ReportGeneratorService {
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
         //For testing purpose
-        eAppResponse.setEmail("jirat.cho@odds.team");
+        eAppResponse.setEmail("kamonwans@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -106,7 +107,7 @@ public class ReportGeneratorService {
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
         rslRequest.setCaId(request.getCaId());
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
-        String appRefNo = applicationInfo.getBody().getAppRefNo();
+        String appRefNo = applicationInfo.getBody( ).getAppRefNo();
 
         if (template.isBlank()) {
             throw new TMBCommonException(ResponseCode.EAPP_INVALID_PRODUCT_CODE.getCode(),
@@ -165,7 +166,9 @@ public class ReportGeneratorService {
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
 
-        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> productCode.equals(rslCode.getRslCode())).findFirst().orElse(null);
+        RslCode rslConfig = getRslConfig(correlationId).stream()
+                .filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);
+
         if (rslConfig != null) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfig);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfig);

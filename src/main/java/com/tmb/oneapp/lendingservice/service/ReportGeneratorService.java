@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
@@ -80,7 +81,7 @@ public class ReportGeneratorService {
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
         //For testing purpose
-        eAppResponse.setEmail("jirat.cho@odds.team");
+        eAppResponse.setEmail("kamonwans@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -106,7 +107,7 @@ public class ReportGeneratorService {
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
         rslRequest.setCaId(request.getCaId());
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
-        String appRefNo = applicationInfo.getBody().getAppRefNo();
+        String appRefNo = applicationInfo.getBody( ).getAppRefNo();
 
         if (template.isBlank()) {
             throw new TMBCommonException(ResponseCode.EAPP_INVALID_PRODUCT_CODE.getCode(),
@@ -165,7 +166,9 @@ public class ReportGeneratorService {
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
 
-        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> productCode.equals(rslCode.getRslCode())).findFirst().orElse(null);
+        RslCode rslConfig = getRslConfig(correlationId).stream()
+                .filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);
+
         if (rslConfig != null) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfig);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfig);
@@ -235,62 +238,62 @@ public class ReportGeneratorService {
 
     private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
         //Loan Detail Section
-        parameters.put("app_no", eAppResponse.getAppNo());
-        parameters.put("product_name", eAppResponse.getProductNameTh());
-        parameters.put("product_type", eAppResponse.getProductType());
-        parameters.put("employment_status", eAppResponse.getEmploymentStatus());
+        parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
+        parameters.put("product_name", beautifyString(eAppResponse.getProductNameTh()));
+        parameters.put("product_type", beautifyString(eAppResponse.getProductType()));
+        parameters.put("employment_status", beautifyString(eAppResponse.getEmploymentStatus()));
         parameters.put("salary", beautifyBigDecimal(eAppResponse.getSalary()));
         parameters.put("other_income", beautifyBigDecimal(eAppResponse.getOtherIncome()));
         parameters.put("apox_income", beautifyBigDecimal(
                 calculateApproxIncome(eAppResponse.getSalary(), eAppResponse.getOtherIncome())));
 
         //Loan Payment Detail Section
-        parameters.put("payment_method", eAppResponse.getPaymentMethod());
-        parameters.put("payment_account_name", eAppResponse.getPaymentAccountName());
-        parameters.put("payment_account_no", eAppResponse.getPaymentAccountNo());
+        parameters.put("payment_method", beautifyString(eAppResponse.getPaymentMethod()));
+        parameters.put("payment_account_name", beautifyString(eAppResponse.getPaymentAccountName()));
+        parameters.put("payment_account_no", beautifyString(eAppResponse.getPaymentAccountNo()));
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
 
         //Personal Detail Section
-        parameters.put("id_type", eAppResponse.getIdType());
+        parameters.put("id_type", beautifyString(eAppResponse.getIdType()));
         parameters.put("id_no", CommonServiceUtils.formatCustomerId(eAppResponse.getIdNo()));
-        parameters.put("issue_country", eAppResponse.getIssueCountry());
+        parameters.put("issue_country", beautifyString(eAppResponse.getIssueCountry()));
         parameters.put("issue_date", convertToThaiDate(eAppResponse.getIssueDate()));
         parameters.put("expiry_date", convertToThaiDate(eAppResponse.getExpiryDate()));
-        parameters.put("name_th", eAppResponse.getNameTh());
-        parameters.put("name_en", eAppResponse.getNameEn());
+        parameters.put("name_th", beautifyString(eAppResponse.getNameTh()));
+        parameters.put("name_en",beautifyString(eAppResponse.getNameEn()));
         parameters.put("birth_day", convertToThaiDate(eAppResponse.getBirthDay()));
         parameters.put("mobile_no", CommonServiceUtils.formatPhoneNumber(
                 CommonServiceUtils.maskPhoneNumber(eAppResponse.getMobileNo())));
-        parameters.put("education_level", eAppResponse.getEducationLevel());
-        parameters.put("source_from_country", eAppResponse.getSourceFromCountry());
-        parameters.put("nationality", eAppResponse.getNationality());
-        parameters.put("marital_status", eAppResponse.getMaritalStatus());
-        parameters.put("place_of_birth", eAppResponse.getPlaceOfBirth());
-        parameters.put("email", eAppResponse.getEmail());
-        parameters.put("contact_address", eAppResponse.getContactAddress());
-        parameters.put("resident_status", eAppResponse.getResidentStatus());
+        parameters.put("education_level", beautifyString(eAppResponse.getEducationLevel()));
+        parameters.put("source_from_country", beautifyString(eAppResponse.getSourceFromCountry()));
+        parameters.put("nationality", beautifyString(eAppResponse.getNationality()));
+        parameters.put("marital_status", beautifyString(eAppResponse.getMaritalStatus()));
+        parameters.put("place_of_birth", beautifyString(eAppResponse.getPlaceOfBirth()));
+        parameters.put("email", beautifyString(eAppResponse.getEmail()));
+        parameters.put("contact_address", beautifyString(eAppResponse.getContactAddress()));
+        parameters.put("resident_status", beautifyString(eAppResponse.getResidentStatus()));
 
         //Job Detail Section
-        parameters.put("rm_occupation", eAppResponse.getRmOccupation());
-        parameters.put("occupation", eAppResponse.getOccupation());
-        parameters.put("contract_type", eAppResponse.getContractType());
+        parameters.put("rm_occupation", beautifyString(eAppResponse.getRmOccupation()));
+        parameters.put("occupation", beautifyString(eAppResponse.getOccupation()));
+        parameters.put("contract_type", beautifyString(eAppResponse.getContractType()));
         parameters.put("work_period", CommonServiceUtils.formatWorkPeriod(eAppResponse.getWorkPeriodYear(),
                 eAppResponse.getWorkPeriodMonth()));
-        parameters.put("work_name", eAppResponse.getWorkName());
-        parameters.put("work_address", eAppResponse.getWorkAddress());
+        parameters.put("work_name", beautifyString(eAppResponse.getWorkName()));
+        parameters.put("work_address", beautifyString(eAppResponse.getWorkAddress()));
         parameters.put("work_tel", CommonServiceUtils.formatPhoneNumber(eAppResponse.getWorkTel()));
-        parameters.put("work_tel_ex", eAppResponse.getWorkTelEx());
-        parameters.put("income_bank", eAppResponse.getIncomeBank());
+        parameters.put("work_tel_ex", beautifyString(eAppResponse.getWorkTelEx()));
+        parameters.put("income_bank", beautifyString(eAppResponse.getIncomeBank()));
         parameters.put("income_bank_account_no", CommonServiceUtils.formatBankAccountNo(eAppResponse.getIncomeBankAccountNo()));
         parameters.put("cash_flow", beautifyBigDecimal(eAppResponse.getCashFlow()));
-        parameters.put("share_percent", eAppResponse.getSharePercent());
-        parameters.put("company_source_of_income", eAppResponse.getSourceFromCountry());
-        parameters.put("estatement", eAppResponse.getEStatement());
-        parameters.put("delivery", eAppResponse.getDelivery());
-        parameters.put("ncb_model_accept", eAppResponse.getNcbModelAccept());
+        parameters.put("share_percent", formatBigDecimalToString(eAppResponse.getSharePercent()));
+        parameters.put("company_source_of_income", beautifyString(eAppResponse.getSourceFromCountry()));
+        parameters.put("estatement", beautifyString(eAppResponse.getEStatement()));
+        parameters.put("delivery", beautifyString(eAppResponse.getDelivery()));
+        parameters.put("ncb_model_accept", beautifyString(eAppResponse.getNcbModelAccept()));
 
         //Consent Section
-        parameters.put("accept_by", eAppResponse.getAcceptBy());
+        parameters.put("accept_by", beautifyString(eAppResponse.getAcceptBy()));
         parameters.put("consent_date", convertToThaiDate(eAppResponse.getAcceptDate()));
         parameters.put("consent_time", convertToTime(eAppResponse.getAcceptDate()));
     }

@@ -1,5 +1,6 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmb.common.exception.model.TMBCommonException;
@@ -75,12 +76,12 @@ public class ReportGeneratorService {
         this.sftpClientImp = sftpClientImp;
     }
 
-    public ReportGeneratorResponse generateEAppReport(String accountId, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
+    public ReportGeneratorResponse generateEAppReport(ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
         //For testing purpose
-        eAppResponse.setEmail("jirat.cho@odds.team");
+        eAppResponse.setEmail("omerta@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -124,7 +125,7 @@ public class ReportGeneratorService {
             stores(crmId, appRefNo, filePath);
 
             ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, productCode, applicationInfo, correlationId, fileName);
-            sendNotification(accountId, crmId, correlationId, notificationWrapper);
+            sendNotification(productCode, crmId, correlationId, notificationWrapper);
 
             return new ReportGeneratorResponse(productCode, fileName);
         }
@@ -181,9 +182,9 @@ public class ReportGeneratorService {
         return notificationAttachments;
     }
 
-    private void sendNotification(String accountId, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+    private void sendNotification(String productCode, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) throws JsonProcessingException {
         try {
-            notificationService.sendNotifyEAppReportGenerator(crmId, accountId, correlationId, wrapper);
+            notificationService.sendNotifyEAppReportGenerator(crmId, productCode, correlationId, wrapper);
         } catch (Exception e) {
             logger.error("sendNotifyEAppReportGenerator error: {}", e);
             throw e;

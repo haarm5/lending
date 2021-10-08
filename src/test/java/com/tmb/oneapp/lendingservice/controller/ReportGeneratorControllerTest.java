@@ -46,9 +46,9 @@ public class ReportGeneratorControllerTest {
         request.setProductCode("VJ");
 
         ReportGeneratorResponse response = new ReportGeneratorResponse();
-        doReturn(response).when(service).generateEAppReport(any(), any(), any(), any());
+        doReturn(response).when(service).generateEAppReport(any(), any(), any());
 
-        ResponseEntity<TmbOneServiceResponse<ReportGeneratorResponse>> responseEntity = controller.generateReport("correlationId", "crmId", "accountId", request);
+        ResponseEntity<TmbOneServiceResponse<ReportGeneratorResponse>> responseEntity = controller.generateReport("correlationId", "crmId", request);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
@@ -58,8 +58,8 @@ public class ReportGeneratorControllerTest {
         request.setCaId("1");
         request.setProductCode("VJ");
 
-        doThrow(IllegalArgumentException.class).when(service).generateEAppReport(any(), any(), any(), any());
-        Assertions.assertThrows(TMBCommonException.class, () -> controller.generateReport("correlationId", "crmId", "accountId", request));
+        doThrow(IllegalArgumentException.class).when(service).generateEAppReport(any(), any(), any());
+        Assertions.assertThrows(TMBCommonException.class, () -> controller.generateReport("correlationId", "crmId", request));
     }
 
 }

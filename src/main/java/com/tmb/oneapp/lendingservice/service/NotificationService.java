@@ -2,24 +2,26 @@ package com.tmb.oneapp.lendingservice.service;
 
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.request.notification.*;
+import com.tmb.common.model.request.notification.EmailChannel;
+import com.tmb.common.model.request.notification.NotificationRecord;
+import com.tmb.common.model.request.notification.NotificationRequest;
+import com.tmb.common.model.request.notification.NotifyCommon;
 import com.tmb.common.model.response.notification.NotificationResponse;
 import com.tmb.common.util.NotificationUtil;
-import com.tmb.oneapp.lendingservice.client.CreditCardClient;
 import com.tmb.oneapp.lendingservice.client.NotificationServiceClient;
-import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.constant.NotificationConstant;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
-import com.tmb.oneapp.lendingservice.model.creditcard.FetchCardResponse;
 import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificationWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -36,29 +38,19 @@ public class NotificationService {
     private static final String HH_MM = "HH:mm";
 
     private final NotificationServiceClient notificationServiceClient;
-    private final CreditCardClient creditCardClient;
 
-    public NotificationService(NotificationServiceClient notificationServiceClient,
-                               CreditCardClient creditCardClient) {
+
+    public NotificationService(NotificationServiceClient notificationServiceClient) {
         this.notificationServiceClient = notificationServiceClient;
-        this.creditCardClient = creditCardClient;
     }
 
-    public void sendNotifyEAppReportGenerator(String crmId, String accountId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
-        ResponseEntity<FetchCardResponse> cardInfoResponse = creditCardClient.getCreditCardDetails(correlationId,
-                accountId);
-        accountId = (accountId.length() > 20) ? accountId.substring(accountId.length() - 20) : accountId;
+    public void sendNotifyEAppReportGenerator(String crmId, String productCode, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         NotifyCommon notifyCommon = NotificationUtil.generateNotifyCommon(correlationId, defaultChannelEn,
                 defaultChannelTh, wrapper.getProductNameEn(), wrapper.getProductNameTh(), wrapper.getCustomerNameEn(), wrapper.getCustomerNameTh());
-        notifyCommon.setAccountId(accountId);
         notifyCommon.setCrmId(crmId);
         String tranDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HTML_DATE_FORMAT));
         String tranTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(HH_MM));
-        String productID = "";
-        if (Objects.nonNull(cardInfoResponse.getBody())
-                && LendingServiceConstant.SILVER_LAKE_SUCCESS_CODE.equals(cardInfoResponse.getBody().getStatus().getStatusCode())) {
-            productID = cardInfoResponse.getBody().getCreditCard().getProductId();
-        }
+
         if (StringUtils.isNotBlank(wrapper.getEmail())) {
             NotificationRequest notificationRequest = new NotificationRequest();
             List<NotificationRecord> notificationRecords = new ArrayList<>();
@@ -69,13 +61,12 @@ public class NotificationService {
             emailChannel.setEmailSearch(false);
 
             record.setEmail(emailChannel);
-            record.setAccount(accountId);
 
             Map<String, Object> params = new HashMap<>();
             params.put(NotificationConstant.TEMPLATE_KEY, NotificationConstant.APPLY_LOAN_SUBMISSION_VALUE);
             params.put(NotificationConstant.CUSTOMER_NAME_TH, notifyCommon.getCustFullNameTH());
             params.put(NotificationConstant.PRODUCT_NAME_TH, notifyCommon.getProductNameTH());
-            params.put(NotificationConstant.PRODUCT_ID, productID);
+            params.put(NotificationConstant.PRODUCT_ID, productCode);
             params.put(NotificationConstant.TRAN_DATE, tranDate);
             params.put(NotificationConstant.TRAN_TIME, tranTime);
             params.put(NotificationConstant.CHANNEL_NAME_TH, notifyCommon.getChannelNameTh());

@@ -16,7 +16,6 @@ import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
-import net.sf.jasperreports.engine.JRException;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +58,7 @@ public class ReportGeneratorServiceTest {
     private SFTPClientImp sftpClientImp;
 
     @BeforeEach
-    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, JRException, ParseException, RemoteException {
+    void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, ParseException, RemoteException {
         MockitoAnnotations.initMocks(this);
         reportGeneratorService = new ReportGeneratorService(rslService,
                 commonServiceFeignClient, reportServiceClient, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
@@ -67,7 +66,7 @@ public class ReportGeneratorServiceTest {
     }
 
     private void mockSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, ParseException, RemoteException {
-        doReturn(mockResponseLoanOnlineSubmissionEApp()).when(loanOnlineSubmissionEAppService).getEApp(anyLong(), any(),any());
+        doReturn(mockResponseLoanOnlineSubmissionEApp()).when(loanOnlineSubmissionEAppService).getEApp(anyLong(), any(), any());
         doReturn(mockApplicationInfoByCaID()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
         doReturn(mockReportServiceResponse()).when(reportServiceClient).generateReport(anyString(), any());
@@ -81,7 +80,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("VJ");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -92,7 +91,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("RC");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -103,7 +102,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("C2G");
 
-        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport("account-id",
+        ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
         Assert.assertNotNull(response);
     }
@@ -114,7 +113,7 @@ public class ReportGeneratorServiceTest {
         request.setCaId("1");
         request.setProductCode("XXX");
 
-        Assertions.assertThrows(TMBCommonException.class, () -> reportGeneratorService.generateEAppReport("account-id",
+        Assertions.assertThrows(TMBCommonException.class, () -> reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId"));
     }
 

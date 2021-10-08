@@ -9,10 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
 import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
-import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionCreateApplicationClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
-import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetIncomeModelInfoClient;
+import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +38,8 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
     private CustomerServiceClient customerServiceClient;
     @Mock
     private LoanSubmissionGetDropdownListClient dropdownListClient;
+    @Mock
+    private CommonServiceFeignClient commonServiceFeignClient;
 
 
     LoanOnlineSubmissionCreateApplicationService loanOnlineSubmissionCreateApplicationService;
@@ -50,13 +49,15 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
         MockitoAnnotations.initMocks(this);
         loanOnlineSubmissionCreateApplicationService = new LoanOnlineSubmissionCreateApplicationService(
                 loanSubmissionCreateApplicationClient, loanSubmissionGetIncomeModelInfoClient,
-                customerServiceClient, dropdownListClient);
+                customerServiceClient, dropdownListClient, commonServiceFeignClient);
     }
+
 
     @Test
     public void testCreateApplicationTypeCC() throws Exception {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
-        req.setProductCode("CC");
+        req.setProductCode("VM");
+        req.setEmploymentStatus("01");
 
         Header appHeader = new Header();
         appHeader.setResponseCode("MSG_000");
@@ -110,6 +111,8 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
         dropdownsBody.setCommonCodeEntries(commonCodeEntries);
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
+
+        doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
 
         ResponseApplication result = loanOnlineSubmissionCreateApplicationService.createApplication(req, "rmId");
         assertEquals("test", result.getBody().getAppType());
@@ -118,7 +121,8 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
     @Test
     public void testCreateApplicationTypePL() throws Exception {
         LoanSubmissionCreateApplicationReq req = new LoanSubmissionCreateApplicationReq();
-        req.setProductCode("PL");
+        req.setProductCode("C2G");
+        req.setEmploymentStatus("01");
 
         Header appHeader = new Header();
         appHeader.setResponseCode("MSG_000");
@@ -171,6 +175,8 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
         dropdownsBody.setCommonCodeEntries(commonCodeEntries);
         responseDropdown.setBody(dropdownsBody);
         doReturn(responseDropdown).when(dropdownListClient).getDropDownListByCode(anyString());
+
+        doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
 
         ResponseApplication result = loanOnlineSubmissionCreateApplicationService.createApplication(req, "rmId");
         assertEquals("test", result.getBody().getAppType());

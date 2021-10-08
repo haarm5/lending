@@ -52,7 +52,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setEmploymentYear(prepareData(customerInfoRsl.getEmploymentYear(), null));
         workingDetail.setEmploymentMonth(prepareData(customerInfoRsl.getEmploymentMonth(), null));
         workingDetail.setRmOccupation(prepareData(customerInfoRsl.getRmOccupation(), customerInfoEc.getOccupationCode()));
-        workingDetail.setOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
+        workingDetail.setEmploymentOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
+        workingDetail.setProfessional(prepareData(customerInfoRsl.getProfessionalCode(), null));
         workingDetail.setContractEmployedFlag(prepareData(customerInfoRsl.getContractEmployedFlag(), null));
         workingDetail.setBusinessType(prepareBusinessType(customerInfoRsl, customerInfoEc));
         workingDetail.setBusinessSubType(prepareData(customerInfoRsl.getBusinessSubType(), customerInfoEc.getBusinessTypeCode()));
@@ -65,8 +66,8 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setIncomeDeclared(prepareData(customerInfoRsl.getIncomeDeclared(), null));
         workingDetail.setIncometotalLastMthCreditAcct1(prepareData(customerInfoRsl.getIncometotalLastMthCreditAcct1(), null));
         workingDetail.setIncomeSharedHolderPercent(prepareData(customerInfoRsl.getIncomeSharedHolderPercent(), null));
-        workingDetail.setIncomeType(prepareData(customerInfoRsl.getIncomeType(), null));
-        workingDetail.setSciCountry(prepareIncomeType(customerInfoRsl.getSourceFromCountry(), customerInfoEc.getCountryOfIncome()));
+        workingDetail.setIncomeType(prepareIncomeType(customerInfoRsl.getIncomeType(), employmentStatus));
+        workingDetail.setSciCountry(prepareData(customerInfoRsl.getSourceFromCountry(), customerInfoEc.getCountryOfIncome()));
         workingDetail.setCardDelivery(prepareData(customerInfoRsl.getMailingPreference(), null));
         workingDetail.setEmailStatementFlag(prepareData(customerInfoRsl.getEmailStatementFlag(), "Y"));
         workingDetail.setTel(prepareData(customerInfoRsl.getEmploymentTelephoneNo(), customerInfoEc.getWorkPhoneNo()));

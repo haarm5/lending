@@ -82,9 +82,6 @@ public class ReportGeneratorService {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
-        //For testing purpose
-
-        eAppResponse.setEmail("omerta@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();

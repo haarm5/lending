@@ -110,6 +110,7 @@ public class ReportGeneratorService {
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
         LoanSubmissionInstantLoanSubmitApplicationRequest applicationRequest = new LoanSubmissionInstantLoanSubmitApplicationRequest();
         applicationRequest.setCaId(request.getCaId());
+        applicationRequest.setSubmittedFlag(applicationRequest.getSubmittedFlag());
         rslRequest.setCaId(request.getCaId());
         rslService.submitInstantLoanApplication(applicationRequest);
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);

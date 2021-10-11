@@ -146,9 +146,14 @@ public class FlexiLoanCheckApprovedStatusService {
     private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response, String loanDay1Set, String product, Facility facility, ResponseInstantLoanCalUW loanCalUWResponse) {
 
         logger.info("loanDayOneSet: " , loanDay1Set);
-        if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+        if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null && !CREDIT_CARD_CODE_LIST.contains(product)) {
             response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
         }
+
+        if (loanCalUWResponse.getBody().getApprovalMemoCreditCards() != null && CREDIT_CARD_CODE_LIST.contains(product)) {
+            response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoCreditCards()[0].getCreditLimit());
+        }
+
         if (product.equals(FLASH) && facility != null) {
             response.setRequestAmount(facility.getFeature().getRequestAmount());
         } else if ((product.equals(C2G02) || product.equals(C2G01)) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {

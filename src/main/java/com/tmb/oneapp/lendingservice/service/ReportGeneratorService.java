@@ -75,12 +75,13 @@ public class ReportGeneratorService {
         this.sftpClientImp = sftpClientImp;
     }
 
-    public ReportGeneratorResponse generateEAppReport(String accountId, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
+    public ReportGeneratorResponse generateEAppReport(ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
         //For testing purpose
-        eAppResponse.setEmail("jirat.cho@odds.team");
+
+        eAppResponse.setEmail("omerta@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -106,7 +107,7 @@ public class ReportGeneratorService {
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
         rslRequest.setCaId(request.getCaId());
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
-        String appRefNo = applicationInfo.getBody().getAppRefNo();
+        String appRefNo = applicationInfo.getBody( ).getAppRefNo();
 
         if (template.isBlank()) {
             throw new TMBCommonException(ResponseCode.EAPP_INVALID_PRODUCT_CODE.getCode(),
@@ -124,7 +125,7 @@ public class ReportGeneratorService {
             stores(crmId, appRefNo, filePath);
 
             ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, productCode, applicationInfo, correlationId, fileName);
-            sendNotification(accountId, crmId, correlationId, notificationWrapper);
+            sendNotification(productCode, crmId, correlationId, notificationWrapper);
 
             return new ReportGeneratorResponse(productCode, fileName);
         }
@@ -165,7 +166,9 @@ public class ReportGeneratorService {
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
 
-        RslCode rslConfig = getRslConfig(correlationId).stream().filter(rslCode -> productCode.equals(rslCode.getRslCode())).findFirst().orElse(null);
+        RslCode rslConfig = getRslConfig(correlationId).stream()
+                .filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);
+
         if (rslConfig != null) {
             String saleSheetAttachments = getSaleSheetFilePath(rslConfig);
             String termAndConditionAttachments = getTermAndConditionFilePath(rslConfig);
@@ -181,9 +184,9 @@ public class ReportGeneratorService {
         return notificationAttachments;
     }
 
-    private void sendNotification(String accountId, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+    private void sendNotification(String productCode, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         try {
-            notificationService.sendNotifyEAppReportGenerator(crmId, accountId, correlationId, wrapper);
+            notificationService.sendNotifyEAppReportGenerator(crmId, productCode, correlationId, wrapper);
         } catch (Exception e) {
             logger.error("sendNotifyEAppReportGenerator error: {}", e);
             throw e;

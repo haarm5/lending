@@ -7,6 +7,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.RslCode;
 import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionUpdateNCBConsentFlagClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
@@ -16,10 +17,12 @@ import com.tmb.oneapp.lendingservice.model.config.LendingModuleConfig;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
+import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificationWrapper;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientRequest;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanSubmitApplicationRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
@@ -105,7 +108,10 @@ public class ReportGeneratorService {
         }
 
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
+        LoanSubmissionInstantLoanSubmitApplicationRequest applicationRequest = new LoanSubmissionInstantLoanSubmitApplicationRequest();
+        applicationRequest.setCaId(request.getCaId());
         rslRequest.setCaId(request.getCaId());
+        rslService.submitInstantLoanApplication(applicationRequest);
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
         String appRefNo = applicationInfo.getBody( ).getAppRefNo();
 

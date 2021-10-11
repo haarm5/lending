@@ -142,9 +142,9 @@ public class LoanOnlineSubmissionEAppService {
         // อาชีพอาจจะ map ไม่เจอ
         response.setRmOccupation(mapRmOccupationName(customer.getEmploymentOccupation(), customer.getRmOccupation()));
         response.setOccupation(mapProfessional(customer.getProfessionalCode(), customer.getEmploymentStatus()));
-        response.setContractType("พนักงานประจำ");
+        response.setContractType("พนักงานชั่วคราว");
         if (customer.getContractEmployedFlag().equals("Y")) {
-            response.setContractType("พนักงานชั่วคราว");
+            response.setContractType("พนักงานประจำ");
         }
         response.setWorkPeriodYear(customer.getEmploymentYear());
         response.setWorkPeriodMonth(customer.getEmploymentMonth());

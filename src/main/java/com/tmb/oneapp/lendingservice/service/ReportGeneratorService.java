@@ -20,6 +20,7 @@ import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificat
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientRequest;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionInstantLoanSubmitApplicationRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
@@ -79,9 +80,6 @@ public class ReportGeneratorService {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
-        //For testing purpose
-
-        eAppResponse.setEmail("omerta@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -105,7 +103,10 @@ public class ReportGeneratorService {
         }
 
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
+        LoanSubmissionInstantLoanSubmitApplicationRequest applicationRequest = new LoanSubmissionInstantLoanSubmitApplicationRequest();
+        applicationRequest.setCaId(request.getCaId());
         rslRequest.setCaId(request.getCaId());
+        rslService.submitInstantLoanApplication(applicationRequest);
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
         String appRefNo = applicationInfo.getBody( ).getAppRefNo();
 

@@ -77,8 +77,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setAppNo(application.getAppRefNo());
         response.setProductNameTh(application.getProductDescTH());
         response.setAcceptBy("Access Pin");
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date date = sdf.parse(application.getApplicationDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -126,6 +125,7 @@ public class LoanOnlineSubmissionEAppService {
         // expire date ผิดอยู่
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
+        response.setNameEn(customer.getNameLine2() + " " + customer.getNameLine1());
         response.setBirthDay(customer.getBirthDate());
         response.setMobileNo(customer.getMobileNo());
         response.setEducationLevel(mapEducationLevel(customer.getEducationLevel()));

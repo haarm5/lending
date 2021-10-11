@@ -93,6 +93,7 @@ public class LoanOnlineSubmissionEAppService {
         if (customer.getEmploymentStatus().equals("02")) {
             response.setEmploymentStatus("เจ้าของกิจการ");
         }
+        response.setEmploymentStatusCode(customer.getEmploymentStatus());
         response.setSalary(customer.getEmploymentFinalTotalIncome());
         response.setOtherIncome(customer.getIncomeOtherIncome());
 

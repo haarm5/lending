@@ -135,7 +135,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setMaritalStatus(mapMaritalStatus(customer.getMaritalStatus()));
         response.setEmail(customer.getEmail());
         response.setContactAddress(mapAddress("H", customer.getAddresses()));
-        response.setResidentStatus(mapResidentType(customer.getResidentFlag()));
+        response.setResidentStatus(mapResidentType(customer.getResidentType()));
         return response;
     }
 

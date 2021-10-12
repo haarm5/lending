@@ -273,9 +273,8 @@ public class LoanOnlineSubmissionEAppService {
 
     private String mapRmOccupationName(String occupation, String rmOccupation) throws ServiceException, TMBCommonException, JsonProcessingException {
         logger.info("mapRmOccupationName: " + "occupation:: " + occupation + "rmOccupation:: " + rmOccupation);
-        List<Dropdowns.RmOccupation> rmOccupations = dropdownService.getDropdownRmOccupationName(occupation);
-        Optional<Dropdowns.RmOccupation> filter = rmOccupations.stream().filter(x -> x.getCode().equals(occupation)).findFirst();
-        return filter.map(Dropdowns.RmOccupation::getName).orElse(null);
+        List<Dropdowns.RmOccupation> rmOccupations = dropdownService.getDropdownRmOccupationName(rmOccupation);
+        return rmOccupations.isEmpty() ? null : rmOccupations.get(0).getName();
     }
 
     private String mapProfessional(String code, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {

@@ -76,6 +76,7 @@ public class LoanOnlineSubmissionEAppService {
     private EAppResponse mapDataFromApplication(Body application, EAppResponse response) throws ParseException {
         response.setAppNo(application.getAppRefNo());
         response.setProductNameTh(application.getProductDescTH());
+        response.setWaiveDoc(application.getNatureOfRequest().equals("04") || application.getNatureOfRequest().equals("12"));
         response.setAcceptBy("Access Pin");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date date = sdf.parse(application.getApplicationDate());

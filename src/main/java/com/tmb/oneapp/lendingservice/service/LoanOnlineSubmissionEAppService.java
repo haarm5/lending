@@ -123,11 +123,15 @@ public class LoanOnlineSubmissionEAppService {
         response.setIdNo(customer.getIdNo1());
         response.setIssueCountry(mapCountryName(customer.getIdIssueCtry1()));
         response.setIssueDate(customer.getIssuedDate());
+        response.getIssueDate().set(Calendar.HOUR, 0);
+        response.getIssueDate().set(Calendar.MINUTE, 0);
         // expire date ผิดอยู่
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
         response.setNameEn(customer.getNameLine2() + " " + customer.getNameLine1());
         response.setBirthDay(customer.getBirthDate());
+        response.getBirthDay().set(Calendar.HOUR, 0);
+        response.getBirthDay().set(Calendar.MINUTE, 0);
         response.setMobileNo(customer.getMobileNo());
         response.setEducationLevel(mapEducationLevel(customer.getEducationLevel()));
         response.setSourceFromCountry(mapCountryName(customer.getSourceFromCountry()));
@@ -172,7 +176,7 @@ public class LoanOnlineSubmissionEAppService {
     private EAppResponse mapDataFromFacility(Facility facility, EAppResponse response) {
         response.setLimitApplied(facility.getLimitApplied());
         response.setMonthlyInstallment(facility.getMonthlyInstallment());
-        response.setInterest(facility.getPricings()!=null?facility.getPricings()[0].getInterestRate():null);
+        response.setInterest(facility.getPricings() != null ? facility.getPricings()[0].getInterestRate() : null);
         response.setDisburstAccountNo(facility.getDisburstAccountNo());
         response.setPaymentMethod(mapPaymentMethod(facility.getPaymentMethod()));
         response.setPaymentMethodCode(facility.getPaymentMethod());

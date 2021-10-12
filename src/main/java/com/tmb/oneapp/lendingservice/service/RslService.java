@@ -16,6 +16,7 @@ import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual
 import com.tmb.common.model.legacy.rsl.ws.instant.calculate.uw.response.ResponseInstantLoanCalUW;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.customer.response.ResponseInstantLoanGetCustInfo;
 import com.tmb.common.model.legacy.rsl.ws.instant.submit.response.ResponseInstantLoanSubmit;
+import com.tmb.common.model.legacy.rsl.ws.submit.response.ResponseSubmit;
 import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateNCBConsentFlagRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.*;
@@ -47,6 +48,7 @@ public class RslService {
     private final LoanSubmissionInstantLoanTransferApplicationClient loanSubmissionInstantLoanTransferApplicationClient;
     private final LoanSubmissionUpdateCreditCardClient loanSubmissionUpdateCreditCardClient;
     private final LoanSubmissionUpdateIncompleteDocApplicationClient loanSubmissionUpdateIncompleteDocApplicationClient;
+    private final LoanSubmissionSubmitApplicationClient loanSubmissionSubmitApplicationClient;
 
     public ResponseApplication getLoanSubmissionApplicationInfo(LoanSubmissionGetApplicationInfoRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
         long caId = CommonServiceUtils.validateCaId(request.getCaId());
@@ -99,6 +101,12 @@ public class RslService {
     public ResponseInstantLoanSubmit submitInstantLoanApplication(LoanSubmissionInstantLoanSubmitApplicationRequest request) throws TMBCommonException, ServiceException, JsonProcessingException {
         BigDecimal caId = BigDecimal.valueOf(CommonServiceUtils.validateCaId(request.getCaId()));
         ResponseInstantLoanSubmit response = loanSubmissionInstantLoanSubmitApplicationClient.submitInstantLoanApplication(caId, request.getSubmittedFlag());
+        RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
+        return response;
+    }
+
+    public ResponseSubmit submitApplication(LoanSubmissionSubmitApplicationRequest request) throws ServiceException, TMBCommonException, JsonProcessingException {
+        ResponseSubmit response = loanSubmissionSubmitApplicationClient.submitApplication(request.getCaId(),request.getMemberRef());
         RslServiceUtils.checkRslResponse(response.getHeader().getResponseCode(), response.getHeader().getResponseDescriptionEN());
         return response;
     }

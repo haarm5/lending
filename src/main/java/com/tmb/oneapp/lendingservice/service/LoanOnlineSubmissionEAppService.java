@@ -162,6 +162,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private EAppResponse mapDataFromCreditCard(CreditCard creditCard, EAppResponse response) {
         response.setPaymentMethod(mapPaymentMethod(creditCard.getPaymentMethod()));
+        response.setPaymentMethodCode(creditCard.getPaymentMethod());
         response.setPaymentAccountName(creditCard.getDebitAccountName());
         response.setPaymentAccountNo(creditCard.getDebitAccountNo());
         response.setPaymentCriteria(mapPaymentMethodCriteria(creditCard.getPaymentCriteria(), "CC"));
@@ -174,6 +175,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setInterest(facility.getPricings()!=null?facility.getPricings()[0].getInterestRate():null);
         response.setDisburstAccountNo(facility.getDisburstAccountNo());
         response.setPaymentMethod(mapPaymentMethod(facility.getPaymentMethod()));
+        response.setPaymentMethodCode(facility.getPaymentMethod());
         response.setPaymentAccountName(facility.getPaymentAccountName());
         response.setPaymentAccountNo(facility.getPaymentAccountNo());
         response.setPaymentCriteria(mapPaymentMethodCriteria(facility.getPayMethodCriteria(), "PL"));

@@ -70,9 +70,7 @@ public class FlexiLoanCheckApprovedStatusService {
                 }
                 return parseResponse(facilityInfo, creditCardInfo, responseInstantLoanCalUW, instantLoanCalUWRequest);
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                return new InstantLoanCalUWResponse();
             }
 
         } catch (Exception e) {
@@ -145,7 +143,7 @@ public class FlexiLoanCheckApprovedStatusService {
 
     private InstantLoanCalUWResponse setAmount(InstantLoanCalUWResponse response, String loanDay1Set, String product, Facility facility, ResponseInstantLoanCalUW loanCalUWResponse) {
 
-        logger.info("loanDayOneSet: " , loanDay1Set);
+        logger.info("loanDayOneSet: ", loanDay1Set);
         if (loanCalUWResponse.getBody().getApprovalMemoFacilities() != null && !CREDIT_CARD_CODE_LIST.contains(product)) {
             response.setCreditLimit(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getCreditLimit());
         }
@@ -156,7 +154,9 @@ public class FlexiLoanCheckApprovedStatusService {
 
         if (product.equals(FLASH) && facility != null) {
             response.setRequestAmount(facility.getFeature().getRequestAmount());
-        } else if ((product.equals(C2G02) || product.equals(C2G01)) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
+        }
+
+        if ((product.equals(C2G02) || product.equals(C2G01)) && loanCalUWResponse.getBody().getApprovalMemoFacilities() != null) {
             response.setRequestAmount(loanCalUWResponse.getBody().getApprovalMemoFacilities()[0].getOutstandingBalance());
         }
         return response;

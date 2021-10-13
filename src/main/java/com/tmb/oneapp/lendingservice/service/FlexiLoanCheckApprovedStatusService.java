@@ -70,9 +70,7 @@ public class FlexiLoanCheckApprovedStatusService {
                 }
                 return parseResponse(facilityInfo, creditCardInfo, responseInstantLoanCalUW, instantLoanCalUWRequest);
             } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getMessage(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
+                return new InstantLoanCalUWResponse();
             }
 
         } catch (Exception e) {

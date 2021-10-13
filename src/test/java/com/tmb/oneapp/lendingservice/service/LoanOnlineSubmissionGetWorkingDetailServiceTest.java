@@ -7,6 +7,9 @@ import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.application.response.Header;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
@@ -55,6 +58,7 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
 
     @Test
     public void getWorkingDetail_Success() throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
+        doReturn(mockApplication()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(mockIndividual()).when(rslService).getLoanSubmissionCustomerInfo(any());
         doReturn(mockCustGeneralProfileResponse()).when(customerServiceClient).getCustomers(anyString());
         doReturn("01").when(dropdownService).getEmploymentStatus(anyString());
@@ -92,6 +96,18 @@ public class LoanOnlineSubmissionGetWorkingDetailServiceTest {
         Individual[] Individuals = {individual};
         com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
         body.setIndividuals(Individuals);
+        response.setBody(body);
+        return response;
+    }
+
+    private ResponseApplication mockApplication() {
+        ResponseApplication response = new ResponseApplication();
+        Header header = new Header();
+        header.setResponseCode(ResponseCode.SUCCESS.getCode());
+        response.setHeader(new Header());
+
+        Body body = new Body();
+        body.setNatureOfRequest("04");
         response.setBody(body);
         return response;
     }

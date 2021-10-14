@@ -87,7 +87,7 @@ public class LoanOnlineSubmissionEAppService {
         return response;
     }
 
-    private EAppResponse mapDataFromCustomer(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private EAppResponse mapDataFromCustomer(Individual customer, EAppResponse response) throws TMBCommonException, JsonProcessingException {
 
         //application
         response.setEmploymentStatus("พนักงานประจำ");
@@ -116,7 +116,7 @@ public class LoanOnlineSubmissionEAppService {
         return response;
     }
 
-    private EAppResponse mapCustomerInformation(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private EAppResponse mapCustomerInformation(Individual customer, EAppResponse response) throws TMBCommonException, JsonProcessingException {
         response.setIdType("บัตรประจำตัวประชาชน");
         if (customer.getIdType1().equals("PP")) {
             response.setIdType("พาสปอร์ต");
@@ -144,7 +144,7 @@ public class LoanOnlineSubmissionEAppService {
         return response;
     }
 
-    private EAppResponse mapWorkingInformation(Individual customer, EAppResponse response) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private EAppResponse mapWorkingInformation(Individual customer, EAppResponse response) throws TMBCommonException, JsonProcessingException {
         // อาชีพอาจจะ map ไม่เจอ
         response.setRmOccupation(mapRmOccupationName(customer.getEmploymentOccupation(), customer.getRmOccupation()));
         response.setOccupation(mapProfessional(customer.getProfessionalCode(), customer.getEmploymentStatus()));
@@ -266,43 +266,43 @@ public class LoanOnlineSubmissionEAppService {
     }
 
 
-    private String mapCountryName(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapCountryName(String code) throws TMBCommonException, JsonProcessingException {
         List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(CORRELATION_ID, CRM_ID);
         Optional<Dropdowns.SciCountry> filter = countries.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.SciCountry::getName2).orElse(null);
     }
 
-    private String mapRmOccupationName(String occupation, String rmOccupation) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapRmOccupationName(String occupation, String rmOccupation) throws JsonProcessingException {
         logger.info("mapRmOccupationName: " + "occupation:: " + occupation + "rmOccupation:: " + rmOccupation);
         List<Dropdowns.RmOccupation> rmOccupations = dropdownService.getDropdownRmOccupationName(rmOccupation);
         return rmOccupations.isEmpty() ? null : rmOccupations.get(0).getName();
     }
 
-    private String mapProfessional(String code, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapProfessional(String code, String employmentStatus) throws TMBCommonException, JsonProcessingException {
         List<Dropdowns.Occupation> professionals = dropdownService.getDropdownOccupation(employmentStatus);
         Optional<Dropdowns.Occupation> filter = professionals.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.Occupation::getName).orElse(null);
     }
 
-    private String mapMaritalStatus(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapMaritalStatus(String code) throws JsonProcessingException {
         List<Dropdowns.MaritalStatus> statusList = dropdownService.getDropdownMaritalStatus(code);
         Optional<Dropdowns.MaritalStatus> filter = statusList.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.MaritalStatus::getName2).orElse(null);
     }
 
-    private String mapResidentType(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapResidentType(String code) throws JsonProcessingException {
         List<Dropdowns.ResidentType> residentTypes = dropdownService.getDropdownResidentType(code);
         Optional<Dropdowns.ResidentType> filter = residentTypes.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.ResidentType::getName2).orElse(null);
     }
 
-    private String mapIncomeBank(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapIncomeBank(String code) throws JsonProcessingException {
         List<Dropdowns.IncomeBank> banks = dropdownService.getDropdownIncomeBank();
         Optional<Dropdowns.IncomeBank> filter = banks.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.IncomeBank::getName2).orElse(null);
     }
 
-    private String mapEducationLevel(String code) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String mapEducationLevel(String code) throws JsonProcessingException {
         List<Dropdowns.EducationLevel> banks = dropdownService.getDropdownEducationLevel(code);
         Optional<Dropdowns.EducationLevel> filter = banks.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.EducationLevel::getName2).orElse(null);

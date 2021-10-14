@@ -78,7 +78,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return workingDetail;
     }
 
-    private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws TMBCommonException {
         return dropdownService.getEmploymentStatus(customerInfoEc.getOccupationCode());
     }
 
@@ -129,7 +129,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return address;
     }
 
-    private String prepareIncomeType(String rslIncomeType, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String prepareIncomeType(String rslIncomeType, String employmentStatus) throws JsonProcessingException {
         if (StringUtils.isEmpty(rslIncomeType)) {
             return rslIncomeType;
         }

@@ -36,7 +36,7 @@ public class DropdownService {
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
-    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, ServiceException, JsonProcessingException {
+    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, JsonProcessingException {
         CustGeneralProfileResponse customerInfo = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
         String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
@@ -51,7 +51,7 @@ public class DropdownService {
         return response;
     }
 
-    public String getEmploymentStatus(String occupationCode) throws ServiceException, TMBCommonException, JsonProcessingException {
+    public String getEmploymentStatus(String occupationCode) throws TMBCommonException {
         List<CriteriaCodeEntry> occupationCriteria = lendingCriteriaInfoService.getOccupationInfoByCode(occupationCode);
         if (occupationCriteria.isEmpty()) {
             throw new TMBCommonException(ResponseCode.DATA_NOT_FOUND.getCode(), ResponseCode.DATA_NOT_FOUND.getMessage(), ResponseCode.DATA_NOT_FOUND.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);

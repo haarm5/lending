@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;   //NOSONAR 
 
@@ -178,6 +179,27 @@ public class SFTPClientImp implements FTPClient {
 		}
 	}
 
+    public boolean removeFolder(String dst) {
+        ChannelSftp channelSftp = null;
+        try {
+            channelSftp = (ChannelSftp) setupJsch();
+            channelSftp.connect();
+            recursiveFolderDelete(channelSftp, dst);
+            channelSftp.exit();
+            return true;
+
+        } catch (JSchException e) {
+            logger.error("error jsch connection:{}", e);
+            return false;
+        } catch (SftpException e) {
+            logger.error("error sftp exception:{}", e);
+            return false;
+        } catch (Exception e) {
+            logger.error("error other exception:{}", e);
+            return false;
+        }
+    }
+
 	@SuppressWarnings("unchecked")
 	private void listDirectory(ChannelSftp channelSftp, String path, List<String> list) throws SftpException {
 		Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR 
@@ -204,4 +226,27 @@ public class SFTPClientImp implements FTPClient {
 			}
 		}
 	}
+
+    @SuppressWarnings("unchecked")
+    private static void recursiveFolderDelete(ChannelSftp channelSftp, String path) throws SftpException {
+
+        // List source directory structure.
+        Collection<ChannelSftp.LsEntry> fileAndFolderList = channelSftp.ls(path);
+
+        // Iterate objects in the list to get file/folder names.
+        for (ChannelSftp.LsEntry item : fileAndFolderList) {
+            if (!item.getAttrs().isDir()) {
+                channelSftp.rm(path + "/" + item.getFilename()); // Remove file.
+            } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) { // If it is a subdir.
+                try {
+                    // removing sub directory.
+                    channelSftp.rmdir(path + "/" + item.getFilename());
+                } catch (Exception e) { // If subdir is not empty and error occurs.
+                    // Do lsFolderRemove on this subdir to enter it and clear its contents.
+                    recursiveFolderDelete(channelSftp, path + "/" + item.getFilename());
+                }
+            }
+        }
+        channelSftp.rmdir(path); // delete the parent directory after empty
+    }
 }

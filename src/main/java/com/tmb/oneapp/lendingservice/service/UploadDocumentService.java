@@ -162,14 +162,7 @@ public class UploadDocumentService {
 
     public void sftpClearDocuments(String dir) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-            sftpStoreFile.setRootPath(sftpLocations);
-            sftpStoreFile.setDstDir(dir);
-            sftpStoreFiles.add(sftpStoreFile);
-
-            sftpClientImp.removeFile(sftpStoreFiles);
+            sftpClientImp.removeFolder(dir);
             logger.info("Sftp remove file successes: {}", dir);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + dir + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);

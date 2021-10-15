@@ -81,5 +81,6 @@ public class LoanOnlineSubmissionGetDocumentListService {
         String baseDir = System.getProperty("user.dir");
         String docDir = String.format("%s/documents/%s/%s", baseDir, rmId, applicationInfo.getAppRefNo());
         uploadDocumentService.removeDirectory(docDir);
+        uploadDocumentService.sftpClearDocuments(docDir);
     }
 }

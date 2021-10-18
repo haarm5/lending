@@ -539,22 +539,27 @@ public class LoanService {
 	 * @throws TMBCommonException
 	 */
 	private List<Application> findApplication(String crmId, String productCode) throws TMBCommonException {
-		TmbOneServiceResponse<Customer> customerResponse = customerServiceClient.getCustomerDetails(crmId);
-		String citizenId = customerResponse.getData().getCitizenId();
-		ResponseTracking loanStatusTrackingResponse = Fetch.fetch(
-				() -> loanStatusTrackingClient.searchAppStatusByID(citizenId),
-				LoanServiceResponseParser::parseLoanStatusTracking);
-		Application[] applications = loanStatusTrackingResponse.getBody().getApplication();
-		if (applications != null) {
-			return Arrays.stream(applications)
-					.filter(application -> !Arrays.stream(application.getApplicants())
-							.filter(applicant -> !Arrays.stream(applicant.getProducts())
-									.filter(product -> product.getProductCode().equalsIgnoreCase(productCode))
-									.collect(Collectors.toList()).isEmpty())
-							.collect(Collectors.toList()).isEmpty())
-					.collect(Collectors.toList());
+		try {
+			TmbOneServiceResponse<Customer> customerResponse = customerServiceClient.getCustomerDetails(crmId);
+			String citizenId = customerResponse.getData().getCitizenId();
+			ResponseTracking loanStatusTrackingResponse = Fetch.fetch(
+					() -> loanStatusTrackingClient.searchAppStatusByID(citizenId),
+					LoanServiceResponseParser::parseLoanStatusTracking);
+			Application[] applications = loanStatusTrackingResponse.getBody().getApplication();
+			if (applications != null) {
+				return Arrays.stream(applications)
+						.filter(application -> !Arrays.stream(application.getApplicants())
+								.filter(applicant -> !Arrays.stream(applicant.getProducts())
+										.filter(product -> product.getProductCode().equalsIgnoreCase(productCode))
+										.collect(Collectors.toList()).isEmpty())
+								.collect(Collectors.toList()).isEmpty())
+						.collect(Collectors.toList());
+			}
+			return new ArrayList<>();
+		} catch (Exception e) {
+			logger.error("Error from customerServiceClient.getCustomerDetails :{}", e);
+			return new ArrayList<>();
 		}
-		return new ArrayList<>();
 	}
 
 	/**

@@ -6,6 +6,7 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.address.Province;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
@@ -15,6 +16,7 @@ import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.loanonline.CommonProvinceRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.WorkingDetail;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -42,10 +44,10 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
     public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
         CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(crmId);
-        return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc);
+        return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc, caId);
     }
 
-    private WorkingDetail parseLoanSubmissionWorkingDetail(Individual customerInfoRsl, CustGeneralProfileResponse customerInfoEc) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private WorkingDetail parseLoanSubmissionWorkingDetail(Individual customerInfoRsl, CustGeneralProfileResponse customerInfoEc, String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
         WorkingDetail workingDetail = new WorkingDetail();
         String employmentStatus = prepareData(customerInfoRsl.getEmploymentStatus(), getEmploymentStatusEc(customerInfoEc));
         workingDetail.setEmploymentStatus(employmentStatus);
@@ -53,7 +55,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setEmploymentMonth(prepareData(customerInfoRsl.getEmploymentMonth(), null));
         workingDetail.setRmOccupation(prepareData(customerInfoRsl.getRmOccupation(), customerInfoEc.getOccupationCode()));
         workingDetail.setEmploymentOccupation(prepareData(customerInfoRsl.getEmploymentOccupation(), null));
-        workingDetail.setProffesional(prepareData(customerInfoRsl.getProfessionalCode(), null));
+        workingDetail.setProfessional(prepareData(customerInfoRsl.getProfessionalCode(), null));
         workingDetail.setContractEmployedFlag(prepareData(customerInfoRsl.getContractEmployedFlag(), null));
         workingDetail.setBusinessType(prepareBusinessType(customerInfoRsl, customerInfoEc));
         workingDetail.setBusinessSubType(prepareData(customerInfoRsl.getBusinessSubType(), customerInfoEc.getBusinessTypeCode()));
@@ -72,17 +74,17 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         workingDetail.setEmailStatementFlag(prepareData(customerInfoRsl.getEmailStatementFlag(), "Y"));
         workingDetail.setTel(prepareData(customerInfoRsl.getEmploymentTelephoneNo(), customerInfoEc.getWorkPhoneNo()));
         workingDetail.setExTel(prepareData(customerInfoRsl.getEmploymentTelephoneExtNo(), customerInfoEc.getWorkPhoneNoExt()));
-
+        workingDetail.setWaiveDoc(getStatusIsWaiveDoc(caId));
         return workingDetail;
     }
 
-    private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws TMBCommonException {
         return dropdownService.getEmploymentStatus(customerInfoEc.getOccupationCode());
     }
 
     private String prepareBusinessType(Individual customerInfoRsl, CustGeneralProfileResponse customerInfoEc) {
         String businessTypeCodeEc = "";
-        if(!StringUtils.isEmpty(customerInfoEc.getBusinessTypeCode())) {
+        if (!StringUtils.isEmpty(customerInfoEc.getBusinessTypeCode())) {
             businessTypeCodeEc = customerInfoEc.getBusinessTypeCode().substring(0, 4);
         }
         return prepareData(customerInfoRsl.getBusinessType(), businessTypeCodeEc);
@@ -127,7 +129,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return address;
     }
 
-    private String prepareIncomeType(String rslIncomeType, String employmentStatus) throws ServiceException, TMBCommonException, JsonProcessingException {
+    private String prepareIncomeType(String rslIncomeType, String employmentStatus) throws JsonProcessingException {
         if (StringUtils.isEmpty(rslIncomeType)) {
             return rslIncomeType;
         }
@@ -145,6 +147,17 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         }
         return response.getBody().getIndividuals()[0];
 
+    }
+
+    private boolean getStatusIsWaiveDoc(String caId) throws ServiceException, TMBCommonException, JsonProcessingException {
+        LoanSubmissionGetApplicationInfoRequest request = new LoanSubmissionGetApplicationInfoRequest();
+        request.setCaId(caId);
+        ResponseApplication response = rslService.getLoanSubmissionApplicationInfo(request);
+        if (ObjectUtils.isEmpty(response.getBody())) {
+            throw new TMBCommonException(response.getHeader().getResponseCode(),
+                    "Application info on rsl are empty.", ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+        return response.getBody().getNatureOfRequest().equals("04") || response.getBody().getNatureOfRequest().equals("12");
     }
 
     private CustGeneralProfileResponse getCustomerInfoFromRslEc(String crmId) throws TMBCommonException {

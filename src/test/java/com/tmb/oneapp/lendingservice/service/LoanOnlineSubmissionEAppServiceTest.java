@@ -113,7 +113,8 @@ class LoanOnlineSubmissionEAppServiceTest {
 
         Body body = new Body();
         body.setAppType(type);
-        body.setApplicationDate("2000-10-10");
+        body.setApplicationDate("2021-10-06T17:38:36.000Z");
+        body.setNatureOfRequest("04");
 
         ResponseApplication application = new ResponseApplication();
         application.setHeader(header);

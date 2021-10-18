@@ -12,10 +12,12 @@ import java.util.Calendar;
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class EAppResponse {
+    boolean waiveDoc;
     String productNameTh;
     String productType;
     String appNo;
     String employmentStatus;
+    String employmentStatusCode;
     BigDecimal salary;
     BigDecimal otherIncome;
     BigDecimal limitApplied;
@@ -26,6 +28,7 @@ public class EAppResponse {
     String disburstAccountNo;
     String paymentPlan;
     String paymentMethod;
+    String paymentMethodCode;
     String paymentAccountName;
     String paymentAccountNo;
     String paymentCriteria;

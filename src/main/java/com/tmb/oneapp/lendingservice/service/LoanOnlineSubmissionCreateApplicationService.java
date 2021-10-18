@@ -13,7 +13,6 @@ import com.tmb.common.model.legacy.rsl.common.ob.facility.Facility;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
-import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
 import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.common.model.legacy.rsl.common.ob.creditcard.CreditCard;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
@@ -36,7 +35,6 @@ import java.util.*;
 public class LoanOnlineSubmissionCreateApplicationService {
     private static final TMBLogger<LoanOnlineSubmissionCreateApplicationService> logger = new TMBLogger<>(LoanOnlineSubmissionCreateApplicationService.class);
     private final LoanSubmissionCreateApplicationClient loanSubmissionCreateApplicationClient;
-    private final LoanSubmissionGetIncomeModelInfoClient incomeModelInfoClient;
     private final CustomerServiceClient customerServiceClient;
     private final LoanSubmissionGetDropdownListClient dropdownListClient;
     private final CommonServiceFeignClient commonServiceFeignClient;
@@ -61,7 +59,7 @@ public class LoanOnlineSubmissionCreateApplicationService {
     }
 
 
-    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException, ServiceException, RemoteException, JsonProcessingException {
+    private Application prepareData(Application application, LoanSubmissionCreateApplicationReq req, String rmId) throws TMBCommonException, ParseException, ServiceException, JsonProcessingException {
         mapIndividual(application, req, rmId);
         String productCode = req.getProductCode();
         boolean isTypeCC = productCode.equals("VM") || productCode.equals("VC")
@@ -72,11 +70,11 @@ public class LoanOnlineSubmissionCreateApplicationService {
                 || productCode.equals("MT") || productCode.equals("MS");
         if (isTypeCC) {
             application.setAppType("CC");
-            application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "04" : "03");
+            application.setNatureOfRequest(req.isWaiveDoc() ? "04" : "03");
             mapDataTypeCC(application, req);
         } else {
             application.setAppType("PL");
-            application.setNatureOfRequest(waiveDocIsAlready(rmId) ? "12" : "11");
+            application.setNatureOfRequest(req.isWaiveDoc() ? "12" : "11");
             mapDataTypeNonCC(application, req);
         }
         application.setBranchCode("026");
@@ -159,20 +157,6 @@ public class LoanOnlineSubmissionCreateApplicationService {
         facilities[0].setConsiderLoanWithOtherBank(req.getConsiderLoanWithOtherBank());
         application.setFacilities(facilities);
         return application;
-    }
-
-    private boolean waiveDocIsAlready(String rmId) throws ServiceException, RemoteException, JsonProcessingException {
-
-        try {
-            ResponseIncomeModel responseIncomeModel = incomeModelInfoClient.getIncomeInfo(StringUtils.right(rmId, 14));
-            if (responseIncomeModel.getHeader().getResponseCode().equals("MSG_000")) {
-                return Objects.nonNull(responseIncomeModel.getBody()) && Objects.nonNull(responseIncomeModel.getBody().getIncomeModelAmt());
-            }
-            return false;
-        } catch (Exception e) {
-            loging("create app  check waive doc soap error", e);
-            throw e;
-        }
     }
 
     private String getThaiSalutationCode(String titleName) throws ServiceException, TMBCommonException, JsonProcessingException {

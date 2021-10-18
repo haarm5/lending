@@ -331,7 +331,7 @@ public class LoanServiceTest {
                 .thenReturn(LoanServiceUtils.mockOneAppCreditCardResponse(c1));
 
         InstantCreditCard ic1 = new InstantCreditCard();
-        ic1.setProductType("vi");
+        ic1.setProductType("vb");
         when(eligibleProductClient.getEligibleProduct(any()))
                 .thenReturn(LoanServiceUtils.mockEligibleProductInstantCreditCard(ic1));
 

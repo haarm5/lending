@@ -36,13 +36,11 @@ public class ReportGeneratorController {
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
-            @ApiParam(value = LendingServiceConstant.HEADER_ACCOUNT_ID, defaultValue = "0000000050078680019000079", required = true)
-            @Valid @RequestHeader(LendingServiceConstant.HEADER_ACCOUNT_ID) String accountId,
             @RequestBody ReportGeneratorRequest request) throws TMBCommonException {
         TmbOneServiceResponse<ReportGeneratorResponse> response = new TmbOneServiceResponse<>();
 
         try {
-            ReportGeneratorResponse reportGeneratorResponse = reportGeneratorService.generateEAppReport(accountId, request, correlationId, crmId);
+            ReportGeneratorResponse reportGeneratorResponse = reportGeneratorService.generateEAppReport(request, correlationId, crmId);
             response.setData(reportGeneratorResponse);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

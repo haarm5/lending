@@ -8,8 +8,10 @@ import com.tmb.common.model.legacy.rsl.ws.application.save.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.application.save.response.ResponseApplication;
 import com.tmb.common.model.legacy.rsl.ws.dropdown.response.ResponseDropdown;
-import com.tmb.common.model.legacy.rsl.ws.incomemodel.response.ResponseIncomeModel;
-import com.tmb.oneapp.lendingservice.client.*;
+import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionCreateApplicationClient;
+import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetDropdownListClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.LoanSubmissionCreateApplicationReq;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -32,8 +35,6 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
 
     @Mock
     private LoanSubmissionCreateApplicationClient loanSubmissionCreateApplicationClient;
-    @Mock
-    private LoanSubmissionGetIncomeModelInfoClient loanSubmissionGetIncomeModelInfoClient;
     @Mock
     private CustomerServiceClient customerServiceClient;
     @Mock
@@ -48,8 +49,8 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
         loanOnlineSubmissionCreateApplicationService = new LoanOnlineSubmissionCreateApplicationService(
-                loanSubmissionCreateApplicationClient, loanSubmissionGetIncomeModelInfoClient,
-                customerServiceClient, dropdownListClient, commonServiceFeignClient);
+                loanSubmissionCreateApplicationClient, customerServiceClient,
+                dropdownListClient, commonServiceFeignClient);
     }
 
 
@@ -67,12 +68,6 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
         res.setHeader(appHeader);
         res.setBody(body);
         when(loanSubmissionCreateApplicationClient.createApplication(any())).thenReturn(res);
-
-        com.tmb.common.model.legacy.rsl.ws.incomemodel.response.Header header = new com.tmb.common.model.legacy.rsl.ws.incomemodel.response.Header();
-        header.setResponseCode("MSG_000");
-        ResponseIncomeModel incomeModel = new ResponseIncomeModel();
-        incomeModel.setHeader(header);
-        when(loanSubmissionGetIncomeModelInfoClient.getIncomeInfo(any())).thenReturn(incomeModel);
 
 
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
@@ -133,11 +128,6 @@ class LoanOnlineSubmissionCreateApplicationServiceTest {
         res.setBody(body);
         when(loanSubmissionCreateApplicationClient.createApplication(any())).thenReturn(res);
 
-        com.tmb.common.model.legacy.rsl.ws.incomemodel.response.Header header = new com.tmb.common.model.legacy.rsl.ws.incomemodel.response.Header();
-        header.setResponseCode("MSG_000");
-        ResponseIncomeModel incomeModel = new ResponseIncomeModel();
-        incomeModel.setHeader(header);
-        when(loanSubmissionGetIncomeModelInfoClient.getIncomeInfo(any())).thenReturn(incomeModel);
 
         TmbOneServiceResponse oneServiceResponse = new TmbOneServiceResponse();
         TmbStatus tmbStatus = new TmbStatus();

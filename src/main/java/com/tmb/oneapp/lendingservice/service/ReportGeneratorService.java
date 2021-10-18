@@ -20,6 +20,7 @@ import com.tmb.oneapp.lendingservice.model.notification.ReportGeneratorNotificat
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientRequest;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
 import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionSubmitApplicationRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
@@ -63,11 +63,13 @@ public class ReportGeneratorService {
     private String sftpLocationENotiDir;
 
     public ReportGeneratorService(RslService rslService,
-                                      CommonServiceFeignClient commonServiceFeignClient,
-                                      ReportServiceClient reportServiceClient,
-                                      LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService,
-                                      NotificationService notificationService,
-                                      SFTPClientImp sftpClientImp) {
+                                  CommonServiceFeignClient commonServiceFeignClient,
+                                  ReportServiceClient reportServiceClient,
+                                  LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService,
+                                  NotificationService notificationService,
+                                  SFTPClientImp sftpClientImp
+
+                                  ) {
         this.rslService = rslService;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.reportServiceClient = reportServiceClient;
@@ -76,12 +78,10 @@ public class ReportGeneratorService {
         this.sftpClientImp = sftpClientImp;
     }
 
-    public ReportGeneratorResponse generateEAppReport(String accountId, ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
+    public ReportGeneratorResponse generateEAppReport(ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
         long caId = Long.parseLong(request.getCaId());
         String productCode = request.getProductCode();
         EAppResponse eAppResponse = loanOnlineSubmissionEAppService.getEApp(caId, crmId, correlationId);
-        //For testing purpose
-        eAppResponse.setEmail("kamonwans@odds.team");
 
         String template;
         Map<String, Object> parameters = new HashMap<>();
@@ -107,7 +107,17 @@ public class ReportGeneratorService {
         LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
         rslRequest.setCaId(request.getCaId());
         ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
-        String appRefNo = applicationInfo.getBody( ).getAppRefNo();
+
+        LoanSubmissionSubmitApplicationRequest applicationRequest = new LoanSubmissionSubmitApplicationRequest();
+        Long caID = CommonServiceUtils.validateCaId(request.getCaId());
+        applicationRequest.setCaId(caID);
+        if (applicationInfo.getBody().getMemberref() != null) {
+            applicationRequest.setMemberRef(applicationInfo.getBody().getMemberref());
+        }
+
+        rslService.submitApplication(applicationRequest);
+
+        String appRefNo = applicationInfo.getBody().getAppRefNo();
 
         if (template.isBlank()) {
             throw new TMBCommonException(ResponseCode.EAPP_INVALID_PRODUCT_CODE.getCode(),
@@ -125,7 +135,7 @@ public class ReportGeneratorService {
             stores(crmId, appRefNo, filePath);
 
             ReportGeneratorNotificationWrapper notificationWrapper = prepareNotificationWrapper(eAppResponse, productCode, applicationInfo, correlationId, fileName);
-            sendNotification(accountId, crmId, correlationId, notificationWrapper);
+            sendNotification(productCode, crmId, correlationId, notificationWrapper);
 
             return new ReportGeneratorResponse(productCode, fileName);
         }
@@ -184,9 +194,9 @@ public class ReportGeneratorService {
         return notificationAttachments;
     }
 
-    private void sendNotification(String accountId, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
+    private void sendNotification(String productCode, String crmId, String correlationId, ReportGeneratorNotificationWrapper wrapper) {
         try {
-            notificationService.sendNotifyEAppReportGenerator(crmId, accountId, correlationId, wrapper);
+            notificationService.sendNotifyEAppReportGenerator(crmId, productCode, correlationId, wrapper);
         } catch (Exception e) {
             logger.error("sendNotifyEAppReportGenerator error: {}", e);
             throw e;
@@ -194,7 +204,7 @@ public class ReportGeneratorService {
     }
 
     private void stores(String crmId, String appRefNo, String srcFile) throws TMBCommonException {
-        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" +SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
         storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
         storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
     }
@@ -260,7 +270,7 @@ public class ReportGeneratorService {
         parameters.put("issue_date", convertToThaiDate(eAppResponse.getIssueDate()));
         parameters.put("expiry_date", convertToThaiDate(eAppResponse.getExpiryDate()));
         parameters.put("name_th", beautifyString(eAppResponse.getNameTh()));
-        parameters.put("name_en",beautifyString(eAppResponse.getNameEn()));
+        parameters.put("name_en", beautifyString(eAppResponse.getNameEn()));
         parameters.put("birth_day", convertToThaiDate(eAppResponse.getBirthDay()));
         parameters.put("mobile_no", CommonServiceUtils.formatPhoneNumber(
                 CommonServiceUtils.maskPhoneNumber(eAppResponse.getMobileNo())));

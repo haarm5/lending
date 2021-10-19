@@ -167,7 +167,7 @@ public class UploadDocumentService {
             sftpStoreFile.setDstDir(dir);
 
             sftpClientImp.removeDirectory(sftpStoreFile);
-            logger.info("Sftp remove folder successes: {}", dir);
+            logger.info("Sftp remove directory successes: {}", dir);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + dir + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }

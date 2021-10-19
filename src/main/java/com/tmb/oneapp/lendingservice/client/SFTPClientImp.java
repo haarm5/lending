@@ -179,13 +179,17 @@ public class SFTPClientImp implements FTPClient {
         }
     }
 
-    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) throws JSchException, SftpException {
+    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
         ChannelSftp channelSftp;
-        String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
-        channelSftp = (ChannelSftp) setupJsch();
-        channelSftp.connect();
-        recursiveRemoveDirectory(channelSftp, dst);
-        channelSftp.exit();
+        try {
+            String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
+            channelSftp = (ChannelSftp) setupJsch();
+            channelSftp.connect();
+            recursiveRemoveDirectory(channelSftp, dst);
+            channelSftp.exit();
+        }catch (Exception e) {
+            logger.error("sftp remove directory error exception:{}", e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")

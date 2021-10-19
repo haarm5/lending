@@ -90,7 +90,7 @@ public class SFTPClientImp implements FTPClient {
 
     @Override
     public boolean storeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
-        ChannelSftp channelSftp = null;
+        ChannelSftp channelSftp;
         String dst;
         try {
             channelSftp = (ChannelSftp) setupJsch();
@@ -124,7 +124,7 @@ public class SFTPClientImp implements FTPClient {
 
 	@Override
 	public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
-        ChannelSftp channelSftp = null;
+        ChannelSftp channelSftp;
         String dst = null;
         try {
             channelSftp = (ChannelSftp) setupJsch();
@@ -154,7 +154,7 @@ public class SFTPClientImp implements FTPClient {
     
     @Override
 	public boolean purgeFileOlderThanNDays(String dst, long day) {
-		ChannelSftp channelSftp = null;
+		ChannelSftp channelSftp;
 		try {
 			channelSftp = (ChannelSftp) setupJsch();
 			channelSftp.connect();
@@ -179,24 +179,18 @@ public class SFTPClientImp implements FTPClient {
 		}
 	}
 
-    public boolean removeFolder(String dst) {
-        ChannelSftp channelSftp = null;
+    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
+        ChannelSftp channelSftp;
+        String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
         try {
             channelSftp = (ChannelSftp) setupJsch();
             channelSftp.connect();
-            recursiveFolderDelete(channelSftp, dst);
+            recursiveRemoveDirectory(channelSftp, dst);
             channelSftp.exit();
-            return true;
-
         } catch (JSchException e) {
-            logger.error("error jsch connection:{}", e);
-            return false;
+            logger.error("error sftp connection:{}", e);
         } catch (SftpException e) {
-            logger.error("error sftp exception:{}", e);
-            return false;
-        } catch (Exception e) {
-            logger.error("error other exception:{}", e);
-            return false;
+            logger.error("error sftp operation:{}", e);
         }
     }
 
@@ -228,25 +222,19 @@ public class SFTPClientImp implements FTPClient {
 	}
 
     @SuppressWarnings("unchecked")
-    private static void recursiveFolderDelete(ChannelSftp channelSftp, String path) throws SftpException {
-
-        // List source directory structure.
-        Collection<ChannelSftp.LsEntry> fileAndFolderList = channelSftp.ls(path);
-
-        // Iterate objects in the list to get file/folder names.
-        for (ChannelSftp.LsEntry item : fileAndFolderList) {
+    private static void recursiveRemoveDirectory(ChannelSftp channelSftp, String path) throws SftpException {
+        Collection<ChannelSftp.LsEntry> fileAndDirList = channelSftp.ls(path);
+        for (ChannelSftp.LsEntry item : fileAndDirList) {
             if (!item.getAttrs().isDir()) {
-                channelSftp.rm(path + "/" + item.getFilename()); // Remove file.
-            } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) { // If it is a subdir.
+                channelSftp.rm(path + "/" + item.getFilename());
+            } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) {
                 try {
-                    // removing sub directory.
                     channelSftp.rmdir(path + "/" + item.getFilename());
-                } catch (Exception e) { // If subdir is not empty and error occurs.
-                    // Do lsFolderRemove on this subdir to enter it and clear its contents.
-                    recursiveFolderDelete(channelSftp, path + "/" + item.getFilename());
+                } catch (Exception e) {
+                    recursiveRemoveDirectory(channelSftp, path + "/" + item.getFilename());
                 }
             }
         }
-        channelSftp.rmdir(path); // delete the parent directory after empty
+        channelSftp.rmdir(path);
     }
 }

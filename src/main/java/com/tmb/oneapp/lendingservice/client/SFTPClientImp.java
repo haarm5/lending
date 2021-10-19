@@ -122,8 +122,8 @@ public class SFTPClientImp implements FTPClient {
     }
 
 
-	@Override
-	public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
+    @Override
+    public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
         ChannelSftp channelSftp;
         String dst = null;
         try {
@@ -151,75 +151,69 @@ public class SFTPClientImp implements FTPClient {
     public String getRemoteHost() {
         return remoteHost;
     }
-    
-    @Override
-	public boolean purgeFileOlderThanNDays(String dst, long day) {
-		ChannelSftp channelSftp;
-		try {
-			channelSftp = (ChannelSftp) setupJsch();
-			channelSftp.connect();
-			List<String> list = new ArrayList<>();
-			listDirectory(channelSftp, dst, list);
-			
-			for (String entry : list) {
-				purgeDataOlderThanNDay(channelSftp, entry, day);
-			}
-			channelSftp.exit();
-			return true;
-			
-		} catch (JSchException e) {
-			logger.error("error jsch connection:{}", e);
-			return false;
-        } catch (SftpException e) {
-            logger.error("error sftp exception:{}", e);
-            return false;
-		} catch (Exception e) {
-			logger.error("error other exception:{}", e);
-			return false;
-		}
-	}
 
-    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
+    @Override
+    public boolean purgeFileOlderThanNDays(String dst, long day) {
         ChannelSftp channelSftp;
-        String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
         try {
             channelSftp = (ChannelSftp) setupJsch();
             channelSftp.connect();
-            recursiveRemoveDirectory(channelSftp, dst);
+            List<String> list = new ArrayList<>();
+            listDirectory(channelSftp, dst, list);
+
+            for (String entry : list) {
+                purgeDataOlderThanNDay(channelSftp, entry, day);
+            }
             channelSftp.exit();
+            return true;
+
         } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
+            logger.error("error jsch connection:{}", e);
+            return false;
         } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+            logger.error("error sftp exception:{}", e);
+            return false;
+        } catch (Exception e) {
+            logger.error("error other exception:{}", e);
+            return false;
         }
     }
 
-	@SuppressWarnings("unchecked")
-	private void listDirectory(ChannelSftp channelSftp, String path, List<String> list) throws SftpException {
-		Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR 
-		for (LsEntry entry : files) {
-			if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-				list.add(path + "/" + entry.getFilename() + "");
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void purgeDataOlderThanNDay(ChannelSftp channelSftp, String path, long day) throws SftpException {
-		Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR 
-		long cutOff = System.currentTimeMillis() - (day * 24 * 60 * 60 * 1000);
-		long modifyDate;
-		for (LsEntry entry : files) {
-			if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-				modifyDate = entry.getAttrs().getMTime() * 1000L;
-				if (modifyDate < cutOff) {
-					channelSftp.rmdir(path + "/" + entry.getFilename());
-					logger.info("Purge data older than {} Day Success >>> Last modify time:{} >>> Path:{}", day,
-							entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
-				}
-			}
-		}
-	}
+    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) throws JSchException, SftpException {
+        ChannelSftp channelSftp;
+        String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
+        channelSftp = (ChannelSftp) setupJsch();
+        channelSftp.connect();
+        recursiveRemoveDirectory(channelSftp, dst);
+        channelSftp.exit();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void listDirectory(ChannelSftp channelSftp, String path, List<String> list) throws SftpException {
+        Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR
+        for (LsEntry entry : files) {
+            if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+                list.add(path + "/" + entry.getFilename() + "");
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void purgeDataOlderThanNDay(ChannelSftp channelSftp, String path, long day) throws SftpException {
+        Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR
+        long cutOff = System.currentTimeMillis() - (day * 24 * 60 * 60 * 1000);
+        long modifyDate;
+        for (LsEntry entry : files) {
+            if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+                modifyDate = entry.getAttrs().getMTime() * 1000L;
+                if (modifyDate < cutOff) {
+                    channelSftp.rmdir(path + "/" + entry.getFilename());
+                    logger.info("Purge data older than {} Day Success >>> Last modify time:{} >>> Path:{}", day,
+                            entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
+                }
+            }
+        }
+    }
 
     @SuppressWarnings("unchecked")
     private static void recursiveRemoveDirectory(ChannelSftp channelSftp, String path) throws SftpException {

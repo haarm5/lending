@@ -1,22 +1,22 @@
 package com.tmb.oneapp.lendingservice.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import com.tmb.common.logger.TMBLogger;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.LOCRequest;
 import com.tmb.oneapp.lendingservice.model.loanonline.CustomerInformationResponse;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class LoanOnlineSubmissionGenNCBFileService {
@@ -46,7 +46,7 @@ public class LoanOnlineSubmissionGenNCBFileService {
 	 * @param crmID
 	 * @param caID
 	 */
-	public void storeNCBfile(CustomerInformationResponse custInfo) {
+	public void storeNCBfile(ResponseApplication responseApplication, CustomerInformationResponse custInfo) {
 		try {
 			LOCRequest locRequest = new LOCRequest();
 			locRequest.setNCBMobileNo(custInfo.getMobileNo());
@@ -57,9 +57,8 @@ public class LoanOnlineSubmissionGenNCBFileService {
 			locRequest.setNCBReferenceID(custInfo.getMemberRef());
 			locRequest.setNCBDateTime(custInfo.getNcbConsentDate());
 			locRequest.setProductName(custInfo.getProductName());
-			locRequest.setAppRefNo(custInfo.getAppRefNo());
-			String createDateStr = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date());
-			locRequest.setCreateDate(createDateStr);
+			locRequest.setAppRefNo(responseApplication.getBody().getAppRefNo());
+			locRequest.setCreateDate(responseApplication.getBody().getApplicationDate());
 			LOCRequest locRequest2 = new LOCRequest(locRequest);
 			executor.execute(() -> constructRequestForLOCCompleteImage(locRequest2));
 

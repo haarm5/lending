@@ -78,7 +78,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setProductNameTh(application.getProductDescTH());
         response.setWaiveDoc(application.getNatureOfRequest().equals("04") || application.getNatureOfRequest().equals("12"));
         response.setAcceptBy("Access Pin");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date date = sdf.parse(application.getNcbConsentDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);

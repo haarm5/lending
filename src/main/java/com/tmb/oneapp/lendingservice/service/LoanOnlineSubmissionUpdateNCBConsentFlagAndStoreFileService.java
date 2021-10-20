@@ -2,6 +2,8 @@ package com.tmb.oneapp.lendingservice.service;
 
 import javax.validation.Valid;
 
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetApplicationInfoRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,12 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			customerInfoRes.setNcbConsentDate(
 					getDateAndTimeForLOC(updateNCBConsentFlagResponse.getBody().getNcbConsentDate()));
 			customerInfoRes.setCrmId(crmId);
-			loanSubmissionGenNCBFileService.storeNCBfile(customerInfoRes);
+
+			LoanSubmissionGetApplicationInfoRequest rslRequest = new LoanSubmissionGetApplicationInfoRequest();
+			rslRequest.setCaId(request.getCaId());
+			ResponseApplication applicationInfo = rslService.getLoanSubmissionApplicationInfo(rslRequest);
+
+			loanSubmissionGenNCBFileService.storeNCBfile(applicationInfo,customerInfoRes);
 
 		} catch (Exception e) {
 			logger.error("Update NCB Consent Flag And Store File got ExecutionException: {}", e);

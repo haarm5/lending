@@ -3,6 +3,8 @@ package com.tmb.oneapp.lendingservice.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
+import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,11 @@ public class LoanOnlineSubmissionGenNCBFileServiceTest {
 
 	@Test
 	void testStoreNCBfile() throws Exception {
+		ResponseApplication responseApplication = new ResponseApplication();
+		Body body = new Body();
+		body.setAppRefNo("026PL64001583");
+		body.setApplicationDate("026PL64001583");
+		responseApplication.setBody(body);
 		CustomerInformationResponse custInfo = new CustomerInformationResponse();
 		String jpgFile = "";
 		custInfo.setMobileNo("0888888888");
@@ -47,7 +54,7 @@ public class LoanOnlineSubmissionGenNCBFileServiceTest {
 		custInfo.setProductName("Product Name");
 		custInfo.setAppRefNo("2645556");
 		when(imageGeneratorService.generateLOCImage(any())).thenReturn(jpgFile);
-		loanOnlineSubmissionGenNCBFileService.storeNCBfile(custInfo);
+		loanOnlineSubmissionGenNCBFileService.storeNCBfile(responseApplication,custInfo);
 		Assertions.assertTrue(true);
 	}
 }

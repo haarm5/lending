@@ -174,7 +174,7 @@ public class ReportGeneratorService {
     private List<String> prepareAttachments(ResponseApplication application, String correlationId, String fileName, String productCode) throws TMBCommonException {
         List<String> notificationAttachments = new ArrayList<>();
         String letterOfConsent = getLetterOfConsentFilePath(application);
-//        notificationAttachments.add(letterOfConsent);
+        notificationAttachments.add(letterOfConsent);
 
         RslCode rslConfig = getRslConfig(correlationId).stream()
                 .filter(rslCode -> rslCode.getRslCode().contains(productCode)).findFirst().orElse(null);

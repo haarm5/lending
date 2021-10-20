@@ -1,22 +1,20 @@
 package com.tmb.oneapp.lendingservice.model.loanonline;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UpdateNCBConsentFlagRequest {
 
-	@NotNull
-	private String caId;
-	private String crmId;
-	@NotNull
+    @NotEmpty
+    private String caId;
+    @NotEmpty
     private String appType;
     private String appRefNo;
     private String productDescTH;

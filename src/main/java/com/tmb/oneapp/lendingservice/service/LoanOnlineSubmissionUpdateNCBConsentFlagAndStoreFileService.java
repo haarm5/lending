@@ -26,7 +26,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 	private final LoanOnlineSubmissionGetCustInformationService loanSubmissionGetCustInformationService;
 	private final LoanOnlineSubmissionGenNCBFileService loanSubmissionGenNCBFileService;
 
-	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(@Valid UpdateNCBConsentFlagRequest request) throws TMBCommonException {
+	public CustomerInformationResponse updateNCBConsentFlagAndStoreFile(String crmId, @Valid UpdateNCBConsentFlagRequest request) throws TMBCommonException {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		try {
 			logger.info("Update NCB Consent flag [RSL]");
@@ -37,7 +37,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileService {
 			customerInfoRes.setMemberRef(updateNCBConsentFlagResponse.getBody().getMemberref());
 			customerInfoRes.setNcbConsentDate(
 					getDateAndTimeForLOC(updateNCBConsentFlagResponse.getBody().getNcbConsentDate()));
-			customerInfoRes.setCrmId(request.getCrmId());
+			customerInfoRes.setCrmId(crmId);
 			loanSubmissionGenNCBFileService.storeNCBfile(customerInfoRes);
 
 		} catch (Exception e) {

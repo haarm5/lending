@@ -139,9 +139,7 @@ public class ImageGeneratorService {
     public String generateLOCImage(LOCRequest request) {
         try {
             Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(request.getCreateDate());
-            String dateStr = CommonServiceUtils.getDateAndTimeInYYYYMMDDHHMMSS(dateObj);
-            dateStr = dateStr.replaceAll("[/: ]", "");
-            dateStr = dateStr.substring(2);
+            String dateStr = CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(dateObj);
             String fileName = "01" + LendingServiceConstant.UNDER_SCORE + dateStr + LendingServiceConstant.UNDER_SCORE + request.getAppRefNo() + LendingServiceConstant.UNDER_SCORE + "00110";
             String jsonData = mapper.writeValueAsString(request);
             return generateJPGFile(jsonData, fileName);

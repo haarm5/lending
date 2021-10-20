@@ -167,7 +167,7 @@ class LoanOnlineSubmissionControllerTest {
     @Test
     public void oanSubmissionUpdateNCBConsentFlagAndStoreFileSuccess() throws Exception {
         CustomerInformationResponse res = new CustomerInformationResponse();
-        when(updateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any())).thenReturn(res);
+        when(updateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(any(),any())).thenReturn(res);
         ResponseEntity<TmbOneServiceResponse<CustomerInformationResponse>> responseEntity = loanOnlineSubmissionController
                 .loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId", new UpdateNCBConsentFlagRequest());
 
@@ -181,7 +181,7 @@ class LoanOnlineSubmissionControllerTest {
     public void loanSubmissionUpdateNCBConsentFlagAndStoreFileThrowException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new IllegalArgumentException()).when(updateNCBConsentFlagAndStoreFileService)
-                    .updateNCBConsentFlagAndStoreFile(any());
+                    .updateNCBConsentFlagAndStoreFile(any(),any());
 
             loanOnlineSubmissionController.loanSubmissionUpdateNCBConsentFlagAndStoreFile("correlationId", "crmId",
                     new UpdateNCBConsentFlagRequest());

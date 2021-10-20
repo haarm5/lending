@@ -41,7 +41,6 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileServiceTest {
 	@Test
 	void testUpdateNCBConsentFlagAndStoreFile() throws Exception {
 		UpdateNCBConsentFlagRequest request = new UpdateNCBConsentFlagRequest();
-		request.setCrmId("123");
 		ResponseUpdateNCBConsentFlag updateNCBConsentFlagResponse = new ResponseUpdateNCBConsentFlag();
 		com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body body = new com.tmb.common.model.legacy.rsl.ws.ncb.consent.flag.update.response.Body();
 		body.setMemberref("");
@@ -52,7 +51,7 @@ public class LoanOnlineSubmissionUpdateNCBConsentFlagAndStoreFileServiceTest {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		when(loanSubmissionGetCustInfoAppInfoService.getCustomerInformation(any())).thenReturn(customerInfoRes);
 		
-		Assert.assertNotNull(loanSubmissionUpdateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile(request));
+		Assert.assertNotNull(loanSubmissionUpdateNCBConsentFlagAndStoreFileService.updateNCBConsentFlagAndStoreFile("crmId",request));
 	}
 
 }

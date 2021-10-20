@@ -197,9 +197,8 @@ public class LoanOnlineSubmissionController {
             @Valid @RequestBody UpdateNCBConsentFlagRequest request) throws TMBCommonException {
         TmbOneServiceResponse<CustomerInformationResponse> response = new TmbOneServiceResponse<>();
         try {
-            request.setCrmId(crmId);
             CustomerInformationResponse customerInfoRes = updateNCBConsentFlagAndStoreFileService
-                    .updateNCBConsentFlagAndStoreFile(request);
+                    .updateNCBConsentFlagAndStoreFile(crmId,request);
             response.setData(customerInfoRes);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(),
                     ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

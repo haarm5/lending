@@ -30,9 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.REPORT_TYPE_PDF;
@@ -69,7 +71,7 @@ public class ReportGeneratorService {
                                   NotificationService notificationService,
                                   SFTPClientImp sftpClientImp
 
-                                  ) {
+    ) {
         this.rslService = rslService;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.reportServiceClient = reportServiceClient;
@@ -151,7 +153,7 @@ public class ReportGeneratorService {
         return Fetch.fetch(() -> reportServiceClient.generateReport(correlationId, reportReq));
     }
 
-    private ReportGeneratorNotificationWrapper prepareNotificationWrapper(EAppResponse response, String productCode, ResponseApplication applicationInfo, String correlationId, String fileName) throws TMBCommonException {
+    private ReportGeneratorNotificationWrapper prepareNotificationWrapper(EAppResponse response, String productCode, ResponseApplication applicationInfo, String correlationId, String fileName) throws TMBCommonException, ParseException {
         String appRefNo = applicationInfo.getBody().getAppRefNo();
         List<String> attachments = prepareAttachments(applicationInfo, correlationId, fileName, productCode);
         return buildNotificationWrapper(response, appRefNo, attachments);
@@ -171,7 +173,7 @@ public class ReportGeneratorService {
         return wrapper;
     }
 
-    private List<String> prepareAttachments(ResponseApplication application, String correlationId, String fileName, String productCode) throws TMBCommonException {
+    private List<String> prepareAttachments(ResponseApplication application, String correlationId, String fileName, String productCode) throws TMBCommonException, ParseException {
         List<String> notificationAttachments = new ArrayList<>();
         String letterOfConsent = getLetterOfConsentFilePath(application);
         notificationAttachments.add(letterOfConsent);
@@ -339,16 +341,17 @@ public class ReportGeneratorService {
         return String.format("01_%s_%s_%s.pdf", dateStr, appRefNo, docType);
     }
 
-    private String getLetterOfConsentFilePath(ResponseApplication application) {
+    private String getLetterOfConsentFilePath(ResponseApplication application) throws ParseException {
+
         String appRefNo = application.getBody().getAppRefNo();
-        String dateStr = application.getBody().getApplicationDate();
-        dateStr = dateStr.replaceAll("[-:T ]", "");
-        dateStr = dateStr.substring(2, 14);
+        Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(application.getBody().getApplicationDate());
+        String dateStr = CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(dateObj);
         String docType = "00110";
         String letterOfConsentFilePath = String.format("sftp://%s%s%s/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, dateStr, appRefNo, docType);
         logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
         return letterOfConsentFilePath;
+
     }
 
     private String getSaleSheetFilePath(RslCode rslConfig) {

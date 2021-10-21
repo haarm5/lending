@@ -54,7 +54,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -73,7 +73,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -92,7 +92,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -111,7 +111,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -130,7 +130,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -149,7 +149,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -168,7 +168,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -193,7 +193,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell border-bottom-style="none" border-left-style="none" border-right-style="none" border-top-style="none" border="solid 1pt gray" padding="2pt">
                                        <fo:block-container width="230px" height="15px" margin-left="5px" margin-top="8px">
@@ -212,7 +212,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell text-align="justify">
                                        <fo:block-container width="560px" height="10px" margin-left="5px" margin-top="15px">
@@ -222,7 +222,7 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell text-align="justify">
                                        <fo:block-container width="560px" height="10px" margin-left="5px" margin-top="15px">
@@ -232,12 +232,18 @@
                                        </fo:block-container>
                                     </fo:table-cell>
                                  </fo:table-row>
-                                 
+
                                  <fo:table-row>
                                     <fo:table-cell text-align="justify">
                                        <fo:block-container width="550px" height="40px" margin-left="5px" margin-top="20px">
                                           <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
-                                             <fo:inline >&#160;&#160;&#160;&#160;&#160; ข้าพเจ้าทราบดีว่า การให้ความยินยอมผ่านระบบอินเทอร์เน็ตจะมีลักษณะเป็น “ข้อมูลอิเล็กทรอนิกส์” และเป็นข้อความที่ได้สร้าง ส่ง รับ เก็บรักษาหรือประมวลผลด้วยวิธีทางอิเล็กทรอนิกส์ซึ่งจะมีผลเป็นการให้ความยินยอมในการเปิดเผยหรือใช้ข้อมูลของข้าพเจ้า ตามกฎหมายว่าด้วยการประกอบธุรกิจข้อมูลเครดิตและข้าพเจ้าจะไม่ยกเลิกเพิกถอนหรือปฏิเสธความยินยอมนี้ เพราะเหตุที่เป็นข้อ มูลอิเล็กทรอนิกส์</fo:inline>
+                                             <fo:inline >&#160;&#160;&#160;&#160;&#160; ข้าพเจ้าทราบดีว่า การให้ความยินยอมผ่านระบบอินเทอร์เน็ตจะมีลักษณะเป็น “ข้อมูลอิเล็กทรอนิกส์” และเป็นข้อความที่ได้สร้าง ส่ง รับ</fo:inline>
+                                          </fo:block>
+                                          <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
+                                             <fo:inline >เก็บรักษาหรือประมวลผลด้วยวิธีทางอิเล็กทรอนิกส์ซึ่งจะมีผลเป็นการให้ความยินยอมในการเปิดเผยหรือใช้ข้อมูลของข้าพเจ้า ตามกฎหมาย</fo:inline>
+                                          </fo:block>
+                                          <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
+                                             <fo:inline >ว่าด้วยการประกอบธุรกิจข้อมูลเครดิตและข้าพเจ้าจะไม่ยกเลิกเพิกถอนหรือปฏิเสธความยินยอมนี้ เพราะเหตุที่เป็นข้อมูลอิเล็กทรอนิกส์</fo:inline>
                                           </fo:block>
                                        </fo:block-container>
                                     </fo:table-cell>
@@ -247,9 +253,18 @@
                                     <fo:table-cell text-align="justify">
                                        <fo:block-container width="550px" height="50px" margin-left="5px" margin-top="40px">
                                           <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
-                                             <fo:inline>&#160;&#160;&#160;&#160;&#160; ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้าและส่งผ่านระบบอินเทอร์เน็ตให้แก่ บริษัท ข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เพื่อเป็นหลักฐานว่า ข้าพเจ้าตกลงยินยอมให้บริษัท ข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่</fo:inline>
+                                             <fo:inline>&#160;&#160;&#160;&#160;&#160; ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้าและส่งผ่านระบบอินเทอร์เน็ตให้แก่ บริษัท ข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท)</fo:inline>
+                                          </fo:block>
+                                          <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
+                                             <fo:inline>เพื่อเป็นหลักฐานว่าข้าพเจ้าตกลงยินยอมให้บริษัท ข้อมูลเครดิตแห่งชาติ จำกัด (บริษัท) เปิดเผยหรือให้ข้อมูลของข้าพเจ้าแก่ </fo:inline>
                                              <fo:inline font-family="DBOzoneX-Bold" font-size="14pt" font-weight="bold"> ธนาคารทหารไทยธนชาต จำกัด (มหาชน) (TMBThanachart) </fo:inline>
-                                             <fo:inline>ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัท เพื่อประโยชน์ในการวิเคราะห์สินเชื่อ การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้าที่ให้ไว้กับธนาคารดังกล่าวข้างต้น รวมทั้งเพื่อประโยชน์ในการทบทวนสินเชื่อ ต่ออายุสัญญาสินเชื่อ/บัตรเครดิต การบริหารและป้องกันความเสี่ยงตามข้อกำหนดของธนาคารแห่งประเทศไทย และให้ถือว่า ความยินยอมเปิดเผยข้อมูลที่ทำขึ้นผ่านระบบอินเทอร์เน็ตนี้ เมื่อประมวลผลและจัดพิมพ์ขึ้นจากข้อมูลอิเล็กทรอนิกส์แล้ว ไม่ว่าในรูปแบบใดๆ เป็นหลักฐานในการให้ความยินยอมด้วยตนเองของข้าพเจ้าเช่นเดียวกัน</fo:inline>
+                                             <fo:inline>ซึ่งเป็นสมาชิกหรือผู้ใช้บริการของบริษัท เพื่อประโยชน์ในการวิเคราะห์สินเชื่อ</fo:inline>
+                                          </fo:block>
+                                          <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
+                                             <fo:inline>การออกบัตรเครดิต ตามคำขอสินเชื่อ/ขอออกบัตรเครดิตของข้าพเจ้าที่ให้ไว้กับธนาคารดังกล่าวข้างต้น รวมทั้งเพื่อประโยชน์ในการ</fo:inline>
+                                          </fo:block>
+                                          <fo:block text-align="left" font-family="DBOzoneX" font-size="14pt" font-weight="normal" color=" #000000">
+                                             <fo:inline>ทบทวนสินเชื่อ ต่ออายุสัญญาสินเชื่อ/บัตรเครดิต การบริหารและป้องกันความเสี่ยงตามข้อกำหนดของธนาคารแห่งประเทศไทย และให้ถือว่า ความยินยอมเปิดเผยข้อมูลที่ทำขึ้นผ่านระบบอินเทอร์เน็ตนี้ เมื่อประมวลผลและจัดพิมพ์ขึ้นจากข้อมูลอิเล็กทรอนิกส์แล้ว ไม่ว่าในรูปแบบใดๆ เป็นหลักฐานในการให้ความยินยอมด้วยตนเองของข้าพเจ้าเช่นเดียวกัน</fo:inline>
                                           </fo:block>
                                        </fo:block-container>
                                     </fo:table-cell>

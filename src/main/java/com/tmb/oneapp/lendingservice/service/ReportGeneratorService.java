@@ -212,7 +212,7 @@ public class ReportGeneratorService {
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
         buildCommonParameters(parameters, eAppResponse);
-        parameters.put("payment_criteria", eAppResponse.getPaymentCriteria());
+        parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
@@ -221,7 +221,7 @@ public class ReportGeneratorService {
         buildCommonParameters(parameters, eAppResponse);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("payment_plan", beautifyString(eAppResponse.getPaymentPlan()));
-        parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria()));
+        parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
         parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
 
         return EAppCardCategory.FLASH_CARD.getTemplate();
@@ -247,6 +247,14 @@ public class ReportGeneratorService {
         return "ตัดบัญชีธนาคาร".equalsIgnoreCase(paymentMethod) ? "Y" : "N";
     }
 
+    private String checkForPaymentMethod(String paymentCriteria) {
+        return "ชำระเงินสด".equalsIgnoreCase(paymentCriteria) ? "Y" : "N";
+    }
+
+    private String checkForEmployee(String paymentCriteria) {
+        return "พนักงานประจำ".equalsIgnoreCase(paymentCriteria) ? "Y" : "N";
+    }
+
     private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
@@ -260,9 +268,11 @@ public class ReportGeneratorService {
 
         //Loan Payment Detail Section
         parameters.put("payment_method", beautifyString(eAppResponse.getPaymentMethod()));
-        parameters.put("payment_account_name", beautifyString(eAppResponse.getPaymentAccountName()));
-        parameters.put("payment_account_no", beautifyString(eAppResponse.getPaymentAccountNo()));
+        parameters.put("payment_account_name", beautifyString(eAppResponse.getPaymentAccountName())); // ชื่อบัญชี
+        parameters.put("payment_account_no", beautifyString(eAppResponse.getPaymentAccountNo())); //หักบัญชีเงินฝากเลขที่
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
+        parameters.put("is_payment_method", checkForPaymentMethod(eAppResponse.getPaymentCriteria()));
+        parameters.put("is_employee", checkForEmployee(eAppResponse.getEmploymentStatus()));
 
         //Personal Detail Section
         parameters.put("id_type", beautifyString(eAppResponse.getIdType()));

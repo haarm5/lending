@@ -182,6 +182,7 @@ public class LoanObjectMapper {
             oneAppEligibleProduct.setLoanReqMax(String.valueOf(instantCreditCard.getLoanReqMax()));
             oneAppEligibleProduct.setLoanReqMin(String.valueOf(instantCreditCard.getLoanReqMin()));
             oneAppEligibleProduct.setPaymentCriteriaOptions(ccMasterDataPymt);
+            oneAppEligibleProduct.setSourceOfData(instantCreditCard.getSourceOfData());
 
             return oneAppEligibleProduct;
         }).toArray(OneAppEligibleProduct[]::new);

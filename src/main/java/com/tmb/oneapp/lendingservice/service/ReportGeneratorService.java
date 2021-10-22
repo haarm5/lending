@@ -251,8 +251,8 @@ public class ReportGeneratorService {
         return "ชำระเงินสด".equalsIgnoreCase(paymentCriteria) ? "Y" : "N";
     }
 
-    private String checkForEmployee(String paymentCriteria) {
-        return "พนักงานประจำ".equalsIgnoreCase(paymentCriteria) ? "Y" : "N";
+    private String checkForEmployee(String employmentStatus) {
+        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N";
     }
 
     private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {

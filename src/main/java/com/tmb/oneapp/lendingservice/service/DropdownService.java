@@ -6,6 +6,7 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
@@ -17,7 +18,10 @@ import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +32,19 @@ import java.util.stream.Collectors;
 public class DropdownService {
     private static final TMBLogger<DropdownService> logger = new TMBLogger<>(DropdownService.class);
 
-    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+    private final LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
     private final CommonServiceFeignClient commonServiceFeignClient;
     private final LendingCriteriaInfoService lendingCriteriaInfoService;
 
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
-    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, JsonProcessingException {
-        CustGeneralProfileResponse customerInfo = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
-        String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
+    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId, String caId) throws TMBCommonException, JsonProcessingException, ServiceException, RemoteException {
+        Individual customerInfoRsl = loanOnlineSubmissionGetWorkingDetailService.getCustomerInfoRsl(caId);
+        CustGeneralProfileResponse customerInfoEc = loanOnlineSubmissionGetWorkingDetailService.getCustomerInfoEc(crmId);
+        String employmentStatus = !ObjectUtils.isEmpty(customerInfoRsl.getEmploymentStatus()) ?
+                customerInfoRsl.getEmploymentStatus() : getEmploymentStatus(customerInfoEc.getOccupationCode());
+
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());
         response.setRmOccupation(getDropdownRmOccupation(employmentStatus));
@@ -212,16 +219,16 @@ public class DropdownService {
 
         List<Dropdowns.SciCountry> sciCountryList = new ArrayList<>();
         for (CriteriaCodeEntry sciCountry : sciCountryCriteria) {
-                Dropdowns.SciCountry dropdownCountry = Dropdowns.SciCountry.builder()
-                        .code(sciCountry.getEntryCode())
-                        .name(sciCountry.getEntryName())
-                        .name2(countryTh.get(sciCountry.getEntryCode()) != null ? countryTh.get(sciCountry.getEntryCode()) : sciCountry.getEntryName2())
-                        .build();
-                if ("TH".equals(sciCountry.getEntryCode())) {
-                    sciCountryList.add(0, dropdownCountry);
-                } else {
-                    sciCountryList.add(dropdownCountry);
-                }
+            Dropdowns.SciCountry dropdownCountry = Dropdowns.SciCountry.builder()
+                    .code(sciCountry.getEntryCode())
+                    .name(sciCountry.getEntryName())
+                    .name2(countryTh.get(sciCountry.getEntryCode()) != null ? countryTh.get(sciCountry.getEntryCode()) : sciCountry.getEntryName2())
+                    .build();
+            if ("TH".equals(sciCountry.getEntryCode())) {
+                sciCountryList.add(0, dropdownCountry);
+            } else {
+                sciCountryList.add(dropdownCountry);
+            }
         }
         logger.info("Dropdown SciCountry: {}", TMBUtils.convertJavaObjectToString(sciCountryList));
         return sciCountryList;

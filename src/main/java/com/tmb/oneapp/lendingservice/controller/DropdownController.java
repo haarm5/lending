@@ -34,12 +34,13 @@ public class DropdownController {
             @ApiParam(value = LendingServiceConstant.HEADER_CORRELATION_ID, defaultValue = "32fbd3b2-3f97-4a89-ar39-b4f628fbc8da", required = true)
             @Valid @RequestHeader(LendingServiceConstant.HEADER_CORRELATION_ID) String correlationId,
             @ApiParam(value = LendingServiceConstant.HEADER_X_CRMID, defaultValue = "001100000000000000000018593707", required = true)
-            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId
+            @Valid @RequestHeader(LendingServiceConstant.HEADER_X_CRMID) String crmId,
+            @Valid @RequestParam(value = "caId") String caId
     ) throws TMBCommonException {
         TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail> response = new TmbOneServiceResponse<>();
 
         try {
-            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = dropdownService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId);
+            DropdownsLoanSubmissionWorkingDetail dropdownsLoanSubmissionWorkingDetail = dropdownService.getDropdownsLoanSubmissionWorkingDetail(correlationId, crmId, caId);
             response.setData(dropdownsLoanSubmissionWorkingDetail);
             response.setStatus(new TmbStatus(ResponseCode.SUCCESS.getCode(),
                     ResponseCode.SUCCESS.getMessage(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getDesc()));

@@ -1,11 +1,18 @@
 # Releases #
 
+## [ Version 2.4.0 ] ##
+
+* [ONEAPP-17258](https://jira.tau2904.com/browse/ONEAPP-17258) (BE) Finish screen - Generate e-Application to .pdf file
+* [ONEAPP-22158](https://jira.tau2904.com/browse/ONEAPP-22158) [BE] - Service for purge file in sFTP
+* [ONEAPP-22219](https://jira.tau2904.com/browse/ONEAPP-22219) Remove Doc Code folder
+* [ONEAPP-22220](https://jira.tau2904.com/browse/ONEAPP-22220) Year of work fields are missing
+* [ONEAPP-24049](https://jira.tau2904.com/browse/ONEAPP-24049) Exception Case: If SCS service down, system would allow to apply credit card/ flash card by displaying as 'Apply' button
+
 ## [ Version 2.3.0 ] ##
 
 * [ONEAPP-13008](https://jira.tau2904.com/browse/ONEAPP-13008) (BE) Submit uploading
 * [ONEAPP-15824](https://jira.tau2904.com/browse/ONEAPP-15824) (BE) Offer cash transfer
 * [ONEAPP-16585](https://jira.tau2904.com/browse/ONEAPP-16585) [BE] Create refactor code to product-exp-service
-* [ONEAPP-17258](https://jira.tau2904.com/browse/ONEAPP-17258) (BE) Finish screen - Generate e-Application to .pdf file
 * [ONEAPP-18129](https://jira.tau2904.com/browse/ONEAPP-18129) [Working information] On working info screen not display select value for select dropdown.
 * [ONEAPP-19871](https://jira.tau2904.com/browse/ONEAPP-19871) BE - Service get staging bar from mongoDB
 * [ONEAPP-19896](https://jira.tau2904.com/browse/ONEAPP-19896) (BE) Pre-load: Loan Cal

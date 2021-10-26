@@ -38,6 +38,7 @@ public class Dropdowns {
         private String name2;
         private String refEntryCode;
         private String groupId;
+        private String extValue1;
         private String extValue2;
         private List<Occupation> occupation;
     }

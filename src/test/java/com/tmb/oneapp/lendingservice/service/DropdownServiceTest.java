@@ -6,7 +6,9 @@ import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
+import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
@@ -22,12 +24,14 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
 import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(JUnit4.class)
 public class DropdownServiceTest {
@@ -40,7 +44,7 @@ public class DropdownServiceTest {
     @Mock
     private CommonServiceFeignClient commonServiceFeignClient;
     @Mock
-    private LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
+    private LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +52,7 @@ public class DropdownServiceTest {
     }
 
     @Test
-    public void getEmploymentStatus_Success() throws JsonProcessingException, ServiceException, TMBCommonException {
+    public void getEmploymentStatus_Success() throws TMBCommonException {
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
 
         String response = dropdownService.getEmploymentStatus("101");
@@ -186,10 +190,13 @@ public class DropdownServiceTest {
     }
 
     @Test
-    public void getDropdownsLoanSubmissionWorkingDetail_Success() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void getDropdownsLoanSubmissionWorkingDetail_EmploymentStatusRsl_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
         customerInfo.setOccupationCode("101");
-        doReturn(customerInfo).when(loanOnlineSubmissionGetPersonalDetailService).getCustomerEC(anyString());
+        Individual individual = mockIndividual();
+        individual.setEmploymentStatus("01");
+        doReturn(individual).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoRsl(anyString());
+        doReturn(customerInfo).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoEc(anyString());
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(lendingCriteriaInfoService).getEmploymentStatus();
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationByEmploymentStatus(anyString());
@@ -199,7 +206,27 @@ public class DropdownServiceTest {
         doReturn(mockDropdownSciCountry()).when(lendingCriteriaInfoService).getCountry();
         doReturn(mockLovmasterConfigCountry()).when(commonServiceFeignClient).getLovmasterConfig(anyString(), anyString(), anyString(), anyString());
 
-        DropdownsLoanSubmissionWorkingDetail response = dropdownService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId");
+        DropdownsLoanSubmissionWorkingDetail response = dropdownService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
+        Assertions.assertEquals(2, response.getCardDelivery().size());
+        Assertions.assertEquals(2, response.getEmailStatementFlag().size());
+    }
+
+    @Test
+    public void getDropdownsLoanSubmissionWorkingDetail_EmploymentStatusEc_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
+        CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
+        customerInfo.setOccupationCode("101");
+        doReturn(mockIndividual()).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoRsl(anyString());
+        doReturn(customerInfo).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoEc(anyString());
+        doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
+        doReturn(mockDropdownEmploymentStatus()).when(lendingCriteriaInfoService).getEmploymentStatus();
+        doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationByEmploymentStatus(anyString());
+        doReturn(mockDropdownBusinessType()).when(lendingCriteriaInfoService).getBusinessType();
+        doReturn(mockDropdownIncomeBank()).when(lendingCriteriaInfoService).getPayrollBank();
+        doReturn(mockDropdownIncomeType()).when(lendingCriteriaInfoService).getSourceOfIncome(anyString());
+        doReturn(mockDropdownSciCountry()).when(lendingCriteriaInfoService).getCountry();
+        doReturn(mockLovmasterConfigCountry()).when(commonServiceFeignClient).getLovmasterConfig(anyString(), anyString(), anyString(), anyString());
+
+        DropdownsLoanSubmissionWorkingDetail response = dropdownService.getDropdownsLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
         Assertions.assertEquals(2, response.getCardDelivery().size());
         Assertions.assertEquals(2, response.getEmailStatementFlag().size());
     }
@@ -665,6 +692,15 @@ public class DropdownServiceTest {
         criteriaCodeEntries.add(education);
 
         return criteriaCodeEntries;
+    }
+
+    private Individual mockIndividual() {
+        Individual individual = new Individual();
+        com.tmb.common.model.legacy.rsl.common.ob.address.Address address = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
+        address.setAddrTypCode(AddressTypeCode.WORKING.getCode());
+        com.tmb.common.model.legacy.rsl.common.ob.address.Address[] addresses = {address};
+        individual.setAddresses(addresses);
+        return individual;
     }
 
 }

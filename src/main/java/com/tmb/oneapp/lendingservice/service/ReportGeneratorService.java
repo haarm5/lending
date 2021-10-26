@@ -25,6 +25,7 @@ import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,9 @@ public class ReportGeneratorService {
     private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private final NotificationService notificationService;
     private final SFTPClientImp sftpClientImp;
+    private static final String CREDIT_CARD = "บัตรเครดิต";
+    private static final String FLASH_CARD = "บัตรกดเงินสดแฟลช";
+    private static final String C2G_CARD = "สินเชื่อบุคคลแคชทูโก";
 
     @Value("${sftp.locations.loan.root}")
     private String sftpLocationLoanRoot;
@@ -213,6 +217,7 @@ public class ReportGeneratorService {
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
         buildCommonParameters(parameters, eAppResponse);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
+        parameters.put("product" , CREDIT_CARD);
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
@@ -223,6 +228,7 @@ public class ReportGeneratorService {
         parameters.put("payment_plan", beautifyString(eAppResponse.getPaymentPlan()));
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
         parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
+        parameters.put("product" , FLASH_CARD);
 
         return EAppCardCategory.FLASH_CARD.getTemplate();
     }
@@ -231,7 +237,8 @@ public class ReportGeneratorService {
         buildCommonParameters(parameters, eAppResponse);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("monthly_installment", beautifyBigDecimal(eAppResponse.getMonthlyInstallment()));
-        parameters.put("interest", String.format("%s%%", eAppResponse.getInterest()));
+        parameters.put("interest", String.format("%s%%", beautifyBigDecimal(eAppResponse.getInterest())));
+        parameters.put("product" , C2G_CARD);
 
         return EAppCardCategory.C2G_CARD.getTemplate();
     }
@@ -252,7 +259,7 @@ public class ReportGeneratorService {
     }
 
     private String checkForEmployee(String employmentStatus) {
-        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N";
+        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
     private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {

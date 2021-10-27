@@ -25,7 +25,6 @@ import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import com.tmb.oneapp.lendingservice.util.Fetch;
 import com.tmb.oneapp.lendingservice.util.FileConvertorUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -215,30 +214,27 @@ public class ReportGeneratorService {
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse,CREDIT_CARD);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
-        parameters.put("product" , CREDIT_CARD);
+
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
 
     private String prepareFlashCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, FLASH_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("payment_plan", beautifyString(eAppResponse.getPaymentPlan()));
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
         parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
-        parameters.put("product" , FLASH_CARD);
-
         return EAppCardCategory.FLASH_CARD.getTemplate();
     }
 
     private String prepareC2GCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse,C2G_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("monthly_installment", beautifyBigDecimal(eAppResponse.getMonthlyInstallment()));
         parameters.put("interest", String.format("%s%%", beautifyBigDecimal(eAppResponse.getInterest())));
-        parameters.put("product" , C2G_CARD);
 
         return EAppCardCategory.C2G_CARD.getTemplate();
     }
@@ -262,7 +258,7 @@ public class ReportGeneratorService {
         return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
-    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
+    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse,String product) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
         parameters.put("product_name", beautifyString(eAppResponse.getProductNameTh()));
@@ -324,6 +320,8 @@ public class ReportGeneratorService {
         parameters.put("accept_by", beautifyString(eAppResponse.getAcceptBy()));
         parameters.put("consent_date", convertToThaiDate(eAppResponse.getAcceptDate()));
         parameters.put("consent_time", convertToTime(eAppResponse.getAcceptDate()));
+        parameters.put("product", product);
+
     }
 
     private String convertToTime(Calendar acceptDate) {
@@ -397,8 +395,15 @@ public class ReportGeneratorService {
 
     private String convertToThaiDate(Calendar calendar) {
         if (Objects.nonNull(calendar)) {
-            Date date = calendar.getTime();
-            String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+            String dateEng;
+            int year = calendar.get(Calendar.YEAR);
+            if (year > 9000) {
+                dateEng = "ตลอดชีพ";
+
+            } else {
+                Date date = calendar.getTime();
+                dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+            }
             return CommonServiceUtils.getThaiDate(dateEng);
         } else {
             return "-";

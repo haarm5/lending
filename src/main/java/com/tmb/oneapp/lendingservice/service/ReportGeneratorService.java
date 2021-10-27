@@ -50,6 +50,9 @@ public class ReportGeneratorService {
     private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private final NotificationService notificationService;
     private final SFTPClientImp sftpClientImp;
+    private static final String CREDIT_CARD = "บัตรเครดิต";
+    private static final String FLASH_CARD = "บัตรกดเงินสดแฟลช";
+    private static final String C2G_CARD = "สินเชื่อบุคคลแคชทูโก";
 
     @Value("${sftp.locations.loan.root}")
     private String sftpLocationLoanRoot;
@@ -211,27 +214,27 @@ public class ReportGeneratorService {
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, CREDIT_CARD);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
+
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
 
     private String prepareFlashCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, FLASH_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("payment_plan", beautifyString(eAppResponse.getPaymentPlan()));
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
         parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
-
         return EAppCardCategory.FLASH_CARD.getTemplate();
     }
 
     private String prepareC2GCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, C2G_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("monthly_installment", beautifyBigDecimal(eAppResponse.getMonthlyInstallment()));
-        parameters.put("interest", String.format("%s%%", eAppResponse.getInterest()));
+        parameters.put("interest", String.format("%s%%", beautifyBigDecimal(eAppResponse.getInterest())));
 
         return EAppCardCategory.C2G_CARD.getTemplate();
     }
@@ -252,10 +255,10 @@ public class ReportGeneratorService {
     }
 
     private String checkForEmployee(String employmentStatus) {
-        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N";
+        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
-    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
+    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse, String product) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
         parameters.put("product_name", beautifyString(eAppResponse.getProductNameTh()));
@@ -317,6 +320,8 @@ public class ReportGeneratorService {
         parameters.put("accept_by", beautifyString(eAppResponse.getAcceptBy()));
         parameters.put("consent_date", convertToThaiDate(eAppResponse.getAcceptDate()));
         parameters.put("consent_time", convertToTime(eAppResponse.getAcceptDate()));
+        parameters.put("product", product);
+
     }
 
     private String convertToTime(Calendar acceptDate) {
@@ -390,9 +395,16 @@ public class ReportGeneratorService {
 
     private String convertToThaiDate(Calendar calendar) {
         if (Objects.nonNull(calendar)) {
-            Date date = calendar.getTime();
-            String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
-            return CommonServiceUtils.getThaiDate(dateEng);
+            int year = calendar.get(Calendar.YEAR);
+            if (year >= 9000) {
+                return "ตลอดชีพ";
+
+            } else {
+                Date date = calendar.getTime();
+                String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+                return CommonServiceUtils.getThaiDate(dateEng);
+            }
+
         } else {
             return "-";
         }

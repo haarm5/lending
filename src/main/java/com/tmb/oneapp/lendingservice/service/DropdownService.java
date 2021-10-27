@@ -6,14 +6,16 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.dropdown.DropdownsLoanSubmissionWorkingDetail;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,18 +35,20 @@ import java.util.stream.Collectors;
 public class DropdownService {
     private static final TMBLogger<DropdownService> logger = new TMBLogger<>(DropdownService.class);
 
-    private final LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
     private final CommonServiceFeignClient commonServiceFeignClient;
+    private final CustomerServiceClient customerServiceClient;
     private final LendingCriteriaInfoService lendingCriteriaInfoService;
+    private final RslService rslService;
 
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
     public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId, String caId) throws TMBCommonException, JsonProcessingException, ServiceException, RemoteException {
-        Individual customerInfoRsl = loanOnlineSubmissionGetWorkingDetailService.getCustomerInfoRsl(caId);
-        CustGeneralProfileResponse customerInfoEc = loanOnlineSubmissionGetWorkingDetailService.getCustomerInfoEc(crmId);
-        String employmentStatus = !ObjectUtils.isEmpty(customerInfoRsl.getEmploymentStatus()) ?
-                customerInfoRsl.getEmploymentStatus() : getEmploymentStatus(customerInfoEc.getOccupationCode());
+        String employmentStatus = getEmploymentStatusRsl(caId);
+        if (ObjectUtils.isEmpty(employmentStatus)) {
+            employmentStatus = getEmploymentStatusEc(crmId);
+        }
+        logger.info("Employment status: {}", employmentStatus);
 
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());
@@ -290,4 +295,16 @@ public class DropdownService {
         return List.of("Y", "N");
     }
 
+    public String getEmploymentStatusRsl(String caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
+        request.setCaId(caId);
+        ResponseIndividual response = rslService.getLoanSubmissionCustomerInfo(request);
+        return response.getBody().getIndividuals()[0].getEmploymentStatus();
+    }
+
+
+    private String getEmploymentStatusEc(String crmId) throws TMBCommonException {
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
+        return getEmploymentStatus(Objects.requireNonNull(response).getData().getOccupationCode());
+    }
 }

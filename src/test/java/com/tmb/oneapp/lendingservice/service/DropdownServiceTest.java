@@ -7,7 +7,9 @@ import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.TmbStatus;
 import com.tmb.common.model.legacy.rsl.common.ob.individual.Individual;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.constant.AddressTypeCode;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
@@ -22,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
@@ -40,11 +43,13 @@ public class DropdownServiceTest {
     private DropdownService dropdownService;
 
     @Mock
-    private LendingCriteriaInfoService lendingCriteriaInfoService;
-    @Mock
     private CommonServiceFeignClient commonServiceFeignClient;
     @Mock
-    private LoanOnlineSubmissionGetWorkingDetailService loanOnlineSubmissionGetWorkingDetailService;
+    private CustomerServiceClient customerServiceClient;
+    @Mock
+    private LendingCriteriaInfoService lendingCriteriaInfoService;
+    @Mock
+    private RslService rslService;
 
     @BeforeEach
     void setUp() {
@@ -191,12 +196,15 @@ public class DropdownServiceTest {
 
     @Test
     public void getDropdownsLoanSubmissionWorkingDetail_EmploymentStatusRsl_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
-        CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
-        customerInfo.setOccupationCode("101");
-        Individual individual = mockIndividual();
+        ResponseIndividual responseIndividual = mockIndividual();
+        Individual individual = responseIndividual.getBody().getIndividuals()[0];
         individual.setEmploymentStatus("01");
-        doReturn(individual).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoRsl(anyString());
-        doReturn(customerInfo).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoEc(anyString());
+        Individual[] individuals = {individual};
+        com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
+        body.setIndividuals(individuals);
+        responseIndividual.setBody(body);
+        doReturn(mockIndividual()).when(rslService).getLoanSubmissionCustomerInfo(any());
+        doReturn(mockCustomerInfo()).when(customerServiceClient).getCustomers(anyString());
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(lendingCriteriaInfoService).getEmploymentStatus();
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationByEmploymentStatus(anyString());
@@ -213,11 +221,8 @@ public class DropdownServiceTest {
 
     @Test
     public void getDropdownsLoanSubmissionWorkingDetail_EmploymentStatusEc_Success() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
-        CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
-        customerInfo.setOccupationCode("101");
-        doReturn(mockIndividual()).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoRsl(anyString());
-        doReturn(customerInfo).when(loanOnlineSubmissionGetWorkingDetailService).getCustomerInfoEc(anyString());
-        doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
+        doReturn(mockIndividual()).when(rslService).getLoanSubmissionCustomerInfo(any());
+        doReturn(mockCustomerInfo()).when(customerServiceClient).getCustomers(anyString());doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationInfoByCode(anyString());
         doReturn(mockDropdownEmploymentStatus()).when(lendingCriteriaInfoService).getEmploymentStatus();
         doReturn(mockDropdownRmOccupation()).when(lendingCriteriaInfoService).getOccupationByEmploymentStatus(anyString());
         doReturn(mockDropdownBusinessType()).when(lendingCriteriaInfoService).getBusinessType();
@@ -694,13 +699,31 @@ public class DropdownServiceTest {
         return criteriaCodeEntries;
     }
 
-    private Individual mockIndividual() {
+    private ResponseIndividual mockIndividual() {
+        ResponseIndividual response = new ResponseIndividual();
+        com.tmb.common.model.legacy.rsl.ws.individual.response.Header header = new com.tmb.common.model.legacy.rsl.ws.individual.response.Header();
+        header.setResponseCode(ResponseCode.SUCCESS.getCode());
+        response.setHeader(header);
+
         Individual individual = new Individual();
         com.tmb.common.model.legacy.rsl.common.ob.address.Address address = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
         address.setAddrTypCode(AddressTypeCode.WORKING.getCode());
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] addresses = {address};
         individual.setAddresses(addresses);
-        return individual;
+        Individual[] Individuals = {individual};
+        com.tmb.common.model.legacy.rsl.ws.individual.response.Body body = new com.tmb.common.model.legacy.rsl.ws.individual.response.Body();
+        body.setIndividuals(Individuals);
+        response.setBody(body);
+        return response;
+    }
+
+    private ResponseEntity<TmbOneServiceResponse<CustGeneralProfileResponse>> mockCustomerInfo() {
+        CustGeneralProfileResponse customerInfo = new CustGeneralProfileResponse();
+        customerInfo.setOccupationCode("101");
+        customerInfo.setBusinessTypeCode("123456789");
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = new TmbOneServiceResponse<>();
+        response.setData(customerInfo);
+        return ResponseEntity.ok().body(response);
     }
 
 }

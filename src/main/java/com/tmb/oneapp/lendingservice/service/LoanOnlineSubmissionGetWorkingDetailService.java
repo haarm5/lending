@@ -97,7 +97,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         address.setNo(customer.getWorkAddrHouseNo());
         address.setFloor(customer.getWorkAddrFloorNo());
         address.setMoo(customer.getWorkAddrMoo());
-        address.setStreetName(customer.getWorkAddrStreet());
+        address.setStreetName(customer.getWorkAddrSoi());
         address.setPostalCode(customer.getWorkAddrZipcode());
         address.setProvince(customer.getWorkAddrProvinceNameTh());
         address.setCountry(customer.getNationality());
@@ -117,7 +117,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
             address.setNo(prepareData(workingAddress.getAddress(), customerEc.getWorkAddrHouseNo()));
             address.setFloor(prepareData(workingAddress.getFloor(), customerEc.getWorkAddrFloorNo()));
             address.setMoo(prepareData(workingAddress.getMoo(), customerEc.getWorkAddrMoo()));
-            address.setStreetName(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrStreet()));
+            address.setStreetName(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrSoi()));
             address.setPostalCode(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode()));
             address.setProvince(getProvinceName(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode())));
             address.setCountry(prepareData(workingAddress.getCountry(), customerEc.getNationality()));

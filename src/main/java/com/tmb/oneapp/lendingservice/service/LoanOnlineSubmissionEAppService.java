@@ -249,7 +249,7 @@ public class LoanOnlineSubmissionEAppService {
                 result = result + " " + address.getBuildingName();
             }
             if (!address.getStreetName().isEmpty()) {
-                result = result + " " + address.getBuildingName();
+                result = result + " " + address.getStreetName();
             }
             if (!address.getRoad().isEmpty()) {
                 result = result + " " + address.getRoad();

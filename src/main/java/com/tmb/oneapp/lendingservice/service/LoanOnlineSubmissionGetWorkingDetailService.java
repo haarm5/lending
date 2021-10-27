@@ -138,7 +138,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return dropdownsIncomeType.get(0).getCode();
     }
 
-    public Individual getCustomerInfoRsl(String caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+    private Individual getCustomerInfoRsl(String caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
         LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
         request.setCaId(caId);
         ResponseIndividual response = rslService.getLoanSubmissionCustomerInfo(request);
@@ -161,7 +161,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return response.getBody().getNatureOfRequest().equals("04") || response.getBody().getNatureOfRequest().equals("12");
     }
 
-    public CustGeneralProfileResponse getCustomerInfoEc(String crmId) throws TMBCommonException {
+    private CustGeneralProfileResponse getCustomerInfoEc(String crmId) throws TMBCommonException {
         TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
         if (ObjectUtils.isEmpty(Objects.requireNonNull(response).getData())) {
             throw new TMBCommonException(response.getStatus().getCode(),

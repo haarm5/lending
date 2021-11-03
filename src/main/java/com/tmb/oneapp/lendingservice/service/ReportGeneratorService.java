@@ -276,6 +276,7 @@ public class ReportGeneratorService {
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
         parameters.put("is_payment_method", checkForPaymentMethod(eAppResponse.getPaymentCriteria()));
         parameters.put("is_employee", checkForEmployee(eAppResponse.getEmploymentStatus()));
+        parameters.put("is_waive_doc", eAppResponse.isWaiveDoc());
 
         //Personal Detail Section
         parameters.put("id_type", beautifyString(eAppResponse.getIdType()));
@@ -296,6 +297,7 @@ public class ReportGeneratorService {
         parameters.put("email", beautifyString(eAppResponse.getEmail()));
         parameters.put("contact_address", beautifyString(eAppResponse.getContactAddress()));
         parameters.put("resident_status", beautifyString(eAppResponse.getResidentStatus()));
+
 
         //Job Detail Section
         parameters.put("rm_occupation", beautifyString(eAppResponse.getRmOccupation()));

@@ -36,6 +36,7 @@ import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.Resp
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.Application;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.Header;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.ResponseTracking;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.LendingModuleCache;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.CustomerExpServiceClient;
@@ -47,7 +48,6 @@ import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetCustomerInfoClient;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.Customer;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.account.AccountSaving;
@@ -179,7 +179,7 @@ public class LoanService {
 		ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
 		if (!ResponseCode.SUCCESS.getCode().equals(tmbStatus.getCode())) {
 			logger.error("Get Account List got error:{}, {}", tmbStatus.getCode(), tmbStatus.getMessage());
-			ServiceError serviceError = new ServiceError();
+			RslServiceError serviceError = new RslServiceError();
 			serviceError.setErrorMessage("Get Account List error");
 			serviceError.setResponseCode(tmbStatus.getCode());
 			serviceResponseImp.setError(serviceError);
@@ -218,7 +218,7 @@ public class LoanService {
 		} catch (ExecutionException e) {
 			logger.error("fetchProducts got ExecutionException:{}", e);
 		}
-		ServiceError serviceError = new ServiceError();
+		RslServiceError serviceError = new RslServiceError();
 		serviceError.setResponseCode("Other");
 		ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
 		serviceResponseImp.setError(serviceError);
@@ -243,7 +243,7 @@ public class LoanService {
 		if (!SUCCESS_CODE.equals(header.getResponseCode())) {
 			logger.error("LoanStatusTracking got error:{}, {}", header.getResponseCode(),
 					header.getResponseDescriptionEN());
-			ServiceError serviceError = new ServiceError();
+			RslServiceError serviceError = new RslServiceError();
 			serviceError.setResponseCode(header.getResponseCode());
 			serviceError.setErrorMessage(header.getResponseDescriptionEN());
 			serviceResponseImp.setError(serviceError);
@@ -267,7 +267,7 @@ public class LoanService {
 		if (!ResponseCode.SUCCESS.getCode().equals(tmbStatus.getCode())) {
 			logger.error("call customer service to get citizen id got error:{}, {}", tmbStatus.getCode(),
 					tmbStatus.getMessage());
-			ServiceError serviceError = new ServiceError();
+			RslServiceError serviceError = new RslServiceError();
 			serviceError.setResponseCode(tmbStatus.getCode());
 			ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
 			serviceResponseImp.setError(serviceError);
@@ -281,7 +281,7 @@ public class LoanService {
 			logger.error("fetchLoanStatusTracking got exception:{}", e);
 		}
 		ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
-		ServiceError serviceError = new ServiceError();
+		RslServiceError serviceError = new RslServiceError();
 		serviceError.setResponseCode("500");
 		serviceError.setErrorMessage("LoanStatusTracking Service Unavailable");
 		serviceResponseImp.setError(serviceError);
@@ -305,7 +305,7 @@ public class LoanService {
 				|| !SUCCESS_DESC.equalsIgnoreCase(header.getResponseDescriptionEN())) {
 			logger.error("EligibleProducts got error:{}, {}", header.getResponseCode(),
 					header.getResponseDescriptionEN());
-			ServiceError serviceError = new ServiceError();
+			RslServiceError serviceError = new RslServiceError();
 			serviceError.setResponseCode(header.getResponseCode());
 			serviceError.setErrorMessage(header.getResponseDescriptionEN());
 			serviceResponseImp.setError(serviceError);
@@ -334,7 +334,7 @@ public class LoanService {
 			logger.error("fetchEligibleProducts got exception:{}", e);
 		}
 		ServiceResponseImp serviceResponseImp = new ServiceResponseImp();
-		ServiceError serviceError = new ServiceError();
+		RslServiceError serviceError = new RslServiceError();
 		serviceError.setResponseCode("500");
 		serviceError.setErrorMessage("Eligible Product Service Unavailable");
 		serviceResponseImp.setError(serviceError);

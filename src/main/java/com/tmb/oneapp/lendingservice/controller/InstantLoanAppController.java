@@ -92,7 +92,7 @@ public class InstantLoanAppController {
 			oneServiceResponse.setData(response.getError());
 			oneServiceResponse.setStatus(new TmbStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getMessage(),
 					ResponseCode.FAILED.getService(), ResponseCode.FAILED.getDesc()));
-			return ResponseEntity.badRequest().headers(responseHeaders).body(oneServiceResponse);
+			return ResponseEntity.ok().headers(responseHeaders).body(oneServiceResponse);
 
 		}
 		oneServiceResponse.setData(response.getData());

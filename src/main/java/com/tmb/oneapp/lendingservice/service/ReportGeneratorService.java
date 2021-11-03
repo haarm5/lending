@@ -214,7 +214,7 @@ public class ReportGeneratorService {
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse,CREDIT_CARD);
+        buildCommonParameters(parameters, eAppResponse, CREDIT_CARD);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
 
 
@@ -231,7 +231,7 @@ public class ReportGeneratorService {
     }
 
     private String prepareC2GCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse,C2G_CARD);
+        buildCommonParameters(parameters, eAppResponse, C2G_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("monthly_installment", beautifyBigDecimal(eAppResponse.getMonthlyInstallment()));
         parameters.put("interest", String.format("%s%%", beautifyBigDecimal(eAppResponse.getInterest())));
@@ -258,7 +258,7 @@ public class ReportGeneratorService {
         return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
-    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse,String product) {
+    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse, String product) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
         parameters.put("product_name", beautifyString(eAppResponse.getProductNameTh()));
@@ -397,16 +397,16 @@ public class ReportGeneratorService {
 
     private String convertToThaiDate(Calendar calendar) {
         if (Objects.nonNull(calendar)) {
-            String dateEng;
             int year = calendar.get(Calendar.YEAR);
-            if (year > 9000) {
-                dateEng = "ตลอดชีพ";
+            if (year >= 9000) {
+                return "ตลอดชีพ";
 
             } else {
                 Date date = calendar.getTime();
-                dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+                String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+                return CommonServiceUtils.getThaiDate(dateEng);
             }
-            return CommonServiceUtils.getThaiDate(dateEng);
+
         } else {
             return "-";
         }

@@ -2,7 +2,7 @@ package com.tmb.oneapp.lendingservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.info.MasterDataRequest;
 import com.tmb.oneapp.lendingservice.model.info.MasterDataResponse;
@@ -54,7 +54,7 @@ public class LendingInfoControllerTest {
     @Test
     void fetchMasterDataHasErrorShouldThrowException() {
         ServiceResponseImp mockResponse = new ServiceResponseImp();
-        ServiceError error = new ServiceError();
+        RslServiceError error = new RslServiceError();
         mockResponse.setError(error);
         when(infoService.fetchMasterData(any())).thenReturn(mockResponse);
         LendingInfoController loanController = new LendingInfoController(infoService);

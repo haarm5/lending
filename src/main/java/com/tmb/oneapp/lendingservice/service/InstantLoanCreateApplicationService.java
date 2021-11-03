@@ -17,11 +17,11 @@ import com.tmb.common.model.loan.CreditCardLoanInfo;
 import com.tmb.common.model.loan.CustomerInfo;
 import com.tmb.common.model.loan.FlashCardOrC2GLoanInfo;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.*;
@@ -170,7 +170,7 @@ public class InstantLoanCreateApplicationService {
 			return response;
 		} catch (JsonProcessingException | ParseException | RemoteException | ServiceException e) {
 			logger.error("Exception {} : ", e);
-			response.setError(new ServiceError());
+			response.setError(new RslServiceError());
 		}
 		return response;
 	}
@@ -205,7 +205,7 @@ public class InstantLoanCreateApplicationService {
 			response.setProductName(productName);
 			serviceResponseImp.setData(response);
 		} else {
-			ServiceError error = new ServiceError();
+			RslServiceError error = new RslServiceError();
 			error.setErrorMessage(soapResponse.getHeader().getResponseDescriptionEN());
 			error.setResponseCode(soapResponse.getHeader().getResponseCode());
 			serviceResponseImp.setError(error);

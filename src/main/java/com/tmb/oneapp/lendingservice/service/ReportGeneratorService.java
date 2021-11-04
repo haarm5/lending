@@ -258,6 +258,10 @@ public class ReportGeneratorService {
         return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
+    private String isWaiveDoc(Boolean isWaiveDoc) {
+        return isWaiveDoc.equals(true) ? "Y" : "N";
+    }
+
     private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse, String product) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
@@ -276,7 +280,7 @@ public class ReportGeneratorService {
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
         parameters.put("is_payment_method", checkForPaymentMethod(eAppResponse.getPaymentCriteria()));
         parameters.put("is_employee", checkForEmployee(eAppResponse.getEmploymentStatus()));
-        parameters.put("is_waive_doc", eAppResponse.isWaiveDoc());
+        parameters.put("is_waive_doc", isWaiveDoc(eAppResponse.isWaiveDoc()));
 
         //Personal Detail Section
         parameters.put("id_type", beautifyString(eAppResponse.getIdType()));

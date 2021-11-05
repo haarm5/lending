@@ -5,6 +5,7 @@ import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;   //NOSONAR 
+import java.util.Vector;   //NOSONAR
+
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
 /**
  * Provides method to store file to sftp server.
@@ -30,9 +33,16 @@ public class SFTPClientImp implements FTPClient {
     @Value("${sftp.password}")
     private String password;
 
-    private static final TMBLogger<SFTPClientImp> logger = new TMBLogger<>(SFTPClientImp.class);
+    @Value("${sftp.enoti.remote-host}")
+    private String enotiRemoteHost;
+    @Value("${sftp.enoti.port}")
+    private int enotiPort;
+    @Value("${sftp.enoti.username}")
+    private String enotiUsername;
+    @Value("${sftp.enoti.password}")
+    private String enotiPassword;
 
-    private static final String SEPARATOR = "/";
+    private static final TMBLogger<SFTPClientImp> logger = new TMBLogger<>(SFTPClientImp.class);
 
 
     private boolean isDirExist(ChannelSftp channel, String path) {
@@ -80,6 +90,18 @@ public class SFTPClientImp implements FTPClient {
         return jschSession.openChannel("sftp");
     }
 
+    public Channel setupEnotiJsch() throws JSchException {
+        JSch jsch = new JSch();
+        Session jschSession = jsch.getSession(enotiUsername, enotiRemoteHost);
+        jschSession.setPassword(enotiPassword);
+        java.util.Properties config = new java.util.Properties();
+        config.put("StrictHostKeyChecking", "no");
+        jschSession.setConfig(config);
+        jschSession.setTimeout(60000);
+        jschSession.connect();
+        return jschSession.openChannel("sftp");
+    }
+
     /**
      * Store file to sftp server
      *
@@ -102,7 +124,7 @@ public class SFTPClientImp implements FTPClient {
                     return false;
                 }
                 String dstDir = sftpStoreFileInfo.getDstDir();
-                if (dstDir == null) {
+                if (StringUtils.isEmpty(dstDir)) {
                     dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sourceFile.getName();
                 } else {
                     mkdir(channelSftp, sftpStoreFileInfo.getRootPath(), sftpStoreFileInfo.getDstDir());
@@ -150,6 +172,10 @@ public class SFTPClientImp implements FTPClient {
 
     public String getRemoteHost() {
         return remoteHost;
+    }
+
+    public String getEnotiRemoteHost() {
+        return enotiRemoteHost;
     }
 
     @Override

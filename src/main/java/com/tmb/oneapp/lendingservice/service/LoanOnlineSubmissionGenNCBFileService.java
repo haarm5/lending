@@ -18,16 +18,20 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
+
 @Service
 public class LoanOnlineSubmissionGenNCBFileService {
 	private static final TMBLogger<LoanOnlineSubmissionGenNCBFileService> logger = new TMBLogger<>(
 			LoanOnlineSubmissionGenNCBFileService.class);
 	private final ImageGeneratorService imageGeneratorService;
 	private final FTPClient ftpClient;
-	private static final String SEPARATOR = "/";
 
 	@Value("${sftp.locations.loan.submission.consent-images}")
 	private String sftpLocations;
+
+	@Value("${sftp.e-noti.locations.loan.submission.consent-images}")
+	private String sftpEnotiLocations;
 
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -38,6 +42,10 @@ public class LoanOnlineSubmissionGenNCBFileService {
 
 	public void setSftpLocations(String sftpLocations) {
 		this.sftpLocations = sftpLocations;
+	}
+
+	public void setSftpEnotiLocations(String sftpEnotiLocations) {
+		this.sftpEnotiLocations = sftpEnotiLocations;
 	}
 
 	/**
@@ -68,7 +76,6 @@ public class LoanOnlineSubmissionGenNCBFileService {
 	}
 
 	private void constructRequestForLOCCompleteImage(LOCRequest locRequest) {
-		List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
 		logger.info("constructRequestForLOCCompleteImage Start");
 		locRequest.setConsentbyCustomer("Access PIN");
 
@@ -81,25 +88,39 @@ public class LoanOnlineSubmissionGenNCBFileService {
 		try {
 			String jpgFile = imageGeneratorService.generateLOCImage(locRequest);
 			String directoryPath = locRequest.getCrmId() + SEPARATOR + locRequest.getAppRefNo();
+
 			String[] locations = sftpLocations.split(",");
-			SFTPStoreFileInfo sftpStoreFile;
-			for (int i = 0; i < locations.length; i++) {
-				sftpStoreFile = new SFTPStoreFileInfo();
-				sftpStoreFile.setSrcFile(jpgFile);
-				sftpStoreFile.setRootPath(locations[i]);
-				if (i == 0) {
-					sftpStoreFile.setDstDir(directoryPath);
-				}
-				sftpStoreFiles.add(sftpStoreFile);
-			}
+			List<SFTPStoreFileInfo> sftpStoreFiles = setSFTPStoreFileInfo(locations, jpgFile, directoryPath);
 			ftpClient.removeFile(sftpStoreFiles);
 			ftpClient.storeFile(sftpStoreFiles);
+
+			String[] enotiLocations = sftpEnotiLocations.split(",");
+			List<SFTPStoreFileInfo> sftpEnotiStoreFiles = setSFTPStoreFileInfo(enotiLocations, jpgFile, directoryPath);
+			ftpClient.removeFile(sftpEnotiStoreFiles);
+			ftpClient.storeFile(sftpEnotiStoreFiles);
+
 			Files.delete(Paths.get(jpgFile));
 		} catch (IOException e) {
 			logger.error("constructRequestForLOCCompleteImage got error:{}", e);
 		}
 
 		logger.info("constructRequestForLOCCompleteImage END");
+	}
+
+	private List<SFTPStoreFileInfo> setSFTPStoreFileInfo(String[] locations, String jpgFile, String directoryPath) {
+		List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
+
+		SFTPStoreFileInfo sftpStoreFile;
+		for (int i = 0; i < locations.length; i++) {
+			sftpStoreFile = new SFTPStoreFileInfo();
+			sftpStoreFile.setSrcFile(jpgFile);
+			sftpStoreFile.setRootPath(locations[i]);
+			if (i == 0) {
+				sftpStoreFile.setDstDir(directoryPath);
+			}
+			sftpStoreFiles.add(sftpStoreFile);
+		}
+		return sftpStoreFiles;
 	}
 
 }

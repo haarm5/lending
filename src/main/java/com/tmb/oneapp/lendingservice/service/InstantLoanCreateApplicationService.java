@@ -58,6 +58,8 @@ public class InstantLoanCreateApplicationService {
 
 	@Value("${sftp.locations.consent-images}")
 	private String sftpLocations;
+	@Value("${sftp.e-noti.locations.consent-images}")
+	private String sftpEnotiLocations;
 
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -71,6 +73,10 @@ public class InstantLoanCreateApplicationService {
 
 	public void setSftpLocations(String sftpLocations) {
 		this.sftpLocations = sftpLocations;
+	}
+
+	public void setSftpEnotiLocations(String sftpEnotiLocations) {
+		this.sftpEnotiLocations = sftpEnotiLocations;
 	}
 
 	/**
@@ -232,18 +238,12 @@ public class InstantLoanCreateApplicationService {
 		try {
 			String jpgFile = imageGeneratorService.generateLOCImage(locRequest2);
 			String directoryPath = locRequest2.getCrmId() + SEPARATOR + locRequest2.getAppRefNo();
-			List<SFTPStoreFileInfo> sftpStoreFileInfoList = new ArrayList<>();
 			String[] locationTokens = sftpLocations.split(",");
-			SFTPStoreFileInfo sftpStoreFileInfo;
-			for (int i = 0; i < locationTokens.length; i++) {
-				sftpStoreFileInfo = new SFTPStoreFileInfo();
-				sftpStoreFileInfo.setSrcFile(jpgFile);
-				sftpStoreFileInfo.setRootPath(locationTokens[i]);
-				if (i == 0)
-					sftpStoreFileInfo.setDstDir(directoryPath);
-				sftpStoreFileInfoList.add(sftpStoreFileInfo);
-			}
+			List<SFTPStoreFileInfo> sftpStoreFileInfoList = setSFTPStoreFileInfo(locationTokens, jpgFile, directoryPath);
+			String[] locationEnoti = sftpEnotiLocations.split(",");
+			List<SFTPStoreFileInfo> sftpStoreEnotiFileInfoList = setSFTPStoreFileInfo(locationEnoti, jpgFile, directoryPath);
 			ftpClient.storeFile(sftpStoreFileInfoList);
+			ftpClient.storeFile(sftpStoreEnotiFileInfoList);
 			Files.delete(Paths.get(jpgFile));
 		} catch (IOException e) {
 			logger.error("constructRequestForLOCCompleteImage got error:{}", e);
@@ -251,6 +251,21 @@ public class InstantLoanCreateApplicationService {
 
 		logger.info("constructRequestForLOCCompleteImage END");
 
+	}
+
+	private List<SFTPStoreFileInfo> setSFTPStoreFileInfo(String[] locations, String jpgFile, String directoryPath) {
+		List<SFTPStoreFileInfo> sftpStoreFileInfoList = new ArrayList<>();
+
+		SFTPStoreFileInfo sftpStoreFileInfo;
+		for (int i = 0; i < locations.length; i++) {
+			sftpStoreFileInfo = new SFTPStoreFileInfo();
+			sftpStoreFileInfo.setSrcFile(jpgFile);
+			sftpStoreFileInfo.setRootPath(locations[i]);
+			if (i == 0)
+				sftpStoreFileInfo.setDstDir(directoryPath);
+			sftpStoreFileInfoList.add(sftpStoreFileInfo);
+		}
+		return sftpStoreFileInfoList;
 	}
 
 	/**

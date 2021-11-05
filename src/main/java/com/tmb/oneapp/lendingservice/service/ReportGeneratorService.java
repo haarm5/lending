@@ -57,10 +57,10 @@ public class ReportGeneratorService {
     @Value("${sftp.locations.loan.dir}")
     private String sftpLocationLoanDir;
 
-    @Value("${sftp.locations.e-noti.root}")
+    @Value("${sftp.e-noti.locations.root}")
     private String sftpLocationENotiRoot;
 
-    @Value("${sftp.locations.e-noti.dir}")
+    @Value("${sftp.e-noti.locations.dir}")
     private String sftpLocationENotiDir;
 
     public ReportGeneratorService(RslService rslService,
@@ -165,7 +165,7 @@ public class ReportGeneratorService {
         wrapper.setProductNameEn(null);
         wrapper.setProductNameTh(beautifyString(response.getProductNameTh()));
         wrapper.setAppRefNo(appRefNo);
-        wrapper.setEmail(response.getEmail());
+        wrapper.setEmail("oranuch901@gmail.com");
 
         wrapper.setAttachments(attachments);
 
@@ -205,9 +205,9 @@ public class ReportGeneratorService {
     }
 
     private void stores(String crmId, String appRefNo, String srcFile) throws TMBCommonException {
-        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
         storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
-        storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
+        storeFileOnNotiSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
@@ -325,19 +325,32 @@ public class ReportGeneratorService {
                 "-";
     }
 
+    private List<SFTPStoreFileInfo> setStoreFileOnSFTP(String rootPath, String dir, String srcFile) {
+        List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
+
+        SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
+        sftpStoreFile.setRootPath(rootPath);
+        sftpStoreFile.setDstDir(dir);
+        sftpStoreFile.setSrcFile(srcFile);
+        sftpStoreFiles.add(sftpStoreFile);
+        return sftpStoreFiles;
+    }
+
     private void storeFileOnSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-            sftpStoreFile.setRootPath(rootPath);
-            sftpStoreFile.setDstDir(dir);
-            sftpStoreFile.setSrcFile(srcFile);
-            sftpStoreFiles.add(sftpStoreFile);
-
+            List<SFTPStoreFileInfo> sftpStoreFiles = setStoreFileOnSFTP(rootPath, dir, srcFile);
             sftpClientImp.storeFile(sftpStoreFiles);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    private void storeFileOnNotiSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
+        try {
+            List<SFTPStoreFileInfo> sftpStoreFiles = setStoreFileOnSFTP(rootPath, dir, srcFile);
+            sftpClientImp.storeFile(sftpStoreFiles);
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP Enoti file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 

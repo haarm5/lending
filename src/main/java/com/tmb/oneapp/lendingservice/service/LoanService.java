@@ -465,7 +465,7 @@ public class LoanService {
 					ResponseCode.FAILED.getService(), HttpStatus.BAD_REQUEST, null);
 		}
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse();
-
+		productDetailResponse.setProductCode(productCode);
 		ResponseInstantLoanGetEligibleProduct eligibleProducts = Fetch.fetch(
 				() -> eligibleProductClient.getEligibleProduct(crmId),
 				LoanServiceResponseParser::parseEligibleProducts);

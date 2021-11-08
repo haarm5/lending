@@ -7,6 +7,7 @@
 * [ONEAPP-22219](https://jira.tau2904.com/browse/ONEAPP-22219) Remove Doc Code folder
 * [ONEAPP-22220](https://jira.tau2904.com/browse/ONEAPP-22220) Year of work fields are missing
 * [ONEAPP-24049](https://jira.tau2904.com/browse/ONEAPP-24049) Exception Case: If SCS service down, system would allow to apply credit card/ flash card by displaying as 'Apply' button
+* [ONEAPP-25919](https://jira.tau2904.com/browse/ONEAPP-25919) Apply instant - Cannot load Card product orientation screen (80)
 
 ## [ Version 2.3.0 ] ##
 

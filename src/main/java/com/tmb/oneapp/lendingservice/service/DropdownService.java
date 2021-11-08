@@ -6,21 +6,28 @@ import com.tmb.common.logger.TMBLogger;
 import com.tmb.common.model.CustGeneralProfileResponse;
 import com.tmb.common.model.LovMaster;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.util.TMBUtils;
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
+import com.tmb.oneapp.lendingservice.client.CustomerServiceClient;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.dropdown.Dropdowns;
 import com.tmb.oneapp.lendingservice.model.dropdown.DropdownsLoanSubmissionWorkingDetail;
+import com.tmb.oneapp.lendingservice.model.rsl.LoanSubmissionGetCustomerInfoRequest;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,16 +35,21 @@ import java.util.stream.Collectors;
 public class DropdownService {
     private static final TMBLogger<DropdownService> logger = new TMBLogger<>(DropdownService.class);
 
-    private final LoanOnlineSubmissionGetPersonalDetailService loanOnlineSubmissionGetPersonalDetailService;
     private final CommonServiceFeignClient commonServiceFeignClient;
+    private final CustomerServiceClient customerServiceClient;
     private final LendingCriteriaInfoService lendingCriteriaInfoService;
+    private final RslService rslService;
 
     private static final String CHANNEL_MIB = "MIB";
     private static final String ACTIVE_STATUS = "1";
 
-    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId) throws TMBCommonException, JsonProcessingException {
-        CustGeneralProfileResponse customerInfo = loanOnlineSubmissionGetPersonalDetailService.getCustomerEC(crmId);
-        String employmentStatus = getEmploymentStatus(customerInfo.getOccupationCode());
+    public DropdownsLoanSubmissionWorkingDetail getDropdownsLoanSubmissionWorkingDetail(String correlationId, String crmId, String caId) throws TMBCommonException, JsonProcessingException, ServiceException, RemoteException {
+        String employmentStatus = getEmploymentStatusRsl(caId);
+        if (ObjectUtils.isEmpty(employmentStatus)) {
+            employmentStatus = getEmploymentStatusEc(crmId);
+        }
+        logger.info("Employment status: {}", employmentStatus);
+
         DropdownsLoanSubmissionWorkingDetail response = new DropdownsLoanSubmissionWorkingDetail();
         response.setEmploymentStatus(getDropdownEmploymentStatus());
         response.setRmOccupation(getDropdownRmOccupation(employmentStatus));
@@ -83,6 +95,7 @@ public class DropdownService {
                                 .name2(rmOccupation.getEntryName2())
                                 .refEntryCode(rmOccupation.getRefEntryCode())
                                 .groupId(rmOccupation.getGroupId())
+                                .extValue1(rmOccupation.getExtValue1())
                                 .extValue2(rmOccupation.getExtValue2())
                                 .occupation(getDropdownOccupation(rmOccupation.getExtValue2()))
                                 .build();
@@ -211,16 +224,16 @@ public class DropdownService {
 
         List<Dropdowns.SciCountry> sciCountryList = new ArrayList<>();
         for (CriteriaCodeEntry sciCountry : sciCountryCriteria) {
-                Dropdowns.SciCountry dropdownCountry = Dropdowns.SciCountry.builder()
-                        .code(sciCountry.getEntryCode())
-                        .name(sciCountry.getEntryName())
-                        .name2(countryTh.get(sciCountry.getEntryCode()) != null ? countryTh.get(sciCountry.getEntryCode()) : sciCountry.getEntryName2())
-                        .build();
-                if ("TH".equals(sciCountry.getEntryCode())) {
-                    sciCountryList.add(0, dropdownCountry);
-                } else {
-                    sciCountryList.add(dropdownCountry);
-                }
+            Dropdowns.SciCountry dropdownCountry = Dropdowns.SciCountry.builder()
+                    .code(sciCountry.getEntryCode())
+                    .name(sciCountry.getEntryName())
+                    .name2(countryTh.get(sciCountry.getEntryCode()) != null ? countryTh.get(sciCountry.getEntryCode()) : sciCountry.getEntryName2())
+                    .build();
+            if ("TH".equals(sciCountry.getEntryCode())) {
+                sciCountryList.add(0, dropdownCountry);
+            } else {
+                sciCountryList.add(dropdownCountry);
+            }
         }
         logger.info("Dropdown SciCountry: {}", TMBUtils.convertJavaObjectToString(sciCountryList));
         return sciCountryList;
@@ -282,4 +295,16 @@ public class DropdownService {
         return List.of("Y", "N");
     }
 
+    public String getEmploymentStatusRsl(String caId) throws ServiceException, TMBCommonException, RemoteException, JsonProcessingException {
+        LoanSubmissionGetCustomerInfoRequest request = new LoanSubmissionGetCustomerInfoRequest();
+        request.setCaId(caId);
+        ResponseIndividual response = rslService.getLoanSubmissionCustomerInfo(request);
+        return response.getBody().getIndividuals()[0].getEmploymentStatus();
+    }
+
+
+    private String getEmploymentStatusEc(String crmId) throws TMBCommonException {
+        TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
+        return getEmploymentStatus(Objects.requireNonNull(response).getData().getOccupationCode());
+    }
 }

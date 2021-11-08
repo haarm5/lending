@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.xml.rpc.ServiceException;
+import java.rmi.RemoteException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,11 +41,11 @@ class DropdownControllerTest {
     }
 
     @Test
-    public void getDropdownLoanSubmissionWorkingDetailSuccess() throws ServiceException, TMBCommonException, JsonProcessingException {
+    public void getDropdownLoanSubmissionWorkingDetailSuccess() throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException {
         DropdownsLoanSubmissionWorkingDetail dropdownWorkingDetailResp = new DropdownsLoanSubmissionWorkingDetail();
-        doReturn(dropdownWorkingDetailResp).when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
+        doReturn(dropdownWorkingDetailResp).when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString());
 
-        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
+        ResponseEntity<TmbOneServiceResponse<DropdownsLoanSubmissionWorkingDetail>> responseEntity = dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
 
         Assertions.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assertions.assertEquals(ResponseCode.SUCCESS.getCode(), Objects.requireNonNull(responseEntity.getBody()).getStatus().getCode());
@@ -55,9 +56,9 @@ class DropdownControllerTest {
     public void getDropdownLoanSubmissionWorkingDetailThrowTMBCommonException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new TMBCommonException(ResponseCode.RSL_CONNECTION_ERROR.getCode(), ResponseCode.RSL_CONNECTION_ERROR.getMessage(), ResponseCode.RSL_CONNECTION_ERROR.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null))
-                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString());
 
-            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
+            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
@@ -69,9 +70,9 @@ class DropdownControllerTest {
     public void getDropdownLoanSubmissionWorkingDetailThrowException() {
         TMBCommonException exception = assertThrows(TMBCommonException.class, () -> {
             doThrow(new IllegalArgumentException())
-                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString());
+                    .when(dropdownService).getDropdownsLoanSubmissionWorkingDetail(anyString(), anyString(), anyString());
 
-            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId");
+            dropdownController.getDropdownLoanSubmissionWorkingDetail("correlationId", "crmId", "caId");
         });
 
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());

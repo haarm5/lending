@@ -30,6 +30,7 @@ import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -43,7 +44,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     public WorkingDetail getWorkingDetail(String crmId, String caId) throws TMBCommonException, ServiceException, RemoteException, JsonProcessingException {
         Individual customerInfoRsl = getCustomerInfoRsl(caId);
-        CustGeneralProfileResponse customerInfoEc = getCustomerInfoFromRslEc(crmId);
+        CustGeneralProfileResponse customerInfoEc = getCustomerInfoEc(crmId);
         return parseLoanSubmissionWorkingDetail(customerInfoRsl, customerInfoEc, caId);
     }
 
@@ -78,7 +79,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return workingDetail;
     }
 
-    private String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws TMBCommonException {
+    public String getEmploymentStatusEc(CustGeneralProfileResponse customerInfoEc) throws TMBCommonException {
         return dropdownService.getEmploymentStatus(customerInfoEc.getOccupationCode());
     }
 
@@ -160,9 +161,9 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         return response.getBody().getNatureOfRequest().equals("04") || response.getBody().getNatureOfRequest().equals("12");
     }
 
-    private CustGeneralProfileResponse getCustomerInfoFromRslEc(String crmId) throws TMBCommonException {
+    private CustGeneralProfileResponse getCustomerInfoEc(String crmId) throws TMBCommonException {
         TmbOneServiceResponse<CustGeneralProfileResponse> response = customerServiceClient.getCustomers(crmId).getBody();
-        if (ObjectUtils.isEmpty(response.getData())) {
+        if (ObjectUtils.isEmpty(Objects.requireNonNull(response).getData())) {
             throw new TMBCommonException(response.getStatus().getCode(),
                     "Customer info on ec are empty.", ResponseCode.FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
@@ -181,7 +182,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         req.setField("postcode");
         req.setSearch(postCode);
         ResponseEntity<TmbOneServiceResponse<List<Province>>> response = commonServiceFeignClient.getProvince(req);
-        if (!ResponseCode.SUCCESS.getCode().equals(response.getBody().getStatus().getCode())) {
+        if (!ResponseCode.SUCCESS.getCode().equals(Objects.requireNonNull(response.getBody()).getStatus().getCode())) {
             return Strings.EMPTY;
         }
         return response.getBody().getData().get(0).getProvinceNameTh();

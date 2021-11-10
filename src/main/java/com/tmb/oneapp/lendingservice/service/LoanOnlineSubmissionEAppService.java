@@ -79,7 +79,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setWaiveDoc(application.getNatureOfRequest().equals("04") || application.getNatureOfRequest().equals("12"));
         response.setAcceptBy("Access Pin");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Date date = sdf.parse(application.getNcbConsentDate());
+        Date date = Objects.nonNull(application.getNcbConsentDate()) ? sdf.parse(application.getNcbConsentDate()) : sdf.parse(application.getApplicationDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         response.setAcceptDate(cal);

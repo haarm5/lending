@@ -197,6 +197,7 @@ class LoanOnlineSubmissionEAppServiceTest {
         pricings[0] = new Pricing();
 
         Feature feature = new Feature();
+        feature.setTenure(48L);
 
         Facility[] facilities = new Facility[1];
         facilities[0] = new Facility();

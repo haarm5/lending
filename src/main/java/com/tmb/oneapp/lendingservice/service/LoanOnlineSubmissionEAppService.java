@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -188,7 +189,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setConsiderLoanWithOtherBank(mapLoanWithOtherBank(facility.getConsiderLoanWithOtherBank()));
         response.setRequestAmount(facility.getFeature().getRequestAmount());
         response.setPaymentPlan(mapPaymentPlan(facility.getFeatureType()));
-        response.setTenure(facility.getTenure());
+        response.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
 
         return response;
     }

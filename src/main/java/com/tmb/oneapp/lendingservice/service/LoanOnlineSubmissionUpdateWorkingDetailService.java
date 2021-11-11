@@ -14,6 +14,7 @@ import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.loanonline.UpdateWorkingDetailRequest;
 import com.tmb.oneapp.lendingservice.model.personal.Address;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -137,17 +138,17 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
 
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("O");
-            newAddress.setAddress(address.getNo());
-            newAddress.setBuildingName(buildingName + " " + room);
-            newAddress.setFloor(address.getFloor());
-            newAddress.setStreetName(address.getStreetName());
-            newAddress.setRoad(address.getRoad());
-            newAddress.setMoo(address.getMoo());
-            newAddress.setTumbol(address.getTumbol());
-            newAddress.setAmphur(address.getAmphur());
-            newAddress.setProvince(address.getProvince());
-            newAddress.setPostalCode(address.getPostalCode());
-            newAddress.setCountry(address.getCountry());
+            newAddress.setAddress(StringUtils.left(address.getNo(), 25));
+            newAddress.setBuildingName(StringUtils.left(buildingName + " " + room, 100));
+            newAddress.setFloor(StringUtils.left(address.getFloor(), 3));
+            newAddress.setStreetName(StringUtils.left(address.getStreetName(), 100));
+            newAddress.setRoad(StringUtils.left(address.getRoad(), 25));
+            newAddress.setMoo(StringUtils.left(address.getMoo(), 20));
+            newAddress.setTumbol(StringUtils.left(address.getTumbol(), 20));
+            newAddress.setAmphur(StringUtils.left(address.getAmphur(), 30));
+            newAddress.setProvince(StringUtils.left(address.getProvince(), 100));
+            newAddress.setPostalCode(StringUtils.left(address.getPostalCode(), 20));
+            newAddress.setCountry(StringUtils.left(address.getCountry(), 40));
 
             if (oldAddress.isPresent()) {
                 com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();

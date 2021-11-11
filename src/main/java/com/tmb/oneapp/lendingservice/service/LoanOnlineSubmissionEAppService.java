@@ -247,10 +247,8 @@ public class LoanOnlineSubmissionEAppService {
             }
             String result = address.getAddress();
             if (!address.getBuildingName().isEmpty()) {
-                result = result + " " + address.getBuildingName();
                 String[] arrOfStr = address.getBuildingName().split("ห้อง");
                 if (arrOfStr.length > 1) {
-                    result = address.getAddress();
                     result = result + " " + arrOfStr[0];
                     if (!address.getMoo().isEmpty()) {
                         result = result + " " + "ม." + " " + address.getMoo();
@@ -259,6 +257,15 @@ public class LoanOnlineSubmissionEAppService {
                         result = result + " " + "ชั้น" + address.getFloor();
                     }
                     result = result + " " + "ห้อง" + " " + arrOfStr[1];
+                } else {
+                    result = result + " " + address.getBuildingName();
+
+                    if (!address.getMoo().isEmpty()) {
+                        result = result + " " + "ม." + " " + address.getMoo();
+                    }
+                    if (!address.getFloor().isEmpty()) {
+                        result = result + " " + "ชั้น" + address.getFloor();
+                    }
                 }
             }
             if (!address.getStreetName().isEmpty()) {

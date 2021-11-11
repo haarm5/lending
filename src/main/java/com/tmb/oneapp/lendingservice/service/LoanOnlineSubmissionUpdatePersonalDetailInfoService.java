@@ -22,6 +22,7 @@ import com.tmb.oneapp.lendingservice.model.personal.DropDown;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailResponse;
 import com.tmb.oneapp.lendingservice.model.personal.PersonalDetailSaveInfoRequest;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -112,7 +113,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
 
     //response position0 = year ,position1 = month
     private List<BigDecimal> calculateAge(Individual individual, CustGeneralProfileResponse ecResponse) throws ParseException {
-        Calendar year =  Objects.isNull(individual.getBirthDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
+        Calendar year = Objects.isNull(individual.getBirthDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdBirthDate()) : individual.getBirthDate();
         Calendar currentYear = Calendar.getInstance();
         int year1 = year.get(Calendar.YEAR);
         int year2 = currentYear.get(Calendar.YEAR);
@@ -231,17 +232,17 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
         newAddress.setCifId(individual.getCifId());
         newAddress.setAddrTypCode("H");
-        newAddress.setAddress(address.getNo());
-        newAddress.setBuildingName(prepareBuildingName(address.getBuildingName(), address.getRoomNo()));
-        newAddress.setFloor(address.getFloor());
-        newAddress.setStreetName(address.getStreetName());
-        newAddress.setRoad(address.getRoad());
-        newAddress.setMoo(address.getMoo());
-        newAddress.setTumbol(address.getTumbol());
-        newAddress.setAmphur(address.getAmphur());
-        newAddress.setProvince(address.getProvince());
-        newAddress.setPostalCode(address.getPostalCode());
-        newAddress.setCountry(address.getCountry());
+        newAddress.setAddress(StringUtils.left(address.getNo(), 25));
+        newAddress.setBuildingName(StringUtils.left(prepareBuildingName(address.getBuildingName(), address.getRoomNo()), 100));
+        newAddress.setFloor(StringUtils.left(address.getFloor(), 3));
+        newAddress.setStreetName(StringUtils.left(address.getStreetName(), 100));
+        newAddress.setRoad(StringUtils.left(address.getRoad(), 25));
+        newAddress.setMoo(StringUtils.left(address.getMoo(), 20));
+        newAddress.setTumbol(StringUtils.left(address.getTumbol(), 20));
+        newAddress.setAmphur(StringUtils.left(address.getAmphur(), 30));
+        newAddress.setProvince(StringUtils.left(address.getProvince(), 100));
+        newAddress.setPostalCode(StringUtils.left(address.getPostalCode(), 20));
+        newAddress.setCountry(StringUtils.left(address.getCountry(), 40));
         if (individual.getCountryOfRegAddr().equals(YES)) {
             individual.setCountryOfRegAddr(newAddress.getCountry());
         }
@@ -255,16 +256,16 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
         newAddress.setCifId(individual.getCifId());
         newAddress.setAddrTypCode("R");
-        newAddress.setAddress(ec.getCurrentAddrHouseNo());
-        newAddress.setBuildingName(prepareBuildingName(ec.getCurrentAddrVillageOrbuilding(), ec.getCurrentAddrRoomNo()));
-        newAddress.setFloor(ec.getCurrentAddrFloorNo());
-        newAddress.setStreetName(ec.getCurrentAddrSoi());
-        newAddress.setRoad(ec.getCurrentAddrStreet());
-        newAddress.setMoo(ec.getCurrentAddrMoo());
-        newAddress.setTumbol(ec.getCurrentAddrSubDistrictNameTh());
-        newAddress.setAmphur(ec.getCurrentAddrdistrictNameTh());
-        newAddress.setProvince(getProvince(ec.getCurrentAddrZipcode()));
-        newAddress.setPostalCode(ec.getCurrentAddrZipcode());
+        newAddress.setAddress(StringUtils.left(ec.getCurrentAddrHouseNo(), 25));
+        newAddress.setBuildingName(StringUtils.left(prepareBuildingName(ec.getCurrentAddrVillageOrbuilding(), ec.getCurrentAddrRoomNo()), 100));
+        newAddress.setFloor(StringUtils.left(ec.getCurrentAddrFloorNo(), 3));
+        newAddress.setStreetName(StringUtils.left(ec.getCurrentAddrSoi(), 100));
+        newAddress.setRoad(StringUtils.left(ec.getCurrentAddrStreet(), 25));
+        newAddress.setMoo(StringUtils.left(ec.getCurrentAddrMoo(), 20));
+        newAddress.setTumbol(StringUtils.left(ec.getCurrentAddrSubDistrictNameTh(), 20));
+        newAddress.setAmphur(StringUtils.left(ec.getCurrentAddrdistrictNameTh(), 30));
+        newAddress.setProvince(StringUtils.left(getProvince(ec.getCurrentAddrProvinceNameTh()), 100));
+        newAddress.setPostalCode(StringUtils.left(ec.getCurrentAddrZipcode(), 20));
         if (individual.getCountryOfRegAddr().equals(YES)) {
             individual.setCountryOfRegAddr(newAddress.getCountry());
         }

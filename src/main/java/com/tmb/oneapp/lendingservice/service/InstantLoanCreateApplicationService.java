@@ -17,8 +17,9 @@ import com.tmb.common.model.loan.CreditCardLoanInfo;
 import com.tmb.common.model.loan.CustomerInfo;
 import com.tmb.common.model.loan.FlashCardOrC2GLoanInfo;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
-import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
+import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
+import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import com.tmb.oneapp.lendingservice.model.ServiceError;
@@ -53,7 +54,8 @@ public class InstantLoanCreateApplicationService {
 	private static final String SALE_CHANNEL = "05";
 	private final ImageGeneratorService imageGeneratorService;
 	private String getMoreFlag = "";
-	private final FTPClient ftpClient;
+	private final SFTPClientImp sftpClient;
+	private final SFTPEnotiClientImp sftpEnotiClient;
 	private static final String SEPARATOR = "/";
 
 	@Value("${sftp.locations.consent-images}")
@@ -64,11 +66,12 @@ public class InstantLoanCreateApplicationService {
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public InstantLoanCreateApplicationService(ObjectMapper mapper, InstantLoanCreateApplicationClient soapClient,
-			ImageGeneratorService imageGeneratorService, FTPClient ftpClient) {
+			ImageGeneratorService imageGeneratorService, SFTPClientImp sftpClient, SFTPEnotiClientImp sftpEnotiClient) {
 		this.mapper = mapper;
 		this.soapClient = soapClient;
 		this.imageGeneratorService = imageGeneratorService;
-		this.ftpClient = ftpClient;
+		this.sftpClient = sftpClient;
+		this.sftpEnotiClient = sftpEnotiClient;
 	}
 
 	public void setSftpLocations(String sftpLocations) {
@@ -242,8 +245,8 @@ public class InstantLoanCreateApplicationService {
 			List<SFTPStoreFileInfo> sftpStoreFileInfoList = setSFTPStoreFileInfo(locationTokens, jpgFile, directoryPath);
 			String[] locationEnoti = sftpEnotiLocations.split(",");
 			List<SFTPStoreFileInfo> sftpStoreEnotiFileInfoList = setSFTPStoreFileInfo(locationEnoti, jpgFile, directoryPath);
-			ftpClient.storeFile(sftpStoreFileInfoList);
-			ftpClient.storeFile(sftpStoreEnotiFileInfoList);
+			sftpClient.storeFile(sftpStoreFileInfoList);
+			sftpEnotiClient.storeFile(sftpStoreEnotiFileInfoList);
 			Files.delete(Paths.get(jpgFile));
 		} catch (IOException e) {
 			logger.error("constructRequestForLOCCompleteImage got error:{}", e);

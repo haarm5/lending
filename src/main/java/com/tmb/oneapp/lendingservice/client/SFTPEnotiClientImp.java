@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;   //NOSONAR
+import java.util.Vector;
 
 import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
@@ -22,18 +21,18 @@ import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPA
  * Provides method to store file to sftp server.
  */
 @Service
-public class SFTPClientImp implements FTPClient {
+public class SFTPEnotiClientImp implements FTPClient {
 
-    @Value("${sftp.remote-host}")
-    private String remoteHost;
-    @Value("${sftp.port}")
-    private int port;
-    @Value("${sftp.username}")
-    private String username;
-    @Value("${sftp.password}")
-    private String password;
+    @Value("${sftp.enoti.remote-host}")
+    private String enotiRemoteHost;
+    @Value("${sftp.enoti.port}")
+    private int enotiPort;
+    @Value("${sftp.enoti.username}")
+    private String enotiUsername;
+    @Value("${sftp.enoti.password}")
+    private String enotiPassword;
 
-    private static final TMBLogger<SFTPClientImp> logger = new TMBLogger<>(SFTPClientImp.class);
+    private static final TMBLogger<SFTPEnotiClientImp> logger = new TMBLogger<>(SFTPEnotiClientImp.class);
 
     public List<SFTPStoreFileInfo> setSFTPStoreFileInfo(String[] locations, String jpgFile, String directoryPath) {
         List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
@@ -56,11 +55,14 @@ public class SFTPClientImp implements FTPClient {
             channel.cd(path);
             return true;
         } catch (SftpException e) {
-            logger.info("sftp directory: {} does not exist", path);
+            logger.info("sftp e-noti directory: {} does not exist", path);
         }
         return false;
     }
 
+    public String getEnotiRemoteHost() {
+        return enotiRemoteHost;
+    }
 
     private boolean mkdir(ChannelSftp channel, String rootPath, String destDirs) {
         String currentPath = rootPath;
@@ -72,14 +74,14 @@ public class SFTPClientImp implements FTPClient {
                 if (!isDirExist(channel, targetDir)) {
                     channel.cd(currentPath);
                     channel.mkdir(dir);
-                    logger.info("sftp directory: {} created", targetDir);
+                    logger.info("sftp e-noti directory: {} created", targetDir);
                 }
                 currentPath = targetDir;
             }
             return true;
 
         } catch (SftpException e) {
-            logger.error("sftp exception:{}", e);
+            logger.error("sftp e-noti exception:{}", e);
         }
         return false;
     }
@@ -87,14 +89,14 @@ public class SFTPClientImp implements FTPClient {
     @Override
     public Channel setupJsch() throws JSchException {
         JSch jsch = new JSch();
-        Session jschSession = jsch.getSession(username, remoteHost);
-        jschSession.setPassword(password);
+        Session jschSession = jsch.getSession(enotiUsername, enotiRemoteHost);
+        jschSession.setPassword(enotiPassword);
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
         jschSession.setConfig(config);
         jschSession.setTimeout(60000);
         jschSession.connect();
-        return jschSession.openChannel("sftp");
+        return jschSession.openChannel("sftp e-noti");
     }
 
     @Override
@@ -157,10 +159,6 @@ public class SFTPClientImp implements FTPClient {
         return false;
     }
 
-    public String getRemoteHost() {
-        return remoteHost;
-    }
-
     @Override
     public boolean purgeFileOlderThanNDays(String dst, long day) {
         ChannelSftp channelSftp;
@@ -180,24 +178,11 @@ public class SFTPClientImp implements FTPClient {
             logger.error("error jsch connection:{}", e);
             return false;
         } catch (SftpException e) {
-            logger.error("error sftp exception:{}", e);
+            logger.error("error sftp e-noti exception:{}", e);
             return false;
         } catch (Exception e) {
             logger.error("error other exception:{}", e);
             return false;
-        }
-    }
-
-    public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
-        ChannelSftp channelSftp;
-        try {
-            String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
-            recursiveRemoveDirectory(channelSftp, dst);
-            channelSftp.exit();
-        }catch (Exception e) {
-            logger.error("sftp remove directory error exception:{}", e.getMessage());
         }
     }
 
@@ -230,8 +215,8 @@ public class SFTPClientImp implements FTPClient {
 
     @SuppressWarnings("unchecked")
     private static void recursiveRemoveDirectory(ChannelSftp channelSftp, String path) throws SftpException {
-        Collection<ChannelSftp.LsEntry> fileAndDirList = channelSftp.ls(path);
-        for (ChannelSftp.LsEntry item : fileAndDirList) {
+        Collection<LsEntry> fileAndDirList = channelSftp.ls(path);
+        for (LsEntry item : fileAndDirList) {
             if (!item.getAttrs().isDir()) {
                 channelSftp.rm(path + "/" + item.getFilename());
             } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) {

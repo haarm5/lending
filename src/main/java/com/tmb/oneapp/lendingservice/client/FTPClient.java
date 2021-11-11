@@ -1,5 +1,7 @@
 package com.tmb.oneapp.lendingservice.client;
 
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSchException;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 
 import java.io.IOException;
@@ -9,6 +11,8 @@ import java.util.List;
  * Provides method to store file to ftp server.
  */
 public interface FTPClient {
+
+    Channel setupJsch() throws JSchException;
     /**
      * Store file to ftp server
      *

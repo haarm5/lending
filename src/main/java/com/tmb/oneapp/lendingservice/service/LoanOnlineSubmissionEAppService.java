@@ -250,39 +250,33 @@ public class LoanOnlineSubmissionEAppService {
                 String[] arrOfStr = address.getBuildingName().split("ห้อง");
                 if (arrOfStr.length > 1) {
                     result = result + " " + arrOfStr[0];
-                    if (!address.getMoo().isEmpty()) {
-                        result = result + " " + "ม." + " " + address.getMoo();
-                    }
-                    if (!address.getFloor().isEmpty()) {
-                        result = result + " " + "ชั้น" + address.getFloor();
-                    }
+                    prepareAddress(result, "ม.", address.getMoo());
+                    prepareAddress(result, "ชั้น", address.getFloor());
                     result = result + " " + "ห้อง" + " " + arrOfStr[1];
                 } else {
                     result = result + " " + address.getBuildingName();
-
-                    if (!address.getMoo().isEmpty()) {
-                        result = result + " " + "ม." + " " + address.getMoo();
-                    }
-                    if (!address.getFloor().isEmpty()) {
-                        result = result + " " + "ชั้น" + address.getFloor();
-                    }
+                    prepareAddress(result, "ม.", address.getMoo());
+                    prepareAddress(result, "ชั้น", address.getFloor());
                 }
+            } else {
+                prepareAddress(result, "ม.", address.getMoo());
             }
-            if (!address.getStreetName().isEmpty()) {
-                result = result + " " + "ซ." + address.getStreetName();
-            }
-            if (!address.getRoad().isEmpty()) {
-                result = result + " " + "ถ." + address.getRoad();
-            }
-            if (!address.getMoo().isEmpty()) {
-                result = result + " " + address.getMoo();
-            }
+            prepareAddress(result, "ซ.", address.getStreetName());
+            prepareAddress(result, "ถ.", address.getRoad());
+
             result = result + " " + subdis + address.getTumbol() +
                     " " + dis + address.getAmphur() + " " + address.getProvince() + " " +
                     address.getPostalCode();
             return result;
         }
         return null;
+    }
+
+    private String prepareAddress(String result, String name, String value) {
+        if (!value.isEmpty()) {
+            result = result + " " + name + " " + value;
+        }
+        return result;
     }
 
 

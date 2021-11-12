@@ -2,10 +2,12 @@ package com.tmb.oneapp.lendingservice.model;
 
 import java.util.List;
 
+import com.tmb.common.model.loan.RslServiceError;
+
 public class ServiceResponseImp implements ServiceResponse {
 
     private String responseCode;
-    private ServiceError error;
+    private RslServiceError error;
     private Object data;
     private List<String> responseMessageList;
 
@@ -28,11 +30,11 @@ public class ServiceResponseImp implements ServiceResponse {
     }
 
     @Override
-    public ServiceError getError() {
+    public RslServiceError getError() {
         return error;
     }
 
-    public void setError(ServiceError error) {
+    public void setError(RslServiceError error) {
         this.error = error;
     }
 

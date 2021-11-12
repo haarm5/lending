@@ -12,12 +12,12 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.common.model.legacy.rsl.ws.individual.response.ResponseIndividual;
 import com.tmb.common.model.legacy.rsl.ws.instant.eligible.product.response.ResponseInstantLoanGetEligibleProduct;
 import com.tmb.common.model.legacy.rsl.ws.tracking.response.*;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.LendingModuleCache;
 import com.tmb.oneapp.lendingservice.client.*;
 import com.tmb.oneapp.lendingservice.constant.LoanCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.Customer;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponse;
 import com.tmb.oneapp.lendingservice.model.account.AccountSaving;
 import com.tmb.oneapp.lendingservice.model.account.LoanAccount;
@@ -81,19 +81,19 @@ public class LoanServiceTest {
         CommonCodeEntry vi = new CommonCodeEntry();
         vi.setEntryCode("vi");
         vi.setEntryName("TMB VISA Classic");
-        vi.setEntryName2("ทีทีบี");
+        vi.setEntryName2("à¸—à¸µà¸—à¸µà¸šà¸µ");
         master26.add(vi);
 
         CommonCodeEntry vj = new CommonCodeEntry();
         vj.setEntryCode("vj");
         vj.setEntryName("TMB VISA Classic");
-        vj.setEntryName2("ทีทีบี");
+        vj.setEntryName2("à¸—à¸µà¸—à¸µà¸šà¸µ");
         master26.add(vj);
 
         CommonCodeEntry c2g01 = new CommonCodeEntry();
         c2g01.setEntryCode("c2g01");
         c2g01.setEntryName("cash 2 go");
-        c2g01.setEntryName2("ทีทีบี cash 2 go");
+        c2g01.setEntryName2("à¸—à¸µà¸—à¸µà¸šà¸µ cash 2 go");
         master27.add(c2g01);
 
         when(lendingModuleCache.getListByCategoryCode(LoanCategory.SUBPRODUCT.getCode())).thenReturn(master27);
@@ -114,7 +114,7 @@ public class LoanServiceTest {
         Applicant applicant = new Applicant();
         applicant.setApplicantType("P");
         applicant.setFirstNameEN("FLEXILOAN NA TEETEEBEE");
-        applicant.setFirstNameTH("วันแอพสาม");
+        applicant.setFirstNameTH("à¸§à¸±à¸™à¹�à¸­à¸žà¸ªà¸²à¸¡");
         Product[] products = new Product[] { product };
         applicant.setProducts(products);
         Applicant[] applicants = new Applicant[] { applicant };
@@ -195,7 +195,7 @@ public class LoanServiceTest {
         mockLoanStatusTrackingResponse.setHeader(header);
         when(loanStatusTrackingClient.searchAppStatusByID(any())).thenReturn(mockLoanStatusTrackingResponse);
         ServiceResponse actualResponse = loanService.fetchLoanStatusTracking(new ProductRequest());
-        ServiceError error = actualResponse.getError();
+        RslServiceError error = actualResponse.getError();
         Assertions.assertNull(error);
         LoanStatusTrackingResponse loanStatusTrackingResponse = (LoanStatusTrackingResponse) actualResponse.getData();
         Assertions.assertNotNull(loanStatusTrackingResponse);
@@ -241,7 +241,7 @@ public class LoanServiceTest {
         HashMap<String, Object> masterData = new HashMap<>();
         ServiceResponse actualResponse = loanService.fetchEligibleProducts(new ProductRequest(), masterData);
         Assertions.assertNotNull(actualResponse);
-        ServiceError serviceError = actualResponse.getError();
+        RslServiceError serviceError = actualResponse.getError();
         Assertions.assertNotNull(serviceError);
         Assertions.assertEquals(header.getResponseCode(), serviceError.getResponseCode());
     }

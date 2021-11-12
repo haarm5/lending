@@ -264,7 +264,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         newAddress.setMoo(checkoutNullAddressMapping(ec.getCurrentAddrMoo(), 20));
         newAddress.setTumbol(checkoutNullAddressMapping(ec.getCurrentAddrSubDistrictNameTh(), 20));
         newAddress.setAmphur(checkoutNullAddressMapping(ec.getCurrentAddrdistrictNameTh(), 30));
-        newAddress.setProvince(checkoutNullAddressMapping(getProvince(ec.getCurrentAddrProvinceNameTh()), 100));
+        newAddress.setProvince(checkoutNullAddressMapping(getProvince(ec.getCurrentAddrZipcode()), 100));
         newAddress.setPostalCode(checkoutNullAddressMapping(ec.getCurrentAddrZipcode(), 20));
         if (individual.getCountryOfRegAddr().equals(YES)) {
             individual.setCountryOfRegAddr(newAddress.getCountry());

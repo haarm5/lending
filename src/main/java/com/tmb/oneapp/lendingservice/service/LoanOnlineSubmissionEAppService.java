@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -79,7 +80,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setWaiveDoc(application.getNatureOfRequest().equals("04") || application.getNatureOfRequest().equals("12"));
         response.setAcceptBy("Access Pin");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        Date date = sdf.parse(application.getNcbConsentDate());
+        Date date = Objects.nonNull(application.getNcbConsentDate()) ? sdf.parse(application.getNcbConsentDate()) : sdf.parse(application.getApplicationDate());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         response.setAcceptDate(cal);
@@ -188,7 +189,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setConsiderLoanWithOtherBank(mapLoanWithOtherBank(facility.getConsiderLoanWithOtherBank()));
         response.setRequestAmount(facility.getFeature().getRequestAmount());
         response.setPaymentPlan(mapPaymentPlan(facility.getFeatureType()));
-        response.setTenure(facility.getTenure());
+        response.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
 
         return response;
     }
@@ -246,23 +247,36 @@ public class LoanOnlineSubmissionEAppService {
             }
             String result = address.getAddress();
             if (!address.getBuildingName().isEmpty()) {
-                result = result + " " + address.getBuildingName();
+                String[] arrOfStr = address.getBuildingName().split("ห้อง");
+                if (arrOfStr.length > 1) {
+                    result = result + " " + arrOfStr[0];
+                    prepareAddress(result, "ม.", address.getMoo());
+                    prepareAddress(result, "ชั้น", address.getFloor());
+                    result = result + " " + "ห้อง" + " " + arrOfStr[1];
+                } else {
+                    result = result + " " + address.getBuildingName();
+                    prepareAddress(result, "ม.", address.getMoo());
+                    prepareAddress(result, "ชั้น", address.getFloor());
+                }
+            } else {
+                prepareAddress(result, "ม.", address.getMoo());
             }
-            if (!address.getStreetName().isEmpty()) {
-                result = result + " " + address.getBuildingName();
-            }
-            if (!address.getRoad().isEmpty()) {
-                result = result + " " + address.getRoad();
-            }
-            if (!address.getMoo().isEmpty()) {
-                result = result + " " + address.getMoo();
-            }
+            prepareAddress(result, "ซ.", address.getStreetName());
+            prepareAddress(result, "ถ.", address.getRoad());
+
             result = result + " " + subdis + address.getTumbol() +
                     " " + dis + address.getAmphur() + " " + address.getProvince() + " " +
                     address.getPostalCode();
             return result;
         }
         return null;
+    }
+
+    private String prepareAddress(String result, String name, String value) {
+        if (!value.isEmpty()) {
+            result = result + " " + name + " " + value;
+        }
+        return result;
     }
 
 

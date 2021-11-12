@@ -125,7 +125,6 @@ public class LoanOnlineSubmissionUpdateApplicationService {
     }
 
     private Facility mapFacility(Facility facility, LoanSubmissionCreateApplicationReq req) {
-        facility.setCaCampaignCode(req.getCampaignCode());
         facility.setLimitApplied(req.getLimitApplied());
         facility.setTenure(req.getTenure());
         facility.setDisburstBankName(req.getDisburstBankName());
@@ -144,7 +143,6 @@ public class LoanOnlineSubmissionUpdateApplicationService {
         creditCard.setCardInd(req.getCardInd());
         creditCard.setProductType(req.getProductType());
         creditCard.setCardBrand(req.getCardBrand());
-        creditCard.setCampaignCode(req.getCampaignCode());
         creditCard.setPaymentMethod(req.getPaymentMethod());
         creditCard.setDebitAccountNo(req.getDebitAccountNo());
         creditCard.setDebitAccountName(req.getDebitAccountName());

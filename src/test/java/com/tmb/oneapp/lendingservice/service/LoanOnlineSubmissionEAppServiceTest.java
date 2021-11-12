@@ -136,6 +136,8 @@ class LoanOnlineSubmissionEAppServiceTest {
         addresses[0].setStreetName("กทม");
         addresses[0].setRoad("กทม");
         addresses[0].setMoo("กทม");
+        addresses[0].setFloor("111");
+
         addresses[1] = new Address();
         addresses[1].setAddrTypCode("O");
         addresses[1].setProvince("กทม");
@@ -143,6 +145,7 @@ class LoanOnlineSubmissionEAppServiceTest {
         addresses[1].setStreetName("กทม");
         addresses[1].setRoad("กทม");
         addresses[1].setMoo("กทม");
+        addresses[1].setFloor("111");
 
         Individual[] individuals = new Individual[1];
         individuals[0] = new Individual();
@@ -197,6 +200,7 @@ class LoanOnlineSubmissionEAppServiceTest {
         pricings[0] = new Pricing();
 
         Feature feature = new Feature();
+        feature.setTenure(48L);
 
         Facility[] facilities = new Facility[1];
         facilities[0] = new Facility();

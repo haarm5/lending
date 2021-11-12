@@ -18,7 +18,6 @@ import com.tmb.common.model.loan.CustomerInfo;
 import com.tmb.common.model.loan.FlashCardOrC2GLoanInfo;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
 import com.tmb.common.model.loan.RslServiceError;
-import com.tmb.oneapp.lendingservice.client.FTPClient;
 import com.tmb.oneapp.lendingservice.client.InstantLoanCreateApplicationClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;

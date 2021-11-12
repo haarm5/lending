@@ -77,7 +77,7 @@ public class NotificationService {
 
             record.setAttachments(wrapper.getAttachments());
 
-            setRequestForEmail("oranuch901@gmail.com", record);
+            setRequestForEmail(wrapper.getEmail(), record);
 
             notificationRecords.add(record);
             notificationRequest.setRecords(notificationRecords);

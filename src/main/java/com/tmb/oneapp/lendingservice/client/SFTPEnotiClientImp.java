@@ -54,28 +54,28 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
         try {
             ChannelSftp channelSftp = (ChannelSftp) setupJsch();
             channelSftp.connect();
-            for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
-                File sourceFile = new File(sftpStoreFileInfo.getSrcFile());
+            for (SFTPStoreFileInfo sftpStoreFileEnotiInfo : storeFileInfoList) {
+                File sourceFile = new File(sftpStoreFileEnotiInfo.getSrcFile());
                 if (!sourceFile.exists()) {
-                    logger.error("src file to upload to ftp does not exists: {}", sftpStoreFileInfo.getSrcFile());
+                    logger.error("src file to upload to ftp does not exists: {}", sftpStoreFileEnotiInfo.getSrcFile());
                     return false;
                 }
-                String dstDir = sftpStoreFileInfo.getDstDir();
+                String dstDir = sftpStoreFileEnotiInfo.getDstDir();
                 if (StringUtils.isEmpty(dstDir)) {
-                    dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sourceFile.getName();
+                    dst = sftpStoreFileEnotiInfo.getRootPath() + SEPARATOR + sourceFile.getName();
                 } else {
-                    mkdir(channelSftp, sftpStoreFileInfo.getRootPath(), sftpStoreFileInfo.getDstDir());
-                    dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sftpStoreFileInfo.getDstDir() + SEPARATOR + sourceFile.getName();
+                    mkdir(channelSftp, sftpStoreFileEnotiInfo.getRootPath(), sftpStoreFileEnotiInfo.getDstDir());
+                    dst = sftpStoreFileEnotiInfo.getRootPath() + SEPARATOR + sftpStoreFileEnotiInfo.getDstDir() + SEPARATOR + sourceFile.getName();
                 }
-                channelSftp.put(sftpStoreFileInfo.getSrcFile(), dst);
-                logger.info("sftp stored success:{}", dst);
+                channelSftp.put(sftpStoreFileEnotiInfo.getSrcFile(), dst);
+                logger.info("sftp e-noti stored success:{}", dst);
             }
             channelSftp.exit();
             return true;
         } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
+            logger.error("error sftp e-noti connection:{}", e);
         } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+            logger.error("error sftp e-noti operation:{}", e);
         }
         return false;
     }
@@ -85,23 +85,23 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
     public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
         String dst = null;
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
-            for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
-                String dstDir = sftpStoreFileInfo.getDstDir();
+            ChannelSftp channelSftpEnoti = (ChannelSftp) setupJsch();
+            channelSftpEnoti.connect();
+            for (SFTPStoreFileInfo sftpStoreFileEnotiInfo : storeFileInfoList) {
+                String dstDir = sftpStoreFileEnotiInfo.getDstDir();
                 if (dstDir != null) {
-                    mkdir(channelSftp, sftpStoreFileInfo.getRootPath(), sftpStoreFileInfo.getDstDir());
-                    dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sftpStoreFileInfo.getDstDir();
-                    channelSftp.rmdir(dst);
+                    mkdir(channelSftpEnoti, sftpStoreFileEnotiInfo.getRootPath(), sftpStoreFileEnotiInfo.getDstDir());
+                    dst = sftpStoreFileEnotiInfo.getRootPath() + SEPARATOR + sftpStoreFileEnotiInfo.getDstDir();
+                    channelSftpEnoti.rmdir(dst);
                 }
-                logger.info("sftp deleted success:{}", dst);
+                logger.info("sftp e-noti deleted success:{}", dst);
             }
-            channelSftp.exit();
+            channelSftpEnoti.exit();
             return true;
         } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
+            logger.error("error sftp e-noti connection:{}", e);
         } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+            logger.error("error sftp e-noti operation:{}", e);
         }
         return false;
     }
@@ -109,15 +109,15 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
     @Override
     public boolean purgeFileOlderThanNDays(String dst, long day) {
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftpEnoti = (ChannelSftp) setupJsch();
+            channelSftpEnoti.connect();
             List<String> list = new ArrayList<>();
-            listDirectory(channelSftp, dst, list);
+            listDirectory(channelSftpEnoti, dst, list);
 
             for (String entry : list) {
-                purgeDataOlderThanNDay(channelSftp, entry, day);
+                purgeDataOlderThanNDay(channelSftpEnoti, entry, day);
             }
-            channelSftp.exit();
+            channelSftpEnoti.exit();
             return true;
 
         } catch (JSchException e) {

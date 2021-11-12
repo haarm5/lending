@@ -37,23 +37,23 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
 
     @Override
     public Channel setupJsch() throws JSchException {
-        JSch jsch = new JSch();
-        Session jschSession = jsch.getSession(enotiUsername, enotiRemoteHost);
-        jschSession.setPassword(enotiPassword);
-        java.util.Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        jschSession.setConfig(config);
-        jschSession.setTimeout(60000);
-        jschSession.connect();
-        return jschSession.openChannel("sftp");
+        JSch jschEnoti = new JSch();
+        Session jschSessionEnoti = jschEnoti.getSession(enotiUsername, enotiRemoteHost);
+        jschSessionEnoti.setPassword(enotiPassword);
+        java.util.Properties configEnoti = new java.util.Properties();
+        configEnoti.put("StrictHostKeyChecking", "no");
+        jschSessionEnoti.setConfig(configEnoti);
+        jschSessionEnoti.setTimeout(60000);
+        jschSessionEnoti.connect();
+        return jschSessionEnoti.openChannel("sftp");
     }
 
     @Override
     public boolean storeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
         String dst;
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftpEnoti = (ChannelSftp) setupJsch();
+            channelSftpEnoti.connect();
             for (SFTPStoreFileInfo sftpStoreFileEnotiInfo : storeFileInfoList) {
                 File sourceFile = new File(sftpStoreFileEnotiInfo.getSrcFile());
                 if (!sourceFile.exists()) {
@@ -64,13 +64,13 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
                 if (StringUtils.isEmpty(dstDir)) {
                     dst = sftpStoreFileEnotiInfo.getRootPath() + SEPARATOR + sourceFile.getName();
                 } else {
-                    mkdir(channelSftp, sftpStoreFileEnotiInfo.getRootPath(), sftpStoreFileEnotiInfo.getDstDir());
+                    mkdir(channelSftpEnoti, sftpStoreFileEnotiInfo.getRootPath(), sftpStoreFileEnotiInfo.getDstDir());
                     dst = sftpStoreFileEnotiInfo.getRootPath() + SEPARATOR + sftpStoreFileEnotiInfo.getDstDir() + SEPARATOR + sourceFile.getName();
                 }
-                channelSftp.put(sftpStoreFileEnotiInfo.getSrcFile(), dst);
+                channelSftpEnoti.put(sftpStoreFileEnotiInfo.getSrcFile(), dst);
                 logger.info("sftp e-noti stored success:{}", dst);
             }
-            channelSftp.exit();
+            channelSftpEnoti.exit();
             return true;
         } catch (JSchException e) {
             logger.error("error sftp e-noti connection:{}", e);
@@ -121,7 +121,7 @@ public class SFTPEnotiClientImp extends SFTPClient implements FTPClient {
             return true;
 
         } catch (JSchException e) {
-            logger.error("error jsch connection:{}", e);
+            logger.error("error jsch e-noti connection:{}", e);
             return false;
         } catch (SftpException e) {
             logger.error("error sftp e-noti exception:{}", e);

@@ -194,6 +194,7 @@ public class DropdownService {
     public List<Dropdowns.IncomeBank> getDropdownIncomeBank() throws JsonProcessingException {
         List<CriteriaCodeEntry> dropdownIncomeBank = lendingCriteriaInfoService.getPayrollBank();
         List<Dropdowns.IncomeBank> incomeBankList = dropdownIncomeBank.stream()
+                .filter(incomeBank -> !incomeBank.getEntryCode().equals("0")) //exclude other
                 .map(incomeBank -> Dropdowns.IncomeBank.builder()
                         .code(incomeBank.getEntryCode())
                         .name(incomeBank.getEntryName())

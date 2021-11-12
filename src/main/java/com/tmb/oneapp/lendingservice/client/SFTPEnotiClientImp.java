@@ -96,7 +96,7 @@ public class SFTPEnotiClientImp implements FTPClient {
         jschSession.setConfig(config);
         jschSession.setTimeout(60000);
         jschSession.connect();
-        return jschSession.openChannel("sftp e-noti");
+        return jschSession.openChannel("sftp");
     }
 
     @Override

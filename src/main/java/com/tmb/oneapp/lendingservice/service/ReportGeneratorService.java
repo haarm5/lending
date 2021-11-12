@@ -168,7 +168,7 @@ public class ReportGeneratorService {
         wrapper.setProductNameEn(null);
         wrapper.setProductNameTh(beautifyString(response.getProductNameTh()));
         wrapper.setAppRefNo(appRefNo);
-        wrapper.setEmail("oranuch901@gmail.com");
+        wrapper.setEmail(response.getEmail());
 
         wrapper.setAttachments(attachments);
 
@@ -191,7 +191,7 @@ public class ReportGeneratorService {
             notificationAttachments.add(termAndConditionAttachments);
         }
 
-        String eAppAttachment = String.format("sftp://%s%s%s/%s", sftpEnotiClient.getEnotiRemoteHost(),
+        String eAppAttachment = String.format("sftp://%s%s/%s/%s", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, fileName);
         logger.info("eApp: {}", eAppAttachment);
         notificationAttachments.add(eAppAttachment);
@@ -328,20 +328,10 @@ public class ReportGeneratorService {
                 "-";
     }
 
-    private List<SFTPStoreFileInfo> setStoreFileOnSFTP(String rootPath, String dir, String srcFile) {
-        List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-        SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-        sftpStoreFile.setRootPath(rootPath);
-        sftpStoreFile.setDstDir(dir);
-        sftpStoreFile.setSrcFile(srcFile);
-        sftpStoreFiles.add(sftpStoreFile);
-        return sftpStoreFiles;
-    }
-
     private void storeFileOnSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = setStoreFileOnSFTP(rootPath, dir, srcFile);
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpClient.setSFTPStoreFileInfo(locations, srcFile, dir);
             sftpClient.storeFile(sftpStoreFiles);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
@@ -350,7 +340,8 @@ public class ReportGeneratorService {
 
     private void storeFileOnNotiSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = setStoreFileOnSFTP(rootPath, dir, srcFile);
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpEnotiClient.setSFTPStoreFileInfo(locations, srcFile, dir);
             sftpEnotiClient.storeFile(sftpStoreFiles);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP e-noti file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
@@ -372,7 +363,7 @@ public class ReportGeneratorService {
         Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(application.getBody().getApplicationDate());
         String dateStr = CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(dateObj);
         String docType = "00110";
-        String letterOfConsentFilePath = String.format("sftp://%s%s%s/01_%s_%s_%s.JPG", sftpEnotiClient.getEnotiRemoteHost(),
+        String letterOfConsentFilePath = String.format("sftp://%s%s/%s/01_%s_%s_%s.JPG", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, dateStr, appRefNo, docType);
         logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
         return letterOfConsentFilePath;
@@ -381,14 +372,14 @@ public class ReportGeneratorService {
 
     private String getSaleSheetFilePath(RslCode rslConfig) {
         String saleSheetFile = rslConfig.getSalesheetName();
-        String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
+        String saleSheetFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
     private String getTermAndConditionFilePath(RslCode rslConfig) {
         String tncFile = rslConfig.getTncName();
-        String tncFilePath = String.format("sftp://%s%s/%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, tncFile);
+        String tncFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
     }

@@ -138,17 +138,17 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
 
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("O");
-            newAddress.setAddress(StringUtils.left(address.getNo(), 25));
-            newAddress.setBuildingName(StringUtils.left(buildingName + " " + room, 100));
-            newAddress.setFloor(StringUtils.left(address.getFloor(), 3));
-            newAddress.setStreetName(StringUtils.left(address.getStreetName(), 100));
-            newAddress.setRoad(StringUtils.left(address.getRoad(), 25));
-            newAddress.setMoo(StringUtils.left(address.getMoo(), 20));
-            newAddress.setTumbol(StringUtils.left(address.getTumbol(), 20));
-            newAddress.setAmphur(StringUtils.left(address.getAmphur(), 30));
-            newAddress.setProvince(StringUtils.left(address.getProvince(), 100));
-            newAddress.setPostalCode(StringUtils.left(address.getPostalCode(), 20));
-            newAddress.setCountry(StringUtils.left(address.getCountry(), 40));
+            newAddress.setAddress(checkoutNullAddressMapping(address.getNo(), 25));
+            newAddress.setBuildingName(checkoutNullAddressMapping(buildingName + " " + room, 100));
+            newAddress.setFloor(checkoutNullAddressMapping(address.getFloor(), 3));
+            newAddress.setStreetName(checkoutNullAddressMapping(address.getStreetName(), 100));
+            newAddress.setRoad(checkoutNullAddressMapping(address.getRoad(), 25));
+            newAddress.setMoo(checkoutNullAddressMapping(address.getMoo(), 20));
+            newAddress.setTumbol(checkoutNullAddressMapping(address.getTumbol(), 20));
+            newAddress.setAmphur(checkoutNullAddressMapping(address.getAmphur(), 30));
+            newAddress.setProvince(checkoutNullAddressMapping(address.getProvince(), 100));
+            newAddress.setPostalCode(checkoutNullAddressMapping(address.getPostalCode(), 20));
+            newAddress.setCountry(checkoutNullAddressMapping(address.getCountry(), 40));
 
             if (oldAddress.isPresent()) {
                 com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();
@@ -164,6 +164,13 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
             }
         }
         return individual;
+    }
+
+    private String checkoutNullAddressMapping(String value, int length) {
+        if (Objects.nonNull(value)) {
+            return StringUtils.left(value, length);
+        }
+        return "";
     }
 
 

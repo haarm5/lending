@@ -256,22 +256,29 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
         newAddress.setCifId(individual.getCifId());
         newAddress.setAddrTypCode("R");
-        newAddress.setAddress(StringUtils.left(ec.getCurrentAddrHouseNo(), 25));
-        newAddress.setBuildingName(StringUtils.left(prepareBuildingName(ec.getCurrentAddrVillageOrbuilding(), ec.getCurrentAddrRoomNo()), 100));
-        newAddress.setFloor(StringUtils.left(ec.getCurrentAddrFloorNo(), 3));
-        newAddress.setStreetName(StringUtils.left(ec.getCurrentAddrSoi(), 100));
-        newAddress.setRoad(StringUtils.left(ec.getCurrentAddrStreet(), 25));
-        newAddress.setMoo(StringUtils.left(ec.getCurrentAddrMoo(), 20));
-        newAddress.setTumbol(StringUtils.left(ec.getCurrentAddrSubDistrictNameTh(), 20));
-        newAddress.setAmphur(StringUtils.left(ec.getCurrentAddrdistrictNameTh(), 30));
-        newAddress.setProvince(StringUtils.left(getProvince(ec.getCurrentAddrProvinceNameTh()), 100));
-        newAddress.setPostalCode(StringUtils.left(ec.getCurrentAddrZipcode(), 20));
+        newAddress.setAddress(checkoutNullAddressMapping(ec.getCurrentAddrHouseNo(), 25));
+        newAddress.setBuildingName(checkoutNullAddressMapping(prepareBuildingName(ec.getCurrentAddrVillageOrbuilding(), ec.getCurrentAddrRoomNo()), 100));
+        newAddress.setFloor(checkoutNullAddressMapping(ec.getCurrentAddrFloorNo(), 3));
+        newAddress.setStreetName(checkoutNullAddressMapping(ec.getCurrentAddrSoi(), 100));
+        newAddress.setRoad(checkoutNullAddressMapping(ec.getCurrentAddrStreet(), 25));
+        newAddress.setMoo(checkoutNullAddressMapping(ec.getCurrentAddrMoo(), 20));
+        newAddress.setTumbol(checkoutNullAddressMapping(ec.getCurrentAddrSubDistrictNameTh(), 20));
+        newAddress.setAmphur(checkoutNullAddressMapping(ec.getCurrentAddrdistrictNameTh(), 30));
+        newAddress.setProvince(checkoutNullAddressMapping(getProvince(ec.getCurrentAddrProvinceNameTh()), 100));
+        newAddress.setPostalCode(checkoutNullAddressMapping(ec.getCurrentAddrZipcode(), 20));
         if (individual.getCountryOfRegAddr().equals(YES)) {
             individual.setCountryOfRegAddr(newAddress.getCountry());
         }
 
         setAddressByType(individual, newAddress);
         return individual;
+    }
+
+    private String checkoutNullAddressMapping(String value, int length) {
+        if (Objects.nonNull(value)) {
+            return StringUtils.left(value, length);
+        }
+        return "";
     }
 
 

@@ -80,7 +80,7 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
         codeEntry.setRefEntryCode("ID01");
         when(lendingCriteriaInfoService.getBusinessTypeCode(any())).thenReturn(criteriaList);
         lendingCriteriaInfoService
-                .getBrmsEcmDocTypeByRefCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
+                .getBrmsEcmDocTypeByCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
 
         List<ChecklistResponse> checklistResponses = loanOnlineSubmissionGetDocumentListService.getDocuments("001100000000000000000018593707", request.getCaId());
 
@@ -139,7 +139,7 @@ public class LoanOnlineSubmissionGetDocumentListServiceTest {
         doReturn(mockResponseApplication().getBody()).when(uploadDocumentService).getApplicationInfo(anyString());
         doNothing().when(uploadDocumentService).removeDirectory(anyString());
         lendingCriteriaInfoService
-                .getBrmsEcmDocTypeByRefCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
+                .getBrmsEcmDocTypeByCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
         List<ChecklistResponse> checklistResponses = loanOnlineSubmissionGetDocumentListService.getDocuments("001100000000000000000018593707", request.getCaId());
         Assertions.assertNotNull(checklistResponses);
 

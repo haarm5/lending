@@ -61,24 +61,22 @@ public class LoanOnlineSubmissionGetDocumentListService {
         List<ChecklistResponse> checklistResponses = new ArrayList<>();
 
         for (Checklist document : checklists) {
-            List<CriteriaCodeEntry> docTypeList = lendingCriteriaInfoService.getBrmsEcmDocTypeByRefCode(document.getDocumentCode());
+            List<CriteriaCodeEntry> docTypeList = lendingCriteriaInfoService.getBrmsEcmDocTypeByCode(document.getDocumentCode());
             if (!docTypeList.isEmpty()) {
                 for (CriteriaCodeEntry entry : docTypeList) {
-                    if (document.getDocumentCode().equals(entry.getRefEntryCode())) {
-                        ChecklistResponse response = new ChecklistResponse();
-                        response.setChecklistType(document.getChecklistType());
-                        response.setCifRelCode(document.getCifRelCode());
-                        response.setDocId(document.getDocId());
-                        response.setDocumentCode(document.getDocumentCode());
-                        response.setDocDescription(entry.getExtValue1());
-                        response.setId(document.getId());
-                        response.setStatus(document.getStatus());
-                        response.setIsMandatory(document.getIsMandatory());
-                        response.setIncompletedDocReasonCd(document.getIncompletedDocReasonCd());
-                        response.setIncompletedDocReasonDesc(document.getIncompletedDocReasonDesc());
-                        response.setLosCifId(document.getLosCifId());
-                        checklistResponses.add(response);
-                    }
+                    ChecklistResponse response = new ChecklistResponse();
+                    response.setChecklistType(document.getChecklistType());
+                    response.setCifRelCode(document.getCifRelCode());
+                    response.setDocId(document.getDocId());
+                    response.setDocumentCode(document.getDocumentCode());
+                    response.setDocDescription(entry.getExtValue1());
+                    response.setId(document.getId());
+                    response.setStatus(document.getStatus());
+                    response.setIsMandatory(document.getIsMandatory());
+                    response.setIncompletedDocReasonCd(document.getIncompletedDocReasonCd());
+                    response.setIncompletedDocReasonDesc(document.getIncompletedDocReasonDesc());
+                    response.setLosCifId(document.getLosCifId());
+                    checklistResponses.add(response);
                 }
             }
 

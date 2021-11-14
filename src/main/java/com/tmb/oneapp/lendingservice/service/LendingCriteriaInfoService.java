@@ -259,6 +259,18 @@ public class LendingCriteriaInfoService {
         return responseCriterias;
     }
 
+    public List<CriteriaCodeEntry> getBrmsEcmDocTypeByRefCode(String code) {
+        final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
+        List<CommonCodeEntry> commonCodeEntries = lendingModuleCache
+                .getListByCategoryCode(LoanCategory.BRMS_ECM_DOC_TYPE.getCode());
+        for (CommonCodeEntry entry : commonCodeEntries) {
+            if (StringUtils.isNotEmpty(code) && code.equals(entry.getRefEntryCode())) {
+                responseCriterias.add(setModelResponseInfo(entry));
+            }
+        }
+        return responseCriterias;
+    }
+
     public List<CriteriaCodeEntry> getEmploymentStatus() {
         final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
         List<CommonCodeEntry> commonCodeEntries = lendingModuleCache.getListByCategoryCode(LoanCategory.EMPLOYMENT_STATUS.getCode());

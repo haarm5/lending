@@ -44,6 +44,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private static String CRM_ID;
     private static String CORRELATION_ID;
+    private String productCode;
 
     public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
@@ -53,6 +54,7 @@ public class LoanOnlineSubmissionEAppService {
             EAppResponse response = new EAppResponse();
 
             Body application = getApplicationInfo(caId);
+            productCode = application.getProduct();
             Individual customer = getCustomerInfo(caId);
             if (application.getAppType().equals("CC")) {
                 CreditCard creditCard = getCreditCard(caId);
@@ -189,9 +191,16 @@ public class LoanOnlineSubmissionEAppService {
         response.setConsiderLoanWithOtherBank(mapLoanWithOtherBank(facility.getConsiderLoanWithOtherBank()));
         response.setRequestAmount(facility.getFeature().getRequestAmount());
         response.setPaymentPlan(mapPaymentPlan(facility.getFeatureType()));
-        response.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
+        response.setTenure(mapTenure(facility));
 
         return response;
+    }
+
+    private BigDecimal mapTenure(Facility facility) {
+        if (productCode.contains("RC") && Objects.nonNull(facility.getFeature()) && Objects.nonNull(facility.getFeature().getTenure())) {
+            return BigDecimal.valueOf(facility.getFeature().getTenure());
+        }
+        return facility.getTenure();
     }
 
     private String mapPaymentMethod(String code) {

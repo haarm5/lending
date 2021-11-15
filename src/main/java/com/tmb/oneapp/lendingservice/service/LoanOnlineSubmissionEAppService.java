@@ -44,7 +44,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private static String CRM_ID;
     private static String CORRELATION_ID;
-    private static String PRODUCT_CODE;
+    private static String productCode;
 
     public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
@@ -54,7 +54,7 @@ public class LoanOnlineSubmissionEAppService {
             EAppResponse response = new EAppResponse();
 
             Body application = getApplicationInfo(caId);
-            PRODUCT_CODE = application.getProduct();
+            productCode = application.getProduct();
             Individual customer = getCustomerInfo(caId);
             if (application.getAppType().equals("CC")) {
                 CreditCard creditCard = getCreditCard(caId);
@@ -197,7 +197,7 @@ public class LoanOnlineSubmissionEAppService {
     }
 
     private BigDecimal mapTenure(Facility facility) {
-        if (PRODUCT_CODE.contains("RC") && Objects.nonNull(facility.getFeature()) && Objects.nonNull(facility.getFeature().getTenure())) {
+        if (productCode.contains("RC") && Objects.nonNull(facility.getFeature()) && Objects.nonNull(facility.getFeature().getTenure())) {
             return BigDecimal.valueOf(facility.getFeature().getTenure());
         }
         return facility.getTenure();

@@ -248,12 +248,6 @@ public class LoanOnlineSubmissionEAppService {
         Optional<Address> filter = Arrays.stream(addresses).filter(x -> x.getAddrTypCode().equals(type)).findFirst();
         if (filter.isPresent()) {
             Address address = filter.get();
-            String subdis = "ตำบล";
-            String dis = "อำเภอ";
-            if (address.getProvince().equals("กรุงเทพมหานคร")) {
-                subdis = "แขวง";
-                dis = "เขต";
-            }
             String result = address.getAddress();
             if (!address.getBuildingName().isEmpty()) {
                 String[] arrOfStr = address.getBuildingName().split("ห้อง");
@@ -273,9 +267,9 @@ public class LoanOnlineSubmissionEAppService {
             prepareAddress(result, "ซ.", address.getStreetName());
             prepareAddress(result, "ถ.", address.getRoad());
 
-            result = result + " " + subdis + address.getTumbol() +
-                    " " + dis + address.getAmphur() + " " + address.getProvince() + " " +
-                    address.getPostalCode();
+            result = result + " " + address.getTumbol() +
+                    " " + address.getAmphur() + " " + address.getProvince() +
+                    " " + address.getPostalCode();
             return result;
         }
         return null;

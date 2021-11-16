@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -115,6 +116,7 @@ class LoanOnlineSubmissionEAppServiceTest {
         body.setAppType(type);
         body.setNcbConsentDate("2021-10-06T17:38:36.000Z");
         body.setNatureOfRequest("04");
+        body.setProduct("RC");
 
         ResponseApplication application = new ResponseApplication();
         application.setHeader(header);
@@ -212,6 +214,7 @@ class LoanOnlineSubmissionEAppServiceTest {
         facilities[0].setLoanWithOtherBank(loanWithOtherBank);
         facilities[0].setConsiderLoanWithOtherBank(considerLoanWithOtherBank);
         facilities[0].setMailingPreference(mailingPreference);
+        facilities[0].setTenure(BigDecimal.valueOf(12));
 
         com.tmb.common.model.legacy.rsl.ws.facility.response.Body body = new com.tmb.common.model.legacy.rsl.ws.facility.response.Body();
         body.setFacilities(facilities);

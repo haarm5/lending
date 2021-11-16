@@ -10,13 +10,13 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
+import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.constant.RslResponseCode;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorRequest;
 import com.tmb.oneapp.lendingservice.model.eapp.ReportGeneratorResponse;
 import com.tmb.oneapp.lendingservice.model.loanonline.EAppResponse;
 import com.tmb.oneapp.lendingservice.model.report.ReportGenerateClientResponse;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,6 @@ import org.junit.runners.JUnit4;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpHeaders;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
@@ -55,13 +54,15 @@ public class ReportGeneratorServiceTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private SFTPClientImp sftpClientImp;
+    private SFTPClientImp sftpClient;
+    @Mock
+    private SFTPEnotiClientImp sftpEnotiClient;
 
     @BeforeEach
     void setUp() throws ServiceException, TMBCommonException, JsonProcessingException, ParseException, RemoteException {
         MockitoAnnotations.initMocks(this);
         reportGeneratorService = new ReportGeneratorService(rslService,
-                commonServiceFeignClient, reportServiceClient, loanOnlineSubmissionEAppService, notificationService, sftpClientImp);
+                commonServiceFeignClient, reportServiceClient, loanOnlineSubmissionEAppService, notificationService, sftpClient, sftpEnotiClient);
         mockSuccess();
     }
 
@@ -70,7 +71,8 @@ public class ReportGeneratorServiceTest {
         doReturn(mockApplicationInfoByCaID()).when(rslService).getLoanSubmissionApplicationInfo(any());
         doReturn(LoanServiceUtils.moduleLendingModuleConfig()).when(commonServiceFeignClient).getCommonConfig(any(), anyString());
         doReturn(mockReportServiceResponse()).when(reportServiceClient).generateReport(anyString(), any());
-        doReturn(true).when(sftpClientImp).storeFile(anyList());
+        doReturn(true).when(sftpClient).storeFile(anyList());
+        doReturn(true).when(sftpEnotiClient).storeFile(anyList());
         doNothing().when(notificationService).sendNotifyEAppReportGenerator(anyString(), anyString(), anyString(), any());
     }
 
@@ -82,7 +84,7 @@ public class ReportGeneratorServiceTest {
 
         ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
     }
 
     @Test
@@ -93,7 +95,7 @@ public class ReportGeneratorServiceTest {
 
         ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
     }
 
     @Test
@@ -104,7 +106,7 @@ public class ReportGeneratorServiceTest {
 
         ReportGeneratorResponse response = reportGeneratorService.generateEAppReport(
                 request, "correlationId", "crmId");
-        Assert.assertNotNull(response);
+        Assertions.assertNotNull(response);
     }
 
     @Test

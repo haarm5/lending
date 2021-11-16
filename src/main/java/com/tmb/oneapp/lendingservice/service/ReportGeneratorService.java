@@ -9,6 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
+import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
@@ -42,14 +43,15 @@ import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPA
 @Service
 public class ReportGeneratorService {
 
-    private static TMBLogger<ReportGeneratorService> logger = new TMBLogger<>(ReportGeneratorService.class);
+    private static final TMBLogger<ReportGeneratorService> logger = new TMBLogger<>(ReportGeneratorService.class);
 
     private final RslService rslService;
     private final CommonServiceFeignClient commonServiceFeignClient;
     private final ReportServiceClient reportServiceClient;
     private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private final NotificationService notificationService;
-    private final SFTPClientImp sftpClientImp;
+    private final SFTPClientImp sftpClient;
+    private final SFTPEnotiClientImp sftpEnotiClient;
     private static final String CREDIT_CARD = "บัตรเครดิต";
     private static final String FLASH_CARD = "บัตรกดเงินสดแฟลช";
     private static final String C2G_CARD = "สินเชื่อบุคคลแคชทูโก";
@@ -60,10 +62,10 @@ public class ReportGeneratorService {
     @Value("${sftp.locations.loan.dir}")
     private String sftpLocationLoanDir;
 
-    @Value("${sftp.locations.e-noti.root}")
+    @Value("${sftp.e-noti.locations.root}")
     private String sftpLocationENotiRoot;
 
-    @Value("${sftp.locations.e-noti.dir}")
+    @Value("${sftp.e-noti.locations.dir}")
     private String sftpLocationENotiDir;
 
     public ReportGeneratorService(RslService rslService,
@@ -71,15 +73,16 @@ public class ReportGeneratorService {
                                   ReportServiceClient reportServiceClient,
                                   LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService,
                                   NotificationService notificationService,
-                                  SFTPClientImp sftpClientImp
-
+                                  SFTPClientImp sftpClient,
+                                  SFTPEnotiClientImp sftpEnotiClient
     ) {
         this.rslService = rslService;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.reportServiceClient = reportServiceClient;
         this.loanOnlineSubmissionEAppService = loanOnlineSubmissionEAppService;
         this.notificationService = notificationService;
-        this.sftpClientImp = sftpClientImp;
+        this.sftpClient = sftpClient;
+        this.sftpEnotiClient = sftpEnotiClient;
     }
 
     public ReportGeneratorResponse generateEAppReport(ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
@@ -191,7 +194,7 @@ public class ReportGeneratorService {
             notificationAttachments.add(termAndConditionAttachments);
         }
 
-        String eAppAttachment = String.format("sftp://%s%s%s/%s", sftpClientImp.getRemoteHost(),
+        String eAppAttachment = String.format("sftp://%s%s/%s/%s", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, fileName);
         logger.info("eApp: {}", eAppAttachment);
         notificationAttachments.add(eAppAttachment);
@@ -208,15 +211,14 @@ public class ReportGeneratorService {
     }
 
     private void stores(String crmId, String appRefNo, String srcFile) throws TMBCommonException {
-        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
         storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
-        storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
+        storeFileOnNotiSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
         buildCommonParameters(parameters, eAppResponse, CREDIT_CARD);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
-
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
@@ -338,17 +340,21 @@ public class ReportGeneratorService {
 
     private void storeFileOnSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-            sftpStoreFile.setRootPath(rootPath);
-            sftpStoreFile.setDstDir(dir);
-            sftpStoreFile.setSrcFile(srcFile);
-            sftpStoreFiles.add(sftpStoreFile);
-
-            sftpClientImp.storeFile(sftpStoreFiles);
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpClient.setSFTPStoreFileInfo(locations, srcFile, dir);
+            sftpClient.storeFile(sftpStoreFiles);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    private void storeFileOnNotiSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
+        try {
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpEnotiClient.setSFTPStoreFileInfo(locations, srcFile, dir);
+            sftpEnotiClient.storeFile(sftpStoreFiles);
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP e-noti file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
@@ -367,7 +373,7 @@ public class ReportGeneratorService {
         Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(application.getBody().getApplicationDate());
         String dateStr = CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(dateObj);
         String docType = "00110";
-        String letterOfConsentFilePath = String.format("sftp://%s%s%s/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(),
+        String letterOfConsentFilePath = String.format("sftp://%s%s/%s/01_%s_%s_%s.JPG", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, dateStr, appRefNo, docType);
         logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
         return letterOfConsentFilePath;
@@ -376,14 +382,14 @@ public class ReportGeneratorService {
 
     private String getSaleSheetFilePath(RslCode rslConfig) {
         String saleSheetFile = rslConfig.getSalesheetName();
-        String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
+        String saleSheetFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
     private String getTermAndConditionFilePath(RslCode rslConfig) {
         String tncFile = rslConfig.getTncName();
-        String tncFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, tncFile);
+        String tncFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
     }

@@ -93,17 +93,17 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
 
     public Address parseWorkingAddressEc(CustGeneralProfileResponse customer) {
         Address address = new Address();
-        address.setBuildingName(customer.getWorkAddrVillageOrbuilding());
-        address.setNo(customer.getWorkAddrHouseNo());
-        address.setFloor(customer.getWorkAddrFloorNo());
-        address.setMoo(customer.getWorkAddrMoo());
-        address.setStreetName(customer.getWorkAddrSoi());
-        address.setPostalCode(customer.getWorkAddrZipcode());
-        address.setProvince(customer.getWorkAddrProvinceNameTh());
-        address.setCountry(customer.getNationality());
-        address.setTumbol(customer.getWorkAddrSubDistrictNameTh());
-        address.setRoad(customer.getWorkAddrStreet());
-        address.setAmphur(customer.getWorkAddrdistrictNameTh());
+        address.setBuildingName(fixedMaxLengthAddress(customer.getWorkAddrVillageOrbuilding(), 90));
+        address.setNo(fixedMaxLengthAddress(customer.getWorkAddrHouseNo(), 25));
+        address.setFloor(fixedMaxLengthAddress(customer.getWorkAddrFloorNo(), 3));
+        address.setMoo(fixedMaxLengthAddress(customer.getWorkAddrMoo(), 20));
+        address.setStreetName(fixedMaxLengthAddress(customer.getWorkAddrSoi(), 100));
+        address.setPostalCode(fixedMaxLengthAddress(customer.getWorkAddrZipcode(), 20));
+        address.setProvince(fixedMaxLengthAddress(customer.getWorkAddrProvinceNameTh(), 100));
+        address.setCountry(fixedMaxLengthAddress(customer.getNationality(), 40));
+        address.setTumbol(fixedMaxLengthAddress(customer.getWorkAddrSubDistrictNameTh(), 20));
+        address.setRoad(fixedMaxLengthAddress(customer.getWorkAddrStreet(), 25));
+        address.setAmphur(fixedMaxLengthAddress(customer.getWorkAddrdistrictNameTh(), 30));
 
         return address;
     }
@@ -113,21 +113,28 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> individualAddr = Arrays.stream(addressRsl).filter(addr -> AddressTypeCode.WORKING.getCode().equals(addr.getAddrTypCode())).findAny();
         if (individualAddr.isPresent()) {
             com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = individualAddr.get();
-            address.setBuildingName(prepareData(workingAddress.getBuildingName(), customerEc.getWorkAddrVillageOrbuilding()));
-            address.setNo(prepareData(workingAddress.getAddress(), customerEc.getWorkAddrHouseNo()));
-            address.setFloor(prepareData(workingAddress.getFloor(), customerEc.getWorkAddrFloorNo()));
-            address.setMoo(prepareData(workingAddress.getMoo(), customerEc.getWorkAddrMoo()));
-            address.setStreetName(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrSoi()));
-            address.setPostalCode(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode()));
-            address.setProvince(getProvinceName(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode())));
-            address.setCountry(prepareData(workingAddress.getCountry(), customerEc.getNationality()));
-            address.setTumbol(prepareData(workingAddress.getTumbol(), customerEc.getWorkAddrSubDistrictNameTh()));
-            address.setRoad(prepareData(workingAddress.getRoad(), customerEc.getWorkAddrStreet()));
-            address.setAmphur(prepareData(workingAddress.getAmphur(), customerEc.getWorkAddrdistrictNameTh()));
+            address.setBuildingName(fixedMaxLengthAddress(prepareData(workingAddress.getBuildingName(), customerEc.getWorkAddrVillageOrbuilding()), 90));
+            address.setNo(fixedMaxLengthAddress(prepareData(workingAddress.getAddress(), customerEc.getWorkAddrHouseNo()), 25));
+            address.setFloor(fixedMaxLengthAddress(prepareData(workingAddress.getFloor(), customerEc.getWorkAddrFloorNo()), 3));
+            address.setMoo(fixedMaxLengthAddress(prepareData(workingAddress.getMoo(), customerEc.getWorkAddrMoo()), 20));
+            address.setStreetName(fixedMaxLengthAddress(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrSoi()), 100));
+            address.setPostalCode(fixedMaxLengthAddress(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode()), 20));
+            address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode())), 100));
+            address.setCountry(fixedMaxLengthAddress(prepareData(workingAddress.getCountry(), customerEc.getNationality()), 40));
+            address.setTumbol(fixedMaxLengthAddress(prepareData(workingAddress.getTumbol(), customerEc.getWorkAddrSubDistrictNameTh()), 20));
+            address.setRoad(fixedMaxLengthAddress(prepareData(workingAddress.getRoad(), customerEc.getWorkAddrStreet()), 25));
+            address.setAmphur(fixedMaxLengthAddress(prepareData(workingAddress.getAmphur(), customerEc.getWorkAddrdistrictNameTh()), 30));
         } else {
             return parseWorkingAddressEc(customerEc);
         }
         return address;
+    }
+
+    private String fixedMaxLengthAddress(String value, int length) {
+        if (Objects.isNull(value) || value.isEmpty()) {
+            return "";
+        }
+        return org.apache.commons.lang3.StringUtils.left(value, length);
     }
 
     private String prepareIncomeType(String rslIncomeType, String employmentStatus) throws JsonProcessingException {

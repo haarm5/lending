@@ -253,19 +253,19 @@ public class LoanOnlineSubmissionEAppService {
                 String[] arrOfStr = address.getBuildingName().split("ห้อง");
                 if (arrOfStr.length > 1) {
                     result = result + " " + arrOfStr[0];
-                    prepareAddress(result, "ม.", address.getMoo());
-                    prepareAddress(result, "ชั้น", address.getFloor());
+                    result = prepareAddress(result, "ม.", address.getMoo());
+                    result = prepareAddress(result, "ชั้น", address.getFloor());
                     result = result + " " + "ห้อง" + " " + arrOfStr[1];
                 } else {
                     result = result + " " + address.getBuildingName();
-                    prepareAddress(result, "ม.", address.getMoo());
-                    prepareAddress(result, "ชั้น", address.getFloor());
+                    result = prepareAddress(result, "ม.", address.getMoo());
+                    result = prepareAddress(result, "ชั้น", address.getFloor());
                 }
             } else {
-                prepareAddress(result, "ม.", address.getMoo());
+                result = prepareAddress(result, "ม.", address.getMoo());
             }
-            prepareAddress(result, "ซ.", address.getStreetName());
-            prepareAddress(result, "ถ.", address.getRoad());
+            result = prepareAddress(result, "ซ.", address.getStreetName());
+            result = prepareAddress(result, "ถ.", address.getRoad());
 
             result = result + " " + address.getTumbol() +
                     " " + address.getAmphur() + " " + address.getProvince() +

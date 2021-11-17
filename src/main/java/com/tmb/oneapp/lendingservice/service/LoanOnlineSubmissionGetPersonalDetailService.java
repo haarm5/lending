@@ -79,35 +79,43 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         Address address = new Address();
         Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> responseAddress = Arrays.stream(individual.getAddresses()).filter(addr -> AddressTypeCode.RESIDENT.getCode().equals(addr.getAddrTypCode())).findAny();
         if (responseAddress.isPresent()) {
-            address.setAmphur(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString());
-            address.setCountry(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString());
-            address.setFloor(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString());
-            address.setMoo(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString());
-            address.setNo(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString());
-            address.setRoad(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
-            address.setPostalCode(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString());
-            address.setStreetName(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString());
-            address.setTumbol(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString());
+            address.setAmphur(fixedMaxLengthAddress(prepareData(responseAddress.get().getAmphur(), custGeneralProfileResponse.getCurrentAddrdistrictNameTh()).toString(), 30));
+            address.setCountry(fixedMaxLengthAddress(prepareData(responseAddress.get().getCountry(), custGeneralProfileResponse.getNationality()).toString(), 40));
+            address.setFloor(fixedMaxLengthAddress(prepareData(responseAddress.get().getFloor(), custGeneralProfileResponse.getCurrentAddrFloorNo()).toString(), 3));
+            address.setMoo(fixedMaxLengthAddress(prepareData(responseAddress.get().getMoo(), custGeneralProfileResponse.getCurrentAddrMoo()).toString(), 20));
+            address.setNo(fixedMaxLengthAddress(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString(), 25));
+            address.setRoad(fixedMaxLengthAddress(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString(), 25));
+            address.setPostalCode(fixedMaxLengthAddress(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString(), 20));
+            address.setStreetName(fixedMaxLengthAddress(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString(), 100));
+            address.setTumbol(fixedMaxLengthAddress(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString(), 20));
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
-
-            String pasCode;
-            if (responseAddress.get().getPostalCode().isEmpty() || responseAddress.get().getPostalCode() == null) {
-                pasCode = custGeneralProfileResponse.getCurrentAddrZipcode();
-            } else {
-                pasCode = responseAddress.get().getPostalCode();
-            }
-            address.setProvince(getProvinceName(pasCode));
-
-            String buildingName = prepareData(responseAddress.get().getBuildingName(), custGeneralProfileResponse.getCurrentAddrVillageOrbuilding()).toString();
-            if (!buildingName.isEmpty() || !buildingName.isBlank()) {
-                String[] roomNo = buildingName.split(" ");
-                address.setRoomNo(roomNo[0]);
-                if (roomNo.length > 1) {
-                    address.setBuildingName(roomNo[1]);
-                }
-            }
+            address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(responseAddress.get().getPostalCode(),custGeneralProfileResponse.getCurrentAddrZipcode()).toString()), 100));
+            MapBuildingNameAndRoomNo(address, responseAddress.get(), custGeneralProfileResponse);
         }
         return address;
+    }
+
+    private Address MapBuildingNameAndRoomNo(Address address, com.tmb.common.model.legacy.rsl.common.ob.address.Address rsl, CustGeneralProfileResponse ec) {
+        if (Objects.nonNull(rsl.getBuildingName()) && !rsl.getBuildingName().isEmpty()) {
+            String[] roomNo = rsl.getBuildingName().split(" ");
+            address.setBuildingName(fixedMaxLengthAddress(roomNo[0], 90));
+            if (roomNo.length > 1) {
+                address.setRoomNo(fixedMaxLengthAddress(roomNo[1], 10));
+            }
+            return address;
+        } else if (Objects.nonNull(ec.getCurrentAddrVillageOrbuilding()) && !ec.getCurrentAddrVillageOrbuilding().isEmpty()) {
+            address.setBuildingName(fixedMaxLengthAddress(ec.getCurrentAddrVillageOrbuilding(), 90));
+            address.setRoomNo(fixedMaxLengthAddress(ec.getCurrentAddrRoomNo(), 10));
+            return address;
+        }
+        return address;
+    }
+
+    private String fixedMaxLengthAddress(String value, int length) {
+        if (Objects.isNull(value) || value.isEmpty()) {
+            return "";
+        }
+        return org.apache.commons.lang3.StringUtils.left(value, length);
     }
 
 
@@ -198,7 +206,7 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
         if (Objects.nonNull(individual) && !individual.equals("")) {
             return individual;
         }
-        if (custGeneralProfileResponse != null) {
+        if (Objects.nonNull(custGeneralProfileResponse)) {
             return custGeneralProfileResponse;
         }
         return "";

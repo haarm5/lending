@@ -189,7 +189,9 @@ public class LoanOnlineSubmissionEAppService {
         response.setPaymentCriteria(mapPaymentMethodCriteria(facility.getPayMethodCriteria(), "PL"));
         response.setLoanWithOtherBank(mapLoanWithOtherBank(facility.getLoanWithOtherBank()));
         response.setConsiderLoanWithOtherBank(mapLoanWithOtherBank(facility.getConsiderLoanWithOtherBank()));
-        response.setRequestAmount(facility.getFeature().getRequestAmount());
+        if (Objects.nonNull(facility.getFeature())) {
+            response.setRequestAmount(facility.getFeature().getRequestAmount());
+        }
         response.setPaymentPlan(mapPaymentPlan(facility.getFeatureType()));
         response.setTenure(mapTenure(facility));
 

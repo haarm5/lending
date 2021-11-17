@@ -90,12 +90,12 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
             address.setTumbol(fixedMaxLengthAddress(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString(), 20));
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
             address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(responseAddress.get().getPostalCode(),custGeneralProfileResponse.getCurrentAddrZipcode()).toString()), 100));
-            MapBuildingName(address, responseAddress.get(), custGeneralProfileResponse);
+            mapBuildingName(address, responseAddress.get(), custGeneralProfileResponse);
         }
         return address;
     }
 
-    private Address MapBuildingName(Address address, com.tmb.common.model.legacy.rsl.common.ob.address.Address rsl, CustGeneralProfileResponse ec) {
+    private Address mapBuildingName(Address address, com.tmb.common.model.legacy.rsl.common.ob.address.Address rsl, CustGeneralProfileResponse ec) {
         if (Objects.nonNull(rsl.getBuildingName()) && !rsl.getBuildingName().isEmpty()) {
             String[] roomNo = rsl.getBuildingName().split(" ");
             address.setBuildingName(fixedMaxLengthAddress(roomNo[0], 90));

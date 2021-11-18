@@ -87,8 +87,7 @@ public class LoanOnlineSubmissionGenNCBFileService {
             sftpClient.storeFile(sftpStoreFiles);
 
             String[] enotiLocations = sftpEnotiLocations.split(",");
-            List<SFTPStoreFileInfo> sftpEnotiStoreFiles = sftpEnotiClient.setSFTPStoreFileInfo(enotiLocations, jpgFile, directoryPath);
-            sftpEnotiClient.removeFile(sftpEnotiStoreFiles);
+            List<SFTPStoreFileInfo> sftpEnotiStoreFiles = sftpEnotiClient.setSFTPStoreFileInfo(enotiLocations, jpgFile, "");
             sftpEnotiClient.storeFile(sftpEnotiStoreFiles);
 
             Files.delete(Paths.get(jpgFile));

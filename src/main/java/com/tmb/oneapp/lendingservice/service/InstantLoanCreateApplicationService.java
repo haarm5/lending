@@ -244,7 +244,7 @@ public class InstantLoanCreateApplicationService {
 			String[] locationTokens = sftpLocations.split(",");
 			List<SFTPStoreFileInfo> sftpStoreFileInfoList = setSFTPStoreFileInfo(locationTokens, jpgFile, directoryPath);
 			String[] locationEnoti = sftpEnotiLocations.split(",");
-			List<SFTPStoreFileInfo> sftpStoreEnotiFileInfoList = setSFTPStoreFileInfo(locationEnoti, jpgFile, directoryPath);
+			List<SFTPStoreFileInfo> sftpStoreEnotiFileInfoList = setSFTPStoreFileInfo(locationEnoti, jpgFile, "");
 			sftpClient.storeFile(sftpStoreFileInfoList);
 			sftpEnotiClient.storeFile(sftpStoreEnotiFileInfoList);
 			Files.delete(Paths.get(jpgFile));

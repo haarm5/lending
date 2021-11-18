@@ -5,7 +5,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
-import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +19,6 @@ public class PurgeDataServiceTest {
 
 	@Mock
 	SFTPClientImp sftpClient;
-	@Mock
-	SFTPEnotiClientImp sftpEnotiClient;
 
 	@InjectMocks
 	PurgeDataService purgeDataService;
@@ -29,7 +26,7 @@ public class PurgeDataServiceTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		purgeDataService = new PurgeDataService(sftpClient, sftpEnotiClient);
+		purgeDataService = new PurgeDataService(sftpClient);
 		purgeDataService.setPurgeAfterDay("10");
 		purgeDataService.setPathLOC("");
 		purgeDataService.setPathDocuments("");
@@ -38,29 +35,17 @@ public class PurgeDataServiceTest {
 	@Test
 	void purgeDataSuccess() {
 		Mockito.when(sftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
-		Mockito.when(sftpEnotiClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
 		boolean actualResult = purgeDataService.purgeData();
 		assertTrue(actualResult);
 		verify(sftpClient, times(2)).purgeFileOlderThanNDays("", 10L);
-		verify(sftpEnotiClient, times(2)).purgeFileOlderThanNDays("", 10L);
 	}
 
 	@Test
 	void purgeDataFailed() {
 		Mockito.when(sftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(false);
-		Mockito.when(sftpEnotiClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
 		boolean actualResult = purgeDataService.purgeData();
 		assertFalse(actualResult);
 		verify(sftpClient, times(1)).purgeFileOlderThanNDays("", 10L);
-	}
-
-	@Test
-	void purgeDataEnotiFailed() {
-		Mockito.when(sftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
-		Mockito.when(sftpEnotiClient.purgeFileOlderThanNDays("", 10L)).thenReturn(false);
-		boolean actualResult = purgeDataService.purgeData();
-		assertFalse(actualResult);
-		verify(sftpEnotiClient, times(1)).purgeFileOlderThanNDays("", 10L);
 	}
 
 }

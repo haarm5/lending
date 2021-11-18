@@ -44,6 +44,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private static String CRM_ID;
     private static String CORRELATION_ID;
+    String productCode;
 
     public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
@@ -53,6 +54,7 @@ public class LoanOnlineSubmissionEAppService {
             EAppResponse response = new EAppResponse();
 
             Body application = getApplicationInfo(caId);
+            productCode = application.getProduct();
             Individual customer = getCustomerInfo(caId);
             if (application.getAppType().equals("CC")) {
                 CreditCard creditCard = getCreditCard(caId);
@@ -187,11 +189,20 @@ public class LoanOnlineSubmissionEAppService {
         response.setPaymentCriteria(mapPaymentMethodCriteria(facility.getPayMethodCriteria(), "PL"));
         response.setLoanWithOtherBank(mapLoanWithOtherBank(facility.getLoanWithOtherBank()));
         response.setConsiderLoanWithOtherBank(mapLoanWithOtherBank(facility.getConsiderLoanWithOtherBank()));
-        response.setRequestAmount(facility.getFeature().getRequestAmount());
+        if (Objects.nonNull(facility.getFeature())) {
+            response.setRequestAmount(facility.getFeature().getRequestAmount());
+        }
         response.setPaymentPlan(mapPaymentPlan(facility.getFeatureType()));
-        response.setTenure(BigDecimal.valueOf(facility.getFeature().getTenure()));
+        response.setTenure(mapTenure(facility));
 
         return response;
+    }
+
+    private BigDecimal mapTenure(Facility facility) {
+        if (productCode.contains("RC") && Objects.nonNull(facility.getFeature()) && Objects.nonNull(facility.getFeature().getTenure())) {
+            return BigDecimal.valueOf(facility.getFeature().getTenure());
+        }
+        return facility.getTenure();
     }
 
     private String mapPaymentMethod(String code) {
@@ -239,34 +250,28 @@ public class LoanOnlineSubmissionEAppService {
         Optional<Address> filter = Arrays.stream(addresses).filter(x -> x.getAddrTypCode().equals(type)).findFirst();
         if (filter.isPresent()) {
             Address address = filter.get();
-            String subdis = "ตำบล";
-            String dis = "อำเภอ";
-            if (address.getProvince().equals("กรุงเทพมหานคร")) {
-                subdis = "แขวง";
-                dis = "เขต";
-            }
             String result = address.getAddress();
             if (!address.getBuildingName().isEmpty()) {
                 String[] arrOfStr = address.getBuildingName().split("ห้อง");
                 if (arrOfStr.length > 1) {
                     result = result + " " + arrOfStr[0];
-                    prepareAddress(result, "ม.", address.getMoo());
-                    prepareAddress(result, "ชั้น", address.getFloor());
+                    result = prepareAddress(result, "ม.", address.getMoo());
+                    result = prepareAddress(result, "ชั้น", address.getFloor());
                     result = result + " " + "ห้อง" + " " + arrOfStr[1];
                 } else {
                     result = result + " " + address.getBuildingName();
-                    prepareAddress(result, "ม.", address.getMoo());
-                    prepareAddress(result, "ชั้น", address.getFloor());
+                    result = prepareAddress(result, "ม.", address.getMoo());
+                    result = prepareAddress(result, "ชั้น", address.getFloor());
                 }
             } else {
-                prepareAddress(result, "ม.", address.getMoo());
+                result = prepareAddress(result, "ม.", address.getMoo());
             }
-            prepareAddress(result, "ซ.", address.getStreetName());
-            prepareAddress(result, "ถ.", address.getRoad());
+            result = prepareAddress(result, "ซ.", address.getStreetName());
+            result = prepareAddress(result, "ถ.", address.getRoad());
 
-            result = result + " " + subdis + address.getTumbol() +
-                    " " + dis + address.getAmphur() + " " + address.getProvince() + " " +
-                    address.getPostalCode();
+            result = result + " " + address.getTumbol() +
+                    " " + address.getAmphur() + " " + address.getProvince() +
+                    " " + address.getPostalCode();
             return result;
         }
         return null;

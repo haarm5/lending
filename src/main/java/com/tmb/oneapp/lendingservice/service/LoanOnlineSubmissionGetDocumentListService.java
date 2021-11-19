@@ -18,6 +18,7 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -42,13 +43,12 @@ public class LoanOnlineSubmissionGetDocumentListService {
     private ResponseChecklist checklistDocument(Long caId, String incompleteDocFlag) throws ServiceException, TMBCommonException, JsonProcessingException {
         try {
             ResponseChecklist response = loanSubmissionGetChecklistInfoClient.getChecklistInfo(caId, incompleteDocFlag);
-            if (response != null) {
+            if (Objects.nonNull(response)) {
                 return response;
-            } else {
-                throw new TMBCommonException(ResponseCode.FAILED.getCode(),
-                        ResponseCode.FAILED.getDesc(),
-                        ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
             }
+            throw new TMBCommonException(ResponseCode.FAILED.getCode(),
+                    ResponseCode.FAILED.getDesc(),
+                    ResponseCode.FAILED.getService(), HttpStatus.NOT_FOUND, null);
         } catch (Exception e) {
             logger.error("get checklist soap error", e);
             throw e;

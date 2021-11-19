@@ -97,7 +97,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
         address.setNo(fixedMaxLengthAddress(customer.getWorkAddrHouseNo(), 25));
         address.setFloor(fixedMaxLengthAddress(customer.getWorkAddrFloorNo(), 3));
         address.setMoo(fixedMaxLengthAddress(customer.getWorkAddrMoo(), 20));
-        address.setStreetName(fixedMaxLengthAddress(customer.getWorkAddrStreet(), 100));
+        address.setStreetName(fixedMaxLengthAddress(customer.getWorkAddrSoi(), 100));
         address.setPostalCode(fixedMaxLengthAddress(customer.getWorkAddrZipcode(), 20));
         address.setProvince(fixedMaxLengthAddress(customer.getWorkAddrProvinceNameTh(), 100));
         address.setCountry(fixedMaxLengthAddress(customer.getNationality(), 40));
@@ -117,7 +117,7 @@ public class LoanOnlineSubmissionGetWorkingDetailService {
             address.setNo(fixedMaxLengthAddress(prepareData(workingAddress.getAddress(), customerEc.getWorkAddrHouseNo()), 25));
             address.setFloor(fixedMaxLengthAddress(prepareData(workingAddress.getFloor(), customerEc.getWorkAddrFloorNo()), 3));
             address.setMoo(fixedMaxLengthAddress(prepareData(workingAddress.getMoo(), customerEc.getWorkAddrMoo()), 20));
-            address.setStreetName(fixedMaxLengthAddress(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrStreet()), 100));
+            address.setStreetName(fixedMaxLengthAddress(prepareData(workingAddress.getStreetName(), customerEc.getWorkAddrSoi()), 100));
             address.setPostalCode(fixedMaxLengthAddress(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode()), 20));
             address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(workingAddress.getPostalCode(), customerEc.getWorkAddrZipcode())), 100));
             address.setCountry(fixedMaxLengthAddress(prepareData(workingAddress.getCountry(), customerEc.getNationality()), 40));

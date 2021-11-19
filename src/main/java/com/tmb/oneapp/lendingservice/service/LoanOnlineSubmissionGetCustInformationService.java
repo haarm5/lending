@@ -2,6 +2,7 @@ package com.tmb.oneapp.lendingservice.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class LoanOnlineSubmissionGetCustInformationService {
 			logger.info("Get customer info from [RSL]");
 			ResponseIndividual individualResponse = rslService.getLoanSubmissionCustomerInfo(requestCust);
 
-			if (individualResponse != null) {
+			if (Objects.nonNull(individualResponse)) {
 				customerInfoRes = parseCustomerInformation(individualResponse, request);
 			}
 		} catch (Exception e) {
@@ -44,7 +45,7 @@ public class LoanOnlineSubmissionGetCustInformationService {
 	}
 
 	private CustomerInformationResponse parseCustomerInformation(ResponseIndividual individualResponse,
-			UpdateNCBConsentFlagRequest updateNCBConsentFlagRequest) {
+																 UpdateNCBConsentFlagRequest updateNCBConsentFlagRequest) {
 		CustomerInformationResponse customerInfoRes = new CustomerInformationResponse();
 		Individual individual = individualResponse.getBody().getIndividuals()[0];
 
@@ -56,10 +57,9 @@ public class LoanOnlineSubmissionGetCustInformationService {
 				.format(individual.getBirthDate().getTime());
 		customerInfoRes.setBirthDate(concertToThaiDate(birthDateStr));
 		customerInfoRes.setMobileNo(individual.getMobileNo());
+		customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (22)");
 		if ("PL".equalsIgnoreCase(updateNCBConsentFlagRequest.getAppType())) {
 			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (05)");
-		} else {
-			customerInfoRes.setProductName(updateNCBConsentFlagRequest.getProductDescTH() + " (22)");
 		}
 		customerInfoRes.setChannel("TTB APP");
 		customerInfoRes.setModule("Access PIN");

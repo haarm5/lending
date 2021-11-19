@@ -86,10 +86,10 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
             address.setNo(fixedMaxLengthAddress(prepareData(responseAddress.get().getAddress(), custGeneralProfileResponse.getCurrentAddrHouseNo()).toString(), 25));
             address.setRoad(fixedMaxLengthAddress(prepareData(responseAddress.get().getRoad(), custGeneralProfileResponse.getCurrentAddrStreet()).toString(), 25));
             address.setPostalCode(fixedMaxLengthAddress(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString(), 20));
-            address.setStreetName(fixedMaxLengthAddress(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrStreet()).toString(), 100));
+            address.setStreetName(fixedMaxLengthAddress(prepareData(responseAddress.get().getStreetName(), custGeneralProfileResponse.getCurrentAddrSoi()).toString(), 100));
             address.setTumbol(fixedMaxLengthAddress(prepareData(responseAddress.get().getTumbol(), custGeneralProfileResponse.getCurrentAddrSubDistrictNameTh()).toString(), 20));
             address.setAddrTypCode(responseAddress.get().getAddrTypCode());
-            address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(responseAddress.get().getPostalCode(),custGeneralProfileResponse.getCurrentAddrZipcode()).toString()), 100));
+            address.setProvince(fixedMaxLengthAddress(getProvinceName(prepareData(responseAddress.get().getPostalCode(), custGeneralProfileResponse.getCurrentAddrZipcode()).toString()), 100));
             mapBuildingName(address, responseAddress.get(), custGeneralProfileResponse);
         }
         return address;
@@ -103,9 +103,11 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
                 address.setRoomNo(fixedMaxLengthAddress(roomNo[1], 10));
             }
             return address;
-        } else if (Objects.nonNull(ec.getCurrentAddrVillageOrbuilding()) && !ec.getCurrentAddrVillageOrbuilding().isEmpty()) {
+        } else if (Objects.nonNull(ec.getCurrentAddrVillageOrbuilding())) {
             address.setBuildingName(fixedMaxLengthAddress(ec.getCurrentAddrVillageOrbuilding(), 90));
-            address.setRoomNo(fixedMaxLengthAddress(ec.getCurrentAddrRoomNo(), 10));
+            if (Objects.nonNull(ec.getCurrentAddrRoomNo())) {
+                address.setRoomNo(fixedMaxLengthAddress(ec.getCurrentAddrRoomNo(), 10));
+            }
             return address;
         }
         return address;
@@ -205,16 +207,10 @@ public class LoanOnlineSubmissionGetPersonalDetailService {
     public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
         if (Objects.nonNull(individual) && !individual.equals("")) {
             return individual;
-        }
-        if (Objects.nonNull(custGeneralProfileResponse)) {
+        } else if (Objects.nonNull(custGeneralProfileResponse)) {
             return custGeneralProfileResponse;
         }
         return "";
-    }
-
-    public boolean personalInfoSaved(Individual individual) {
-        logger.info("PersonalInfoSavedFlag is : {}", individual.getPersonalInfoSavedFlag());
-        return individual.getPersonalInfoSavedFlag().equals("Y");
     }
 
     private String getProvinceName(String postCode) {

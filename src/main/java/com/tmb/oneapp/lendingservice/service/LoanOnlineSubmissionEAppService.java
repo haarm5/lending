@@ -42,15 +42,15 @@ public class LoanOnlineSubmissionEAppService {
     private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
     private final DropdownService dropdownService;
 
-    private static String CRM_ID;
-    private static String CORRELATION_ID;
+    private static String rmId;
+    private static String correlationId;
     private static String productCode;
 
-    public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
+    public EAppResponse getEApp(long caId, String crmId, String correlation) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
         try {
-            CRM_ID = crmId;
-            CORRELATION_ID = correlationId;
+            rmId = crmId;
+            correlationId = correlation;
             EAppResponse response = new EAppResponse();
 
             Body application = getApplicationInfo(caId);
@@ -291,7 +291,7 @@ public class LoanOnlineSubmissionEAppService {
 
 
     private String mapCountryName(String code) throws TMBCommonException, JsonProcessingException {
-        List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(CORRELATION_ID, CRM_ID);
+        List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(correlationId, rmId);
         Optional<Dropdowns.SciCountry> filter = countries.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.SciCountry::getName2).orElse(null);
     }

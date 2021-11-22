@@ -247,8 +247,7 @@ public class LoanOnlineSubmissionController {
             List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getDocuments(crmId, request.getCaId());
             oneTmbOneServiceResponse.setData(responseChecklist);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
-            setHeader();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get checklist document upload: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));
@@ -269,8 +268,7 @@ public class LoanOnlineSubmissionController {
             List<ChecklistResponse> responseChecklist = loanOnlineSubmissionGetDocumentListService.getMoreDocuments(crmId, request.getCaId());
             oneTmbOneServiceResponse.setData(responseChecklist);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getService(), ResponseCode.SUCCESS.getMessage(), ""));
-            setHeader();
-            return ResponseEntity.ok().body(oneTmbOneServiceResponse);
+            return ResponseEntity.ok().headers(TMBUtils.getResponseHeaders()).body(oneTmbOneServiceResponse);
         } catch (Exception e) {
             logger.error("error while get checklist more document upload: {}", e);
             oneTmbOneServiceResponse.setStatus(getStatus(ResponseCode.FAILED.getCode(), ResponseCode.FAILED.getService(), ResponseCode.FAILED.getMessage(), e.getMessage()));

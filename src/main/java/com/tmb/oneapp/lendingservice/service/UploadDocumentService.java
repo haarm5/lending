@@ -57,11 +57,9 @@ public class UploadDocumentService {
     public UploadDocumentResponse upload(String crmId, UploadDocumentRequest request) throws TMBCommonException, IOException, ServiceException {
         UploadDocumentResponse response = new UploadDocumentResponse();
 
-        String rmId = CommonServiceUtils.getRmId(crmId);
-
         Body applicationInfo = getApplicationInfo(request.getCaId());
         String appRefNo = applicationInfo.getAppRefNo();
-        String srcDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, request.getDocCode());
+        String srcDir = String.format("%s/documents/%s/%s/%s", baseDir, crmId, appRefNo, request.getDocCode());
         String fileName = request.getFileName();
 
         String fileType = request.getFile().split(";")[0];
@@ -80,15 +78,14 @@ public class UploadDocumentService {
 
     public SubmitDocumentResponse submit(String crmId, SubmitDocumentRequest request) throws TMBCommonException, IOException, ServiceException, DocumentException {
         SubmitDocumentResponse response = new SubmitDocumentResponse();
-        String rmId = CommonServiceUtils.getRmId(crmId);
 
         Body applicationInfo = getApplicationInfo(request.getCaId());
         String appRefNo = applicationInfo.getAppRefNo();
 
         for (String docCode : request.getDocCodes()) {
-            String sftpDir = String.format("%s/%s", rmId, appRefNo);
-            String srcDir = String.format("%s/documents/%s/%s/%s/TempAttachments", baseDir, rmId, appRefNo, docCode);
-            String outDir = String.format("%s/documents/%s/%s/%s", baseDir, rmId, appRefNo, docCode);
+            String sftpDir = String.format("%s/%s", crmId, appRefNo);
+            String srcDir = String.format("%s/documents/%s/%s/%s/TempAttachments", baseDir, crmId, appRefNo, docCode);
+            String outDir = String.format("%s/documents/%s/%s/%s", baseDir, crmId, appRefNo, docCode);
             String fileName = parsePdfFileName(docCode, appRefNo, CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(new Date()));
             mergeImagesToPdf(srcDir, outDir, fileName);
             for(Path path: listFiles(Paths.get(outDir))) {
@@ -96,7 +93,7 @@ public class UploadDocumentService {
             }
         }
 
-        String tempDoc = String.format("%s/documents/%s/%s", baseDir, rmId, appRefNo);
+        String tempDoc = String.format("%s/documents/%s/%s", baseDir, crmId, appRefNo);
         removeDirectory(tempDoc);
 
         updateDocApplication(Long.parseLong(request.getCaId()));
@@ -118,14 +115,12 @@ public class UploadDocumentService {
     public DeleteDocumentResponse delete(String crmId, String caId, String docCode, String fileType, String fileName) throws ServiceException, TMBCommonException, IOException {
         DeleteDocumentResponse response = new DeleteDocumentResponse();
 
-        String rmId = CommonServiceUtils.getRmId(crmId);
-
         Body applicationInfo = getApplicationInfo(caId);
         String appRefNo = applicationInfo.getAppRefNo();
 
-        String filePath = String.format("%s/%s/%s/TempAttachments/%s.%s", rmId, appRefNo, docCode, fileName, fileType);
+        String filePath = String.format("%s/%s/%s/TempAttachments/%s.%s", crmId, appRefNo, docCode, fileName, fileType);
         if ("pdf".equals(fileType)) {
-            filePath = String.format("%s/%s/%s/%s.%s", rmId, appRefNo, docCode, fileName, fileType);
+            filePath = String.format("%s/%s/%s/%s.%s", crmId, appRefNo, docCode, fileName, fileType);
         }
 
         String srcPath = String.format("%s/documents/%s", baseDir, filePath);

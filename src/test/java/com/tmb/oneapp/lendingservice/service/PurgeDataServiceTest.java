@@ -1,9 +1,10 @@
 package com.tmb.oneapp.lendingservice.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.Assertions;
+import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -13,13 +14,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.tmb.oneapp.lendingservice.client.FTPClient;
-
 @RunWith(JUnit4.class)
 public class PurgeDataServiceTest {
 
 	@Mock
-	FTPClient ftpClient;
+	SFTPClientImp sftpClient;
 
 	@InjectMocks
 	PurgeDataService purgeDataService;
@@ -27,7 +26,7 @@ public class PurgeDataServiceTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		purgeDataService = new PurgeDataService(ftpClient);
+		purgeDataService = new PurgeDataService(sftpClient);
 		purgeDataService.setPurgeAfterDay("10");
 		purgeDataService.setPathLOC("");
 		purgeDataService.setPathDocuments("");
@@ -35,20 +34,18 @@ public class PurgeDataServiceTest {
 
 	@Test
 	void purgeDataSuccess() {
-		Mockito.when(ftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
+		Mockito.when(sftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(true);
 		boolean actualResult = purgeDataService.purgeData();
-		Assertions.assertNotNull(actualResult);
-		Assertions.assertEquals(true, actualResult);
-		verify(ftpClient, times(2)).purgeFileOlderThanNDays("", 10L);
+		assertTrue(actualResult);
+		verify(sftpClient, times(2)).purgeFileOlderThanNDays("", 10L);
 	}
 
 	@Test
 	void purgeDataFailed() {
-		Mockito.when(ftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(false);
+		Mockito.when(sftpClient.purgeFileOlderThanNDays("", 10L)).thenReturn(false);
 		boolean actualResult = purgeDataService.purgeData();
-		Assertions.assertNotNull(actualResult);
-		Assertions.assertEquals(false, actualResult);
-		verify(ftpClient, times(1)).purgeFileOlderThanNDays("", 10L);
+		assertFalse(actualResult);
+		verify(sftpClient, times(1)).purgeFileOlderThanNDays("", 10L);
 	}
 
 }

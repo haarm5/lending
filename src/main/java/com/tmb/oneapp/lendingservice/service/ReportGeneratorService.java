@@ -9,6 +9,7 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.ResponseApplicati
 import com.tmb.oneapp.lendingservice.client.CommonServiceFeignClient;
 import com.tmb.oneapp.lendingservice.client.ReportServiceClient;
 import com.tmb.oneapp.lendingservice.client.SFTPClientImp;
+import com.tmb.oneapp.lendingservice.client.SFTPEnotiClientImp;
 import com.tmb.oneapp.lendingservice.constant.EAppCardCategory;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
@@ -42,14 +43,18 @@ import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPA
 @Service
 public class ReportGeneratorService {
 
-    private static TMBLogger<ReportGeneratorService> logger = new TMBLogger<>(ReportGeneratorService.class);
+    private static final TMBLogger<ReportGeneratorService> logger = new TMBLogger<>(ReportGeneratorService.class);
 
     private final RslService rslService;
     private final CommonServiceFeignClient commonServiceFeignClient;
     private final ReportServiceClient reportServiceClient;
     private final LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService;
     private final NotificationService notificationService;
-    private final SFTPClientImp sftpClientImp;
+    private final SFTPClientImp sftpClient;
+    private final SFTPEnotiClientImp sftpEnotiClient;
+    private static final String CREDIT_CARD = "บัตรเครดิต";
+    private static final String FLASH_CARD = "บัตรกดเงินสดแฟลช";
+    private static final String C2G_CARD = "สินเชื่อบุคคลแคชทูโก";
 
     @Value("${sftp.locations.loan.root}")
     private String sftpLocationLoanRoot;
@@ -57,10 +62,10 @@ public class ReportGeneratorService {
     @Value("${sftp.locations.loan.dir}")
     private String sftpLocationLoanDir;
 
-    @Value("${sftp.locations.e-noti.root}")
+    @Value("${sftp.e-noti.locations.root}")
     private String sftpLocationENotiRoot;
 
-    @Value("${sftp.locations.e-noti.dir}")
+    @Value("${sftp.e-noti.locations.dir}")
     private String sftpLocationENotiDir;
 
     public ReportGeneratorService(RslService rslService,
@@ -68,15 +73,16 @@ public class ReportGeneratorService {
                                   ReportServiceClient reportServiceClient,
                                   LoanOnlineSubmissionEAppService loanOnlineSubmissionEAppService,
                                   NotificationService notificationService,
-                                  SFTPClientImp sftpClientImp
-
+                                  SFTPClientImp sftpClient,
+                                  SFTPEnotiClientImp sftpEnotiClient
     ) {
         this.rslService = rslService;
         this.commonServiceFeignClient = commonServiceFeignClient;
         this.reportServiceClient = reportServiceClient;
         this.loanOnlineSubmissionEAppService = loanOnlineSubmissionEAppService;
         this.notificationService = notificationService;
-        this.sftpClientImp = sftpClientImp;
+        this.sftpClient = sftpClient;
+        this.sftpEnotiClient = sftpEnotiClient;
     }
 
     public ReportGeneratorResponse generateEAppReport(ReportGeneratorRequest request, String correlationId, String crmId) throws TMBCommonException, ServiceException, IOException, ParseException {
@@ -188,7 +194,7 @@ public class ReportGeneratorService {
             notificationAttachments.add(termAndConditionAttachments);
         }
 
-        String eAppAttachment = String.format("sftp://%s%s%s/%s", sftpClientImp.getRemoteHost(),
+        String eAppAttachment = String.format("sftp://%s%s/%s/%s", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, fileName);
         logger.info("eApp: {}", eAppAttachment);
         notificationAttachments.add(eAppAttachment);
@@ -205,33 +211,32 @@ public class ReportGeneratorService {
     }
 
     private void stores(String crmId, String appRefNo, String srcFile) throws TMBCommonException {
-        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + SEPARATOR + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
+        storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir + "ApplyLoan" + SEPARATOR + crmId + SEPARATOR + appRefNo, srcFile);
         storeFileOnSFTP(sftpLocationLoanRoot, sftpLocationLoanDir, srcFile);
-        storeFileOnSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
+        storeFileOnNotiSFTP(sftpLocationENotiRoot, sftpLocationENotiDir, srcFile);
     }
 
     private String prepareCreditCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, CREDIT_CARD);
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
 
         return EAppCardCategory.CREDIT_CARD.getTemplate();
     }
 
     private String prepareFlashCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, FLASH_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("payment_plan", beautifyString(eAppResponse.getPaymentPlan()));
         parameters.put("payment_criteria", beautifyString(eAppResponse.getPaymentCriteria())); // เงื่อนไขการหักบัญชี
         parameters.put("is_loan_day_one", StringUtils.isBlank(eAppResponse.getDisburstAccountNo()) ? "N" : "Y");
-
         return EAppCardCategory.FLASH_CARD.getTemplate();
     }
 
     private String prepareC2GCardParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
-        buildCommonParameters(parameters, eAppResponse);
+        buildCommonParameters(parameters, eAppResponse, C2G_CARD);
         buildBankInfoParameters(parameters, eAppResponse);
         parameters.put("monthly_installment", beautifyBigDecimal(eAppResponse.getMonthlyInstallment()));
-        parameters.put("interest", String.format("%s%%", eAppResponse.getInterest()));
+        parameters.put("interest", String.format("%s%%", beautifyBigDecimal(eAppResponse.getInterest())));
 
         return EAppCardCategory.C2G_CARD.getTemplate();
     }
@@ -252,10 +257,14 @@ public class ReportGeneratorService {
     }
 
     private String checkForEmployee(String employmentStatus) {
-        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N";
+        return "พนักงานประจำ".equalsIgnoreCase(employmentStatus) ? "Y" : "N"; //พนักงานประจำ or เจ้าของกิจการ
     }
 
-    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse) {
+    private String isWaiveDoc(Boolean isWaiveDoc) {
+        return isWaiveDoc.equals(true) ? "Y" : "N";
+    }
+
+    private void buildCommonParameters(Map<String, Object> parameters, EAppResponse eAppResponse, String product) {
         //Loan Detail Section
         parameters.put("app_no", beautifyString(eAppResponse.getAppNo()));
         parameters.put("product_name", beautifyString(eAppResponse.getProductNameTh()));
@@ -273,6 +282,7 @@ public class ReportGeneratorService {
         parameters.put("is_direct_debit", checkForDirectDebit(eAppResponse.getPaymentMethod()));
         parameters.put("is_payment_method", checkForPaymentMethod(eAppResponse.getPaymentCriteria()));
         parameters.put("is_employee", checkForEmployee(eAppResponse.getEmploymentStatus()));
+        parameters.put("is_waive_doc", isWaiveDoc(eAppResponse.isWaiveDoc()));
 
         //Personal Detail Section
         parameters.put("id_type", beautifyString(eAppResponse.getIdType()));
@@ -293,6 +303,7 @@ public class ReportGeneratorService {
         parameters.put("email", beautifyString(eAppResponse.getEmail()));
         parameters.put("contact_address", beautifyString(eAppResponse.getContactAddress()));
         parameters.put("resident_status", beautifyString(eAppResponse.getResidentStatus()));
+
 
         //Job Detail Section
         parameters.put("rm_occupation", beautifyString(eAppResponse.getRmOccupation()));
@@ -317,6 +328,8 @@ public class ReportGeneratorService {
         parameters.put("accept_by", beautifyString(eAppResponse.getAcceptBy()));
         parameters.put("consent_date", convertToThaiDate(eAppResponse.getAcceptDate()));
         parameters.put("consent_time", convertToTime(eAppResponse.getAcceptDate()));
+        parameters.put("product", product);
+
     }
 
     private String convertToTime(Calendar acceptDate) {
@@ -327,17 +340,21 @@ public class ReportGeneratorService {
 
     private void storeFileOnSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
         try {
-            List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
-
-            SFTPStoreFileInfo sftpStoreFile = new SFTPStoreFileInfo();
-            sftpStoreFile.setRootPath(rootPath);
-            sftpStoreFile.setDstDir(dir);
-            sftpStoreFile.setSrcFile(srcFile);
-            sftpStoreFiles.add(sftpStoreFile);
-
-            sftpClientImp.storeFile(sftpStoreFiles);
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpClient.setSFTPStoreFileInfo(locations, srcFile, dir);
+            sftpClient.storeFile(sftpStoreFiles);
         } catch (Exception e) {
             throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    private void storeFileOnNotiSFTP(String rootPath, String dir, String srcFile) throws TMBCommonException {
+        try {
+            String[] locations = {rootPath};
+            List<SFTPStoreFileInfo> sftpStoreFiles = sftpEnotiClient.setSFTPStoreFileInfo(locations, srcFile, dir);
+            sftpEnotiClient.storeFile(sftpStoreFiles);
+        } catch (Exception e) {
+            throw new TMBCommonException(ResponseCode.SFTP_FAILED.getCode(), "SFTP e-noti file : " + srcFile + " fail.", ResponseCode.SFTP_FAILED.getService(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
@@ -356,7 +373,7 @@ public class ReportGeneratorService {
         Date dateObj = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(application.getBody().getApplicationDate());
         String dateStr = CommonServiceUtils.getDateAndTimeInYYMMDDHHMMSS(dateObj);
         String docType = "00110";
-        String letterOfConsentFilePath = String.format("sftp://%s%s%s/01_%s_%s_%s.JPG", sftpClientImp.getRemoteHost(),
+        String letterOfConsentFilePath = String.format("sftp://%s%s/%s/01_%s_%s_%s.JPG", sftpEnotiClient.getEnotiRemoteHost(),
                 sftpLocationENotiRoot, sftpLocationENotiDir, dateStr, appRefNo, docType);
         logger.info("letterOfConsentFilePath: {}", letterOfConsentFilePath);
         return letterOfConsentFilePath;
@@ -365,14 +382,14 @@ public class ReportGeneratorService {
 
     private String getSaleSheetFilePath(RslCode rslConfig) {
         String saleSheetFile = rslConfig.getSalesheetName();
-        String saleSheetFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
+        String saleSheetFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, saleSheetFile);
         logger.info("saleSheetFilePath: {}", saleSheetFilePath);
         return saleSheetFilePath;
     }
 
     private String getTermAndConditionFilePath(RslCode rslConfig) {
         String tncFile = rslConfig.getTncName();
-        String tncFilePath = String.format("sftp://%s%s/%s", sftpClientImp.getRemoteHost(), sftpLocationENotiRoot, tncFile);
+        String tncFilePath = String.format("sftp://%s%s%s", sftpEnotiClient.getEnotiRemoteHost(), sftpLocationENotiRoot, tncFile);
         logger.info("tncFilePath: {}", tncFilePath);
         return tncFilePath;
     }
@@ -390,9 +407,16 @@ public class ReportGeneratorService {
 
     private String convertToThaiDate(Calendar calendar) {
         if (Objects.nonNull(calendar)) {
-            Date date = calendar.getTime();
-            String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
-            return CommonServiceUtils.getThaiDate(dateEng);
+            int year = calendar.get(Calendar.YEAR);
+            if (year >= 9000) {
+                return "ตลอดชีพ";
+
+            } else {
+                Date date = calendar.getTime();
+                String dateEng = CommonServiceUtils.getDateInYYYYMMDD(date);
+                return CommonServiceUtils.getThaiDate(dateEng);
+            }
+
         } else {
             return "-";
         }

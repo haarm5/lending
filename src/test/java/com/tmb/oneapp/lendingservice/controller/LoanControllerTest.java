@@ -2,8 +2,8 @@ package com.tmb.oneapp.lendingservice.controller;
 
 import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.loan.ProductDetailRequest;
 import com.tmb.oneapp.lendingservice.model.loan.ProductDetailResponse;
@@ -73,7 +73,7 @@ public class LoanControllerTest {
     @Test
     void productsHasErrorShouldThrowException() {
         ServiceResponseImp mockResponse = new ServiceResponseImp();
-        ServiceError error = new ServiceError();
+        RslServiceError error = new RslServiceError();
         mockResponse.setError(error);
         when(loanService.fetchProducts(any())).thenReturn(mockResponse);
         LoanController loanController = new LoanController(loanService);

@@ -145,7 +145,7 @@ public class DropdownServiceTest {
         doReturn(mockDropdownIncomeBank()).when(lendingCriteriaInfoService).getPayrollBank();
 
         List<Dropdowns.IncomeBank> response = dropdownService.getDropdownIncomeBank();
-        Assertions.assertEquals(2, response.size());
+        Assertions.assertEquals(1, response.size());
     }
 
     @Test

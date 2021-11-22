@@ -8,6 +8,7 @@ import com.tmb.common.model.legacy.rsl.ws.application.response.Body;
 import com.tmb.common.model.legacy.rsl.ws.checklist.response.ResponseChecklist;
 import com.tmb.oneapp.lendingservice.client.LoanSubmissionGetChecklistInfoClient;
 import com.tmb.oneapp.lendingservice.constant.ResponseCode;
+import com.tmb.oneapp.lendingservice.model.CriteriaCodeEntry;
 import com.tmb.oneapp.lendingservice.model.personal.ChecklistResponse;
 import com.tmb.oneapp.lendingservice.util.CommonServiceUtils;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class LoanOnlineSubmissionGetDocumentListService {
     private static final TMBLogger<LoanOnlineSubmissionGetDocumentListService> logger = new TMBLogger<>(LoanOnlineSubmissionGetDocumentListService.class);
     private final LoanSubmissionGetChecklistInfoClient loanSubmissionGetChecklistInfoClient;
     private final UploadDocumentService uploadDocumentService;
+    private final LendingCriteriaInfoService lendingCriteriaInfoService;
 
     public List<ChecklistResponse> getDocuments(String crmId, Long caId) throws ServiceException, TMBCommonException, IOException {
         ResponseChecklist responseChecklist = checklistDocument(caId, "N");
@@ -57,20 +59,27 @@ public class LoanOnlineSubmissionGetDocumentListService {
 
     private List<ChecklistResponse> parseChecklistResponse(Checklist[] checklists) {
         List<ChecklistResponse> checklistResponses = new ArrayList<>();
+
         for (Checklist document : checklists) {
-            ChecklistResponse response = new ChecklistResponse();
-            response.setChecklistType(document.getChecklistType());
-            response.setCifRelCode(document.getCifRelCode());
-            response.setDocId(document.getDocId());
-            response.setDocumentCode(document.getDocumentCode());
-            response.setDocDescription(document.getDocDescription());
-            response.setId(document.getId());
-            response.setStatus(document.getStatus());
-            response.setIsMandatory(document.getIsMandatory());
-            response.setIncompletedDocReasonCd(document.getIncompletedDocReasonCd());
-            response.setIncompletedDocReasonDesc(document.getIncompletedDocReasonDesc());
-            response.setLosCifId(document.getLosCifId());
-            checklistResponses.add(response);
+            List<CriteriaCodeEntry> docTypeList = lendingCriteriaInfoService.getBrmsEcmDocTypeByCode(document.getDocumentCode());
+            if (!docTypeList.isEmpty()) {
+                for (CriteriaCodeEntry entry : docTypeList) {
+                    ChecklistResponse response = new ChecklistResponse();
+                    response.setChecklistType(document.getChecklistType());
+                    response.setCifRelCode(document.getCifRelCode());
+                    response.setDocId(document.getDocId());
+                    response.setDocumentCode(document.getDocumentCode());
+                    response.setDocDescription(entry.getExtValue1());
+                    response.setId(document.getId());
+                    response.setStatus(document.getStatus());
+                    response.setIsMandatory(document.getIsMandatory());
+                    response.setIncompletedDocReasonCd(document.getIncompletedDocReasonCd());
+                    response.setIncompletedDocReasonDesc(document.getIncompletedDocReasonDesc());
+                    response.setLosCifId(document.getLosCifId());
+                    checklistResponses.add(response);
+                }
+            }
+
         }
         return checklistResponses;
     }

@@ -2,24 +2,23 @@ package com.tmb.oneapp.lendingservice.client;
 
 
 import com.jcraft.jsch.*;
-import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Vector;   //NOSONAR 
+
+import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPARATOR;
 
 /**
  * Provides method to store file to sftp server.
  */
 @Service
-public class SFTPClientImp implements FTPClient {
+public class SFTPClientImp extends SFTPClient implements FTPClient {
 
     @Value("${sftp.remote-host}")
     private String remoteHost;
@@ -32,77 +31,23 @@ public class SFTPClientImp implements FTPClient {
 
     private static final TMBLogger<SFTPClientImp> logger = new TMBLogger<>(SFTPClientImp.class);
 
-    private static final String SEPARATOR = "/";
-
-
-    private boolean isDirExist(ChannelSftp channel, String path) {
-        try {
-            channel.cd(path);
-            return true;
-        } catch (SftpException e) {
-            logger.info("sftp directory: {} does not exist", path);
-        }
-        return false;
-    }
-
-
-    private boolean mkdir(ChannelSftp channel, String rootPath, String destDirs) {
-        String currentPath = rootPath;
-        try {
-            String[] dirs = destDirs.split(SEPARATOR);
-            String targetDir;
-            for (String dir : dirs) {
-                targetDir = currentPath + SEPARATOR + dir;
-                if (!isDirExist(channel, targetDir)) {
-                    channel.cd(currentPath);
-                    channel.mkdir(dir);
-                    logger.info("sftp directory: {} created", targetDir);
-                }
-                currentPath = targetDir;
-            }
-            return true;
-
-        } catch (SftpException e) {
-            logger.error("sftp exception:{}", e);
-        }
-        return false;
-    }
-
     public Channel setupJsch() throws JSchException {
-        JSch jsch = new JSch();
-        Session jschSession = jsch.getSession(username, remoteHost);
-        jschSession.setPassword(password);
-        java.util.Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        jschSession.setConfig(config);
-        jschSession.setTimeout(60000);
-        jschSession.connect();
-        return jschSession.openChannel("sftp");
+        return createChannel(username, remoteHost, password);
     }
-
-    /**
-     * Store file to sftp server
-     *
-     * @param storeFileInfoList
-     * @return
-     * @throws IOException
-     */
 
     @Override
     public boolean storeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
-        ChannelSftp channelSftp;
         String dst;
         try {
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
-                File sourceFile = new File(sftpStoreFileInfo.getSrcFile());
+                File sourceFile = getSourceFile(sftpStoreFileInfo);
                 if (!sourceFile.exists()) {
                     logger.error("src file to upload to ftp does not exists: {}", sftpStoreFileInfo.getSrcFile());
                     return false;
                 }
                 String dstDir = sftpStoreFileInfo.getDstDir();
-                if (dstDir == null) {
+                if (StringUtils.isEmpty(dstDir)) {
                     dst = sftpStoreFileInfo.getRootPath() + SEPARATOR + sourceFile.getName();
                 } else {
                     mkdir(channelSftp, sftpStoreFileInfo.getRootPath(), sftpStoreFileInfo.getDstDir());
@@ -113,22 +58,18 @@ public class SFTPClientImp implements FTPClient {
             }
             channelSftp.exit();
             return true;
-        } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
-        } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+        } catch (Exception e) {
+            logSftpError(e);
+            return false;
         }
-        return false;
     }
 
 
     @Override
     public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
-        ChannelSftp channelSftp;
         String dst = null;
         try {
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
                 String dstDir = sftpStoreFileInfo.getDstDir();
                 if (dstDir != null) {
@@ -140,12 +81,10 @@ public class SFTPClientImp implements FTPClient {
             }
             channelSftp.exit();
             return true;
-        } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
-        } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+        } catch (Exception e) {
+            logSftpError(e);
+            return false;
         }
-        return false;
     }
 
     public String getRemoteHost() {
@@ -154,10 +93,8 @@ public class SFTPClientImp implements FTPClient {
 
     @Override
     public boolean purgeFileOlderThanNDays(String dst, long day) {
-        ChannelSftp channelSftp;
         try {
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             List<String> list = new ArrayList<>();
             listDirectory(channelSftp, dst, list);
 
@@ -167,72 +104,26 @@ public class SFTPClientImp implements FTPClient {
             channelSftp.exit();
             return true;
 
-        } catch (JSchException e) {
-            logger.error("error jsch connection:{}", e);
-            return false;
-        } catch (SftpException e) {
-            logger.error("error sftp exception:{}", e);
-            return false;
         } catch (Exception e) {
-            logger.error("error other exception:{}", e);
+            logSftpError(e);
             return false;
         }
     }
 
     public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
-        ChannelSftp channelSftp;
         try {
             String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             recursiveRemoveDirectory(channelSftp, dst);
             channelSftp.exit();
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("sftp remove directory error exception:{}", e.getMessage());
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void listDirectory(ChannelSftp channelSftp, String path, List<String> list) throws SftpException {
-        Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR
-        for (LsEntry entry : files) {
-            if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-                list.add(path + "/" + entry.getFilename() + "");
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void purgeDataOlderThanNDay(ChannelSftp channelSftp, String path, long day) throws SftpException {
-        Vector<LsEntry> files = channelSftp.ls(path);  //NOSONAR
-        long cutOff = System.currentTimeMillis() - (day * 24 * 60 * 60 * 1000);
-        long modifyDate;
-        for (LsEntry entry : files) {
-            if (entry.getAttrs().isDir() && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
-                modifyDate = entry.getAttrs().getMTime() * 1000L;
-                if (modifyDate < cutOff) {
-                    channelSftp.rmdir(path + "/" + entry.getFilename());
-                    logger.info("Purge data older than {} Day Success >>> Last modify time:{} >>> Path:{}", day,
-                            entry.getAttrs().getMtimeString(), path + "/" + entry.getFilename());
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void recursiveRemoveDirectory(ChannelSftp channelSftp, String path) throws SftpException {
-        Collection<ChannelSftp.LsEntry> fileAndDirList = channelSftp.ls(path);
-        for (ChannelSftp.LsEntry item : fileAndDirList) {
-            if (!item.getAttrs().isDir()) {
-                channelSftp.rm(path + "/" + item.getFilename());
-            } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) {
-                try {
-                    channelSftp.rmdir(path + "/" + item.getFilename());
-                } catch (Exception e) {
-                    recursiveRemoveDirectory(channelSftp, path + "/" + item.getFilename());
-                }
-            }
-        }
-        channelSftp.rmdir(path);
+    private ChannelSftp connectChannelSftp() throws JSchException {
+        ChannelSftp channelSftpEnoti = (ChannelSftp) setupJsch();
+        channelSftpEnoti.connect();
+        return channelSftpEnoti;
     }
 }

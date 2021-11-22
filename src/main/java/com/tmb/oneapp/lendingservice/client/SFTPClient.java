@@ -1,13 +1,13 @@
 package com.tmb.oneapp.lendingservice.client;
 
 
-import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.jcraft.jsch.SftpException;
 import com.tmb.common.logger.TMBLogger;
 import com.tmb.oneapp.lendingservice.model.SFTPStoreFileInfo;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +22,18 @@ import static com.tmb.oneapp.lendingservice.constant.LendingServiceConstant.SEPA
 public class SFTPClient {
 
     private static final TMBLogger<SFTPClient> logger = new TMBLogger<>(SFTPClient.class);
+
+    public Channel createChannel(String enotiUsername, String enotiRemoteHost, String enotiPassword) throws JSchException {
+        JSch jschEnoti = new JSch();
+        Session jschSessionEnoti = jschEnoti.getSession(enotiUsername, enotiRemoteHost);
+        jschSessionEnoti.setPassword(enotiPassword);
+        java.util.Properties configEnoti = new java.util.Properties();
+        configEnoti.put("StrictHostKeyChecking", "no");
+        jschSessionEnoti.setConfig(configEnoti);
+        jschSessionEnoti.setTimeout(60000);
+        jschSessionEnoti.connect();
+        return jschSessionEnoti.openChannel("sftp");
+    }
 
     public List<SFTPStoreFileInfo> setSFTPStoreFileInfo(String[] locations, String jpgFile, String directoryPath) {
         List<SFTPStoreFileInfo> sftpStoreFiles = new ArrayList<>();
@@ -113,5 +125,19 @@ public class SFTPClient {
             }
         }
         channelSftp.rmdir(path);
+    }
+
+    public File getSourceFile(SFTPStoreFileInfo sftpStoreFileEnotiInfo) {
+        return new File(sftpStoreFileEnotiInfo.getSrcFile());
+    }
+
+    public void logSftpError(Exception e) {
+        if(e instanceof JSchException) {
+            logger.error("error jsch connection:{}", e);
+        }else if(e instanceof SftpException) {
+            logger.error("error sftp exception:{}", e);
+        }else{
+            logger.error("error other exception:{}", e);
+        }
     }
 }

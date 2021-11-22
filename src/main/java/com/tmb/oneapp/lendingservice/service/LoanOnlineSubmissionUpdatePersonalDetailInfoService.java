@@ -83,7 +83,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
         individual.setResidentType(request.getResidentFlag());
-        individual.setExpiryDate(request.getExpiryDate());
+        individual.setExpiryDate(Objects.isNull(individual.getExpiryDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdExpireDate()) : individual.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());
         individual.setWorkingAddrCopyFrom(RESIDENCE);
@@ -347,8 +347,10 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
     public static Object prepareData(Object individual, Object custGeneralProfileResponse) {
         if (Objects.nonNull(individual) && !individual.toString().isEmpty()) {
             return individual;
+        } else if (Objects.nonNull(custGeneralProfileResponse) && !custGeneralProfileResponse.toString().isEmpty()){
+            return custGeneralProfileResponse;
         }
-        return custGeneralProfileResponse;
+        return "";
     }
 
 

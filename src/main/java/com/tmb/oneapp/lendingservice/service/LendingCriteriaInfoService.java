@@ -259,6 +259,7 @@ public class LendingCriteriaInfoService {
         return responseCriterias;
     }
 
+
     public List<CriteriaCodeEntry> getEmploymentStatus() {
         final List<CriteriaCodeEntry> responseCriterias = new ArrayList<>();
         List<CommonCodeEntry> commonCodeEntries = lendingModuleCache.getListByCategoryCode(LoanCategory.EMPLOYMENT_STATUS.getCode());

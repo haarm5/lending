@@ -102,7 +102,7 @@ public class CommonServiceUtils {
             DecimalFormat formatter = new DecimalFormat("#,###.00");
             return formatter.format(number);
         }
-        return "";
+        return "0";
     }
 
     public static String getThaiYear(String year) {

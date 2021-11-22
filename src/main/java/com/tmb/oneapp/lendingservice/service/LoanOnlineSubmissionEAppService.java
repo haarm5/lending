@@ -42,15 +42,15 @@ public class LoanOnlineSubmissionEAppService {
     private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
     private final DropdownService dropdownService;
 
-    private static String CRM_ID;
-    private static String CORRELATION_ID;
-    private static String productCode;
+    private String rmId;
+    private String correlationId;
+    private String productCode;
 
-    public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
+    public EAppResponse getEApp(long caId, String crmId, String correlation) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
         try {
-            CRM_ID = crmId;
-            CORRELATION_ID = correlationId;
+            rmId = crmId;
+            correlationId = correlation;
             EAppResponse response = new EAppResponse();
 
             Body application = getApplicationInfo(caId);
@@ -126,16 +126,12 @@ public class LoanOnlineSubmissionEAppService {
         }
         response.setIdNo(customer.getIdNo1());
         response.setIssueCountry(mapCountryName(customer.getIdIssueCtry1()));
-        response.setIssueDate(customer.getIssuedDate());
-        response.getIssueDate().set(Calendar.HOUR, 0);
-        response.getIssueDate().set(Calendar.MINUTE, 0);
+        response.setIssueDate(adjustDate(customer.getIssuedDate()));
         // expire date ผิดอยู่
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
         response.setNameEn(customer.getNameLine2() + " " + customer.getNameLine1());
-        response.setBirthDay(customer.getBirthDate());
-        response.getBirthDay().set(Calendar.HOUR, 0);
-        response.getBirthDay().set(Calendar.MINUTE, 0);
+        response.setBirthDay(adjustDate(customer.getBirthDate()));
         response.setMobileNo(customer.getMobileNo());
         response.setEducationLevel(mapEducationLevel(customer.getEducationLevel()));
         response.setSourceFromCountry(mapCountryName(customer.getSourceFromCountry()));
@@ -146,6 +142,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setResidentStatus(mapResidentType(customer.getResidentType()));
         return response;
     }
+
 
     private EAppResponse mapWorkingInformation(Individual customer, EAppResponse response) throws TMBCommonException, JsonProcessingException {
         // อาชีพอาจจะ map ไม่เจอ
@@ -196,6 +193,14 @@ public class LoanOnlineSubmissionEAppService {
         response.setTenure(mapTenure(facility));
 
         return response;
+    }
+
+    private Calendar adjustDate(Calendar date) {
+        if (Objects.nonNull(date)) {
+            date.set(Calendar.HOUR, 0);
+            date.set(Calendar.MINUTE, 0);
+        }
+        return date;
     }
 
     private BigDecimal mapTenure(Facility facility) {
@@ -286,7 +291,7 @@ public class LoanOnlineSubmissionEAppService {
 
 
     private String mapCountryName(String code) throws TMBCommonException, JsonProcessingException {
-        List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(CORRELATION_ID, CRM_ID);
+        List<Dropdowns.SciCountry> countries = dropdownService.getDropdownSciCountry(correlationId, rmId);
         Optional<Dropdowns.SciCountry> filter = countries.stream().filter(x -> x.getCode().equals(code)).findFirst();
         return filter.map(Dropdowns.SciCountry::getName2).orElse(null);
     }

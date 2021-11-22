@@ -124,22 +124,23 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
         return "";
     }
 
+    private String mapBuildingName(Address address) {
+        if (!checkEmptyString(address.getRoomNo()).isEmpty()) {
+            return checkEmptyString(address.getBuildingName()) + " " + "ห้อง" + address.getRoomNo();
+        }
+        return checkEmptyString(address.getBuildingName());
+    }
+
     private Individual prepareAddress(Individual individual, Address address) {
         com.tmb.common.model.legacy.rsl.common.ob.address.Address[] individualAddresses = individual.getAddresses();
         if (Objects.nonNull(individualAddresses)) {
             Optional<com.tmb.common.model.legacy.rsl.common.ob.address.Address> oldAddress = Arrays.stream(individualAddresses).filter(x -> x.getAddrTypCode().equals("O")).findFirst();
             var newAddress = new com.tmb.common.model.legacy.rsl.common.ob.address.Address();
 
-            String room = checkEmptyString(address.getRoomNo());
-            String buildingName = checkEmptyString(address.getBuildingName());
-            if (!room.isEmpty()) {
-                room = "ห้อง" + room;
-            }
-
             newAddress.setCifId(individual.getCifId());
             newAddress.setAddrTypCode("O");
             newAddress.setAddress(checkoutNullAddressMapping(address.getNo(), 25));
-            newAddress.setBuildingName(checkoutNullAddressMapping(buildingName + " " + room, 100));
+            newAddress.setBuildingName(checkoutNullAddressMapping(mapBuildingName(address), 100));
             newAddress.setFloor(checkoutNullAddressMapping(address.getFloor(), 3));
             newAddress.setStreetName(checkoutNullAddressMapping(address.getStreetName(), 100));
             newAddress.setRoad(checkoutNullAddressMapping(address.getRoad(), 25));
@@ -152,19 +153,24 @@ public class LoanOnlineSubmissionUpdateWorkingDetailService {
 
             if (oldAddress.isPresent()) {
                 com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress = oldAddress.get();
-                newAddress.setId(workingAddress.getId());
-                for (int i = 0; i < individual.getAddresses().length; i++) {
-                    if (individual.getAddresses()[i].getAddrTypCode().equals("O")) {
-                        individual.getAddresses()[i] = newAddress;
-                        break;
-                    }
-                }
-            } else {
-                individualAddresses[individualAddresses.length] = newAddress;
+                setAddressToList(individual,workingAddress,newAddress);
             }
         }
         return individual;
     }
+
+    private Individual setAddressToList(Individual individual,com.tmb.common.model.legacy.rsl.common.ob.address.Address workingAddress,
+                                        com.tmb.common.model.legacy.rsl.common.ob.address.Address newAddress) {
+        newAddress.setId(workingAddress.getId());
+        for (int i = 0; i < individual.getAddresses().length; i++) {
+            if (individual.getAddresses()[i].getAddrTypCode().equals("O")) {
+                individual.getAddresses()[i] = newAddress;
+                break;
+            }
+        }
+        return individual;
+    }
+
 
     private String checkoutNullAddressMapping(String value, int length) {
         if (Objects.nonNull(value)) {

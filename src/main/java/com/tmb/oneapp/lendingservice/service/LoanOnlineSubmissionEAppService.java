@@ -44,7 +44,7 @@ public class LoanOnlineSubmissionEAppService {
 
     private static String CRM_ID;
     private static String CORRELATION_ID;
-    String productCode;
+    private static String productCode;
 
     public EAppResponse getEApp(long caId, String crmId, String correlationId) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 
@@ -126,16 +126,12 @@ public class LoanOnlineSubmissionEAppService {
         }
         response.setIdNo(customer.getIdNo1());
         response.setIssueCountry(mapCountryName(customer.getIdIssueCtry1()));
-        response.setIssueDate(customer.getIssuedDate());
-        response.getIssueDate().set(Calendar.HOUR, 0);
-        response.getIssueDate().set(Calendar.MINUTE, 0);
+        response.setIssueDate(adjustDate(customer.getIssuedDate()));
         // expire date ผิดอยู่
         response.setExpiryDate(customer.getExpiryDate());
         response.setNameTh(customer.getThaiName() + " " + customer.getThaiSurName());
         response.setNameEn(customer.getNameLine2() + " " + customer.getNameLine1());
-        response.setBirthDay(customer.getBirthDate());
-        response.getBirthDay().set(Calendar.HOUR, 0);
-        response.getBirthDay().set(Calendar.MINUTE, 0);
+        response.setBirthDay(adjustDate(customer.getBirthDate()));
         response.setMobileNo(customer.getMobileNo());
         response.setEducationLevel(mapEducationLevel(customer.getEducationLevel()));
         response.setSourceFromCountry(mapCountryName(customer.getSourceFromCountry()));
@@ -146,6 +142,7 @@ public class LoanOnlineSubmissionEAppService {
         response.setResidentStatus(mapResidentType(customer.getResidentType()));
         return response;
     }
+
 
     private EAppResponse mapWorkingInformation(Individual customer, EAppResponse response) throws TMBCommonException, JsonProcessingException {
         // อาชีพอาจจะ map ไม่เจอ
@@ -196,6 +193,14 @@ public class LoanOnlineSubmissionEAppService {
         response.setTenure(mapTenure(facility));
 
         return response;
+    }
+
+    private Calendar adjustDate(Calendar date) {
+        if (Objects.nonNull(date)) {
+            date.set(Calendar.HOUR, 0);
+            date.set(Calendar.MINUTE, 0);
+        }
+        return date;
     }
 
     private BigDecimal mapTenure(Facility facility) {

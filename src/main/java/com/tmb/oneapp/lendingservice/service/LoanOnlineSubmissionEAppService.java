@@ -42,9 +42,9 @@ public class LoanOnlineSubmissionEAppService {
     private final LoanSubmissionGetCreditcardInfoClient loanSubmissionGetCreditcardInfoClient;
     private final DropdownService dropdownService;
 
-    private static String rmId;
-    private static String correlationId;
-    private static String productCode;
+    private String rmId;
+    private String correlationId;
+    private String productCode;
 
     public EAppResponse getEApp(long caId, String crmId, String correlation) throws ServiceException, TMBCommonException, JsonProcessingException, RemoteException, ParseException {
 

@@ -6,8 +6,8 @@ import com.tmb.common.exception.model.TMBCommonException;
 import com.tmb.common.model.TmbOneServiceResponse;
 import com.tmb.common.model.loan.CreditCardLoanInfo;
 import com.tmb.common.model.loan.InstantLoanCreationRequest;
+import com.tmb.common.model.loan.RslServiceError;
 import com.tmb.oneapp.lendingservice.constant.LendingServiceConstant;
-import com.tmb.oneapp.lendingservice.model.ServiceError;
 import com.tmb.oneapp.lendingservice.model.ServiceResponseImp;
 import com.tmb.oneapp.lendingservice.model.instantloancreation.InstantLoanCreationResponse;
 import com.tmb.oneapp.lendingservice.service.InstantLoanCreateApplicationService;
@@ -72,7 +72,7 @@ public class InstantLoanAppControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
         InstantLoanCreationResponse data = (InstantLoanCreationResponse) actualResult.getBody().getData();
 
-        serviceResponseImp.setError(new ServiceError());
+        serviceResponseImp.setError(new RslServiceError());
         actualResult = instantLoanCreateApplicationController.createInstantLoanApplication(reqHeaders, ccRequest);
         assertEquals(HttpStatus.BAD_REQUEST, actualResult.getStatusCode());
         assertEquals(null, actualResult.getBody().getData());

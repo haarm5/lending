@@ -83,7 +83,7 @@ public class LoanOnlineSubmissionUpdatePersonalDetailInfoService {
         individual.setEmail(request.getEmail());
         individual.setIdIssueCtry1(request.getIdIssueCtry1());
         individual.setResidentType(request.getResidentFlag());
-        individual.setExpiryDate(request.getExpiryDate());
+        individual.setExpiryDate(Objects.isNull(individual.getExpiryDate()) ? loanOnlineSubmissionGetPersonalDetailService.convertStringToCalender(ecResponse.getIdExpireDate()) : individual.getExpiryDate());
         individual.setBirthDate(request.getBirthDate());
         individual.setAccounts(individual.getAccounts());
         individual.setWorkingAddrCopyFrom(RESIDENCE);

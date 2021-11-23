@@ -236,10 +236,13 @@ public class LoanOnlineSubmissionEAppService {
     }
 
     private String mapPaymentPlan(String code) {
-        if (code.contains("c")) {
-            return "Cash Chill Chill (บริการเงินสดผ่อนชิลล์ ชิลล์)";
+        if (Objects.nonNull(code)) {
+            if (code.contains("c")) {
+                return "Cash Chill Chill (บริการเงินสดผ่อนชิลล์ ชิลล์)";
+            }
+            return "Cash Transfer (บริการวงเงินล่วงหน้า)";
         }
-        return "Cash Transfer (บริการวงเงินล่วงหน้า)";
+        return "";
     }
 
     private String mapDelivery(String type) {

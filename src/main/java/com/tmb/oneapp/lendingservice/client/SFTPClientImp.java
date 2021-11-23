@@ -31,27 +31,17 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
 
     private static final TMBLogger<SFTPClientImp> logger = new TMBLogger<>(SFTPClientImp.class);
 
-    @Override
     public Channel setupJsch() throws JSchException {
-        JSch jsch = new JSch();
-        Session jschSession = jsch.getSession(username, remoteHost);
-        jschSession.setPassword(password);
-        java.util.Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        jschSession.setConfig(config);
-        jschSession.setTimeout(60000);
-        jschSession.connect();
-        return jschSession.openChannel("sftp");
+        return createChannel(username, remoteHost, password);
     }
 
     @Override
     public boolean storeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
         String dst;
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
-                File sourceFile = new File(sftpStoreFileInfo.getSrcFile());
+                File sourceFile = getSourceFile(sftpStoreFileInfo);
                 if (!sourceFile.exists()) {
                     logger.error("src file to upload to ftp does not exists: {}", sftpStoreFileInfo.getSrcFile());
                     return false;
@@ -68,12 +58,10 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
             }
             channelSftp.exit();
             return true;
-        } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
-        } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+        } catch (Exception e) {
+            logSftpError(e);
+            return false;
         }
-        return false;
     }
 
 
@@ -81,8 +69,7 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
     public boolean removeFile(List<SFTPStoreFileInfo> storeFileInfoList) {
         String dst = null;
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             for (SFTPStoreFileInfo sftpStoreFileInfo : storeFileInfoList) {
                 String dstDir = sftpStoreFileInfo.getDstDir();
                 if (dstDir != null) {
@@ -94,12 +81,10 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
             }
             channelSftp.exit();
             return true;
-        } catch (JSchException e) {
-            logger.error("error sftp connection:{}", e);
-        } catch (SftpException e) {
-            logger.error("error sftp operation:{}", e);
+        } catch (Exception e) {
+            logSftpError(e);
+            return false;
         }
-        return false;
     }
 
     public String getRemoteHost() {
@@ -109,8 +94,7 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
     @Override
     public boolean purgeFileOlderThanNDays(String dst, long day) {
         try {
-            ChannelSftp channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             List<String> list = new ArrayList<>();
             listDirectory(channelSftp, dst, list);
 
@@ -120,28 +104,26 @@ public class SFTPClientImp extends SFTPClient implements FTPClient {
             channelSftp.exit();
             return true;
 
-        } catch (JSchException e) {
-            logger.error("error jsch connection:{}", e);
-            return false;
-        } catch (SftpException e) {
-            logger.error("error sftp exception:{}", e);
-            return false;
         } catch (Exception e) {
-            logger.error("error other exception:{}", e);
+            logSftpError(e);
             return false;
         }
     }
 
     public void removeDirectory(SFTPStoreFileInfo storeFileInfoList) {
-        ChannelSftp channelSftp;
         try {
             String dst = storeFileInfoList.getRootPath() + SEPARATOR + storeFileInfoList.getDstDir();
-            channelSftp = (ChannelSftp) setupJsch();
-            channelSftp.connect();
+            ChannelSftp channelSftp = connectChannelSftp();
             recursiveRemoveDirectory(channelSftp, dst);
             channelSftp.exit();
         } catch (Exception e) {
             logger.error("sftp remove directory error exception:{}", e.getMessage());
         }
+    }
+
+    private ChannelSftp connectChannelSftp() throws JSchException {
+        ChannelSftp channelSftpEnoti = (ChannelSftp) setupJsch();
+        channelSftpEnoti.connect();
+        return channelSftpEnoti;
     }
 }
